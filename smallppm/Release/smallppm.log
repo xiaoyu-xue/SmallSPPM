@@ -1,0 +1,77 @@
+﻿  smallppm.cpp
+c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(391): error C2092: “sph”数组元素类型不能是函数或抽象类类型
+c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(392): error C2259: “Sphere”: 不能实例化抽象类
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(392): note: 由于下列成员:
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(392): note: “double Shape::Intersect(const Ray &)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(141): note: 参见“Shape::Intersect”的声明
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(392): note: “Vec Shape::Sample(Vec)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(142): note: 参见“Shape::Sample”的声明
+c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(393): error C2259: “Sphere”: 不能实例化抽象类
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(393): note: 由于下列成员:
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(393): note: “double Shape::Intersect(const Ray &)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(141): note: 参见“Shape::Intersect”的声明
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(393): note: “Vec Shape::Sample(Vec)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(142): note: 参见“Shape::Sample”的声明
+c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(394): error C2259: “Sphere”: 不能实例化抽象类
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(394): note: 由于下列成员:
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(394): note: “double Shape::Intersect(const Ray &)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(141): note: 参见“Shape::Intersect”的声明
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(394): note: “Vec Shape::Sample(Vec)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(142): note: 参见“Shape::Sample”的声明
+c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(395): error C2259: “Sphere”: 不能实例化抽象类
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(395): note: 由于下列成员:
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(395): note: “double Shape::Intersect(const Ray &)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(141): note: 参见“Shape::Intersect”的声明
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(395): note: “Vec Shape::Sample(Vec)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(142): note: 参见“Shape::Sample”的声明
+c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(396): error C2259: “Sphere”: 不能实例化抽象类
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(396): note: 由于下列成员:
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(396): note: “double Shape::Intersect(const Ray &)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(141): note: 参见“Shape::Intersect”的声明
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(396): note: “Vec Shape::Sample(Vec)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(142): note: 参见“Shape::Sample”的声明
+c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(397): error C2259: “Sphere”: 不能实例化抽象类
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(397): note: 由于下列成员:
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(397): note: “double Shape::Intersect(const Ray &)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(141): note: 参见“Shape::Intersect”的声明
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(397): note: “Vec Shape::Sample(Vec)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(142): note: 参见“Shape::Sample”的声明
+c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(398): error C2259: “Sphere”: 不能实例化抽象类
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(398): note: 由于下列成员:
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(398): note: “double Shape::Intersect(const Ray &)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(141): note: 参见“Shape::Intersect”的声明
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(398): note: “Vec Shape::Sample(Vec)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(142): note: 参见“Shape::Sample”的声明
+c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(399): error C2259: “Sphere”: 不能实例化抽象类
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(399): note: 由于下列成员:
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(399): note: “double Shape::Intersect(const Ray &)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(141): note: 参见“Shape::Intersect”的声明
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(399): note: “Vec Shape::Sample(Vec)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(142): note: 参见“Shape::Sample”的声明
+c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(400): error C2259: “Sphere”: 不能实例化抽象类
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(400): note: 由于下列成员:
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(400): note: “double Shape::Intersect(const Ray &)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(141): note: 参见“Shape::Intersect”的声明
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(400): note: “Vec Shape::Sample(Vec)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(142): note: 参见“Shape::Sample”的声明
+c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(401): error C2259: “Sphere”: 不能实例化抽象类
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(401): note: 由于下列成员:
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(401): note: “double Shape::Intersect(const Ray &)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(141): note: 参见“Shape::Intersect”的声明
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(401): note: “Vec Shape::Sample(Vec)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(142): note: 参见“Shape::Sample”的声明
+c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(402): error C2259: “Sphere”: 不能实例化抽象类
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(402): note: 由于下列成员:
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(402): note: “double Shape::Intersect(const Ray &)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(141): note: 参见“Shape::Intersect”的声明
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(402): note: “Vec Shape::Sample(Vec)”: 是抽象的
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(142): note: 参见“Shape::Sample”的声明
+c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(391): error C2466: 不能分配常量大小为 0 的数组
+c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(403): error C2512: “Sphere”: 没有合适的默认构造函数可用
+  c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(403): note: 无构造函数可以接受源类型，或构造函数重载决策不明确
+c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(586): warning C4244: “初始化”: 从“_Ty”转换到“int”，可能丢失数据
+          with
+          [
+              _Ty=__int64
+          ]
+c:\users\xxy\desktop\cg proj\smallppm\smallppm\smallppm.cpp(634): warning C4018: “<”: 有符号/无符号不匹配

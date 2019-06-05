@@ -1,0 +1,5 @@
+﻿  smallppm.cpp
+c:\cg proj\smallppm\smallppm\smallppm.cpp(119): warning C4018: '<': signed/unsigned mismatch
+c:\cg proj\smallppm\smallppm\smallppm.cpp(605): warning C4018: '<': signed/unsigned mismatch
+  smallppm.vcxproj -> C:\CG Proj\smallppm\Debug\smallppm.exe
+  smallppm.vcxproj -> C:\CG Proj\smallppm\Debug\smallppm.pdb (Full PDB)
