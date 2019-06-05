@@ -1,5 +1,5 @@
 #include "svpng.inc"
-#include <math.h>   
+#include <math.h>  
 #include <stdlib.h> 
 #include <stdio.h>  
 #include <Random>
@@ -16,6 +16,7 @@ const int render_stage_number = 2000000;
 const double PiOver2 = 1.57079632679489661923;
 const double PiOver4 = 0.78539816339744830961;
 const double eps = 10e-6;
+const double Inf = 1e20;
 
 std::mt19937_64 rng(1234);
 std::uniform_real_distribution<double> uniform;
@@ -54,12 +55,16 @@ struct Vec {
 	inline Vec operator+(double b) const { return Vec(x + b, y + b, z + b); }
 	inline Vec operator-(double b) const { return Vec(x - b, y - b, z - b); }
 	inline Vec operator*(double b) const { return Vec(x * b, y * b, z * b); }
+	inline Vec operator*(const Vec &b) const { return Vec(x * b.x, y * b.y, z * b.z); }
 	inline Vec operator/(double b) const { if (b == 0) return Vec(); else return Vec(x / b, y / b, z / b); }
 	inline Vec mul(const Vec &b) const { return Vec(x * b.x, y * b.y, z * b.z); }
 	inline Vec norm() { return (*this) * (1.0 / sqrt(x*x + y * y + z * z)); }
 	inline double dot(const Vec &b) const { return x * b.x + y * b.y + z * b.z; }
 	Vec operator%(Vec&b) const { return Vec(y*b.z - z * b.y, z*b.x - x * b.z, x*b.y - y * b.x); }
 	double& operator[](int i) { return i == 0 ? x : i == 1 ? y : z; }
+	double maxValue() const {
+		return std::max(x, std::max(y, z));
+	}
 };
 
 Vec operator*(double a, Vec b) { return Vec(a * b.x, a * b.y, a * b.z); }
@@ -83,7 +88,7 @@ struct AABB {
 };
 
 struct HPoint {
-	Vec f, pos, nrm, flux;
+	Vec importance, pos, nrm, flux, outDir;
 	double r2;
 	unsigned int n; // n = N / ALPHA in the paper
 	int pix;
@@ -138,27 +143,49 @@ double CosineHemispherePdf(double cosTheta) { return cosTheta * INV_PI; }
 
 class Shape {
 public:
-	Shape(ReflectionType type): reflType(type){}
-	virtual double Intersect(const Ray &r) = 0;
-	virtual Vec Sample(Vec rand) = 0;
-	std::shared_ptr<BSDF> GetBSDF(const Vec &n, const Vec &nl) const {
-		if(reflType == DIFF) return std::shared_ptr<BSDF>(new BSDF)
+	Shape(ReflectionType type, const Vec &color, bool isL = false): reflType(type), c(color), isLight(isL){}
+	virtual double Intersect(const Ray &r) const = 0;
+	virtual Vec Sample(Vec rand) const = 0;
+	virtual std::shared_ptr<BSDF> GetBSDF(const Vec &n, const Vec &nl) const {
+		if (reflType == DIFF) {
+			return std::shared_ptr<BSDF>(new DiffuseBSDF(n, nl, c));
+		}
+		else if (reflType == SPEC) {
+			return std::shared_ptr<BSDF>(new SpecularBSDF(n, nl, c));
+		}
+		else if (reflType == REFR) {
+			return std::shared_ptr<BSDF>(new TransmissionBSDF(n, nl, c));
+		}
 	}
+	bool IsLight() const { return isLight; }
+	virtual Vec GetNorm(const Vec &point) const = 0;
+	virtual Vec GetEmission() const = 0;
 private:
 	ReflectionType reflType;
+	Vec c;
+	bool isLight;
 };
 
 class Light {
 public:
-	virtual Vec DirectIllumination(Vec hitpoint, Vec nl, Vec f, Vec u) = 0;
+	virtual Vec DirectIllumination(const Vec &hitpoint, const Vec &wo, const std::shared_ptr<BSDF> bsdf, 
+		const Vec &nl, const Vec &importance, Vec *dir, Vec u) const = 0;
+	virtual Vec Emission() const = 0;
+	virtual Vec SampleLight(Vec *pos, Vec *dir, Vec *lightNorm, double *pdfPos, double *pdfDir) const {
+		SampleOnLight(pos, dir, lightNorm, pdfPos, pdfDir);
+		return Emission();
+	}
+protected:
+	virtual void SampleOnLight(Vec *pos, Vec *dir, Vec *lightNorm, double *pdfPos, double *pdfDir) const = 0;
 };
 
 class BSDF {
 public:
 	BSDF(const Vec &normal, const Vec &normalL) : n(normal), nl(normalL){}
-	virtual double Pdf(const Vec &wo, const Vec &wi) = 0;
-	virtual Vec Sample_f(const Vec &wo, Vec *wi, Vec rand = Vec(0, 0, 0)) = 0;
-	virtual Vec f(const Vec &wo, const Vec &wi) { return Vec(0, 0, 0); }
+	virtual double Pdf(const Vec &wo, const Vec &wi) const = 0 ;
+	virtual Vec Sample_f(const Vec &wo, Vec *wi, double *pdf, Vec rand = Vec(0, 0, 0)) const = 0;
+	virtual Vec f(const Vec &wo, const Vec &wi) const { return Vec(0, 0, 0); }
+	virtual bool IsDelta() const { return false; }
 protected:
 	const Vec n, nl;
 };
@@ -166,17 +193,21 @@ protected:
 class DiffuseBSDF : public BSDF {
 public:
 	DiffuseBSDF(const Vec &n, const Vec &nl, Vec r): BSDF(n, nl), R(r){}
+
 	double Pdf(const Vec &wo, const Vec &wi) const {
-		return nl.dot(wi) * INV_PI;
+		return std::abs(wi.dot(nl)) * INV_PI;
 	}
-	Vec Sample_f(const Vec &wo, Vec *wi, Vec rand) const {
+
+	Vec Sample_f(const Vec &wo, Vec *wi, double *pdf, Vec rand) const {
 		double r1 = 2. * PI * rand[0], r2 = rand[1];
 		double r2s = sqrt(r2);
 		Vec w = nl, u = ((fabs(w.x) > .1 ? Vec(0, 1) : Vec(1)) % w).norm();
 		Vec v = w % u;
 		*wi = (u*cos(r1)*r2s + v * sin(r1)*r2s + w * sqrt(1 - r2)).norm();
+		*pdf = Pdf(wo, *wi);
 		return f(wo, *wi);
 	}
+
 	Vec f(const Vec &wo, const Vec &wi) const {
 		return R * INV_PI;
 	}
@@ -187,16 +218,22 @@ private:
 class SpecularBSDF : public BSDF {
 public:
 	SpecularBSDF(const Vec &n, const Vec &nl, Vec r = Vec(1.0, 1.0, 1.0)) : BSDF(n, nl), R(r){}
+
 	double Pdf(const Vec &wo, const Vec &wi) const {
 		return 1.0;
 	}
-	Vec Sample_f(const Vec &wo, Vec *wi, Vec rand) const {
+
+	Vec Sample_f(const Vec &wo, Vec *wi, double *pdf, Vec rand) const {
 		*wi = nl * 2.0 * nl.dot(wo) - wo;
+		*pdf = Pdf(wo, *wi);
 		return f(wo, *wi);
 	}
+
 	Vec f(const Vec &wo, const Vec &wi) const {
 		return R;
 	}
+
+	bool IsDelta() const { return true; }
 private:
 	Vec R;
 };
@@ -206,16 +243,17 @@ public:
 	TransmissionBSDF(const Vec &n, const Vec &nl, Vec fa = Vec(1.0, 1.0, 1.0), double eta1 = 1.0, double eta2 = 1.5) : 
 		BSDF(n, nl), Fa(fa), nc(eta1), nt(eta2){}
 
-	double Pdf(const Vec &wo, const Vec &wi) {
+	double Pdf(const Vec &wo, const Vec &wi) const {
 		return 1.0;
 	}
 
-	Vec Sample_f(const Vec &wo, Vec *wi, Vec rand) const {
+	Vec Sample_f(const Vec &wo, Vec *wi, double *pdf, Vec rand) const {
 		bool into = (n.dot(nl) > 0.0);
 		double nnt = into ? nc / nt : nt / nc, ddn = (-1 * wo).dot(nl), cos2t;
 		// total internal reflection
 		if ((cos2t = 1 - nnt * nnt*(1 - ddn * ddn)) < 0) {
 			*wi = nl * 2.0 * nl.dot(wo) - wo;
+			*pdf = Pdf(wo, *wi);
 			return Fa;
 		}
 		Vec td = ((-1 * wo) * nnt - nl * (ddn * nnt + sqrt(cos2t))).norm();
@@ -223,10 +261,12 @@ public:
 		double P = Re * 0.5 + 0.25;
 		if (P < rand[2]) {
 			*wi = nl * 2.0 * nl.dot(wo) - wo;
+			*pdf = Pdf(wo, *wi);
 			return Fa * Re / P;
 		}
 		else {
 			*wi = td;
+			*pdf = Pdf(wo, *wi);
 			return Fa * (1.0 - Re) / (1 - P);
 		}
 	}
@@ -234,6 +274,8 @@ public:
 	Vec f(const Vec &wo, const Vec &wi) const {
 		return Fa;
 	}
+
+	bool IsDelta() const { return true; }
 
 private:
 	double Fresnell(const Vec &wo, const Vec &nl, bool into) const {
@@ -251,7 +293,7 @@ private:
 class Sphere: public Shape, public Light {
 public:
 	Sphere(double r_, Vec p_, Vec e_, Vec c_, ReflectionType reflType) : 
-		rad(r_), p(p_), e(e_), c(c_), Shape(reflType){}
+		rad(r_), p(p_), e(e_), c(c_), Shape(reflType, c_){}
 
 	double Intersect(const Ray &r) const {
 		// ray-sphere Intersection returns distance
@@ -266,25 +308,51 @@ public:
 		return (t = b - det) > 1e-4 ? t : ((t = b + det) > 1e-4 ? t : 1e20);
 	}
 
-	Vec DirectIllumination(Vec hitpoint, Vec nl, Vec f, Vec u) {
+	Vec DirectIllumination(const Vec &hitpoint, const Vec &wo, const std::shared_ptr<BSDF> bsdf, 
+		const Vec &nl, const Vec &importance, Vec *dir, Vec u) const {
 		Vec sw = p - hitpoint, su = ((fabs(sw.x) > .1 ? Vec(0, 1) : Vec(1)) % sw).norm(), sv = sw % su;
 		double cos_a_max = sqrt(1 - rad * rad / (hitpoint - p).dot(hitpoint - p));
-		double eps1 = u.x, eps2 = u.y;
-		double cos_a = 1 - eps1 + eps1 * cos_a_max;
+		double zeta1 = u.x, zeta2 = u.y;
+		double cos_a = 1 - zeta1 + zeta1 * cos_a_max;
 		double sin_a = sqrt(1 - cos_a * cos_a);
-		double phi = 2 * PI * eps2;
+		double phi = 2 * PI * zeta2;
 		Vec l = su * cos(phi) * sin_a + sv * sin(phi) * sin_a + sw * cos_a;
+		*dir = l.norm();
 		double omega = 2 * PI*(1 - cos_a_max);
-
-		return f.mul(e * l.dot(nl) * omega) * INV_PI;  // 1/pi for brdf
+		Vec f = bsdf->f(wo, *dir);
+		return importance * f * l.dot(nl) * e * omega  ;  // 1/pi for brdf
 	}
 
-	Vec Sample(const Vec &rand) const {
+	Vec Sample(Vec rand) const {
 		return UniformSampleSphere(rand);
 	}
 
-	
+	Vec Emission() const {
+		return e;
+	}
+
+	Vec GetNorm(const Vec & point) const {
+		return (point - p).norm();
+	}
+
+	Vec GetEmission() const {
+		return e;
+	}
 double rad; Vec p, e, c;
+
+protected:
+	void SampleOnLight(Vec *pos, Vec *dir, Vec *lightNorm, double *pdfPos, double *pdfDir) const {
+		//sample a position
+		*pos = UniformSampleSphere(Vec(Random(), Random(), Random())) * rad + p;
+		*pdfPos = 1.f / (4.0 * PI * rad * rad);
+		*lightNorm = (*pos - p).norm();
+		Vec ss, ts;
+		CoordinateSystem(*lightNorm, &ss, &ts);
+		Vec dirLocal = CosineSampleHemisphere(Vec(Random(), Random(), Random()));
+		double cosTheta = dirLocal.z;
+		Vec lightDir = (ss * dirLocal.x + ts * dirLocal.y + *lightNorm * dirLocal.z).norm();
+		*pdfDir = CosineHemispherePdf(cosTheta);
+	}
 };
 
 
@@ -368,10 +436,6 @@ void BuildHashGrid(const int w, const int h, int stage_num) {
 }
 
 
-class Scene {
-
-};
-
 /*
 Sphere sph[] = { // Scene: radius, position, color, material
 	Sphere(1e5, Vec(1e5 + 1,40.8,81.6), Vec(), Vec(.75,.25,.25),DIFF),//Left
@@ -414,6 +478,47 @@ Sphere sph[] = {//Scene: radius, position, emission, color, material
 };
 
 
+class Scene {
+public:
+
+	void SetCamera(const Ray &camera, const Vec &cX, const Vec &cY) {
+		cam = camera;
+		cx = cX;
+		cy = cY;
+	}
+
+	void AddShape(std::shared_ptr<Shape> shape) {
+		shapes.push_back(shape);
+	}
+
+	void AddLight(std::shared_ptr<Light> light) {
+		lights.push_back(light);
+	}
+
+	bool Intersect(const Ray &r, double &t, std::shared_ptr<Shape> &hitObj) const {
+		int n = sizeof(sph) / sizeof(Sphere);
+		double d, t = Inf;
+		for (int i = 0; i < shapes.size(); ++i) {
+			d = shapes[i]->Intersect(r);
+			if (d < t) {
+				t = d;
+				hitObj = shapes[i];
+			}
+		}
+		return t < Inf;
+	}
+
+	const std::vector<std::shared_ptr<Light>>& GetLights() const {
+		return lights;
+	}
+
+private:
+	std::vector<std::shared_ptr<Shape>> shapes;
+	std::vector<std::shared_ptr<Light>> lights;
+	Ray cam;
+	Vec cx, cy;
+};
+
 // tone mapping and gamma correction
 int toInt(double x) {
 	return int(pow(1 - exp(-x), 1 / 2.2) * 255 + .5);
@@ -435,7 +540,23 @@ inline bool Intersect(const Ray &r, double &t, int &id) {
 
 
 
+void GenratePhoton(const Scene &scene, Ray *pr, Vec *f) {
+	const std::vector<std::shared_ptr<Light>> lights = scene.GetLights();
+	int lightsNum = lights.size();
+	double lightPdf = 1.0 / lightsNum;
+	int lightindex = (int)(Random() * lightsNum);
+	const Light &light = *lights[lightindex];
+	Vec Le = light.Emission();
+	Vec pos, lightDir, lightNorm;
+	double pdfPos, pdfDir;
+	light.SampleLight(&pos, &lightDir, &lightNorm, &pdfPos, &pdfDir);
+	pr->o = pos + lightDir * eps;
+	pr->d = lightDir;
+	double cosTheta = std::abs(lightNorm.dot(lightDir));
+	*f = Le * cosTheta / (pdfPos * pdfDir);
+}
 
+/*
 void GenratePhoton(Ray *pr, Vec *f, int i) {
 	int lightindex = (int)(sizeof(sph) / sizeof(Sphere)) - 1;
 	const Sphere &light = sph[lightindex];
@@ -453,6 +574,22 @@ void GenratePhoton(Ray *pr, Vec *f, int i) {
 	pr->o = pos + lightDir * eps;
 	pr->d = lightDir;
 	*f = Le * cosTheta / (Pdfpos * Pdfdir);
+}*/
+
+
+Vec DirectIllumination(const Scene &scene, Vec hitpoint, Vec wo, const std::shared_ptr<BSDF> bsdf, Vec nl, Vec importance, Vec u) {
+	Vec L;
+	const std::vector<std::shared_ptr<Light>> lights = scene.GetLights();
+	for (auto light : lights) {
+		Vec dir;
+		std::shared_ptr<Shape> hitObj;
+		double t;
+		Vec Li = light->DirectIllumination(hitpoint, wo, bsdf, nl, importance, &dir, u);
+		if (scene.Intersect(Ray(hitpoint, dir), t, hitObj) && hitObj->IsLight()) {
+			L = L + Li;
+		}
+	}
+	return L;
 }
 
 
@@ -481,6 +618,7 @@ Vec DirectIllumination(Vec hitpoint, Vec nl, Vec f, Vec u) {
 	return e;
 }
 
+/*
 void trace(const Ray &r, int dpt, bool m, const Vec &fl, const Vec &adj, int i, bool specularbounce = false, int pixel = -1)
 {
 	double t;
@@ -511,7 +649,7 @@ void trace(const Ray &r, int dpt, bool m, const Vec &fl, const Vec &adj, int i, 
 			// store the measurment point
 			HPoint &hp = hitPoints[pixel];
 			hp.used = true;
-			hp.f = f.mul(adj);
+			hp.importance = f.mul(adj);
 			hp.pos = x;
 			hp.nrm = n;
 			hp.pix = pixel;
@@ -584,10 +722,103 @@ void trace(const Ray &r, int dpt, bool m, const Vec &fl, const Vec &adj, int i, 
 		}
 	}
 }
+*/
 
+void TraceEyePath(const Scene &scene, const Ray &ray, int maxDepth, long long pixel) {
+	Ray r = ray;
+	bool deltaBoundEvent = false;
+	Vec importance(1.0, 1.0, 1.0);
+	for (int i = 0; i < maxDepth; ++i) {
+		double t;
+		std::shared_ptr<Shape> hitObj;
+		if (!scene.Intersect(r, t, hitObj)) return;
+		Vec hit = r.o + r.d * t;
+		Vec n = hitObj->GetNorm(hit);
+		Vec nl = n.dot(r.d) < 0 ? n : n * -1;
+		std::shared_ptr<BSDF> bsdf = hitObj->GetBSDF(n, nl);
+		Vec wi;
+		double pdf;
+		if (bsdf->IsDelta()) {
+			Vec f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec(Random(), Random(), Random()));
+			importance = f * std::abs(wi.dot(n)) * importance / pdf;
+			r.o = hit;
+			r.d = wi;
+		}
+		else {
+			//Vec f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec(Random(), Random(), Random()));
+			//importance = f * std::abs(wi.dot(n)) * importance / pdf;
 
-void TraceEyePath(const Ray &r) {
+			HPoint &hp = hitPoints[pixel];
+			hp.used = true;
+			hp.importance = importance;
+			hp.pos = hit;
+			hp.nrm = n;
+			hp.pix = pixel;
+			hp.outDir = -1 * r.d;
+			hitPoints[pixel] = hp;
+			if ((i == 0 || deltaBoundEvent) && hitObj->IsLight())
+				directillum[hp.pix] = directillum[hp.pix] + importance * hitObj->GetEmission();
+			else
+				directillum[hp.pix] = directillum[hp.pix] + 
+					DirectIllumination(scene, hit, -1 * r.d, bsdf, nl, hp.importance, Vec(Random(), Random(), Random()));
 
+			return;
+		}
+	}
+}
+
+void TracePhoton(const Scene &scene, const Ray &ray, Vec photonFlux, int maxDepth) {
+	Ray r = ray;
+	bool deltaBoundEvent = false;
+	for (int i = 0; i < maxDepth; ++i) {
+		double t;
+		std::shared_ptr<Shape> hitObj;
+		if (!scene.Intersect(r, t, hitObj)) return;
+		Vec hit = r.o + r.d * t;
+		Vec n = hitObj->GetNorm(hit);
+		Vec nl = n.dot(r.d) < 0 ? n : n * -1;
+		std::shared_ptr<BSDF> bsdf = hitObj->GetBSDF(n, nl);
+		Vec wi;
+		double pdf;
+		Vec f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec(Random(), Random(), Random()));
+		Vec estimation = f * std::abs(wi.dot(n)) / pdf;
+		if (bsdf->IsDelta()) {
+			photonFlux = photonFlux * estimation;
+			r.o = hit;
+			r.d = wi;
+		}
+		else {
+			// photon ray
+			// find neighboring measurement points and accumulate flux via progressive density estimation
+			Vec hh = (hit - hpbbox.minPoint) * hashCellSize;
+			int ix = std::abs(int(hh.x)), iy = std::abs(int(hh.y)), iz = std::abs(int(hh.z));
+			// strictly speaking, we should use #pragma omp critical here.
+			// it usually works without an artifact due to the fact that photons are 
+			// rarely accumulated to the same measurement points at the same time (especially with QMC).
+			// it is also significantly faster.
+			if (i > 1) {
+				std::vector<HPoint*> &hp = hashGrid[hash(ix, iy, iz)];
+				for (HPoint* hitpoint : hp) {
+					Vec v = hitpoint->pos - hit;
+					if ((hitpoint->nrm.dot(n) > 1e-3) && (v.dot(v) <= radius2[hitpoint->pix])) {
+						// unlike N in the paper, hitpoint->n stores "N / ALPHA" to make it an integer value
+						double g = (photonNums[hitpoint->pix] * ALPHA + ALPHA) / (photonNums[hitpoint->pix] * ALPHA + 1.0);
+						radius2[hitpoint->pix] = radius2[hitpoint->pix] * g;
+						photonNums[hitpoint->pix]++;
+						Vec contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.d) * photonFlux;
+						flux[hitpoint->pix] = (flux[hitpoint->pix] + contribution) * g;
+					}
+				}
+			}
+
+			double p = estimation.maxValue();
+			if (p < 1) {
+				if (Random() < p) photonFlux = photonFlux / p;
+				else break;
+			}
+			photonFlux = photonFlux * estimation;
+		}
+	}
 }
 
 
@@ -602,10 +833,29 @@ int main(int argc, char *argv[]) {
 	hitPoints.resize(w * h);
 	directillum.resize(w * h);
 
+	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
+
 	// trace eye rays and store measurement points
 	Ray cam(Vec(50, 48, 295.6), Vec(0, -0.042612, -1).norm());
 	Vec cx = Vec(w*.5135 / h), cy = (cx%cam.d).norm()*.5135, *c = new Vec[w*h], vw;
 
+	scene->SetCamera(cam, cx, cy);
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(1e5 + 1, 40.8, 81.6), Vec(), Vec(.75, .25, .25), DIFF)));
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(-1e5 + 99, 40.8, 81.6), Vec(), Vec(.25, .25, .75), DIFF)));
+
+	//Scene
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, 40.8, 1e5), Vec(), Vec(.75, .75, .75), DIFF)));//Back
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, 40.8, -1e5 + 170), Vec(), Vec(.75, .75, .75), DIFF)));//Frnt
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, 1e5, 81.6), Vec(), Vec(.75, .75, .75), DIFF)));//Botm
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, -1e5 + 81.6, 81.6), Vec(), Vec(.75, .75, .75), DIFF)));//Top
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(16.5, Vec(27, 16.5, 47), Vec(), Vec(1, 1, 1)*.999, REFR)));//Mirr
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(7.0, Vec(27, 16.5, 47), Vec(), Vec(.25, .25, .75), DIFF)));//Mirr
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(16.5, Vec(73, 26.5, 78), Vec(), Vec(1, 1, 1)*.999, REFR)));//Glas
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(9.5, Vec(53, 9.5, 88), Vec(), Vec(1, 1, 1)*.999, REFR)));
+	std::shared_ptr<Sphere> light0 = std::shared_ptr<Sphere>(new Sphere(8.0, Vec(50, 81.6 - 16.5, 81.6), Vec(0.3, 0.3, 0.3) * 100, Vec(), DIFF));
+	scene->AddShape(std::dynamic_pointer_cast<Shape>(light0));
+	//Light
+	scene->AddLight(std::dynamic_pointer_cast<Light>(light0));
 
 	for (int render_stage = 0; render_stage < samps; ++render_stage) {
 		for (int y = 0; y < h; y++) {
@@ -616,7 +866,9 @@ int main(int argc, char *argv[]) {
 				hitPoints[pixel].used = false;
 				double u = Random() - 0.5, v = Random() - 0.5;
 				Vec d = cx * ((x + 0.5 + u) / w - 0.5) + cy * (-(y + 0.5 + v) / h + 0.5) + cam.d;
-				trace(Ray(cam.o + d * 140, d.norm()), 0, true, Vec(), Vec(1, 1, 1), 0, false, pixel);
+				//trace(Ray(cam.o + d * 140, d.norm()), 0, true, Vec(), Vec(1, 1, 1), 0, false, pixel);
+				Ray ray(cam.o + d * 140, d.norm());
+				TraceEyePath(*scene, ray, 20, pixel);
 			}
 		}
 
@@ -628,12 +880,14 @@ int main(int argc, char *argv[]) {
 			double p = 100.*(render_stage + 1) / photonTotalNum;
 			fprintf(stderr, "\rPhotonPass %5.2f%%", p);
 			int m = render_stage_number * render_stage;
-			Ray r;
-			Vec f;
+			Ray ray;
+			Vec photonFlux;
 #pragma omp parallel for schedule(dynamic, 1)
 			for (int j = 0; j < render_stage_number; j++) {
-				GenratePhoton(&r, &f, m + j);
-				trace(r, 0, 0 > 1, f, vw, m + j);
+				GenratePhoton(*scene, &ray, &photonFlux);
+				TracePhoton(*scene, ray, photonFlux, 20);
+				//GenratePhoton(&r, &f, m + j);
+				//trace(r, 0, 0 > 1, f, vw, m + j);
 			}
 			fprintf(stderr, "\n");
 		}
