@@ -7,12 +7,14 @@
 #include <crtdbg.h>
 #include <iostream>
 #include <algorithm>
+#include <atomic>
+#include <ctime>
 #define _CRTDBG_MAP_ALLOC
 
 const double PI = 3.14159265358979;
 const double INV_PI = 0.31830988618379067154;
 const double ALPHA = 0.7;
-const int render_stage_number = 2000;
+const int render_stage_number = 50000000;
 const double PiOver2 = 1.57079632679489661923;
 const double PiOver4 = 0.78539816339744830961;
 const double eps = 10e-6;
@@ -408,13 +410,15 @@ private:
 	std::shared_ptr<Shape> shape;
 };
 
+
+
 std::vector<double> radius2;
 std::vector<long long> photonNums;
 std::vector<Vec> flux;
 std::vector<Vec> directillum;
 std::vector<HPoint> hitPoints;
 std::vector<std::vector<HPoint*>> hashGrid;
-long long hashNum, pixelIndex, photonTotalNum;
+long long hashNum, pixelIndex;
 double hashCellSize;
 AABB hpbbox;
 
@@ -469,7 +473,10 @@ void BuildHashGrid(const int w, const int h, int stage_num) {
 
 	hashGrid.resize(hashNum);
 
-	for (HPoint &hp : hitPoints) {
+#pragma omp parallel for schedule(guided)
+	for(long long i = 0; i < hitPoints.size(); ++i){
+		HPoint &hp = hitPoints[i];
+	//for (HPoint &hp : hitPoints) {
 		if (!hp.used) continue;
 		Vec BMin = ((hp.pos - irad) - hpbbox.minPoint) * hashCellSize;
 		Vec BMax = ((hp.pos + irad) - hpbbox.minPoint) * hashCellSize;
@@ -606,7 +613,7 @@ void GenratePhoton(const Scene &scene, Ray *pr, Vec *f) {
 
 
 
-Vec DirectIllumination(const Scene &scene, const Intersection &isect, const std::shared_ptr<BSDF> bsdf, Vec importance, Vec u) {
+Vec DirectIllumination(const Scene &scene, const Intersection &isect, const std::shared_ptr<BSDF> &bsdf, Vec importance, Vec u) {
 	Vec L;
 	const std::vector<std::shared_ptr<Light>> lights = scene.GetLights();
 	for (auto light : lights) {
@@ -680,15 +687,15 @@ void TracePhoton(const Scene &scene, const Ray &ray, Vec photonFlux, int maxDept
 			r.d = wi;
 		}
 		else {
-			// photon ray
-			// find neighboring measurement points and accumulate flux via progressive density estimation
-			Vec hh = (isect.hit - hpbbox.minPoint) * hashCellSize;
-			int ix = std::abs(int(hh.x)), iy = std::abs(int(hh.y)), iz = std::abs(int(hh.z));
-			// strictly speaking, we should use #pragma omp critical here.
-			// it usually works without an artifact due to the fact that photons are 
-			// rarely accumulated to the same measurement points at the same time (especially with QMC).
-			// it is also significantly faster.
-			if (i > 1) {
+			if (i > 0) {
+				// photon ray
+				// find neighboring measurement points and accumulate flux via progressive density estimation
+				Vec hh = (isect.hit - hpbbox.minPoint) * hashCellSize;
+				int ix = std::abs(int(hh.x)), iy = std::abs(int(hh.y)), iz = std::abs(int(hh.z));
+				// strictly speaking, we should use #pragma omp critical here.
+				// it usually works without an artifact due to the fact that photons are 
+				// rarely accumulated to the same measurement points at the same time (especially with QMC).
+				// it is also significantly faster.
 				std::vector<HPoint*> &hp = hashGrid[hash(ix, iy, iz)];
 				for (HPoint* hitpoint : hp) {
 					Vec v = hitpoint->pos - isect.hit;
@@ -718,7 +725,10 @@ void TracePhoton(const Scene &scene, const Ray &ray, Vec photonFlux, int maxDept
 
 
 int main(int argc, char *argv[]) {
-	int w = 1024, h = 768, samps = (argc == 2) ? std::max(atoll(argv[1]) / render_stage_number, (long long)1) : render_stage_number;
+	
+	clock_t begin = clock();
+
+	int w = 1024 * 2, h = 768 * 2, nIterations = (argc == 2) ? atoll(argv[1]) : 256; //(argc == 2) ? std::max(atoll(argv[1]) / render_stage_number, (long long)1) : render_stage_number;
 
 	radius2.resize(w * h);
 	photonNums.resize(w * h);
@@ -732,6 +742,7 @@ int main(int argc, char *argv[]) {
 	Ray cam(Vec(50, 48, 295.6), Vec(0, -0.042612, -1).norm());
 	Vec cx = Vec(w*.5135 / h), cy = (cx%cam.d).norm()*.5135, *c = new Vec[w*h], vw;
 
+	fprintf(stderr, "Load Scene ...\n");
 	scene->SetCamera(cam, cx, cy);
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(1e5 + 1, 40.8, 81.6), Vec(), Vec(.75, .25, .25), DIFF)));
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(-1e5 + 99, 40.8, 81.6), Vec(), Vec(.25, .25, .75), DIFF)));
@@ -747,11 +758,12 @@ int main(int argc, char *argv[]) {
 	std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape));
 	scene->AddLight(light0);
 
-
-	for (int render_stage = 0; render_stage < samps; ++render_stage) {
+	fprintf(stderr, "Rendering ...\n");
+	for (int render_stage = 0; render_stage < nIterations; ++render_stage) {
+#pragma omp parallel for schedule(guided)
 		for (int y = 0; y < h; y++) {
-			fprintf(stderr, "\rHitPointPass %5.2f%%", 100.0*y / (h - 1));
-#pragma omp parallel for schedule(dynamic, 1)
+			//fprintf(stderr, "\rHitPointPass %5.2f%%", 100.0*y / (h - 1));
+//#pragma omp parallel for schedule(dynamic, 1)
 			for (int x = 0; x < w; x++) {
 				int pixel = x + y * w;
 				hitPoints[pixel].used = false;
@@ -763,24 +775,23 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
-		
 		BuildHashGrid(w, h, render_stage);
-		photonTotalNum = samps;
 		{
-			fprintf(stderr, "\n");
-			double p = 100.*(render_stage + 1) / photonTotalNum;
-			fprintf(stderr, "\rPhotonPass %5.2f%%", p);
+			//fprintf(stderr, "\n");
+			double percentage = 100.*(render_stage + 1) / nIterations;
+			//fprintf(stderr, "\rPhotonPass %5.2f%%", percentage);
 			int m = render_stage_number * render_stage;
 			Ray ray;
 			Vec photonFlux;
-#pragma omp parallel for schedule(dynamic, 1)
+#pragma omp parallel for schedule(guided)
 			for (int j = 0; j < render_stage_number; j++) {
 				GenratePhoton(*scene, &ray, &photonFlux);
 				TracePhoton(*scene, ray, photonFlux, 21);
 				//GenratePhoton(&r, &f, m + j);
 				//trace(r, 0, 0 > 1, f, vw, m + j);
 			}
-			fprintf(stderr, "\n");
+			//fprintf(stderr, "\n");
+			fprintf(stderr, "\rPhotonPass %5.2f%%", percentage);
 		}
 		ClearHashGrid();
 	}
@@ -790,16 +801,19 @@ int main(int argc, char *argv[]) {
 	//for (int i = 0; i < flux.size(); ++i) {
 	//	std::cout << flux[i].x << " " << flux[i].y << " " << flux[i].z << std::endl;
 	//}
-	std::cout << "flux size: " << flux.size() << std::endl;
+	std::cout << "\nflux size: " << flux.size() << std::endl;
+#pragma omp parallel for schedule(guided)
 	for (int i = 0; i < flux.size(); ++i) {
-		c[i] = c[i] + flux[i] * (1.0 / (PI * radius2[i] * photonTotalNum * render_stage_number))
-			+ directillum[i] / samps;
-		//c[i] = c[i] + directillum[i] / samps;
+		c[i] = c[i] + flux[i] * (1.0 / (PI * radius2[i] * nIterations * render_stage_number))
+			+ directillum[i] / nIterations;
+		//c[i] = c[i] + directillum[i] / nIterations;
 		//std::cout << c[i].x << " " << c[i].y << " " << c[i].z << std::endl;
 	}
 
+	clock_t end = clock();
+	std::cout << "cost time "<< (end - begin) / 1000.0 / 60.0 <<"min"<< std::endl;
 	// save the image after tone mapping and gamma correction
-	FILE* f = fopen("cornellbox.png", "wb");
+	FILE* f = fopen("cornellbox9.png", "wb");
 	unsigned char *RGBs = new unsigned char[w * h * 3];
 	for (int j = 0; j < h; ++j) {
 		for (int i = 0; i < w; ++i) {
