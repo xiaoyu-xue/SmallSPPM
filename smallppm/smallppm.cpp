@@ -14,7 +14,7 @@
 const double PI = 3.14159265358979;
 const double INV_PI = 0.31830988618379067154;
 const double ALPHA = 0.7;
-const int render_stage_number = 50000000;
+const int render_stage_number = 7000000;
 const double PiOver2 = 1.57079632679489661923;
 const double PiOver4 = 0.78539816339744830961;
 const double eps = 10e-6;
@@ -473,10 +473,8 @@ void BuildHashGrid(const int w, const int h, int stage_num) {
 
 	hashGrid.resize(hashNum);
 
-#pragma omp parallel for schedule(guided)
-	for(long long i = 0; i < hitPoints.size(); ++i){
-		HPoint &hp = hitPoints[i];
-	//for (HPoint &hp : hitPoints) {
+
+	for (HPoint &hp : hitPoints) {
 		if (!hp.used) continue;
 		Vec BMin = ((hp.pos - irad) - hpbbox.minPoint) * hashCellSize;
 		Vec BMax = ((hp.pos + irad) - hpbbox.minPoint) * hashCellSize;
@@ -728,8 +726,10 @@ int main(int argc, char *argv[]) {
 	
 	clock_t begin = clock();
 
-	int w = 1024 * 2, h = 768 * 2, nIterations = (argc == 2) ? atoll(argv[1]) : 256; //(argc == 2) ? std::max(atoll(argv[1]) / render_stage_number, (long long)1) : render_stage_number;
+	int w = 1024 * 2, h = 768 * 2;
+	long long nIterations = (argc == 2) ? atoll(argv[1]) : 256; //(argc == 2) ? std::max(atoll(argv[1]) / render_stage_number, (long long)1) : render_stage_number;
 
+	std::cout << nIterations << std::endl;
 	radius2.resize(w * h);
 	photonNums.resize(w * h);
 	flux.resize(w * h);
@@ -780,7 +780,6 @@ int main(int argc, char *argv[]) {
 			//fprintf(stderr, "\n");
 			double percentage = 100.*(render_stage + 1) / nIterations;
 			//fprintf(stderr, "\rPhotonPass %5.2f%%", percentage);
-			int m = render_stage_number * render_stage;
 			Ray ray;
 			Vec photonFlux;
 #pragma omp parallel for schedule(guided)
