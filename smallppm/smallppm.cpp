@@ -8,13 +8,14 @@
 #include <iostream>
 #include <algorithm>
 #include <atomic>
+#include <mutex>
 #include <ctime>
 #define _CRTDBG_MAP_ALLOC
 
 const double PI = 3.14159265358979;
 const double INV_PI = 0.31830988618379067154;
 const double ALPHA = 0.7;
-const int render_stage_number = 7000000;
+const int render_stage_number = 1000;
 const double PiOver2 = 1.57079632679489661923;
 const double PiOver4 = 0.78539816339744830961;
 const double eps = 10e-6;
@@ -52,7 +53,44 @@ double hal(const int b, int j) {
 	return h;
 }
 
+class Spinlock {
+protected:
+	std::atomic<bool> latch;
 
+public:
+	Spinlock() : Spinlock(false) {
+	}
+
+	Spinlock(bool flag) {
+		latch.store(flag);
+	}
+
+	Spinlock(int flag) : Spinlock(flag != 0) {
+	}
+
+	void lock() {
+		bool unlatched = false;
+		while (!latch.compare_exchange_weak(unlatched, true,
+			std::memory_order_acquire)) {
+			unlatched = false;
+		}
+	}
+
+	void unlock() {
+		latch.store(false, std::memory_order_release);
+	}
+
+	Spinlock(const Spinlock &o) {
+		// We just ignore racing condition here...
+		latch.store(o.latch.load());
+	}
+
+	Spinlock &operator=(const Spinlock &o) {
+		// We just ignore racing condition here...
+		latch.store(o.latch.load());
+		return *this;
+	}
+};
 
 struct Vec {
 	double x, y, z; // vector: position, also color (r,g,b)
@@ -418,6 +456,7 @@ std::vector<Vec> flux;
 std::vector<Vec> directillum;
 std::vector<HPoint> hitPoints;
 std::vector<std::vector<HPoint*>> hashGrid;
+std::vector<Spinlock> hashGridSpinlocks;
 long long hashNum, pixelIndex;
 double hashCellSize;
 AABB hpbbox;
@@ -472,9 +511,14 @@ void BuildHashGrid(const int w, const int h, int stage_num) {
 	// build the hash table
 
 	hashGrid.resize(hashNum);
+	//hashGridSpinlocks.resize(hashNum);
 
 
-	for (HPoint &hp : hitPoints) {
+	//for (HPoint &hp : hitPoints) {
+	int hitPointNum = hitPoints.size();
+#pragma omp parallel for schedule(guided)
+	for(int i = 0; i < hitPointNum; ++i){
+		HPoint &hp = hitPoints[i];
 		if (!hp.used) continue;
 		Vec BMin = ((hp.pos - irad) - hpbbox.minPoint) * hashCellSize;
 		Vec BMax = ((hp.pos + irad) - hpbbox.minPoint) * hashCellSize;
@@ -485,6 +529,7 @@ void BuildHashGrid(const int w, const int h, int stage_num) {
 				for (int ix = abs(int(BMin.x)); ix <= abs(int(BMax.x)); ix++)
 				{
 					int hv = hash(ix, iy, iz);
+					std::lock_guard<Spinlock> lock(hashGridSpinlocks[hv]);
 					hashGrid[hv].push_back(&hp);
 				}
 			}
@@ -735,6 +780,7 @@ int main(int argc, char *argv[]) {
 	flux.resize(w * h);
 	hitPoints.resize(w * h);
 	directillum.resize(w * h);
+	hashGridSpinlocks.resize(w * h);
 
 	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
 
@@ -747,7 +793,7 @@ int main(int argc, char *argv[]) {
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(1e5 + 1, 40.8, 81.6), Vec(), Vec(.75, .25, .25), DIFF)));
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(-1e5 + 99, 40.8, 81.6), Vec(), Vec(.25, .25, .75), DIFF)));
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, 40.8, 1e5), Vec(), Vec(.75, .75, .75), DIFF)));//Back
-	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, 40.8, -1e5 + 170), Vec(), Vec(.75, .75, .75), DIFF)));//Frnt
+	//scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, 40.8, -1e5 + 170), Vec(), Vec(.75, .75, .75), DIFF)));//Frnt
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, 1e5, 81.6), Vec(), Vec(.75, .75, .75), DIFF)));//Botm
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, -1e5 + 81.6, 81.6), Vec(), Vec(.75, .75, .75), DIFF)));//Top
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(16.5, Vec(27, 16.5, 47), Vec(), Vec(1, 1, 1)*.999, REFR)));//Mirr
@@ -812,7 +858,7 @@ int main(int argc, char *argv[]) {
 	clock_t end = clock();
 	std::cout << "cost time "<< (end - begin) / 1000.0 / 60.0 <<"min"<< std::endl;
 	// save the image after tone mapping and gamma correction
-	FILE* f = fopen("cornellbox9.png", "wb");
+	FILE* f = fopen("cornellbox10.png", "wb");
 	unsigned char *RGBs = new unsigned char[w * h * 3];
 	for (int j = 0; j < h; ++j) {
 		for (int i = 0; i < w; ++i) {
