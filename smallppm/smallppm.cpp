@@ -14,8 +14,8 @@
 
 const double PI = 3.14159265358979;
 const double INV_PI = 0.31830988618379067154;
-const double ALPHA = 0.7;
-const int render_stage_number = 1000;
+const double ALPHA = 0.66666667;
+const int render_stage_number = 100000;
 const double PiOver2 = 1.57079632679489661923;
 const double PiOver4 = 0.78539816339744830961;
 const double eps = 10e-6;
@@ -24,7 +24,6 @@ const double Inf = 1e20;
 
 class Shape;
 class BSDF;
-
 
 std::mt19937_64 rng(1234);
 std::uniform_real_distribution<double> uniform;
@@ -105,9 +104,10 @@ struct Vec {
 	inline bool operator==(const Vec &b) const { return x == b.x && y == b.y && z == b.z; }
 	inline bool operator!=(const Vec &b) const { return x != b.x || y != b.y || z != b.z; }
 	inline Vec mul(const Vec &b) const { return Vec(x * b.x, y * b.y, z * b.z); }
-	inline Vec norm() { return (*this) * (1.0 / sqrt(x*x + y * y + z * z)); }
+	inline Vec norm() { return (*this) * (1.0 / sqrt(x * x + y * y + z * z)); }
 	inline double dot(const Vec &b) const { return x * b.x + y * b.y + z * b.z; }
-	Vec operator%(Vec&b) const { return Vec(y*b.z - z * b.y, z*b.x - x * b.z, x*b.y - y * b.x); }
+	inline double length() const {return sqrt(x * x + y * y + z * z);}
+	Vec operator%(Vec&b) const { return Vec(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x); }
 	double& operator[](int i) { return i == 0 ? x : i == 1 ? y : z; }
 	double maxValue() const {
 		return std::max(x, std::max(y, z));
@@ -448,95 +448,204 @@ private:
 	std::shared_ptr<Shape> shape;
 };
 
+class Film {
+public:
+	Film(int w, int h) : resX(w), resY(h) {
 
-
-std::vector<double> radius2;
-std::vector<long long> photonNums;
-std::vector<Vec> flux;
-std::vector<Vec> directillum;
-std::vector<HPoint> hitPoints;
-std::vector<std::vector<HPoint*>> hashGrid;
-std::vector<Spinlock> hashGridSpinlocks;
-long long hashNum, pixelIndex;
-double hashCellSize;
-AABB hpbbox;
-
-
-
-
-
-void ClearHashGrid() {
-	for (auto &e : hashGrid) {
-		std::vector<HPoint*>().swap(e);
 	}
-}
+	double Area() const {
+		return area;
+	}
+	void SaveImage() {
 
-// spatial hash function
-inline unsigned int hash(const int ix, const int iy, const int iz) {
-	return (unsigned int)((ix * 73856093) ^ (iy * 19349663) ^ (iz * 83492791)) % hashNum;
-}
+	}
+public:
+	int resX, resY;
+	double width, heigh;
+	double aspect;
+	double area;
+	Vec LL, LU, RL, RU;
+private:
+	const std::string filename;
+	std::vector<Vec> image;
 
+};
 
-void BuildHashGrid(const int w, const int h, int stage_num) {
-	// find the bounding box of all the measurement points
-	hpbbox.reset();
-	for (HPoint &hp :hitPoints) {
-		if (hp.used) hpbbox.fit(hp.pos);
+class Camera {
+public:
+	Camera(const std::shared_ptr<Film> &pFilm) {
+		film = pFilm;
+	}
+	virtual Ray GenerateRay(int pixelX, int pixelY, Vec u, double offset = 0.0) const = 0;
+	virtual Vec We(const Ray &ray) const = 0;
+	virtual Vec Sample_Wi(const Intersection &isect, double *pdfW, Vec *wi, Vec u) const = 0;
+protected:
+	std::shared_ptr<Film> film;
+};
+
+class PinHoleCamera : public Camera {
+	PinHoleCamera(const std::shared_ptr<Film> &pFilm, const Vec &position, 
+		const Vec &pLookAt, const Vec &pCx, const Vec &pCy, double pFovy, double dis) :
+		Camera(pFilm), pos(position), lookAt(pLookAt), cx(pCx), cy(pCy), filmDistance(dis) {
+
+		Initialize();
 	}
 
-	// heuristic for initial radius
-	Vec ssize = hpbbox.maxPoint - hpbbox.minPoint;
-	double irad = ((ssize.x + ssize.y + ssize.z) / 3.0) / ((w + h) / 2.0) * 2.0;
-	// determine hash table size
-	// we now find the bounding box of all the measurement points inflated by the initial radius
-	hpbbox.reset();
-	int vphoton = 0;
+	void Initialize() {
+		Vec filmCenter = pos + pos * filmDistance;
+		double filmHeigh = filmDistance * std::tan(fovy / 2.0 * PI / 180) * 2.0;
+		double filmWidth = filmHeigh * film->aspect;
 
-	for (HPoint &hp : hitPoints) {
-		if (!hp.used) continue;
-		if (stage_num == 0) {
-			radius2[hp.pix] = irad * irad;
-			photonNums[hp.pix] = 0;
-			flux[hp.pix] = Vec();
+		film->LU = filmCenter + cy * filmHeigh * 0.5 - cx * filmWidth * 0.5;
+		film->LL = filmCenter - cy * filmHeigh * 0.5 - cx * filmWidth * 0.5;
+		film->RU = filmCenter + cy * filmHeigh * 0.5 + cx * filmWidth * 0.5;
+		film->RL = filmCenter - cy * filmHeigh * 0.5 + cx * filmWidth * 0.5;
+	}
+
+	Ray GenerateRay(int pixelX, int pixelY, Vec u, double offset) const {
+		Vec dir = cx * ((pixelX + 0.5 + u.x) / film->resX - 0.5) * film->width * 0.5 + 
+			cy * (-(pixelY + 0.5 + u.y) / film->resY + 0.5) * film->width * 0.5  + lookAt * filmDistance;
+		dir = dir.norm();
+		return Ray(pos + dir * offset, dir);
+	}
+
+	Vec We(const Ray &ray) const {
+		double pdfA = 1.0; // for the pinhole camera
+		//double A = (film->LU - film->LL).length() * (film->RU - film->LU).length();
+		//double A = film->width * film->heigh;
+		double area = film->area;
+		double cosTheta = lookAt.dot(ray.d);
+		double cos2Theta = cosTheta * cosTheta;
+		double value = filmDistance * filmDistance * pdfA / (area * cos2Theta * cos2Theta);
+		return Vec(value, value, value);
+	}
+
+	Vec Sample_Wi(const Intersection &isect, double *pdfW, Vec *wi, Vec u) const {
+		*wi = (pos - isect.hit);
+		double distance = wi->length();
+		wi->norm();
+		double CosTheta = d.dot(-1 * (*wi));
+		*PdfW = 1.0 * (distance * distance) / CosTheta;
+		//*PdfW = 1.0 * (dis / CosTheta) * (dis / CosTheta) / CosTheta;
+		return We(Ray(isect.HitPoint, -1 * (*wi)));
+	}
+private:
+	Vec pos, lookAt, cx, cy;
+	double fovy;
+	double filmDistance;
+
+};
+
+//std::vector<double> radius2;
+//std::vector<long long> photonNums;
+//std::vector<Vec> flux;
+//std::vector<Vec> directillum;
+//std::vector<HPoint> hitPoints;
+//std::vector<std::vector<HPoint*>> hashGrid;
+//std::vector<Spinlock> hashGridSpinlocks;
+//long long hashNum, pixelIndex;
+//double hashCellSize;
+//AABB hpbbox;
+
+
+
+class HashGrid {
+public:
+	HashGrid(double initialRadius = 1.0) {
+		irad = initialRadius;
+	}
+
+	void Initialize(double initialRadius) {
+		irad = initialRadius;
+	}
+
+	// spatial hash function
+	inline unsigned int hash(const int ix, const int iy, const int iz) {
+		return (unsigned int)((ix * 73856093) ^ (iy * 19349663) ^ (iz * 83492791)) % hashNum;
+	}
+
+	void BuildHashGrid(std::vector<HPoint> &hitPoints) {
+		// find the bounding box of all the measurement points
+		hpbbox.reset();
+		for (const HPoint &hp : hitPoints) {
+			if (hp.used) hpbbox.fit(hp.pos);
 		}
-		vphoton++;
-		hpbbox.fit(hp.pos - irad);
-		hpbbox.fit(hp.pos + irad);
-	}
 
-	// make each grid cell two times larger than the initial radius
-	hashCellSize = 1.0 / (irad*2.0);
-	hashNum = vphoton;
+		// heuristic for initial radius
+		Vec ssize = hpbbox.maxPoint - hpbbox.minPoint;
+		//double irad = ((ssize.x + ssize.y + ssize.z) / 3.0) / ((w + h) / 2.0) * 2.0;
+		double irad = 0.8;
+		// determine hash table size
+		// we now find the bounding box of all the measurement points inflated by the initial radius
+		hpbbox.reset();
+		int vphoton = 0;
 
-	// build the hash table
+		for (const HPoint &hp : hitPoints) {
+			if (!hp.used) continue;
+			vphoton++;
+			hpbbox.fit(hp.pos - irad);
+			hpbbox.fit(hp.pos + irad);
+		}
 
-	hashGrid.resize(hashNum);
-	//hashGridSpinlocks.resize(hashNum);
+		// make each grid cell two times larger than the initial radius
+		invHashCellSize = 1.0 / (irad * 2.0);
+		hashNum = vphoton;
+
+		// build the hash table
+
+		hashGrid.resize(hashNum);
+		hashGridSpinlocks.resize(hashNum);
 
 
-	//for (HPoint &hp : hitPoints) {
-	int hitPointNum = hitPoints.size();
+		//for (HPoint &hp : hitPoints) {
+		int hitPointNum = (int)hitPoints.size();
 #pragma omp parallel for schedule(guided)
-	for(int i = 0; i < hitPointNum; ++i){
-		HPoint &hp = hitPoints[i];
-		if (!hp.used) continue;
-		Vec BMin = ((hp.pos - irad) - hpbbox.minPoint) * hashCellSize;
-		Vec BMax = ((hp.pos + irad) - hpbbox.minPoint) * hashCellSize;
-		for (int iz = abs(int(BMin.z)); iz <= abs(int(BMax.z)); iz++)
-		{
-			for (int iy = abs(int(BMin.y)); iy <= abs(int(BMax.y)); iy++)
+		for (int i = 0; i < hitPointNum; ++i) {
+			HPoint &hp = hitPoints[i];
+			if (!hp.used) continue;
+			Vec BMin = ((hp.pos - irad) - hpbbox.minPoint) * invHashCellSize;
+			Vec BMax = ((hp.pos + irad) - hpbbox.minPoint) * invHashCellSize;
+			for (int iz = abs(int(BMin.z)); iz <= abs(int(BMax.z)); iz++)
 			{
-				for (int ix = abs(int(BMin.x)); ix <= abs(int(BMax.x)); ix++)
+				for (int iy = abs(int(BMin.y)); iy <= abs(int(BMax.y)); iy++)
 				{
-					int hv = hash(ix, iy, iz);
-					std::lock_guard<Spinlock> lock(hashGridSpinlocks[hv]);
-					hashGrid[hv].push_back(&hp);
+					for (int ix = abs(int(BMin.x)); ix <= abs(int(BMax.x)); ix++)
+					{
+						int hv = hash(ix, iy, iz);
+						std::lock_guard<Spinlock> lock(hashGridSpinlocks[hv]);
+						hashGrid[hv].push_back(&hp);
+					}
 				}
 			}
 		}
 	}
-}
 
+	std::vector<HPoint*>& GetGrid(const Vec &point) {
+		// photon ray
+		// find neighboring measurement points and accumulate flux via progressive density estimation
+		Vec hh = (point - hpbbox.minPoint) * invHashCellSize;
+		int ix = std::abs(int(hh.x)), iy = std::abs(int(hh.y)), iz = std::abs(int(hh.z));
+		// strictly speaking, we should use #pragma omp critical here.
+		// it usually works without an artifact due to the fact that photons are 
+		// rarely accumulated to the same measurement points at the same time (especially with QMC).
+		// it is also significantly faster.
+		return hashGrid[hash(ix, iy, iz)];
+	}
+
+	void ClearHashGrid() {
+		for (auto &e : hashGrid) {
+			std::vector<HPoint*>().swap(e);
+		}
+	}
+
+private:
+	std::vector<std::vector<HPoint*>> hashGrid;
+	std::vector<Spinlock> hashGridSpinlocks;
+	long long hashNum, pixelIndex;
+	double invHashCellSize;
+	double irad;
+	AABB hpbbox;
+};
 
 /*
 Sphere sph[] = { // Scene: radius, position, color, material
@@ -602,7 +711,7 @@ public:
 	}
 
 	bool Intersect(const Ray &r, double *t, Intersection *isect, std::shared_ptr<Shape> &hitObj) const {
-		int n = shapes.size();
+		int n = (int)shapes.size();
 		double d;
 		*t = Inf;
 		for (int i = 0; i < n; ++i) {
@@ -638,149 +747,228 @@ int toInt(double x) {
 }
 
 
-void GenratePhoton(const Scene &scene, Ray *pr, Vec *f) {
-	const std::vector<std::shared_ptr<Light>> lights = scene.GetLights();
-	int lightsNum = lights.size();
-	double lightPdf = 1.0 / lightsNum;
-	int lightindex = (int)(Random() * lightsNum);
-	const Light &light = *(lights[lightindex]);
-	Vec Le = light.Emission();
-	Vec pos, lightDir, lightNorm;
-	double pdfPos, pdfDir;
-	light.SampleLight(&pos, &lightDir, &lightNorm, &pdfPos, &pdfDir);
-	pr->o = pos + lightDir * eps;
-	pr->d = lightDir;
-	double cosTheta = std::abs(lightNorm.dot(lightDir));
-	*f = Le * cosTheta / (pdfPos * pdfDir);
-}
-
-
-
-Vec DirectIllumination(const Scene &scene, const Intersection &isect, const std::shared_ptr<BSDF> &bsdf, Vec importance, Vec u) {
-	Vec L;
-	const std::vector<std::shared_ptr<Light>> lights = scene.GetLights();
-	for (auto light : lights) {
-		Vec dir;
-		std::shared_ptr<Shape> hitObj;
-		double t;
-		Vec Li = light->DirectIllumination(isect, bsdf, importance, &dir, u);
-		Intersection intersection;
-		if (scene.Intersect(Ray(isect.hit, dir), &t, &intersection, hitObj) && hitObj->GetId() == light->GetId()) {
-			L = L + Li;
+class Integrator {
+public:
+	virtual void Render(const Scene &scene) = 0;
+	virtual ~Integrator() {}
+	static Vec DirectIllumination(const Scene &scene, const Intersection &isect, const std::shared_ptr<BSDF> &bsdf, Vec importance, Vec u) {
+		Vec L;
+		const std::vector<std::shared_ptr<Light>> lights = scene.GetLights();
+		for (auto light : lights) {
+			Vec dir;
+			std::shared_ptr<Shape> hitObj;
+			double t;
+			Vec Li = light->DirectIllumination(isect, bsdf, importance, &dir, u);
+			Intersection intersection;
+			if (scene.Intersect(Ray(isect.hit, dir), &t, &intersection, hitObj) && hitObj->GetId() == light->GetId()) {
+				L = L + Li;
+			}
 		}
+		return L;
 	}
-	return L;
-}
+};
 
 
-void TraceEyePath(const Scene &scene, const Ray &ray, int maxDepth, long long pixel) {
-	Ray r = ray;
-	bool deltaBoundEvent = false;
-	Vec importance(1.0, 1.0, 1.0);
-	for (int i = 0; i < maxDepth; ++i) {
-		double t;
-		Intersection isect;
-		std::shared_ptr<Shape> hitObj;
-		if (!scene.Intersect(r, &t, &isect, hitObj)) return;
-		std::shared_ptr<BSDF> bsdf = hitObj->GetBSDF(isect);
-		Vec wi;
-		double pdf;
-		if (bsdf->IsDelta()) {
-			Vec f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec(Random(), Random(), Random()));
-			importance = f * std::abs(wi.dot(isect.n)) * importance / pdf;
-			r.o = isect.hit;
-			r.d = wi;
-			deltaBoundEvent = true;
-		}
-		else {
-			HPoint &hp = hitPoints[pixel];
-			hp.used = true;
-			hp.importance = importance;
-			hp.pos = isect.hit;
-			hp.nrm = isect.n;
-			hp.pix = pixel;
-			hp.outDir = -1 * r.d;
-			hitPoints[pixel] = hp;
-			if ((i == 0 || deltaBoundEvent) && hitObj->IsLight())
-				directillum[hp.pix] = directillum[hp.pix] + importance * hitObj->GetEmission();
-			else
-				directillum[hp.pix] = directillum[hp.pix] + 
+class SPPM : public Integrator {
+	SPPM(int iterations, int nPhotonsPerStage, int maxDepth, double initialRadius):
+		nIterations(iterations), nPhotonsPerRenderStage(nPhotonsPerStage), 
+		maxDepth(maxDepth), initialRadius(initialRadius), alpha(ALPHA)
+	{
+		
+	}
+
+	void GenratePhoton(const Scene &scene, Ray *pr, Vec *f) {
+		const std::vector<std::shared_ptr<Light>> lights = scene.GetLights();
+		int lightsNum = (int)lights.size();
+		double lightPdf = 1.0 / lightsNum;
+		int lightindex = (int)(Random() * lightsNum);
+		const Light &light = *(lights[lightindex]);
+		Vec Le = light.Emission();
+		Vec pos, lightDir, lightNorm;
+		double pdfPos, pdfDir;
+		light.SampleLight(&pos, &lightDir, &lightNorm, &pdfPos, &pdfDir);
+		pr->o = pos + lightDir * eps;
+		pr->d = lightDir;
+		double cosTheta = std::abs(lightNorm.dot(lightDir));
+		*f = Le * cosTheta / (pdfPos * pdfDir);
+	}
+
+	void TraceEyePath(const Scene &scene, const Ray &ray, long long pixel) {
+		Ray r = ray;
+		bool deltaBoundEvent = false;
+		Vec importance(1.0, 1.0, 1.0);
+		for (int i = 0; i < maxDepth; ++i) {
+			double t;
+			Intersection isect;
+			std::shared_ptr<Shape> hitObj;
+			if (!scene.Intersect(r, &t, &isect, hitObj)) return;
+			std::shared_ptr<BSDF> bsdf = hitObj->GetBSDF(isect);
+			Vec wi;
+			double pdf;
+			if (bsdf->IsDelta()) {
+				Vec f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec(Random(), Random(), Random()));
+				importance = f * std::abs(wi.dot(isect.n)) * importance / pdf;
+				r.o = isect.hit;
+				r.d = wi;
+				deltaBoundEvent = true;
+			}
+			else {
+				HPoint &hp = hitPoints[pixel];
+				hp.used = true;
+				hp.importance = importance;
+				hp.pos = isect.hit;
+				hp.nrm = isect.n;
+				hp.pix = pixel;
+				hp.outDir = -1 * r.d;
+				hitPoints[pixel] = hp;
+				if ((i == 0 || deltaBoundEvent) && hitObj->IsLight())
+					directillum[hp.pix] = directillum[hp.pix] + importance * hitObj->GetEmission();
+				else
+					directillum[hp.pix] = directillum[hp.pix] +
 					DirectIllumination(scene, isect, bsdf, hp.importance, Vec(Random(), Random(), Random()));
 
-			return;
+				return;
+			}
 		}
 	}
-}
 
-void TracePhoton(const Scene &scene, const Ray &ray, Vec photonFlux, int maxDepth) {
-	Ray r = ray;
-	for (int i = 0; i < maxDepth; ++i) {
-		double t;
-		Intersection isect;
-		std::shared_ptr<Shape> hitObj;
-		if (!scene.Intersect(r, &t, &isect, hitObj)) return;
-		std::shared_ptr<BSDF> bsdf = hitObj->GetBSDF(isect);
-		Vec wi;
-		double pdf;
-		Vec f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec(Random(), Random(), Random()));
-		Vec estimation = f * std::abs(wi.dot(isect.n)) / pdf;
-		if (bsdf->IsDelta()) {
-			photonFlux = photonFlux * estimation;
-			r.o = isect.hit;
-			r.d = wi;
-		}
-		else {
-			if (i > 0) {
-				// photon ray
-				// find neighboring measurement points and accumulate flux via progressive density estimation
-				Vec hh = (isect.hit - hpbbox.minPoint) * hashCellSize;
-				int ix = std::abs(int(hh.x)), iy = std::abs(int(hh.y)), iz = std::abs(int(hh.z));
-				// strictly speaking, we should use #pragma omp critical here.
-				// it usually works without an artifact due to the fact that photons are 
-				// rarely accumulated to the same measurement points at the same time (especially with QMC).
-				// it is also significantly faster.
-				std::vector<HPoint*> &hp = hashGrid[hash(ix, iy, iz)];
-				for (HPoint* hitpoint : hp) {
-					Vec v = hitpoint->pos - isect.hit;
-					if ((hitpoint->nrm.dot(isect.n) > 1e-3) && (v.dot(v) <= radius2[hitpoint->pix])) {
-						// unlike N in the paper, hitpoint->n stores "N / ALPHA" to make it an integer value
-						double g = (photonNums[hitpoint->pix] * ALPHA + ALPHA) / (photonNums[hitpoint->pix] * ALPHA + 1.0);
-						radius2[hitpoint->pix] = radius2[hitpoint->pix] * g;
-						photonNums[hitpoint->pix]++;
-						Vec contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.d) * photonFlux;
-						flux[hitpoint->pix] = (flux[hitpoint->pix] + contribution) * g;
+	void TracePhoton(const Scene &scene, const Ray &ray, Vec photonFlux) {
+		Ray r = ray;
+		for (int i = 0; i < maxDepth; ++i) {
+			double t;
+			Intersection isect;
+			std::shared_ptr<Shape> hitObj;
+			if (!scene.Intersect(r, &t, &isect, hitObj)) return;
+			std::shared_ptr<BSDF> bsdf = hitObj->GetBSDF(isect);
+			Vec wi;
+			double pdf;
+			Vec f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec(Random(), Random(), Random()));
+			Vec estimation = f * std::abs(wi.dot(isect.n)) / pdf;
+			if (bsdf->IsDelta()) {
+				photonFlux = photonFlux * estimation;
+				r.o = isect.hit;
+				r.d = wi;
+			}
+			else {
+				if (i > 0) {
+					std::vector<HPoint*> &hp = hashGrid.GetGrid(isect.hit);
+					for (HPoint* hitpoint : hp) {
+						Vec v = hitpoint->pos - isect.hit;
+						if ((hitpoint->nrm.dot(isect.n) > 1e-3) && (v.dot(v) <= radius2[hitpoint->pix])) {
+							// unlike N in the paper, hitpoint->n stores "N / ALPHA" to make it an integer value
+							double g = (photonNums[hitpoint->pix] * ALPHA + ALPHA) / (photonNums[hitpoint->pix] * ALPHA + 1.0);
+							radius2[hitpoint->pix] = radius2[hitpoint->pix] * g;
+							photonNums[hitpoint->pix]++;
+							Vec contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.d) * photonFlux;
+							flux[hitpoint->pix] = (flux[hitpoint->pix] + contribution) * g;
+						}
 					}
+				}
+
+				double p = estimation.maxValue();
+				if (p < 1) {
+					if (Random() < p) photonFlux = photonFlux / p;
+					else break;
+				}
+				photonFlux = photonFlux * estimation;
+				r.o = isect.hit;
+				r.d = wi;
+			}
+		}
+	}
+
+	void Render(const Scene &scene) {
+		fprintf(stderr, "Rendering ...\n");
+		for (int render_stage = 0; render_stage < nIterations; ++render_stage) {
+#pragma omp parallel for schedule(guided)
+			for (int y = 0; y < h; y++) {
+				//fprintf(stderr, "\rHitPointPass %5.2f%%", 100.0*y / (h - 1));
+	//#pragma omp parallel for schedule(dynamic, 1)
+				for (int x = 0; x < w; x++) {
+					int pixel = x + y * w;
+					hitPoints[pixel].used = false;
+					double u = Random() - 0.5, v = Random() - 0.5;
+					Vec d = cx * ((x + 0.5 + u) / w - 0.5) + cy * (-(y + 0.5 + v) / h + 0.5) + cam.d;
+					//trace(Ray(cam.o + d * 140, d.norm()), 0, true, Vec(), Vec(1, 1, 1), 0, false, pixel);
+					Ray ray(cam.o + d * 140, d.norm());
+					TraceEyePath(*scene, ray, 21, pixel);
 				}
 			}
 
-			double p = estimation.maxValue();
-			if (p < 1) {
-				if (Random() < p) photonFlux = photonFlux / p;
-				else break;
+			BuildHashGrid(w, h, render_stage);
+			{
+				//fprintf(stderr, "\n");
+				double percentage = 100.*(render_stage + 1) / nIterations;
+				//fprintf(stderr, "\rPhotonPass %5.2f%%", percentage);
+				Ray ray;
+				Vec photonFlux;
+#pragma omp parallel for schedule(guided)
+				for (int j = 0; j < render_stage_number; j++) {
+					GenratePhoton(*scene, &ray, &photonFlux);
+					TracePhoton(*scene, ray, photonFlux, 21);
+					//GenratePhoton(&r, &f, m + j);
+					//trace(r, 0, 0 > 1, f, vw, m + j);
+				}
+				//fprintf(stderr, "\n");
+				fprintf(stderr, "\rIterations: %5.2f%%", percentage);
 			}
-			photonFlux = photonFlux * estimation;
-			r.o = isect.hit;
-			r.d = wi;
+			ClearHashGrid();
+		}
+
+		// density estimation
+
+		//for (int i = 0; i < flux.size(); ++i) {
+		//	std::cout << flux[i].x << " " << flux[i].y << " " << flux[i].z << std::endl;
+		//}
+		std::cout << "\nflux size: " << flux.size() << std::endl;
+#pragma omp parallel for schedule(guided)
+		for (int i = 0; i < flux.size(); ++i) {
+			c[i] = c[i] + flux[i] * (1.0 / (PI * radius2[i] * nIterations * render_stage_number))
+				+ directillum[i] / nIterations;
+			//c[i] = c[i] + directillum[i] / nIterations;
+			//std::cout << c[i].x << " " << c[i].y << " " << c[i].z << std::endl;
 		}
 	}
-}
 
+private:
+	void Initialize(int w, int h, double irad) {
+		for (int i = 0; i < w * h; ++i) {
+			radius2[i] = irad * irad;
+			photonNums[i] = 0;
+			flux[i] = Vec();
+		}
+		radius2.resize(w * h);
+		photonNums.resize(w * h);
+		flux.resize(w * h);
+		hitPoints.resize(w * h);
+		directillum.resize(w * h);
+	}
+
+	HashGrid hashGrid;
+	std::vector<double> radius2;
+	std::vector<long long> photonNums;
+	std::vector<Vec> flux;
+	std::vector<Vec> directillum;
+	std::vector<HPoint> hitPoints;
+	const double initialRadius;
+	const int maxDepth;
+	const int nIterations;
+	const int nPhotonsPerRenderStage;
+	const double alpha;
+};
 
 
 int main(int argc, char *argv[]) {
 	
 	clock_t begin = clock();
 
-	int w = 1024 * 2, h = 768 * 2;
-	long long nIterations = (argc == 2) ? atoll(argv[1]) : 256; //(argc == 2) ? std::max(atoll(argv[1]) / render_stage_number, (long long)1) : render_stage_number;
+	int w = 1024, h = 768;
+	int nIterations = (argc == 2) ? atol(argv[1]) : 256; //(argc == 2) ? std::max(atoll(argv[1]) / render_stage_number, (long long)1) : render_stage_number;
 
 	std::cout << nIterations << std::endl;
-	radius2.resize(w * h);
-	photonNums.resize(w * h);
-	flux.resize(w * h);
-	hitPoints.resize(w * h);
-	directillum.resize(w * h);
-	hashGridSpinlocks.resize(w * h);
+
+	//Initialize(w, h, 0.8);
+	//hashGridSpinlocks.resize(w * h);
 
 	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
 
@@ -804,59 +992,9 @@ int main(int argc, char *argv[]) {
 	std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape));
 	scene->AddLight(light0);
 
-	fprintf(stderr, "Rendering ...\n");
-	for (int render_stage = 0; render_stage < nIterations; ++render_stage) {
-#pragma omp parallel for schedule(guided)
-		for (int y = 0; y < h; y++) {
-			//fprintf(stderr, "\rHitPointPass %5.2f%%", 100.0*y / (h - 1));
-//#pragma omp parallel for schedule(dynamic, 1)
-			for (int x = 0; x < w; x++) {
-				int pixel = x + y * w;
-				hitPoints[pixel].used = false;
-				double u = Random() - 0.5, v = Random() - 0.5;
-				Vec d = cx * ((x + 0.5 + u) / w - 0.5) + cy * (-(y + 0.5 + v) / h + 0.5) + cam.d;
-				//trace(Ray(cam.o + d * 140, d.norm()), 0, true, Vec(), Vec(1, 1, 1), 0, false, pixel);
-				Ray ray(cam.o + d * 140, d.norm());
-				TraceEyePath(*scene, ray, 21, pixel);
-			}
-		}
-
-		BuildHashGrid(w, h, render_stage);
-		{
-			//fprintf(stderr, "\n");
-			double percentage = 100.*(render_stage + 1) / nIterations;
-			//fprintf(stderr, "\rPhotonPass %5.2f%%", percentage);
-			Ray ray;
-			Vec photonFlux;
-#pragma omp parallel for schedule(guided)
-			for (int j = 0; j < render_stage_number; j++) {
-				GenratePhoton(*scene, &ray, &photonFlux);
-				TracePhoton(*scene, ray, photonFlux, 21);
-				//GenratePhoton(&r, &f, m + j);
-				//trace(r, 0, 0 > 1, f, vw, m + j);
-			}
-			//fprintf(stderr, "\n");
-			fprintf(stderr, "\rPhotonPass %5.2f%%", percentage);
-		}
-		ClearHashGrid();
-	}
-
-	// density estimation
-	
-	//for (int i = 0; i < flux.size(); ++i) {
-	//	std::cout << flux[i].x << " " << flux[i].y << " " << flux[i].z << std::endl;
-	//}
-	std::cout << "\nflux size: " << flux.size() << std::endl;
-#pragma omp parallel for schedule(guided)
-	for (int i = 0; i < flux.size(); ++i) {
-		c[i] = c[i] + flux[i] * (1.0 / (PI * radius2[i] * nIterations * render_stage_number))
-			+ directillum[i] / nIterations;
-		//c[i] = c[i] + directillum[i] / nIterations;
-		//std::cout << c[i].x << " " << c[i].y << " " << c[i].z << std::endl;
-	}
 
 	clock_t end = clock();
-	std::cout << "cost time "<< (end - begin) / 1000.0 / 60.0 <<"min"<< std::endl;
+	std::cout << "cost time: "<< (end - begin) / 1000.0 / 60.0 <<" min"<< std::endl;
 	// save the image after tone mapping and gamma correction
 	FILE* f = fopen("cornellbox10.png", "wb");
 	unsigned char *RGBs = new unsigned char[w * h * 3];
