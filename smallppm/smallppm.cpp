@@ -10,6 +10,9 @@
 #include <atomic>
 #include <mutex>
 #include <ctime>
+#include <iostream>
+#include <fstream>
+#include <string.h>
 #define _CRTDBG_MAP_ALLOC
 
 const double PI = 3.14159265358979;
@@ -50,6 +53,14 @@ double hal(const int b, int j) {
 		h += rev(j % p, p) * fct; j /= p; fct *= f;
 	}
 	return h;
+}
+
+template <class T1, class T2, class T3>
+T1 Clamp(const T1& tVal, const T2& tMin, const T3& max)
+{
+	if (tVal < tMin) return tMin;
+	if (tVal > max) return max;
+	return tVal;
 }
 
 class Spinlock {
@@ -448,7 +459,47 @@ private:
 	std::shared_ptr<Shape> shape;
 };
 
+class Filter
+{
+protected:
+	float radius;
+
+public:
+	Filter(const double rad)
+		: radius(rad)
+	{
+	}
+	virtual ~Filter() {}
+
+	const float GetRadius() const
+	{
+		return radius;
+	}
+	virtual float Evaluate(const double dx, const double dy) const = 0;
+};
+
+class BoxFilter : public Filter
+{
+public:
+	BoxFilter()
+		: Filter(0.5)
+	{
+	}
+
+public:
+	float Evaluate(const double dx, const double dy) const {
+		return 1.0;
+	}
+};
+
 class Film {
+protected:
+	struct Pixel
+	{
+		Vec color;
+		Vec splat;
+		float weight;
+	};
 public:
 	Film(int w, int h) : resX(w), resY(h) {
 
@@ -456,6 +507,47 @@ public:
 	double Area() const {
 		return area;
 	}
+	void AddSample(double x, double y, const Vec &sample) {
+		x -= 0.5;
+		y -= 0.5;
+
+		int minX = (int)(std::ceil(x - filter->GetRadius()));
+		int maxX = (int)(std::floor(x + filter->GetRadius()));
+		int minY = (int)(std::ceil(y - filter->GetRadius()));
+		int maxY = (int)(std::floor(y + filter->GetRadius()));
+		minX = std::max(0, minX);
+		maxX = std::min(maxX, resX - 1);
+		minY = std::max(0, minY);
+		maxY = std::min(maxY, resY - 1);
+
+		for (int i = minY; i <= maxY; i++) {
+			for (int j = minX; j <= maxX; j++) {
+				//int rowAdd = resY - 1 - i;
+				//int colAdd = j;
+				int pixelIndex = i * resX + j;
+				Pixel& pixel = imageBuffer[pixelIndex];
+
+				float weight = filter->Evaluate(j - x, i - y);
+				pixel.weight += weight;
+				pixel.color = pixel.color + sample * weight;
+			}
+		}
+	}
+
+	void Film::AddSplat(double x, double y, const Vec& sample)
+	{
+		int X = (int)(std::floor(x));
+		int Y = (int)(std::floor(y));
+		X = Clamp(X, 0, resX - 1);
+		Y = Clamp(Y, 0, resY - 1);
+
+		//int rowAdd = resY - 1 - Y;
+		//int colAdd = X;
+		int pixelIndex = X * resX + Y;
+		Pixel& pixel = imageBuffer[pixelIndex];
+		pixel.splat = pixel.splat + sample;
+	}
+
 	void SaveImage() {
 
 	}
@@ -466,8 +558,96 @@ public:
 	double area;
 	Vec LL, LU, RL, RU;
 private:
+	struct BmpHeader
+	{
+		unsigned int   mFileSize;        // Size of file in bytes
+		unsigned int   mReserved01;      // 2x 2 reserved bytes
+		unsigned int   mDataOffset;      // Offset in bytes where data can be found (54)
+
+		unsigned int    mHeaderSize;      // 40B
+		unsigned int    mWidth;           // Width in pixels
+		unsigned int    mHeight;          // Height in pixels
+
+		short  mColorPlates;     // Must be 1
+		short  mBitsPerPixel;    // We use 24bpp
+		unsigned int   mCompression;     // We use BI_RGB ~ 0, uncompressed
+		unsigned int   mImageSize;       // mWidth x mHeight x 3B
+		unsigned int   mHorizRes;        // Pixels per meter (75dpi ~ 2953ppm)
+		unsigned int   mVertRes;         // Pixels per meter (75dpi ~ 2953ppm)
+		unsigned int   mPaletteColors;   // Not using palette - 0
+		unsigned int   mImportantColors; // 0 - all are important
+	};
+
+
+	void WritePngImage() {
+		FILE* f = fopen(filename.c_str(), "wb");
+		unsigned char *pngImage = new unsigned char[resX * resY * 3];
+		for (int j = 0; j < resY; ++j) {
+			for (int i = 0; i < resX; ++i) {
+				int index = 3 * j * resX + 3 * i;
+				int imageBufferIndex = j * resX + i;
+				const Pixel &pixel = imageBuffer[imageBufferIndex];
+				Vec rgb = pixel.color / pixel.weight + pixel.splat;
+				pngImage[index] = (unsigned char)(toInt(rgb.x));
+				pngImage[index + 1] = (unsigned char)(toInt(rgb.y));
+				pngImage[index + 2] = (unsigned char)(toInt(rgb.z));
+			}
+		}
+		svpng(f, resX, resY, pngImage, 0);
+		delete[] pngImage;
+		fclose(f);
+	}
+
+	// tone mapping and gamma correction
+	int toInt(double x) {
+		return int(pow(1 - exp(-x), 1 / 2.2) * 255 + .5);
+	}
+
+	void SaveBMP(const char *aFilename, float aGamma = 1.f)  
+	{
+		std::ofstream bmp(aFilename, std::ios::binary);
+		BmpHeader header;
+		bmp.write("BM", 2);
+		header.mFileSize = unsigned(sizeof(BmpHeader) + 2) + resX * resY * 3;
+		header.mReserved01 = 0;
+		header.mDataOffset = unsigned(sizeof(BmpHeader) + 2);
+		header.mHeaderSize = 40;
+		header.mWidth = resX;
+		header.mHeight = resY;
+		header.mColorPlates = 1;
+		header.mBitsPerPixel = 24;
+		header.mCompression = 0;
+		header.mImageSize = resX * resY * 3;
+		header.mHorizRes = 2953;
+		header.mVertRes = 2953;
+		header.mPaletteColors = 0;
+		header.mImportantColors = 0;
+		bmp.write((char*)&header, sizeof(header));
+
+		const float invGamma = 1.f / aGamma;
+		for (int y = 0; y < resY; y++)
+		{
+			for (int x = 0; x < resX; x++)
+			{
+				typedef unsigned char byte;
+				int index = x * resX + y;
+				const Pixel &pixel = imageBuffer[index];
+				byte bgrB[3];
+				bgrB[0] =  byte(toInt((pixel.color / pixel.weight).x + pixel.splat.x));
+				bgrB[1] = byte(toInt((pixel.color / pixel.weight).y + pixel.splat.y));
+				bgrB[2] = byte(toInt((pixel.color / pixel.weight).z + pixel.splat.z));
+				bmp.write((char*)&bgrB, sizeof(bgrB));
+			}
+		}
+	}
+
+
+
 	const std::string filename;
-	std::vector<Vec> image;
+	std::vector<Pixel> imageBuffer;
+	std::unique_ptr<Filter> filter;
+	std::vector<Spinlock> bufferLocks;
+	unsigned char *pngImage;
 
 };
 
@@ -479,6 +659,9 @@ public:
 	virtual Ray GenerateRay(int pixelX, int pixelY, Vec u, double offset = 0.0) const = 0;
 	virtual Vec We(const Ray &ray) const = 0;
 	virtual Vec Sample_Wi(const Intersection &isect, double *pdfW, Vec *wi, Vec u) const = 0;
+	virtual double PdfPos() const = 0;
+	virtual double PdfDir() const = 0;	
+	virtual std::shared_ptr<Film> GetFilm() const { return film; }
 protected:
 	std::shared_ptr<Film> film;
 };
@@ -523,11 +706,22 @@ class PinHoleCamera : public Camera {
 	Vec Sample_Wi(const Intersection &isect, double *pdfW, Vec *wi, Vec u) const {
 		*wi = (pos - isect.hit);
 		double distance = wi->length();
-		wi->norm();
-		double CosTheta = d.dot(-1 * (*wi));
-		*PdfW = 1.0 * (distance * distance) / CosTheta;
+		*wi = wi->norm();
+		double cosTheta = lookAt.dot(-1 * (*wi));
+		*pdfW = 1.0 * (distance * distance) / cosTheta;
 		//*PdfW = 1.0 * (dis / CosTheta) * (dis / CosTheta) / CosTheta;
-		return We(Ray(isect.HitPoint, -1 * (*wi)));
+		return We(Ray(isect.hit, -1 * (*wi)));
+	}
+
+	double PdfPos() const {
+		return 1.0;
+	}
+
+	double PdfDir(const Ray &cameraRay) const {
+		double filmArea = film->Area();
+		double cosTheta = std::abs(lookAt.dot(cameraRay.d));
+		double cos2Theta = cosTheta * cosTheta;
+		return filmDistance * filmDistance / (filmArea * cos2Theta * cosTheta);
 	}
 private:
 	Vec pos, lookAt, cx, cy;
@@ -692,10 +886,8 @@ Sphere sph[] = {//Scene: radius, position, emission, color, material
 class Scene {
 public:
 
-	void SetCamera(const Ray &camera, const Vec &cX, const Vec &cY) {
-		cam = camera;
-		cx = cX;
-		cy = cY;
+	void SetCamera(const std::shared_ptr<Camera> &pCamera) {
+		camera = pCamera;
 		shapeNum = 0;
 	}
 
@@ -733,18 +925,18 @@ public:
 	const std::vector<std::shared_ptr<Shape>>& GetShapes() const {
 		return shapes;
 	}
+
+	std::shared_ptr<Camera> GetCamera() const {
+		return camera;
+	}
 private:
 	std::vector<std::shared_ptr<Shape>> shapes;
 	std::vector<std::shared_ptr<Light>> lights;
-	Ray cam;
-	Vec cx, cy;
+	std::shared_ptr<Camera> camera;
+	//Ray cam;
+	//Vec cx, cy;
 	int shapeNum;
 };
-
-// tone mapping and gamma correction
-int toInt(double x) {
-	return int(pow(1 - exp(-x), 1 / 2.2) * 255 + .5);
-}
 
 
 class Integrator {
@@ -864,7 +1056,6 @@ class SPPM : public Integrator {
 						}
 					}
 				}
-
 				double p = estimation.maxValue();
 				if (p < 1) {
 					if (Random() < p) photonFlux = photonFlux / p;
@@ -879,23 +1070,25 @@ class SPPM : public Integrator {
 
 	void Render(const Scene &scene) {
 		fprintf(stderr, "Rendering ...\n");
+		int resX = scene.GetCamera()->GetFilm()->resX;
+		int resY = scene.GetCamera()->GetFilm()->resY;
 		for (int render_stage = 0; render_stage < nIterations; ++render_stage) {
 #pragma omp parallel for schedule(guided)
-			for (int y = 0; y < h; y++) {
+			for (int y = 0; y < resY; y++) {
 				//fprintf(stderr, "\rHitPointPass %5.2f%%", 100.0*y / (h - 1));
-	//#pragma omp parallel for schedule(dynamic, 1)
-				for (int x = 0; x < w; x++) {
-					int pixel = x + y * w;
+				for (int x = 0; x < resX; x++) {
+					int pixel = x + y * resX;
 					hitPoints[pixel].used = false;
-					double u = Random() - 0.5, v = Random() - 0.5;
-					Vec d = cx * ((x + 0.5 + u) / w - 0.5) + cy * (-(y + 0.5 + v) / h + 0.5) + cam.d;
+					Ray ray = scene.GetCamera()->GenerateRay(x, y, Vec(Random(), Random(), Random()), 140);
+					//double u = Random() - 0.5, v = Random() - 0.5;
+					//Vec d = cx * ((x + 0.5 + u) / w - 0.5) + cy * (-(y + 0.5 + v) / h + 0.5) + cam.d;
 					//trace(Ray(cam.o + d * 140, d.norm()), 0, true, Vec(), Vec(1, 1, 1), 0, false, pixel);
-					Ray ray(cam.o + d * 140, d.norm());
-					TraceEyePath(*scene, ray, 21, pixel);
+					//Ray ray(cam.o + d * 140, d.norm());
+					TraceEyePath(scene, ray, pixel);
 				}
 			}
 
-			BuildHashGrid(w, h, render_stage);
+			hashGrid.BuildHashGrid(hitPoints);
 			{
 				//fprintf(stderr, "\n");
 				double percentage = 100.*(render_stage + 1) / nIterations;
@@ -904,29 +1097,22 @@ class SPPM : public Integrator {
 				Vec photonFlux;
 #pragma omp parallel for schedule(guided)
 				for (int j = 0; j < render_stage_number; j++) {
-					GenratePhoton(*scene, &ray, &photonFlux);
-					TracePhoton(*scene, ray, photonFlux, 21);
-					//GenratePhoton(&r, &f, m + j);
-					//trace(r, 0, 0 > 1, f, vw, m + j);
+					GenratePhoton(scene, &ray, &photonFlux);
+					TracePhoton(scene, ray, photonFlux);
 				}
 				//fprintf(stderr, "\n");
 				fprintf(stderr, "\rIterations: %5.2f%%", percentage);
 			}
-			ClearHashGrid();
+			hashGrid.ClearHashGrid();
 		}
 
 		// density estimation
-
-		//for (int i = 0; i < flux.size(); ++i) {
-		//	std::cout << flux[i].x << " " << flux[i].y << " " << flux[i].z << std::endl;
-		//}
 		std::cout << "\nflux size: " << flux.size() << std::endl;
 #pragma omp parallel for schedule(guided)
 		for (int i = 0; i < flux.size(); ++i) {
 			c[i] = c[i] + flux[i] * (1.0 / (PI * radius2[i] * nIterations * render_stage_number))
 				+ directillum[i] / nIterations;
-			//c[i] = c[i] + directillum[i] / nIterations;
-			//std::cout << c[i].x << " " << c[i].y << " " << c[i].z << std::endl;
+
 		}
 	}
 
@@ -942,6 +1128,7 @@ private:
 		flux.resize(w * h);
 		hitPoints.resize(w * h);
 		directillum.resize(w * h);
+		c.resize(w * h);
 	}
 
 	HashGrid hashGrid;
@@ -950,6 +1137,7 @@ private:
 	std::vector<Vec> flux;
 	std::vector<Vec> directillum;
 	std::vector<HPoint> hitPoints;
+	std::vector<Vec> c;
 	const double initialRadius;
 	const int maxDepth;
 	const int nIterations;
@@ -977,7 +1165,7 @@ int main(int argc, char *argv[]) {
 	Vec cx = Vec(w*.5135 / h), cy = (cx%cam.d).norm()*.5135, *c = new Vec[w*h], vw;
 
 	fprintf(stderr, "Load Scene ...\n");
-	scene->SetCamera(cam, cx, cy);
+	//scene->SetCamera(cam, cx, cy);
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(1e5 + 1, 40.8, 81.6), Vec(), Vec(.75, .25, .25), DIFF)));
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(-1e5 + 99, 40.8, 81.6), Vec(), Vec(.25, .25, .75), DIFF)));
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, 40.8, 1e5), Vec(), Vec(.75, .75, .75), DIFF)));//Back
@@ -994,6 +1182,7 @@ int main(int argc, char *argv[]) {
 
 
 	clock_t end = clock();
+	/*
 	std::cout << "cost time: "<< (end - begin) / 1000.0 / 60.0 <<" min"<< std::endl;
 	// save the image after tone mapping and gamma correction
 	FILE* f = fopen("cornellbox10.png", "wb");
@@ -1009,6 +1198,6 @@ int main(int argc, char *argv[]) {
 	}
 	svpng(f, w, h, RGBs, 0);
 	delete[] RGBs;
-	fclose(f);
+	fclose(f);*/
 	//_CrtDumpMemoryLeaks();
 }
