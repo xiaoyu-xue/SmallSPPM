@@ -350,6 +350,8 @@ public:
 
 	int GetId() const { return shapeId; }
 
+	virtual double Area() const = 0;
+
 	friend class Scene;
 private:
 	ReflectionType reflType;
@@ -368,6 +370,7 @@ public:
 		return Emission();
 	}
 	virtual int GetId() const = 0;
+	virtual Vec Power() const = 0;
 	virtual bool IsAreaLight() const { return false; }
 	virtual std::shared_ptr<Shape> GetShapePtr() const = 0;
 protected:
@@ -421,6 +424,10 @@ public:
 		return (point - p).norm();
 	}
 
+	double Area() const {
+		return 4.0 * PI * rad * rad;
+	}
+
 private:
 	double rad; Vec p;
 };
@@ -442,6 +449,10 @@ public:
 
 	int GetId() const {
 		return shape->GetId();
+	}
+
+	Vec Power() const {
+		return Emission() * shape->Area() * PI;
 	}
 
 	bool IsAreaLight() const { return true; }
