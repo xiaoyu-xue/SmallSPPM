@@ -2,7 +2,7 @@
 #include <math.h>  
 #include <stdlib.h> 
 #include <stdio.h>  
-#include <Random>
+#include <random>
 #include <vector>
 #include <crtdbg.h>
 #include <iostream>
@@ -15,10 +15,13 @@
 #include <string.h>
 #define _CRTDBG_MAP_ALLOC
 
+#define ASSERT(expr) \
+	do { if(!(expr)) { std::cerr << "Error: assertion `"#expr"' failed at " << __FILE__ << ":" << __LINE__ << std::endl; exit(2); } } while(0)
+
 const double PI = 3.14159265358979;
 const double INV_PI = 0.31830988618379067154;
 const double ALPHA = 0.66666667;
-const int render_stage_number = 1000;
+const int render_stage_number = 100000;
 const double PiOver2 = 1.57079632679489661923;
 const double PiOver4 = 0.78539816339744830961;
 const double eps = 10e-6;
@@ -28,15 +31,27 @@ const double Inf = 1e20;
 class Shape;
 class BSDF;
 
+/*
 std::mt19937_64 rng(1234);
 std::uniform_real_distribution<double> uniform;
-enum ReflectionType { DIFF, SPEC, REFR };  // material types, used in radiance()
-
 double Random() {
 	return uniform(rng);
 }
+*/
+
+enum ReflectionType { DIFF, SPEC, REFR };  // material types, used in radiance()
+
+int IsPrime(int a) noexcept {
+	ASSERT(a >= 2);
+	for (int i = 2; i * i <= a; i++) {
+		if (a % i == 0)
+			return false;
+	}
+	return true;
+}
 
 // Halton sequence with reverse permutation
+/*
 int primes[61] = {
 	2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,
 	83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,
@@ -53,7 +68,7 @@ double hal(const int b, int j) {
 		h += rev(j % p, p) * fct; j /= p; fct *= f;
 	}
 	return h;
-}
+}*/
 
 template <class T1, class T2, class T3>
 T1 Clamp(const T1& tVal, const T2& tMin, const T3& max)
@@ -102,6 +117,264 @@ public:
 	}
 };
 
+struct Distribution1D
+{
+public:
+	Distribution1D(const double *f, int n)
+	{
+		count = n;
+		func = new double[n];
+		memcpy(func, f, n * sizeof(double));
+		cdf = new double[n + 1];
+
+		// Compute integral of step function at $x_i$
+		cdf[0] = 0.;
+		for (int i = 1; i < count + 1; ++i)
+			cdf[i] = cdf[i - 1] + func[i - 1] / n;
+
+		// Transform step function integral into CDF
+		funcInt = cdf[count];
+		if (funcInt == 0.f)
+		{
+			for (int i = 1; i < n + 1; ++i)
+				cdf[i] = double(i) / double(n);
+		}
+		else
+		{
+			for (int i = 1; i < n + 1; ++i)
+				cdf[i] /= funcInt;
+		}
+	}
+
+	~Distribution1D()
+	{
+		delete[] func;
+		delete[] cdf;
+	}
+
+	double SampleContinuous(double u, double *pdf, int *off = NULL) const
+	{
+		// Find surrounding CDF segments and _offset_
+		double *ptr = std::upper_bound(cdf, cdf + count + 1, u);
+		int offset = Clamp(int(ptr - cdf - 1), 0, count - 1);
+		if (off) *off = offset;
+		ASSERT(offset < count);
+		ASSERT(u >= cdf[offset] && (u < cdf[offset + 1] || u == 1));
+
+		// Fix the case when func ends with zeros
+		if (cdf[offset] == cdf[offset + 1])
+		{
+			ASSERT(u == 1.0f);
+
+			do { offset--; } while (cdf[offset] == cdf[offset + 1] && offset > 0);
+
+			ASSERT(cdf[offset] != cdf[offset + 1]);
+		}
+
+		// Compute offset along CDF segment
+		double du = (u - cdf[offset]) / (cdf[offset + 1] - cdf[offset]);
+		ASSERT(!std::isnan(du));
+		
+		// Compute PDF for sampled offset
+		if (pdf) *pdf = func[offset] / funcInt;
+		ASSERT(func[offset] > 0);
+
+		// Return $x\in{}[0,1]$ corresponding to sample
+		return (offset + du) / count;
+	}
+
+	int SampleDiscrete(double u, double *pdf) const
+	{
+		// Find surrounding CDF segments and _offset_
+		double *ptr = std::upper_bound(cdf, cdf + count + 1, u);
+		int offset = std::max(0, int(ptr - cdf - 1));
+		ASSERT(offset < count);
+		ASSERT(u >= cdf[offset] && u < cdf[offset + 1]);
+		if (pdf) *pdf = func[offset] / (funcInt * count);
+		return offset;
+	}
+
+private:
+	friend struct Distribution2D;
+	double *func, *cdf;
+	double funcInt;
+	int count;
+};
+
+struct Distribution2D
+{
+public:
+	Distribution2D(const double *func, int nu, int nv)
+	{
+		pConditionalV.reserve(nv);
+		for (int v = 0; v < nv; ++v)
+		{
+			// Compute conditional sampling distribution for $\tilde{v}$
+			pConditionalV.push_back(new Distribution1D(&func[v*nu], nu));
+		}
+
+		// Compute marginal sampling distribution $p[\tilde{v}]$
+		std::vector<double> marginalFunc;
+		marginalFunc.reserve(nv);
+		for (int v = 0; v < nv; ++v)
+			marginalFunc.push_back(pConditionalV[v]->funcInt);
+		pMarginal = new Distribution1D(&marginalFunc[0], nv);
+	}
+
+	~Distribution2D()
+	{
+		delete pMarginal;
+		for (uint32_t i = 0; i < pConditionalV.size(); ++i)
+			delete pConditionalV[i];
+	}
+
+	void SampleContinuous(double u0, double u1, double uv[2], double *pdf) const
+	{
+		double pdfs[2];
+		int v;
+		uv[1] = pMarginal->SampleContinuous(u1, &pdfs[1], &v);
+		uv[0] = pConditionalV[v]->SampleContinuous(u0, &pdfs[0]);
+		*pdf = pdfs[0] * pdfs[1];
+	}
+
+	double Pdf(double u, double v) const
+	{
+		int iu = Clamp((int)(u * pConditionalV[0]->count), 0,
+			pConditionalV[0]->count - 1);
+		int iv = Clamp((int)(v * pMarginal->count), 0,
+			pMarginal->count - 1);
+		if (pConditionalV[iv]->funcInt * pMarginal->funcInt == 0.f) return 0.f;
+		return (pConditionalV[iv]->func[iu] * pMarginal->func[iv]) /
+			(pConditionalV[iv]->funcInt * pMarginal->funcInt);
+	}
+
+private:
+	std::vector<Distribution1D *> pConditionalV;
+	Distribution1D *pMarginal;
+};
+
+
+class Sampler {
+public:
+	virtual double Sample(int d, long long i) = 0;
+};
+
+class StateSequence {
+protected:
+	int cursor = 0;
+
+public:
+	virtual double Sample() = 0;
+
+	virtual double operator()() {
+		return Sample();
+	}
+
+	int GetCursor() const {
+		return cursor;
+	}
+	/*
+	void assert_cursor_pos(int cursor) const {
+		assert_info(
+			this->cursor == cursor,
+			std::string("Cursor position should be " + std::to_string(cursor) +
+				" instead of " + std::to_string(this->cursor)));
+	}*/
+	
+
+
+};
+
+class RandomStateSequence : public StateSequence {
+private:
+	std::shared_ptr<Sampler> sampler;
+	long long instance;
+
+public:
+	RandomStateSequence(std::shared_ptr<Sampler> sampler, long long instance)
+		: sampler(sampler), instance(instance) {
+	}
+
+	double Sample() override {
+		//assert_info(sampler != nullptr, "null sampler");
+		double ret = sampler->Sample(cursor++, instance);
+		//assert_info(ret >= 0, "sampler output should be non-neg");
+		if (ret > 1 + 1e-5f) {
+			printf("Warning: sampler returns value > 1: [%f]", ret);
+		}
+		if (ret >= 1) {
+			ret = 0;
+		}
+		return ret;
+	}
+};
+
+class RandomSampler : public Sampler {
+public:
+	RandomSampler(int seed) : rng(seed) {
+
+	}
+
+	double Sample(int d, long long i) {
+		return uniform(rng);
+	}
+private:
+	std::mt19937_64 rng;
+	std::uniform_real_distribution<double> uniform;
+};
+
+class PrimeList {
+public:
+	PrimeList() {
+		for (int i = 2; i <= 10000; i++) {
+			if (IsPrime(i)) {
+				primes.push_back(i);
+			}
+		}
+		ASSERT(primes.size() == 1229);
+	}
+
+	int GetPrime(int i) {
+		return primes[i];
+	}
+
+	int GetPrimesNum() {
+		return (int)primes.size();
+	}
+
+private:
+	std::vector<int> primes;
+};
+
+
+class HaltonSampler : public Sampler {
+public:
+	double Sample(int d, long long i) {
+		ASSERT(d < primeList.GetPrimesNum());
+		double val = hal(d, i + 1);  // The first one is evil...
+		return val;
+	}
+
+private:
+	inline int rev(const int i, const int p) const {
+		return i == 0 ? i : p - i;
+	}
+
+	double hal(const int d, long long j) const {
+		const int p = primeList.GetPrime(d);
+		double h = 0.0, f = 1.0 / p, fct = f;
+		while (j > 0) {
+			h += rev(j % p, p) * fct;
+			j /= p;
+			fct *= f;
+		}
+		return h;
+	}
+	static PrimeList primeList;
+};
+PrimeList HaltonSampler::primeList;
+
+
 struct Vec {
 	double x, y, z; // vector: position, also color (r,g,b)
 	Vec(double x_ = 0, double y_ = 0, double z_ = 0) { x = x_; y = y_; z = z_; }
@@ -122,6 +395,10 @@ struct Vec {
 	double& operator[](int i) { return i == 0 ? x : i == 1 ? y : z; }
 	double maxValue() const {
 		return std::max(x, std::max(y, z));
+	}
+	double Y() const {
+		const double YWeight[3] = { 0.212671f, 0.715160f, 0.072169f };
+		return YWeight[0] * x + YWeight[1] * y + YWeight[2] * z;
 	}
 };
 
@@ -365,8 +642,8 @@ public:
 	Light() {}
 	virtual Vec DirectIllumination(const Intersection &isect, const std::shared_ptr<BSDF> &bsdf, const Vec &importance, Vec *dir, Vec u) const = 0;
 	virtual Vec Emission() const = 0;
-	virtual Vec SampleLight(Vec *pos, Vec *dir, Vec *lightNorm, double *pdfPos, double *pdfDir) const {
-		SampleOnLight(pos, dir, lightNorm, pdfPos, pdfDir);
+	virtual Vec SampleLight(Vec *pos, Vec *dir, Vec *lightNorm, double *pdfPos, double *pdfDir, Vec u, Vec v) const {
+		SampleOnLight(pos, dir, lightNorm, pdfPos, pdfDir, u, v);
 		return Emission();
 	}
 	virtual int GetId() const = 0;
@@ -374,7 +651,7 @@ public:
 	virtual bool IsAreaLight() const { return false; }
 	virtual std::shared_ptr<Shape> GetShapePtr() const = 0;
 protected:
-	virtual void SampleOnLight(Vec *pos, Vec *dir, Vec *lightNorm, double *pdfPos, double *pdfDir) const = 0;
+	virtual void SampleOnLight(Vec *pos, Vec *dir, Vec *lightNorm, double *pdfPos, double *pdfDir, Vec u, Vec v) const = 0;
 };
 
 
@@ -459,13 +736,13 @@ public:
 
 	std::shared_ptr<Shape> GetShapePtr() const { return shape; }
 protected:
-	void SampleOnLight(Vec *pos, Vec *dir, Vec *lightNorm, double *pdfPos, double *pdfDir) const {
+	void SampleOnLight(Vec *pos, Vec *dir, Vec *lightNorm, double *pdfPos, double *pdfDir, Vec u, Vec v) const {
 		//sample a position
-		*pos = shape->Sample(pdfPos, Vec(Random(), Random(), Random()));
+		*pos = shape->Sample(pdfPos, u);
 		*lightNorm = shape->GetNorm(*pos);
 		Vec ss, ts;
 		CoordinateSystem(*lightNorm, &ss, &ts);
-		Vec dirLocal = CosineSampleHemisphere(Vec(Random(), Random(), Random()));
+		Vec dirLocal = CosineSampleHemisphere(v);
 		double cosTheta = dirLocal.z;
 		*dir = (ss * dirLocal.x + ts * dirLocal.y + *lightNorm * dirLocal.z).norm();
 		*pdfDir = CosineHemispherePdf(cosTheta);
@@ -490,7 +767,7 @@ public:
 	{
 		return radius;
 	}
-	virtual float Evaluate(const double dx, const double dy) const = 0;
+	virtual double Evaluate(const double dx, const double dy) const = 0;
 };
 
 class BoxFilter : public Filter
@@ -502,7 +779,7 @@ public:
 	}
 
 public:
-	float Evaluate(const double dx, const double dy) const {
+	double Evaluate(const double dx, const double dy) const {
 		return 1.0;
 	}
 };
@@ -513,7 +790,7 @@ protected:
 	{
 		Vec color;
 		Vec splat;
-		float weight;
+		double weight;
 	};
 public:
 	Film(int w, int h) : resX(w), resY(h) {
@@ -543,7 +820,7 @@ public:
 				int pixelIndex = i * resX + j;
 				Pixel& pixel = pixelBuffer[pixelIndex];
 
-				float weight = filter->Evaluate(j - x, i - y);
+				double weight = filter->Evaluate(j - x, i - y);
 				pixel.weight += weight;
 				pixel.color = pixel.color + sample * weight;
 			}
@@ -941,7 +1218,13 @@ public:
 
 	void AddLight(std::shared_ptr<Light> light) {
 		lights.push_back(light);
-		AddShape(light->GetShapePtr());
+		if (light->IsAreaLight()) {
+			AddShape(light->GetShapePtr());
+		}
+	}
+
+	void Initialize() {
+		lightPowerDistribution = ComputeLightPowerDistribution();
 	}
 
 	bool Intersect(const Ray &r, double *t, Intersection *isect, std::shared_ptr<Shape> &hitObj) const {
@@ -971,10 +1254,36 @@ public:
 	std::shared_ptr<Camera> GetCamera() const {
 		return camera;
 	}
+
+	std::shared_ptr<Light> SampleOneLight(double *lightPdf, double u) const {
+		int nLights = (int)(lights.size());
+		int lightNum;
+		if (lightPowerDistribution != nullptr) {
+			lightNum = lightPowerDistribution->SampleDiscrete(u, lightPdf);
+			if (*lightPdf == 0) return nullptr;
+		} else {
+			lightNum = std::min((int)(u * nLights), nLights - 1);
+			*lightPdf = 1.0 / nLights;
+		}
+		return lights[lightNum];
+	}
+
+private:
+
+	std::unique_ptr<Distribution1D> ComputeLightPowerDistribution() {
+		if (lights.size() == 0) return nullptr;
+		std::vector<double> lightPower;
+		for (const auto &light : lights)
+			lightPower.push_back(light->Power().Y());
+		return std::unique_ptr<Distribution1D>(
+			new Distribution1D(&lightPower[0], (int)lightPower.size()));
+	}
+
 private:
 	std::vector<std::shared_ptr<Shape>> shapes;
 	std::vector<std::shared_ptr<Light>> lights;
 	std::shared_ptr<Camera> camera;
+	std::unique_ptr<Distribution1D> lightPowerDistribution;
 	int shapeNum;
 };
 
@@ -1003,30 +1312,27 @@ public:
 
 class SPPM : public Integrator {
 public:
-	SPPM(int iterations, int nPhotonsPerStage, int maxDepth, double initialRadius):
+	SPPM(int iterations, int nPhotonsPerStage, int maxDepth, double initialRadius, const std::shared_ptr<Sampler> &pSampler):
 		nIterations(iterations), nPhotonsPerRenderStage(nPhotonsPerStage), 
-		maxDepth(maxDepth), initialRadius(initialRadius), alpha(ALPHA)
+		maxDepth(maxDepth), initialRadius(initialRadius), alpha(ALPHA), sampler(pSampler)
 	{
 		
 	}
 
-	void GenratePhoton(const Scene &scene, Ray *pr, Vec *f) {
-		const std::vector<std::shared_ptr<Light>> lights = scene.GetLights();
-		int lightsNum = (int)lights.size();
-		double lightPdf = 1.0 / lightsNum;
-		int lightindex = (int)(Random() * lightsNum);
-		const Light &light = *(lights[lightindex]);
-		Vec Le = light.Emission();
+	void GenratePhoton(const Scene &scene, Ray *pr, Vec *f, double u, const Vec &v, const Vec &w) {
+		double lightPdf;
+		std::shared_ptr<Light> light = scene.SampleOneLight(&lightPdf, u);
+		Vec Le = light->Emission();
 		Vec pos, lightDir, lightNorm;
 		double pdfPos, pdfDir;
-		light.SampleLight(&pos, &lightDir, &lightNorm, &pdfPos, &pdfDir);
+		light->SampleLight(&pos, &lightDir, &lightNorm, &pdfPos, &pdfDir, v, w);
 		pr->o = pos + lightDir * eps;
 		pr->d = lightDir;
 		double cosTheta = std::abs(lightNorm.dot(lightDir));
-		*f = Le * cosTheta / (pdfPos * pdfDir);
+		*f = Le * cosTheta / (pdfPos * pdfDir * lightPdf);
 	}
 
-	void TraceEyePath(const Scene &scene, const Ray &ray, long long pixel) {
+	void TraceEyePath(const Scene &scene, StateSequence &rand, const Ray &ray, long long pixel) {
 		Ray r = ray;
 		bool deltaBoundEvent = false;
 		Vec importance(1.0, 1.0, 1.0);
@@ -1039,7 +1345,7 @@ public:
 			Vec wi;
 			double pdf;
 			if (bsdf->IsDelta()) {
-				Vec f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec(Random(), Random(), Random()));
+				Vec f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec(rand(), rand(), rand()));
 				importance = f * std::abs(wi.dot(isect.n)) * importance / pdf;
 				r.o = isect.hit;
 				r.d = wi;
@@ -1058,14 +1364,14 @@ public:
 					directillum[hp.pix] = directillum[hp.pix] + importance * hitObj->GetEmission();
 				else
 					directillum[hp.pix] = directillum[hp.pix] +
-					DirectIllumination(scene, isect, bsdf, hp.importance, Vec(Random(), Random(), Random()));
+					DirectIllumination(scene, isect, bsdf, hp.importance, Vec(rand(), rand(), rand()));
 
 				return;
 			}
 		}
 	}
 
-	void TracePhoton(const Scene &scene, const Ray &ray, Vec photonFlux) {
+	void TracePhoton(const Scene &scene, StateSequence &rand, const Ray &ray, Vec photonFlux) {
 		Ray r = ray;
 		for (int i = 0; i < maxDepth; ++i) {
 			double t;
@@ -1075,7 +1381,7 @@ public:
 			std::shared_ptr<BSDF> bsdf = hitObj->GetBSDF(isect);
 			Vec wi;
 			double pdf;
-			Vec f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec(Random(), Random(), Random()));
+			Vec f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec(rand(), rand(), rand()));
 			Vec estimation = f * std::abs(wi.dot(isect.n)) / pdf;
 			if (bsdf->IsDelta()) {
 				photonFlux = photonFlux * estimation;
@@ -1089,7 +1395,7 @@ public:
 						Vec v = hitpoint->pos - isect.hit;
 						if ((hitpoint->nrm.dot(isect.n) > 1e-3) && (v.dot(v) <= radius2[hitpoint->pix])) {
 							// unlike N in the paper, hitpoint->n stores "N / ALPHA" to make it an integer value
-							double g = (photonNums[hitpoint->pix] * ALPHA + ALPHA) / (photonNums[hitpoint->pix] * ALPHA + 1.0);
+							double g = (photonNums[hitpoint->pix] * alpha + alpha) / (photonNums[hitpoint->pix] * alpha + 1.0);
 							radius2[hitpoint->pix] = radius2[hitpoint->pix] * g;
 							photonNums[hitpoint->pix]++;
 							Vec contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.d) * photonFlux;
@@ -1099,7 +1405,7 @@ public:
 				}
 				double p = estimation.maxValue();
 				if (p < 1) {
-					if (Random() < p) photonFlux = photonFlux / p;
+					if (rand() < p) photonFlux = photonFlux / p;
 					else break;
 				}
 				photonFlux = photonFlux * estimation;
@@ -1114,19 +1420,17 @@ public:
 		int resX = scene.GetCamera()->GetFilm()->resX;
 		int resY = scene.GetCamera()->GetFilm()->resY;
 		Initialize(resX, resY);
-		for (int render_stage = 0; render_stage < nIterations; ++render_stage) {
+		for (int iter = 0; iter < nIterations; ++iter) {
+			std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(resX * resY));
 #pragma omp parallel for schedule(guided)
 			for (int y = 0; y < resY; y++) {
 				//fprintf(stderr, "\rHitPointPass %5.2f%%", 100.0*y / (h - 1));
 				for (int x = 0; x < resX; x++) {
 					int pixel = x + y * resX;
 					hitPoints[pixel].used = false;
-					Ray ray = scene.GetCamera()->GenerateRay(x, y, Vec(Random(), Random(), Random()), 140);
-					//double u = Random() - 0.5, v = Random() - 0.5;
-					//Vec d = cx * ((x + 0.5 + u) / w - 0.5) + cy * (-(y + 0.5 + v) / h + 0.5) + cam.d;
-					//trace(Ray(cam.o + d * 140, d.norm()), 0, true, Vec(), Vec(1, 1, 1), 0, false, pixel);
-					//Ray ray(cam.o + d * 140, d.norm());
-					TraceEyePath(scene, ray, pixel);
+					RandomStateSequence rand(randomSampler, x * resX + y);
+					Ray ray = scene.GetCamera()->GenerateRay(x, y, Vec(rand(), rand(), rand()), 140);
+					TraceEyePath(scene, rand, ray, pixel);
 				}
 			}
 			
@@ -1138,15 +1442,16 @@ public:
 				Ray ray;
 				Vec photonFlux;
 #pragma omp parallel for schedule(guided)
-				for (int j = 0; j < render_stage_number; j++) {
-					GenratePhoton(scene, &ray, &photonFlux);
-					TracePhoton(scene, ray, photonFlux);
+				for (int j = 0; j < nPhotonsPerRenderStage; j++) {
+					RandomStateSequence rand(sampler, iter * nPhotonsPerRenderStage + j);
+					GenratePhoton(scene, &ray, &photonFlux, rand(), Vec(rand(), rand(), rand()), Vec(rand(), rand(), rand()));
+					TracePhoton(scene, rand, ray, photonFlux);
 				}
 				//fprintf(stderr, "\n");
 
 			}
 			hashGrid.ClearHashGrid();
-			double percentage = 100.*(render_stage + 1) / nIterations;
+			double percentage = 100.*(iter + 1) / nIterations;
 			fprintf(stderr, "\rIterations: %5.2f%%", percentage);
 		}
 
@@ -1154,11 +1459,9 @@ public:
 		std::cout << "\nflux size: " << flux.size() << std::endl;
 #pragma omp parallel for schedule(guided)
 		for (int i = 0; i < flux.size(); ++i) {
-			c[i] = c[i] + flux[i] * (1.0 / (PI * radius2[i] * nIterations * render_stage_number))
+			c[i] = c[i] + flux[i] * (1.0 / (PI * radius2[i] * nIterations * nPhotonsPerRenderStage))
 				+ directillum[i] / nIterations;
 			//c[i] = c[i] + directillum[i] / nIterations;
-			//std::cout << c[i] << std::endl;
-			//scene.GetCamera()->GetFilm()->AddSample()
 		}
 		scene.GetCamera()->GetFilm()->SetImage(c);
 	}
@@ -1179,6 +1482,7 @@ private:
 	}
 
 	HashGrid hashGrid;
+	std::shared_ptr<Sampler> sampler;
 	std::vector<double> radius2;
 	std::vector<long long> photonNums;
 	std::vector<Vec> flux;
@@ -1237,8 +1541,10 @@ int main(int argc, char *argv[]) {
 
 	//std::cout << camPos + cz << std::endl << cy << std::endl;
 	
-	std::shared_ptr<Camera> camera = std::shared_ptr<PinHoleCamera>(new PinHoleCamera(film, camPos, cz, cx, cy, fovy, filmDis));
-	std::shared_ptr<Integrator> integrator = std::shared_ptr<SPPM>(new SPPM(nIterations, render_stage_number, 21, 0.8));
+	std::shared_ptr<Camera> camera = std::shared_ptr<Camera>(new PinHoleCamera(film, camPos, cz, cx, cy, fovy, filmDis));
+	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
+	std::shared_ptr<Sampler> haltonSampler = std::shared_ptr<Sampler>(new HaltonSampler());
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 21, 0.8, haltonSampler));
 	fprintf(stderr, "Load Scene ...\n");
 	//scene->SetCamera(cam, cx, cy);
 	scene->SetCamera(camera);
@@ -1255,8 +1561,8 @@ int main(int argc, char *argv[]) {
 	std::shared_ptr<Shape> lightShape = std::shared_ptr<Shape>(new Sphere(8.0, Vec(50, 81.6 - 16.5, 81.6), Vec(0.3, 0.3, 0.3) * 100, Vec(), DIFF));//Lite
 	std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape));
 	scene->AddLight(light0);
-
-	film->SetFileName("cornellbox2.png");
+	scene->Initialize();
+	film->SetFileName("cornellbox3.png");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
 
