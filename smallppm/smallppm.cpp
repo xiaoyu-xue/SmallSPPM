@@ -18,7 +18,7 @@
 const double PI = 3.14159265358979;
 const double INV_PI = 0.31830988618379067154;
 const double ALPHA = 0.66666667;
-const int render_stage_number = 100000;
+const int render_stage_number = 1000;
 const double PiOver2 = 1.57079632679489661923;
 const double PiOver4 = 0.78539816339744830961;
 const double eps = 10e-6;
@@ -127,6 +127,10 @@ struct Vec {
 
 Vec operator*(double a, Vec b) { return Vec(a * b.x, a * b.y, a * b.z); }
 
+std::ostream& operator<<(std::ostream &os, const Vec &v) {
+	os << v.x << " " << v.y << " " << v.z;
+	return os;
+}
 struct Intersection {
 	Vec hit, n, nl, wo;
 };
@@ -462,7 +466,7 @@ private:
 class Filter
 {
 protected:
-	float radius;
+	double radius;
 
 public:
 	Filter(const double rad)
@@ -471,7 +475,7 @@ public:
 	}
 	virtual ~Filter() {}
 
-	const float GetRadius() const
+	const double GetRadius() const
 	{
 		return radius;
 	}
@@ -502,7 +506,8 @@ protected:
 	};
 public:
 	Film(int w, int h) : resX(w), resY(h) {
-
+		aspect = (double)(resX) / (double)(resY);
+		filter = std::unique_ptr<BoxFilter>(new BoxFilter());
 	}
 	double Area() const {
 		return area;
@@ -525,7 +530,7 @@ public:
 				//int rowAdd = resY - 1 - i;
 				//int colAdd = j;
 				int pixelIndex = i * resX + j;
-				Pixel& pixel = imageBuffer[pixelIndex];
+				Pixel& pixel = pixelBuffer[pixelIndex];
 
 				float weight = filter->Evaluate(j - x, i - y);
 				pixel.weight += weight;
@@ -544,12 +549,29 @@ public:
 		//int rowAdd = resY - 1 - Y;
 		//int colAdd = X;
 		int pixelIndex = X * resX + Y;
-		Pixel& pixel = imageBuffer[pixelIndex];
+		Pixel& pixel = pixelBuffer[pixelIndex];
 		pixel.splat = pixel.splat + sample;
 	}
 
-	void SaveImage() {
+	void SetImage(const std::vector<Vec> &image) {
+		imageBuffer = image;
+	}
 
+	void SetFileName(const std::string &pFileName) {
+		filename = pFileName;
+	}
+
+	void SaveImage() {
+		std::string suffix = filename.substr(filename.size() - 4);
+		if (suffix == ".png") {
+			WritePngFile();
+		}
+		else if (suffix == ".bmp") {
+			WriteBmpFile();
+		}
+		else {
+
+		}
 	}
 public:
 	int resX, resY;
@@ -578,19 +600,17 @@ private:
 		unsigned int   mImportantColors; // 0 - all are important
 	};
 
-
-	void WritePngImage() {
+	void WritePngFile() {
 		FILE* f = fopen(filename.c_str(), "wb");
-		unsigned char *pngImage = new unsigned char[resX * resY * 3];
+		typedef unsigned char byte;
+		byte *pngImage = new byte[resX * resY * 3];
 		for (int j = 0; j < resY; ++j) {
 			for (int i = 0; i < resX; ++i) {
 				int index = 3 * j * resX + 3 * i;
 				int imageBufferIndex = j * resX + i;
-				const Pixel &pixel = imageBuffer[imageBufferIndex];
-				Vec rgb = pixel.color / pixel.weight + pixel.splat;
-				pngImage[index] = (unsigned char)(toInt(rgb.x));
-				pngImage[index + 1] = (unsigned char)(toInt(rgb.y));
-				pngImage[index + 2] = (unsigned char)(toInt(rgb.z));
+				pngImage[index] = (byte)(toInt(imageBuffer[imageBufferIndex].x));
+				pngImage[index + 1] = (byte)(toInt(imageBuffer[imageBufferIndex].y));
+				pngImage[index + 2] = (byte)(toInt(imageBuffer[imageBufferIndex].z));
 			}
 		}
 		svpng(f, resX, resY, pngImage, 0);
@@ -603,14 +623,24 @@ private:
 		return int(pow(1 - exp(-x), 1 / 2.2) * 255 + .5);
 	}
 
-	void SaveBMP(const char *aFilename, float aGamma = 1.f)  
+	void WriteToPixelBuffer() {
+		for (int i = 0; i < resX; ++i) {
+			for (int j = 0; j < resY; ++j) {
+				int index = i * resX + j;
+				Pixel &pixel = pixelBuffer[index];
+				imageBuffer[index] = pixel.color / pixel.weight + pixel.splat;
+			}
+		}
+	}
+
+	void WriteBmpFile()  
 	{
-		std::ofstream bmp(aFilename, std::ios::binary);
+		std::ofstream bmp(filename.c_str(), std::ios::binary);
 		BmpHeader header;
 		bmp.write("BM", 2);
-		header.mFileSize = unsigned(sizeof(BmpHeader) + 2) + resX * resY * 3;
+		header.mFileSize = (unsigned int)(sizeof(BmpHeader) + 2) + resX * resY * 3;
 		header.mReserved01 = 0;
-		header.mDataOffset = unsigned(sizeof(BmpHeader) + 2);
+		header.mDataOffset = (unsigned int)(sizeof(BmpHeader) + 2);
 		header.mHeaderSize = 40;
 		header.mWidth = resX;
 		header.mHeight = resY;
@@ -624,30 +654,28 @@ private:
 		header.mImportantColors = 0;
 		bmp.write((char*)&header, sizeof(header));
 
-		const float invGamma = 1.f / aGamma;
 		for (int y = 0; y < resY; y++)
 		{
 			for (int x = 0; x < resX; x++)
 			{
+				const Vec &rgbF = imageBuffer[x + (resY - y - 1) * resX];
 				typedef unsigned char byte;
-				int index = x * resX + y;
-				const Pixel &pixel = imageBuffer[index];
 				byte bgrB[3];
-				bgrB[0] =  byte(toInt((pixel.color / pixel.weight).x + pixel.splat.x));
-				bgrB[1] = byte(toInt((pixel.color / pixel.weight).y + pixel.splat.y));
-				bgrB[2] = byte(toInt((pixel.color / pixel.weight).z + pixel.splat.z));
+				bgrB[0] = byte(toInt(rgbF.z));
+				bgrB[1] = byte(toInt(rgbF.y));
+				bgrB[2] = byte(toInt(rgbF.x));
+
 				bmp.write((char*)&bgrB, sizeof(bgrB));
 			}
 		}
 	}
 
-
-
-	const std::string filename;
-	std::vector<Pixel> imageBuffer;
+private:
+	std::string filename;
+	std::vector<Pixel> pixelBuffer;
+	std::vector<Vec> imageBuffer;
 	std::unique_ptr<Filter> filter;
 	std::vector<Spinlock> bufferLocks;
-	unsigned char *pngImage;
 
 };
 
@@ -660,44 +688,47 @@ public:
 	virtual Vec We(const Ray &ray) const = 0;
 	virtual Vec Sample_Wi(const Intersection &isect, double *pdfW, Vec *wi, Vec u) const = 0;
 	virtual double PdfPos() const = 0;
-	virtual double PdfDir() const = 0;	
+	virtual double PdfDir(const Ray &cameraRay) const = 0;
 	virtual std::shared_ptr<Film> GetFilm() const { return film; }
 protected:
 	std::shared_ptr<Film> film;
 };
 
 class PinHoleCamera : public Camera {
+public:
 	PinHoleCamera(const std::shared_ptr<Film> &pFilm, const Vec &position, 
-		const Vec &pLookAt, const Vec &pCx, const Vec &pCy, double pFovy, double dis) :
-		Camera(pFilm), pos(position), lookAt(pLookAt), cx(pCx), cy(pCy), filmDistance(dis) {
-
+		const Vec &pCz, const Vec &pCx, const Vec &pCy, double pFovy, double dis) :
+		Camera(pFilm), pos(position), cz(pCz), cx(pCx), cy(pCy), fovy(pFovy), filmDistance(dis) {
 		Initialize();
 	}
 
 	void Initialize() {
-		Vec filmCenter = pos + pos * filmDistance;
-		double filmHeigh = filmDistance * std::tan(fovy / 2.0 * PI / 180) * 2.0;
-		double filmWidth = filmHeigh * film->aspect;
-
-		film->LU = filmCenter + cy * filmHeigh * 0.5 - cx * filmWidth * 0.5;
-		film->LL = filmCenter - cy * filmHeigh * 0.5 - cx * filmWidth * 0.5;
-		film->RU = filmCenter + cy * filmHeigh * 0.5 + cx * filmWidth * 0.5;
-		film->RL = filmCenter - cy * filmHeigh * 0.5 + cx * filmWidth * 0.5;
+		Vec filmCenter = pos + cz * filmDistance;
+		//std::cout << "film cetner: " << filmCenter << std::endl;
+		film->heigh = filmDistance * std::tan(fovy * 0.5 * PI / 180) * 2.0;
+		film->width = film->heigh * film->aspect;
+		film->area = film->width * film->heigh;
+		/*
+		film->LU = filmCenter + cy * film->heigh * 0.5 - cx * film->width * 0.5;
+		film->LL = filmCenter - cy * film->heigh * 0.5 - cx * film->width * 0.5;
+		film->RU = filmCenter + cy * film->heigh * 0.5 + cx * film->width * 0.5;
+		film->RL = filmCenter - cy * film->heigh * 0.5 + cx * film->width * 0.5;
+		*/
 	}
 
 	Ray GenerateRay(int pixelX, int pixelY, Vec u, double offset) const {
-		Vec dir = cx * ((pixelX + 0.5 + u.x) / film->resX - 0.5) * film->width * 0.5 + 
-			cy * (-(pixelY + 0.5 + u.y) / film->resY + 0.5) * film->width * 0.5  + lookAt * filmDistance;
+		
+		Vec dir = cx * ((pixelX + u.x) / film->resX - 0.5) * film->width + 
+			cy * (-(pixelY + u.y) / film->resY + 0.5) * film->heigh  + cz * filmDistance;
 		dir = dir.norm();
+
 		return Ray(pos + dir * offset, dir);
 	}
 
 	Vec We(const Ray &ray) const {
 		double pdfA = 1.0; // for the pinhole camera
-		//double A = (film->LU - film->LL).length() * (film->RU - film->LU).length();
-		//double A = film->width * film->heigh;
 		double area = film->area;
-		double cosTheta = lookAt.dot(ray.d);
+		double cosTheta = cz.dot(ray.d);
 		double cos2Theta = cosTheta * cosTheta;
 		double value = filmDistance * filmDistance * pdfA / (area * cos2Theta * cos2Theta);
 		return Vec(value, value, value);
@@ -707,7 +738,7 @@ class PinHoleCamera : public Camera {
 		*wi = (pos - isect.hit);
 		double distance = wi->length();
 		*wi = wi->norm();
-		double cosTheta = lookAt.dot(-1 * (*wi));
+		double cosTheta = cz.dot(-1 * (*wi));
 		*pdfW = 1.0 * (distance * distance) / cosTheta;
 		//*PdfW = 1.0 * (dis / CosTheta) * (dis / CosTheta) / CosTheta;
 		return We(Ray(isect.hit, -1 * (*wi)));
@@ -719,12 +750,12 @@ class PinHoleCamera : public Camera {
 
 	double PdfDir(const Ray &cameraRay) const {
 		double filmArea = film->Area();
-		double cosTheta = std::abs(lookAt.dot(cameraRay.d));
+		double cosTheta = std::abs(cz.dot(cameraRay.d));
 		double cos2Theta = cosTheta * cosTheta;
 		return filmDistance * filmDistance / (filmArea * cos2Theta * cosTheta);
 	}
 private:
-	Vec pos, lookAt, cx, cy;
+	Vec pos, cx, cy, cz;
 	double fovy;
 	double filmDistance;
 
@@ -933,8 +964,6 @@ private:
 	std::vector<std::shared_ptr<Shape>> shapes;
 	std::vector<std::shared_ptr<Light>> lights;
 	std::shared_ptr<Camera> camera;
-	//Ray cam;
-	//Vec cx, cy;
 	int shapeNum;
 };
 
@@ -962,6 +991,7 @@ public:
 
 
 class SPPM : public Integrator {
+public:
 	SPPM(int iterations, int nPhotonsPerStage, int maxDepth, double initialRadius):
 		nIterations(iterations), nPhotonsPerRenderStage(nPhotonsPerStage), 
 		maxDepth(maxDepth), initialRadius(initialRadius), alpha(ALPHA)
@@ -1072,6 +1102,7 @@ class SPPM : public Integrator {
 		fprintf(stderr, "Rendering ...\n");
 		int resX = scene.GetCamera()->GetFilm()->resX;
 		int resY = scene.GetCamera()->GetFilm()->resY;
+		Initialize(resX, resY);
 		for (int render_stage = 0; render_stage < nIterations; ++render_stage) {
 #pragma omp parallel for schedule(guided)
 			for (int y = 0; y < resY; y++) {
@@ -1087,11 +1118,11 @@ class SPPM : public Integrator {
 					TraceEyePath(scene, ray, pixel);
 				}
 			}
-
+			
 			hashGrid.BuildHashGrid(hitPoints);
 			{
 				//fprintf(stderr, "\n");
-				double percentage = 100.*(render_stage + 1) / nIterations;
+
 				//fprintf(stderr, "\rPhotonPass %5.2f%%", percentage);
 				Ray ray;
 				Vec photonFlux;
@@ -1101,9 +1132,11 @@ class SPPM : public Integrator {
 					TracePhoton(scene, ray, photonFlux);
 				}
 				//fprintf(stderr, "\n");
-				fprintf(stderr, "\rIterations: %5.2f%%", percentage);
+
 			}
 			hashGrid.ClearHashGrid();
+			double percentage = 100.*(render_stage + 1) / nIterations;
+			fprintf(stderr, "\rIterations: %5.2f%%", percentage);
 		}
 
 		// density estimation
@@ -1112,23 +1145,26 @@ class SPPM : public Integrator {
 		for (int i = 0; i < flux.size(); ++i) {
 			c[i] = c[i] + flux[i] * (1.0 / (PI * radius2[i] * nIterations * render_stage_number))
 				+ directillum[i] / nIterations;
-
+			//c[i] = c[i] + directillum[i] / nIterations;
+			//std::cout << c[i] << std::endl;
+			//scene.GetCamera()->GetFilm()->AddSample()
 		}
+		scene.GetCamera()->GetFilm()->SetImage(c);
 	}
 
 private:
-	void Initialize(int w, int h, double irad) {
-		for (int i = 0; i < w * h; ++i) {
-			radius2[i] = irad * irad;
-			photonNums[i] = 0;
-			flux[i] = Vec();
-		}
+	void Initialize(int w, int h) {
 		radius2.resize(w * h);
 		photonNums.resize(w * h);
 		flux.resize(w * h);
 		hitPoints.resize(w * h);
 		directillum.resize(w * h);
 		c.resize(w * h);
+		for (int i = 0; i < w * h; ++i) {
+			radius2[i] = initialRadius * initialRadius;
+			photonNums[i] = 0;
+			flux[i] = Vec();
+		}
 	}
 
 	HashGrid hashGrid;
@@ -1146,6 +1182,22 @@ private:
 };
 
 
+class Renderer {
+public:
+	Renderer(const std::shared_ptr<Scene> &pScene, const std::shared_ptr<Integrator> &pIntegrator,
+		const std::shared_ptr<Film> &pFilm): scene(pScene), integrator(pIntegrator), film(pFilm) {
+
+	}
+	void Render() {
+		integrator->Render(*scene);
+		film->SaveImage();
+	}
+private:
+	std::shared_ptr<Scene> scene;
+	std::shared_ptr<Integrator> integrator;
+	std::shared_ptr<Film> film;
+};
+
 int main(int argc, char *argv[]) {
 	
 	clock_t begin = clock();
@@ -1153,33 +1205,49 @@ int main(int argc, char *argv[]) {
 	int w = 1024, h = 768;
 	int nIterations = (argc == 2) ? atol(argv[1]) : 256; //(argc == 2) ? std::max(atoll(argv[1]) / render_stage_number, (long long)1) : render_stage_number;
 
-	std::cout << nIterations << std::endl;
+	//std::cout << nIterations << std::endl;
 
 	//Initialize(w, h, 0.8);
 	//hashGridSpinlocks.resize(w * h);
 
+	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(w, h));
+
 	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
 
 	// trace eye rays and store measurement points
-	Ray cam(Vec(50, 48, 295.6), Vec(0, -0.042612, -1).norm());
-	Vec cx = Vec(w*.5135 / h), cy = (cx%cam.d).norm()*.5135, *c = new Vec[w*h], vw;
+	//Ray cam(Vec(50, 48, 295.6), Vec(0, -0.042612, -1).norm());
+	//Vec cx = Vec(w*.5135 / h), cy = (cx%cam.d).norm()*.5135, *c = new Vec[w*h], vw;
 
+	Vec camPos(50, 52, 295.6), cz(0, -0.042612, -1);
+	double filmDis = cz.length();
+	Vec cx = Vec(w * .5135 / h).norm();
+	Vec cy = (cx % cz).norm();
+	double fovy = 28.7993;
+
+	//std::cout << camPos + cz << std::endl << cy << std::endl;
+	
+	std::shared_ptr<Camera> camera = std::shared_ptr<PinHoleCamera>(new PinHoleCamera(film, camPos, cz, cx, cy, fovy, filmDis));
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<SPPM>(new SPPM(nIterations, render_stage_number, 21, 0.8));
 	fprintf(stderr, "Load Scene ...\n");
 	//scene->SetCamera(cam, cx, cy);
-	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(1e5 + 1, 40.8, 81.6), Vec(), Vec(.75, .25, .25), DIFF)));
-	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(-1e5 + 99, 40.8, 81.6), Vec(), Vec(.25, .25, .75), DIFF)));
+	scene->SetCamera(camera);
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(1e5 + 1, 40.8, 81.6), Vec(), Vec(.75, .25, .25), DIFF)));//Left
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(-1e5 + 99, 40.8, 81.6), Vec(), Vec(.25, .25, .75), DIFF)));//Right
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, 40.8, 1e5), Vec(), Vec(.75, .75, .75), DIFF)));//Back
-	//scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, 40.8, -1e5 + 170), Vec(), Vec(.75, .75, .75), DIFF)));//Frnt
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, 40.8, -1e5 + 170), Vec(), Vec(.75, .75, .75), DIFF)));//Frnt
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, 1e5, 81.6), Vec(), Vec(.75, .75, .75), DIFF)));//Botm
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, -1e5 + 81.6, 81.6), Vec(), Vec(.75, .75, .75), DIFF)));//Top
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(16.5, Vec(27, 16.5, 47), Vec(), Vec(1, 1, 1)*.999, REFR)));//Mirr
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(7.0, Vec(27, 16.5, 47), Vec(), Vec(.25, .25, .75), DIFF)));//Mirr
-	scene->AddShape(std::shared_ptr<Shape>(new Sphere(16.5, Vec(73, 26.5, 78), Vec(), Vec(1, 1, 1)*.999, REFR)));//Glas
-	scene->AddShape(std::shared_ptr<Shape>(new Sphere(9.5, Vec(53, 9.5, 88), Vec(), Vec(1, 1, 1)*.999, REFR)));
-	std::shared_ptr<Shape> lightShape = std::shared_ptr<Shape>(new Sphere(8.0, Vec(50, 81.6 - 16.5, 81.6), Vec(0.3, 0.3, 0.3) * 100, Vec(), DIFF));
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(16.5, Vec(73, 26.5, 78), Vec(), Vec(1, 1, 1)*.999, REFR)));//Glass
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(9.5, Vec(53, 9.5, 88), Vec(), Vec(1, 1, 1)*.999, REFR)));//Glass
+	std::shared_ptr<Shape> lightShape = std::shared_ptr<Shape>(new Sphere(8.0, Vec(50, 81.6 - 16.5, 81.6), Vec(0.3, 0.3, 0.3) * 100, Vec(), DIFF));//Lite
 	std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape));
 	scene->AddLight(light0);
 
+	film->SetFileName("cornellbox2.png");
+	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
+	renderer->Render();
 
 	clock_t end = clock();
 	/*
