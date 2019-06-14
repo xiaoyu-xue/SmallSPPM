@@ -13,6 +13,7 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
+#include "halton_sampler.h"
 #define _CRTDBG_MAP_ALLOC
 
 #define ASSERT(expr) \
@@ -21,12 +22,12 @@
 const double PI = 3.14159265358979;
 const double INV_PI = 0.31830988618379067154;
 const double ALPHA = 0.66666667;
-const int render_stage_number = 100000;
+const long long  render_stage_number = 700000;
 const double PiOver2 = 1.57079632679489661923;
 const double PiOver4 = 0.78539816339744830961;
-const double eps = 10e-6;
+const double eps = 1e-6;
 const double Inf = 1e20;
-
+const double rayeps = 1e-3;
 
 class Shape;
 class BSDF;
@@ -560,23 +561,24 @@ public:
 			*wi = (nl * 2.0 * nl.dot(wo) - wo).norm();
 			double cosTheta = std::abs((*wi).dot(n));
 			*pdf = 1.0;
-			return Fa / cosTheta;
+			//return Fa / cosTheta;
+			return Vec();
 		}
 		Vec td = ((-1 * wo) * nnt - n * ((into ? 1 : -1) * (ddn * nnt + sqrt(cos2t)))).norm();
 		double Re = Fresnell(wo, td, n, nl);
 		double P = Re * 0.5 + 0.25;
 		if (rand.z < P) {
 			*wi = (nl * 2.0 * nl.dot(wo) - wo).norm();
-			*pdf = 1.0;
+			*pdf = P;
 			double cosTheta = std::abs((*wi).dot(n));
-			return Fa * Re / cosTheta / P;
+			return Fa * Re / cosTheta;
 		}
 		else {
 
 			*wi = td;
-			*pdf = 1.0;
+			*pdf = 1 - P;
 			double cosTheta = std::abs((*wi).dot(n));
-			return Fa * (1.0 - Re) / cosTheta / (1 - P);
+			return Fa * (1.0 - Re) / cosTheta;
 		}
 	}
 
@@ -586,11 +588,34 @@ public:
 
 	double Fresnell(const Vec &wo, const Vec &td, const Vec &n, const Vec &nl) const {
 		bool into = (n.dot(nl) > 0.0);
-		double nnt = into ? nc / nt : nt / nc, ddn = (-1 * wo).dot(nl), cos2t;
-		cos2t = 1 - nnt * nnt*(1 - ddn * ddn);
+		double nnt = into ? nc / nt : nt / nc, ddn = (-1 * wo).dot(nl);//, cos2t;
+		//cos2t = 1 - nnt * nnt*(1 - ddn * ddn);
 		double a = nt - nc, b = nt + nc, R0 = a * a / (b * b), c = 1 - (into ? -ddn : td.dot(n));
 		double Re = R0 + (1 - R0) * c * c* c * c * c;
 		return Re;
+	}
+
+	double FrDielectric(double cosThetaI, double etaI, double etaT) {
+		cosThetaI = Clamp(cosThetaI, -1, 1);
+		// Potentially swap indices of refraction
+		bool entering = cosThetaI > 0.f;
+		if (!entering) {
+			std::swap(etaI, etaT);
+			cosThetaI = std::abs(cosThetaI);
+		}
+
+		// Compute _cosThetaT_ using Snell's law
+		double sinThetaI = std::sqrt(std::max((double)0, 1 - cosThetaI * cosThetaI));
+		double sinThetaT = etaI / etaT * sinThetaI;
+
+		// Handle total internal reflection
+		if (sinThetaT >= 1) return 1;
+		double cosThetaT = std::sqrt(std::max((double)0, 1 - sinThetaT * sinThetaT));
+		double Rparl = ((etaT * cosThetaI) - (etaI * cosThetaT)) /
+			((etaT * cosThetaI) + (etaI * cosThetaT));
+		double Rperp = ((etaI * cosThetaI) - (etaT * cosThetaT)) /
+			((etaI * cosThetaI) + (etaT * cosThetaT));
+		return (Rparl * Rparl + Rperp * Rperp) / 2;
 	}
 
 	bool IsDelta() const { return true; }
@@ -907,8 +932,11 @@ private:
 	}
 
 	// tone mapping and gamma correction
-	int toInt(double x) {
-		return int(pow(1 - exp(-x), 1 / 2.2) * 255 + .5);
+	//int toInt(double x) {
+	//	return int(pow(1 - exp(-x), 1 / 2.2) * 255 + .5);
+	//}
+	int toInt(double x) { 
+		return int(pow(Clamp(x, 0.0, 1.0), 1 / 2.2) * 255 + .5); 
 	}
 
 	void WriteToPixelBuffer() {
@@ -1326,7 +1354,7 @@ public:
 		Vec pos, lightDir, lightNorm;
 		double pdfPos, pdfDir;
 		light->SampleLight(&pos, &lightDir, &lightNorm, &pdfPos, &pdfDir, v, w);
-		pr->o = pos + lightDir * eps;
+		pr->o = pos + lightDir * rayeps;
 		pr->d = lightDir;
 		double cosTheta = std::abs(lightNorm.dot(lightDir));
 		*f = Le * cosTheta / (pdfPos * pdfDir * lightPdf);
@@ -1347,7 +1375,7 @@ public:
 			if (bsdf->IsDelta()) {
 				Vec f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec(rand(), rand(), rand()));
 				importance = f * std::abs(wi.dot(isect.n)) * importance / pdf;
-				r.o = isect.hit;
+				r.o = isect.hit + wi * rayeps;
 				r.d = wi;
 				deltaBoundEvent = true;
 			}
@@ -1359,7 +1387,7 @@ public:
 				hp.nrm = isect.n;
 				hp.pix = pixel;
 				hp.outDir = -1 * r.d;
-				hitPoints[pixel] = hp;
+				//hitPoints[pixel] = hp;
 				if ((i == 0 || deltaBoundEvent) && hitObj->IsLight())
 					directillum[hp.pix] = directillum[hp.pix] + importance * hitObj->GetEmission();
 				else
@@ -1385,7 +1413,7 @@ public:
 			Vec estimation = f * std::abs(wi.dot(isect.n)) / pdf;
 			if (bsdf->IsDelta()) {
 				photonFlux = photonFlux * estimation;
-				r.o = isect.hit;
+				r.o = isect.hit + wi * rayeps;
 				r.d = wi;
 			}
 			else {
@@ -1409,7 +1437,7 @@ public:
 					else break;
 				}
 				photonFlux = photonFlux * estimation;
-				r.o = isect.hit;
+				r.o = isect.hit + wi * rayeps;
 				r.d = wi;
 			}
 		}
@@ -1428,7 +1456,8 @@ public:
 				for (int x = 0; x < resX; x++) {
 					int pixel = x + y * resX;
 					hitPoints[pixel].used = false;
-					RandomStateSequence rand(randomSampler, x * resX + y);
+					RandomStateSequence rand(randomSampler, iter);
+					//RandomStateSequence rand(sampler, iter);
 					Ray ray = scene.GetCamera()->GenerateRay(x, y, Vec(rand(), rand(), rand()), 140);
 					TraceEyePath(scene, rand, ray, pixel);
 				}
@@ -1492,7 +1521,7 @@ private:
 	const double initialRadius;
 	const int maxDepth;
 	const int nIterations;
-	const int nPhotonsPerRenderStage;
+	const long long nPhotonsPerRenderStage;
 	const double alpha;
 };
 
@@ -1534,7 +1563,8 @@ int main(int argc, char *argv[]) {
 	//Vec cx = Vec(w*.5135 / h), cy = (cx%cam.d).norm()*.5135, *c = new Vec[w*h], vw;
 
 	Vec camPos(50, 52, 295.6), cz(0, -0.042612, -1);
-	double filmDis = cz.length();
+	//double filmDis = cz.length();
+	double filmDis = 1.0;
 	Vec cx = Vec(w * .5135 / h).norm();
 	Vec cy = (cx % cz).norm();
 	double fovy = 28.7993;
@@ -1544,14 +1574,14 @@ int main(int argc, char *argv[]) {
 	std::shared_ptr<Camera> camera = std::shared_ptr<Camera>(new PinHoleCamera(film, camPos, cz, cx, cy, fovy, filmDis));
 	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
 	std::shared_ptr<Sampler> haltonSampler = std::shared_ptr<Sampler>(new HaltonSampler());
-	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 21, 0.8, haltonSampler));
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 0.8, haltonSampler));
 	fprintf(stderr, "Load Scene ...\n");
 	//scene->SetCamera(cam, cx, cy);
 	scene->SetCamera(camera);
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(1e5 + 1, 40.8, 81.6), Vec(), Vec(.75, .25, .25), DIFF)));//Left
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(-1e5 + 99, 40.8, 81.6), Vec(), Vec(.25, .25, .75), DIFF)));//Right
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, 40.8, 1e5), Vec(), Vec(.75, .75, .75), DIFF)));//Back
-	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, 40.8, -1e5 + 170), Vec(), Vec(.75, .75, .75), DIFF)));//Frnt
+	//scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, 40.8, -1e5 + 170), Vec(), Vec(.75, .75, .75), DIFF)));//Frnt
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, 1e5, 81.6), Vec(), Vec(.75, .75, .75), DIFF)));//Botm
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, -1e5 + 81.6, 81.6), Vec(), Vec(.75, .75, .75), DIFF)));//Top
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(16.5, Vec(27, 16.5, 47), Vec(), Vec(1, 1, 1)*.999, REFR)));//Mirr
@@ -1562,13 +1592,36 @@ int main(int argc, char *argv[]) {
 	std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape));
 	scene->AddLight(light0);
 	scene->Initialize();
-	film->SetFileName("cornellbox3.png");
+	film->SetFileName("cornellbox14.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
 
 	clock_t end = clock();
-	/*
+
 	std::cout << "cost time: "<< (end - begin) / 1000.0 / 60.0 <<" min"<< std::endl;
+
+
+
+	//test
+	/*
+	Intersection isect;
+	isect.n = Vec(0, 1, 0);
+	isect.nl = isect.n * -1;
+	isect.wo = Vec(1, -1, 0) * -1;
+	Vec wi;
+	double pdf;
+	TransmissionBSDF bsdf(isect);
+	bsdf.Sample_f(isect.wo, &wi, &pdf, Vec(0.5, 0.5, 0.5));
+	std::cout << "------------------------" << std::endl;
+
+	bool into = isect.n.dot(isect.nl) > 0;                // Ray from outside going in?
+	double nc = 1, nt = 1.5, nnt = into ? nc / nt : nt / nc, ddn = (isect.wo * -1).dot(isect.nl), cos2t;
+	cos2t = 1 - nnt * nnt*(1 - ddn * ddn);
+	Vec tdir = ((isect.wo * -1)*nnt - isect.n * ((into ? 1 : -1)*(ddn*nnt + sqrt(cos2t)))).norm();
+	double a = nt - nc, b = nt + nc, R0 = a * a / (b*b), c = 1 - (into ? -ddn : tdir.dot(isect.n));
+	double Re = R0 + (1 - R0)*c*c*c*c*c;
+	std::cout << tdir << std::endl << std::endl << Re << std::endl;*/
+	/**
 	// save the image after tone mapping and gamma correction
 	FILE* f = fopen("cornellbox10.png", "wb");
 	unsigned char *RGBs = new unsigned char[w * h * 3];
