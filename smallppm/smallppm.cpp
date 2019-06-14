@@ -13,7 +13,6 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
-#include "halton_sampler.h"
 #define _CRTDBG_MAP_ALLOC
 
 #define ASSERT(expr) \
@@ -28,10 +27,11 @@ const double PiOver4 = 0.78539816339744830961;
 const double eps = 1e-6;
 const double Inf = 1e20;
 const double rayeps = 1e-3;
+const double shadowRayEps = 1e-3;
 
 class Shape;
 class BSDF;
-
+class Scene;
 /*
 std::mt19937_64 rng(1234);
 std::uniform_real_distribution<double> uniform;
@@ -39,6 +39,20 @@ double Random() {
 	return uniform(rng);
 }
 */
+
+unsigned int rand_int() noexcept {
+	static unsigned int x = 123456789, y = 362436069, z = 521288629, w = 88675123;
+	unsigned int t = x ^ (x << 11);
+	x = y;
+	y = z;
+	z = w;
+	return (w = (w ^ (w >> 19)) ^ (t ^ (t >> 8)));
+}
+
+double Rand() noexcept {
+	 return rand_int() * (1.0f / 4294967296.0f);
+ }
+
 
 enum ReflectionType { DIFF, SPEC, REFR };  // material types, used in radiance()
 
@@ -317,7 +331,8 @@ public:
 	}
 
 	double Sample(int d, long long i) {
-		return uniform(rng);
+		//return uniform(rng);
+		return Rand();
 	}
 private:
 	std::mt19937_64 rng;
@@ -409,9 +424,7 @@ std::ostream& operator<<(std::ostream &os, const Vec &v) {
 	os << v.x << " " << v.y << " " << v.z;
 	return os;
 }
-struct Intersection {
-	Vec hit, n, nl, wo;
-};
+
 
 struct AABB {
 	Vec minPoint, maxPoint; // axis aligned bounding box
@@ -438,7 +451,21 @@ struct HPoint {
 	bool used;
 };
 
-struct Ray { Vec o, d; Ray() {}; Ray(Vec o_, Vec d_) : o(o_), d(d_) {} };
+struct Ray { 
+	 Ray() {}; Ray(Vec o_, Vec d_, double tmax_ = Inf) : o(o_), d(d_), tMax(tmax_) {} 
+	 Vec o, d;
+	 double tMax;
+};
+
+
+struct Intersection {
+	Vec hit, n, nl, wo;
+	Ray SpawnTo(const Intersection &isect) const {
+		Vec dir = isect.hit - hit;
+		double d = dir.length();
+		return Ray(hit, dir.norm(), d - shadowRayEps);
+	}
+};
 
 void CoordinateSystem(const Vec &v1, Vec *v2, Vec *v3) {
 	if (std::abs(v1.x) > std::abs(v1.y))
@@ -480,6 +507,15 @@ Vec CosineSampleHemisphere(const Vec &u) {
 	Vec d = ConcentricSampleDisk(u);
 	double z = std::sqrt(std::max((double)0, 1 - d.x * d.x - d.y * d.y));
 	return Vec(d.x, d.y, z);
+}
+
+double BalanceHeuristic(int nf, double fPdf, int ng, double gPdf) {
+	return (nf * fPdf) / (nf * fPdf + ng * gPdf);
+}
+
+double PowerHeuristic(int nf, double fPdf, int ng, double gPdf) {
+	double f = nf * fPdf, g = ng * gPdf;
+	return (f * f) / (f * f + g * g);
 }
 
 double CosineHemispherePdf(double cosTheta) { return cosTheta * INV_PI; }
@@ -630,8 +666,24 @@ public:
 	Shape(ReflectionType type, const Vec &color, const Vec &emission, bool isL = false): 
 		reflType(type), c(color), e(emission), isLight(isL){}
 	virtual double Intersect(const Ray &r, Intersection *isect) const = 0;
+	virtual bool Intersect(const Ray &r, Intersection *isect, double *t) const = 0;
+	virtual bool Intersect(const Ray &r) const = 0;
 	virtual Vec Sample(double *pdf, Vec rand) const = 0;
 	virtual Vec Sample(const Intersection &isect, double *pdf, Vec u) const = 0;
+
+	virtual double Pdf(const Intersection &isect, const Vec &wi) const {
+		Ray ray(isect.hit, wi);
+		Intersection lightPoint;
+		double t;
+		if (!Intersect(ray, &lightPoint, &t)) {
+			return 0;
+		}
+		Vec d = lightPoint.hit - isect.hit;
+		double pdf = d.dot(d) / (std::abs(lightPoint.n.dot(-1 * wi)) * Area());
+		if (std::isinf(pdf)) return 0;
+		return pdf;
+	}
+
 	virtual std::shared_ptr<BSDF> GetBSDF(const Intersection &isect) const {
 		if (reflType == DIFF) {
 			return std::dynamic_pointer_cast<BSDF>(std::make_shared<DiffuseBSDF>(isect, c));
@@ -644,6 +696,7 @@ public:
 		}
 		return std::shared_ptr<BSDF>();
 	}
+
 	bool IsLight() const { return isLight; }
 
 	virtual Vec GetNorm(const Vec &point) const = 0;
@@ -665,15 +718,19 @@ private:
 class Light {
 public:
 	Light() {}
-	virtual Vec DirectIllumination(const Intersection &isect, const std::shared_ptr<BSDF> &bsdf, const Vec &importance, Vec *dir, Vec u) const = 0;
+	virtual Vec DirectIllumination(const Intersection &isect, const std::shared_ptr<BSDF> &bsdf, 
+		const Vec &importance, Vec *dir, Intersection *lightPoint, Vec u) const = 0;
 	virtual Vec Emission() const = 0;
 	virtual Vec SampleLight(Vec *pos, Vec *dir, Vec *lightNorm, double *pdfPos, double *pdfDir, Vec u, Vec v) const {
 		SampleOnLight(pos, dir, lightNorm, pdfPos, pdfDir, u, v);
 		return Emission();
 	}
+	virtual Vec Sample_Li(const Intersection &isect, Vec *wi, double *pdf, Intersection *lightPoint, Vec u) const = 0;
+	virtual double Pdf_Li(const Intersection &isect, const Vec &wi) const = 0;
 	virtual int GetId() const = 0;
 	virtual Vec Power() const = 0;
 	virtual bool IsAreaLight() const { return false; }
+	virtual bool IsDeltaLight() const { return false; }
 	virtual std::shared_ptr<Shape> GetShapePtr() const = 0;
 protected:
 	virtual void SampleOnLight(Vec *pos, Vec *dir, Vec *lightNorm, double *pdfPos, double *pdfDir, Vec u, Vec v) const = 0;
@@ -690,18 +747,54 @@ public:
 		Vec op = p - r.o;
 		double t, b = op.dot(r.d), det = b * b - op.dot(op) + rad * rad;
 		if (det < 0) {
-			return 1e20;
+			return Inf;
 		}
 		else {
 			det = sqrt(det);
 		}
-		t = (t = b - det) > 1e-4 ? t : ((t = b + det) > 1e-4 ? t : 1e20);
+		t = (t = b - det) > 1e-4 ? t : ((t = b + det) > 1e-4 ? t : Inf);
 
 		isect->hit = r.o + r.d * t;
 		isect->n = (isect->hit - p).norm();
 		isect->nl = isect->n.dot(r.d) < 0 ? isect->n : isect->n * -1;
 		isect->wo = -1 * r.d;
 		return t;
+	}
+
+	bool Intersect(const Ray &r, Intersection *isect, double *t) const {
+		// ray-sphere Intersection returns distance
+		Vec op = p - r.o;
+		double b = op.dot(r.d), det = b * b - op.dot(op) + rad * rad;
+		if (det < 0) {
+			return Inf;
+		}
+		else {
+			det = sqrt(det);
+		}
+		*t = (*t = b - det) > 1e-4 ? *t : ((*t = b + det) > 1e-4 ? *t : Inf);
+
+		isect->hit = r.o + r.d * (*t);
+		isect->n = (isect->hit - p).norm();
+		isect->nl = isect->n.dot(r.d) < 0 ? isect->n : isect->n * -1;
+		isect->wo = -1 * r.d;
+		
+		return (*t > 0 && *t < r.tMax)  ;
+	}
+
+
+	bool Intersect(const Ray &r) const {
+		// ray-sphere Intersection returns distance
+		Vec op = p - r.o;
+		double t, b = op.dot(r.d), det = b * b - op.dot(op) + rad * rad;
+		if (det < 0) {
+			t = Inf;
+		}
+		else {
+			det = sqrt(det);
+		}
+		t = (t = b - det) > 1e-4 ? t : ((t = b + det) > 1e-4 ? t : Inf);
+
+		return t > 0 && t < r.tMax;
 	}
 
 	Vec Sample(double *pdf, Vec rand) const {
@@ -719,7 +812,8 @@ public:
 		Vec dir = su * cos(phi) * sin_a + sv * sin(phi) * sin_a + sw * cos_a;
 		double omega = 2 * PI *(1 - cos_a_max);
 		*pdf = 1.0 / omega;
-		return dir.norm();
+		return isect.hit + dir.norm() * (sw.length() - rad);
+		//return dir.norm();
 	}
 
 	Vec GetNorm(const Vec & point) const {
@@ -738,11 +832,25 @@ private:
 class AreaLight : public Light{
 public:
 	AreaLight(const std::shared_ptr<Shape>& pShape): shape(pShape){}
-	Vec DirectIllumination(const Intersection &isect, const std::shared_ptr<BSDF> &bsdf, const Vec &importance, Vec *dir, Vec u) const {
+	Vec DirectIllumination(const Intersection &isect, const std::shared_ptr<BSDF> &bsdf, 
+		const Vec &importance, Vec *dir, Intersection *lightPoint, Vec u) const {
 		double pdf;
-		*dir = shape->Sample(isect, &pdf, u);
+		lightPoint->hit = shape->Sample(isect, &pdf, u);
+		lightPoint->n = lightPoint->nl = shape->GetNorm(lightPoint->hit);
+		*dir = (lightPoint->hit - isect.hit).norm();
 		Vec f = bsdf->f(isect.wo, *dir);
-		return importance * f * std::abs((*dir).dot(isect.nl)) * Emission() / pdf; 
+		return importance * f * std::abs((*dir).dot(isect.n)) * Emission() / pdf; 
+	}
+
+	Vec Sample_Li(const Intersection &isect, Vec *wi, double *pdf, Intersection *lightPoint, Vec u) const {
+		lightPoint->hit = shape->Sample(isect, pdf, u);
+		lightPoint->n = lightPoint->nl = shape->GetNorm(lightPoint->hit);
+		*wi = (lightPoint->hit - isect.hit).norm();
+		return Emission();
+	}
+
+	double Pdf_Li(const Intersection &isect, const Vec &wi) const {
+		return shape->Pdf(isect, wi);
 	}
 
 	Vec Emission() const {
@@ -775,6 +883,9 @@ protected:
 private:
 	std::shared_ptr<Shape> shape;
 };
+
+
+
 
 class Filter
 {
@@ -1257,18 +1368,28 @@ public:
 
 	bool Intersect(const Ray &r, double *t, Intersection *isect, std::shared_ptr<Shape> &hitObj) const {
 		int n = (int)shapes.size();
-		double d;
 		*t = Inf;
 		for (int i = 0; i < n; ++i) {
 			Intersection intersection;
-			d = shapes[i]->Intersect(r, &intersection);
-			if (d < *t) {
-				*t = d;
-				hitObj = shapes[i];
-				*isect = intersection;
+			double ti;
+			if (shapes[i]->Intersect(r, &intersection, &ti)) {
+				if (ti < *t) {
+					*t = ti;
+					*isect = intersection;
+					hitObj = shapes[i];
+				}
 			}
 		}
-		return *t < Inf;
+		return *t < r.tMax;
+	}
+
+	bool Intersect(const Ray &r) const {
+		for (auto shape : shapes) {
+			if (shape->Intersect(r)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	const std::vector<std::shared_ptr<Light>>& GetLights() const {
@@ -1315,25 +1436,89 @@ private:
 	int shapeNum;
 };
 
+class VisibilityTester {
+public:
+	VisibilityTester() {}
+	VisibilityTester(const Intersection &p0, const Intersection &p1)
+		: p0(p0), p1(p1) {}
+	const Intersection &P0() const { return p0; }
+	const Intersection &P1() const { return p1; }
+	bool Unoccluded(const Scene &scene) const {
+		Ray ray = p0.SpawnTo(p1);
+		return scene.Intersect(ray);
+	};
+
+private:
+	Intersection p0, p1;
+};
 
 class Integrator {
 public:
 	virtual void Render(const Scene &scene) = 0;
 	virtual ~Integrator() {}
-	static Vec DirectIllumination(const Scene &scene, const Intersection &isect, const std::shared_ptr<BSDF> &bsdf, Vec importance, Vec u) {
+	static Vec DirectIllumination(const Scene &scene, const Intersection &isect, const std::shared_ptr<BSDF> &bsdf, 
+		Vec importance, double uLight, Vec u, Vec v) {
 		Vec L;
+		/*
 		const std::vector<std::shared_ptr<Light>> lights = scene.GetLights();
 		for (auto light : lights) {
 			Vec dir;
 			std::shared_ptr<Shape> hitObj;
 			double t;
-			Vec Li = light->DirectIllumination(isect, bsdf, importance, &dir, u);
+			Intersection lightPoint;
+			Vec Li = light->DirectIllumination(isect, bsdf, importance, &dir, &lightPoint, v);
 			Intersection intersection;
 			if (scene.Intersect(Ray(isect.hit, dir), &t, &intersection, hitObj) && hitObj->GetId() == light->GetId()) {
 				L = L + Li;
 			}
 		}
 		return L;
+		*/
+
+		//Sample light
+		double lightSamplingPdf;
+		double weight1 = 1, weight2 = 1;
+		Vec L1, L2;
+		std::shared_ptr<Light> light = scene.SampleOneLight(&lightSamplingPdf, uLight);
+		{
+			Vec wi;
+			Intersection lightPoint;
+			double pdf;
+			Vec Li = light->Sample_Li(isect, &wi, &pdf, &lightPoint, u);
+			if (pdf > 0) {
+				double scatteringPdf = bsdf->Pdf(isect.wo, wi);
+				Vec f = bsdf->f(isect.wo, wi);
+				VisibilityTester visibilityTester(isect, lightPoint);
+				weight1 = PowerHeuristic(1, pdf, 1, scatteringPdf);
+				if (!visibilityTester.Unoccluded(scene)) {
+					L1 =  Li * f * std::abs(isect.n.dot(wi)) / pdf;
+				}
+			}
+
+		}
+
+
+		//Sample 
+		
+		{
+			Vec wi;
+			double pdf;
+			Vec f = bsdf->Sample_f(isect.wo, &wi, &pdf, v);
+			Intersection intersection;
+			std::shared_ptr<Shape> hitObj;
+			double t;
+			if (pdf != 0) {
+				double lightPdf = light->Pdf_Li(isect, wi);
+				weight2 = PowerHeuristic(1, pdf, 1, lightPdf);
+				if (scene.Intersect(Ray(isect.hit + wi * rayeps, wi), &t, &intersection, hitObj) && hitObj->IsLight()) {
+					L2 = hitObj->GetEmission() * f * std::abs(isect.n.dot(wi)) / pdf;
+				}
+			}
+		}
+		//return importance * L1 / lightSamplingPdf;
+		//return importance * L2 / lightSamplingPdf;
+		return importance * (L1 * weight1 + L2 * weight2) / lightSamplingPdf;
+		
 	}
 };
 
@@ -1392,7 +1577,8 @@ public:
 					directillum[hp.pix] = directillum[hp.pix] + importance * hitObj->GetEmission();
 				else
 					directillum[hp.pix] = directillum[hp.pix] +
-					DirectIllumination(scene, isect, bsdf, hp.importance, Vec(rand(), rand(), rand()));
+					DirectIllumination(scene, isect, bsdf, hp.importance, rand(), 
+						Vec(rand(), rand(), rand()), Vec(rand(), rand(), rand()));
 
 				return;
 			}
@@ -1462,7 +1648,7 @@ public:
 					TraceEyePath(scene, rand, ray, pixel);
 				}
 			}
-			
+			/*
 			hashGrid.BuildHashGrid(hitPoints);
 			{
 				//fprintf(stderr, "\n");
@@ -1477,9 +1663,9 @@ public:
 					TracePhoton(scene, rand, ray, photonFlux);
 				}
 				//fprintf(stderr, "\n");
-
+				
 			}
-			hashGrid.ClearHashGrid();
+			hashGrid.ClearHashGrid();*/
 			double percentage = 100.*(iter + 1) / nIterations;
 			fprintf(stderr, "\rIterations: %5.2f%%", percentage);
 		}
@@ -1592,7 +1778,7 @@ int main(int argc, char *argv[]) {
 	std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape));
 	scene->AddLight(light0);
 	scene->Initialize();
-	film->SetFileName("cornellbox14.bmp");
+	film->SetFileName("cornellbox9.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
 
