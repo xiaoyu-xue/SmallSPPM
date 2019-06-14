@@ -21,7 +21,7 @@
 const double PI = 3.14159265358979;
 const double INV_PI = 0.31830988618379067154;
 const double ALPHA = 0.66666667;
-const long long  render_stage_number = 700000;
+const long long  render_stage_number = 70000;
 const double PiOver2 = 1.57079632679489661923;
 const double PiOver4 = 0.78539816339744830961;
 const double eps = 1e-6;
@@ -405,8 +405,15 @@ struct Vec {
 	inline bool operator!=(const Vec &b) const { return x != b.x || y != b.y || z != b.z; }
 	inline Vec mul(const Vec &b) const { return Vec(x * b.x, y * b.y, z * b.z); }
 	inline Vec norm() { return (*this) * (1.0 / sqrt(x * x + y * y + z * z)); }
+	inline void normalize() {
+		double invLength = 1.0 / std::sqrt(x * x + y * y + z * z);
+		this->x *= invLength;
+		this->y *= invLength;
+		this->z *= invLength;
+	}
 	inline double dot(const Vec &b) const { return x * b.x + y * b.y + z * b.z; }
-	inline double length() const {return sqrt(x * x + y * y + z * z);}
+	inline double length() const {return std::sqrt(x * x + y * y + z * z);}
+	inline double length2() const { return x * x + y * y + z * z; }
 	Vec operator%(Vec&b) const { return Vec(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x); }
 	double& operator[](int i) { return i == 0 ? x : i == 1 ? y : z; }
 	double maxValue() const {
@@ -452,7 +459,10 @@ struct HPoint {
 };
 
 struct Ray { 
-	 Ray() {}; Ray(Vec o_, Vec d_, double tmax_ = Inf) : o(o_), d(d_), tMax(tmax_) {} 
+	 Ray() {
+		 tMax = Inf;
+	 }; 
+	 Ray(Vec o_, Vec d_, double tmax_ = Inf) : o(o_), d(d_), tMax(tmax_) {} 
 	 Vec o, d;
 	 double tMax;
 };
@@ -766,12 +776,13 @@ public:
 		Vec op = p - r.o;
 		double b = op.dot(r.d), det = b * b - op.dot(op) + rad * rad;
 		if (det < 0) {
-			return Inf;
+			*t = Inf;
+			return false;
 		}
 		else {
 			det = sqrt(det);
 		}
-		*t = (*t = b - det) > 1e-4 ? *t : ((*t = b + det) > 1e-4 ? *t : Inf);
+		*t = ((*t) = b - det) > 1e-4 ? (*t) : (((*t) = b + det) > 1e-4 ? (*t) : Inf);
 
 		isect->hit = r.o + r.d * (*t);
 		isect->n = (isect->hit - p).norm();
@@ -797,12 +808,13 @@ public:
 		return t > 0 && t < r.tMax;
 	}
 
-	Vec Sample(double *pdf, Vec rand) const {
+	Vec Sample(double *pdf, Vec u) const {
 		*pdf = 1.0 / (4.0 * PI * rad * rad);
-		return UniformSampleSphere(rand) * rad + p;
+		return UniformSampleSphere(u) * rad + p;
 	}
 
 	Vec Sample(const Intersection &isect, double *pdf, Vec u) const {
+		/*
 		Vec sw = p - isect.hit, su = ((fabs(sw.x) > .1 ? Vec(0, 1) : Vec(1)) % sw).norm(), sv = sw % su;
 		double cos_a_max = sqrt(1 - rad * rad / (isect.hit - p).dot(isect.hit - p));
 		double zeta1 = u.x, zeta2 = u.y;
@@ -813,7 +825,40 @@ public:
 		double omega = 2 * PI *(1 - cos_a_max);
 		*pdf = 1.0 / omega;
 		return isect.hit + dir.norm() * (sw.length() - rad);
-		//return dir.norm();
+		//return dir.norm();*/
+		if ((p - isect.hit).length2() <= rad * rad) {
+			Vec lightPoint = Sample(pdf, u);
+			Vec wi = lightPoint - isect.hit;
+			if (wi.dot(wi) == 0)
+				*pdf = 0;
+			else {
+				double s = wi.length();
+				wi.normalize();
+				*pdf *= s / std::abs((lightPoint - p).norm().dot(-1 * wi));
+			}
+			if (std::isinf(*pdf)) *pdf = 0.f;
+			return lightPoint;
+		}
+		Vec localZ = (p - isect.hit);
+		double dis = localZ.length();
+		localZ.normalize();
+		Vec localX, localY;
+		CoordinateSystem(localZ, &localX, &localY);
+		double sin2ThetaMax = rad * rad / (dis * dis);
+		double cosThetaMax = std::sqrt(std::max(1 - sin2ThetaMax, (double)0));
+		double cosTheta = (1 - u[0]) + u[0] * cosThetaMax;
+		double sinTheta = std::sqrt(std::max(1 - cosTheta * cosTheta, (double)0));
+		double phi = 2 * PI * u[1];
+		double s = dis * cosTheta - std::sqrt(std::max(rad * rad - dis * dis * sinTheta * sinTheta, (double)0));
+		//double cosAlpha = (dis * dis + rad * rad - s * s) / (2 * dis * rad);
+		//double sinAlpha = std::sqrt(std::max(1 - cosAlpha * cosAlpha, (double)0));
+		//Vec wi = sinAlpha * std::cos(phi) * localX + sinAlpha * std::sin(phi) * localY + cosTheta * localZ;
+		Vec wi = sinTheta * std::cos(phi) * localX + sinTheta * std::sin(phi) * localY + cosTheta * localZ;
+
+		Vec lightPoint = isect.hit + wi * s;
+		*pdf = 1 / (2 * PI * (1 - cosThetaMax));
+		
+		return lightPoint;
 	}
 
 	Vec GetNorm(const Vec & point) const {
@@ -1498,8 +1543,7 @@ public:
 		}
 
 
-		//Sample 
-		
+		//Sample BSDF
 		{
 			Vec wi;
 			double pdf;
@@ -1532,7 +1576,7 @@ public:
 		
 	}
 
-	void GenratePhoton(const Scene &scene, Ray *pr, Vec *f, double u, const Vec &v, const Vec &w) {
+	void GeneratePhoton(const Scene &scene, Ray *pr, Vec *f, double u, const Vec &v, const Vec &w) {
 		double lightPdf;
 		std::shared_ptr<Light> light = scene.SampleOneLight(&lightPdf, u);
 		Vec Le = light->Emission();
@@ -1572,7 +1616,7 @@ public:
 				hp.nrm = isect.n;
 				hp.pix = pixel;
 				hp.outDir = -1 * r.d;
-				//hitPoints[pixel] = hp;
+				hitPoints[pixel] = hp;
 				if ((i == 0 || deltaBoundEvent) && hitObj->IsLight())
 					directillum[hp.pix] = directillum[hp.pix] + importance * hitObj->GetEmission();
 				else
@@ -1648,24 +1692,25 @@ public:
 					TraceEyePath(scene, rand, ray, pixel);
 				}
 			}
-			/*
+			
 			hashGrid.BuildHashGrid(hitPoints);
 			{
 				//fprintf(stderr, "\n");
 
 				//fprintf(stderr, "\rPhotonPass %5.2f%%", percentage);
-				Ray ray;
-				Vec photonFlux;
 #pragma omp parallel for schedule(guided)
 				for (int j = 0; j < nPhotonsPerRenderStage; j++) {
+					Ray ray;
+					Vec photonFlux;
 					RandomStateSequence rand(sampler, iter * nPhotonsPerRenderStage + j);
-					GenratePhoton(scene, &ray, &photonFlux, rand(), Vec(rand(), rand(), rand()), Vec(rand(), rand(), rand()));
+					GeneratePhoton(scene, &ray, &photonFlux, rand(), Vec(rand(), rand(), rand()), Vec(rand(), rand(), rand()));
 					TracePhoton(scene, rand, ray, photonFlux);
 				}
 				//fprintf(stderr, "\n");
 				
 			}
-			hashGrid.ClearHashGrid();*/
+			hashGrid.ClearHashGrid();
+			
 			double percentage = 100.*(iter + 1) / nIterations;
 			fprintf(stderr, "\rIterations: %5.2f%%", percentage);
 		}
@@ -1778,7 +1823,7 @@ int main(int argc, char *argv[]) {
 	std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape));
 	scene->AddLight(light0);
 	scene->Initialize();
-	film->SetFileName("cornellbox9.bmp");
+	film->SetFileName("cornellbox16.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
 
