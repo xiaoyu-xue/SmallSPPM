@@ -17,6 +17,7 @@
 #include "sampler.h"
 #include "halton.h"
 #include "samplerenum.h"
+#include "linagl.h"
 
 #define _CRTDBG_MAP_ALLOC
 
@@ -26,7 +27,7 @@
 const double PI = 3.14159265358979;
 const double INV_PI = 0.31830988618379067154;
 const double ALPHA = 0.66666667;
-const long long  render_stage_number = 3000000;
+const long long  render_stage_number = 700000;
 const double PiOver2 = 1.57079632679489661923;
 const double PiOver4 = 0.78539816339744830961;
 const double eps = 1e-6;
@@ -975,6 +976,39 @@ public:
 
 		}
 	}
+
+	void ConvertBmpToPng(std::string path) {
+
+		typedef unsigned char byte;
+		std::ifstream bmp(path.c_str(), std::ios::binary);
+		BmpHeader header;
+		char a[2];
+		bmp.read(&a[0], 2);
+		std::cout << a[0]<<a[1] << std::endl;
+		bmp.read((char* )&header, sizeof(BmpHeader));
+		std::cout << header.mHeight << std::endl;
+		byte *pngImage = new byte[resX * resY * 3];
+		std::string output = "output.png";
+		FILE* f = fopen(output.c_str(), "wb");
+		for (int y = 0; y < resY; y++)
+		{
+			for (int x = 0; x < resX; x++)
+			{
+
+				byte bgrB[3];
+				bmp.read((char*)&bgrB[0], sizeof(bgrB));
+				int index = 3 * x + 3 * (resY - y - 1) * resX;
+				pngImage[index] = bgrB[2];
+				pngImage[index + 1] = bgrB[1];
+				pngImage[index + 2] = bgrB[0];
+
+			}
+		}
+		svpng(f, resX, resY, pngImage, 0);
+		delete[] pngImage;
+		fclose(f);
+	}
+
 public:
 	int resX, resY;
 	double width, heigh;
@@ -1074,6 +1108,8 @@ private:
 			}
 		}
 	}
+
+
 
 private:
 	std::string filename;
@@ -1719,7 +1755,7 @@ int main(int argc, char *argv[]) {
 	
 	clock_t begin = clock();
 
-	int w = 1024 * 2, h = 768 * 2;
+	int w = 1024, h = 768;
 	int nIterations = (argc == 2) ? atol(argv[1]) : 256; //(argc == 2) ? std::max(atoll(argv[1]) / render_stage_number, (long long)1) : render_stage_number;
 
 	//std::cout << nIterations << std::endl;
@@ -1759,17 +1795,18 @@ int main(int argc, char *argv[]) {
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, 1e5, 81.6), Vec(), Vec(.75, .75, .75), DIFF)));//Botm
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, -1e5 + 81.6, 81.6), Vec(), Vec(.75, .75, .75), DIFF)));//Top
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(16.5, Vec(27, 16.5, 47), Vec(), Vec(1, 1, 1), REFR)));//Mirr
-	scene->AddShape(std::shared_ptr<Shape>(new Sphere(7.0, Vec(27, 16.5, 47), Vec(), Vec(.25, .25, .75), DIFF)));//Mirr
+	//scene->AddShape(std::shared_ptr<Shape>(new Sphere(7.0, Vec(27, 16.5, 47), Vec(), Vec(.25, .25, .75), DIFF)));//Mirr
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(16.5, Vec(73, 26.5, 78), Vec(), Vec(1, 1, 1), REFR)));//Glass
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(9.5, Vec(53, 9.5, 88), Vec(), Vec(1, 1, 1), REFR)));//Glass
-	scene->AddShape(std::shared_ptr<Shape>(new Sphere(9.5, Vec(23, 0.0, 98), Vec(), Vec(1, 1, 1), REFR)));//Glass
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(9.5, Vec(23, 0.0, 98), Vec(), Vec(1, 1, 1), DIFF)));//Glass
 	std::shared_ptr<Shape> lightShape = std::shared_ptr<Shape>(new Sphere(8.0, Vec(50, 81.6 - 16.5, 81.6), Vec(0.3, 0.3, 0.3) * 100, Vec(), DIFF));//Lite
 	std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape));
 	scene->AddLight(light0);
 	scene->Initialize();
-	film->SetFileName("cornellbox31.bmp");
+	film->SetFileName("cornellbox33.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
+	//film->ConvertBmpToPng("cornellbox31.bmp");
 
 	clock_t end = clock();
 

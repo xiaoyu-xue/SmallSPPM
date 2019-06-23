@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\sampler">
+      <UniqueIdentifier>{2258e439-3de2-49a8-95d0-0b00a3fd0b92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\math">
+      <UniqueIdentifier>{84bb62b6-de73-4d8b-b518-cbbdab4c9518}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="smallppm.cpp">
@@ -23,5 +29,31 @@
     <None Include="svpng.inc">
       <Filter>Header Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="lowdiscrepency.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="halton.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="sampler.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="def.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rng.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="samplerenum.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="linagl.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
