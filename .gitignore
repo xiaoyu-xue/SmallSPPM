@@ -15,8 +15,10 @@ Debug/
 ipch/
 *.sln
 *.db
-*.vcxproj
 *.filters
+*.user
+*.bmp
+*.png
 ReadMe.txt
 stdafx.h
 stdafx.cpp

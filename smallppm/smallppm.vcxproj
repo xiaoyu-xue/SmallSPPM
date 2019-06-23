@@ -156,10 +156,12 @@
   <ItemGroup>
     <ClInclude Include="def.h" />
     <ClInclude Include="halton.h" />
+    <ClInclude Include="linagl.h" />
     <ClInclude Include="lowdiscrepency.h" />
     <ClInclude Include="rng.h" />
     <ClInclude Include="sampler.h" />
     <ClInclude Include="samplerenum.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
