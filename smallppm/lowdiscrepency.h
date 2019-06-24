@@ -1,6 +1,7 @@
 #pragma once
 #include "def.h"
-inline unsigned int reverse_bit32(unsigned int n) {
+#include "utils.h"
+inline uint32 reverse_bit32(uint32 n) {
 	n = (n << 16) | (n >> 16);
 	n = ((n & 0x00ff00ff) << 8) | ((n & 0xff00ff00) >> 8);
 	n = ((n & 0x0f0f0f0f) << 4) | ((n & 0xf0f0f0f0) >> 4);
@@ -9,9 +10,9 @@ inline unsigned int reverse_bit32(unsigned int n) {
 	return n;
 }
 
-inline unsigned long long reverse_bit64(unsigned long long n) {
-	unsigned long long n0 = reverse_bit32((unsigned int)n);
-	unsigned long long n1 = reverse_bit32((unsigned int)(n >> 32));
+inline uint64 reverse_bit64(uint64 n) {
+	uint64 n0 = reverse_bit32((uint32)n);
+	uint64 n1 = reverse_bit32((uint32)(n >> 32));
 	return (n0 << 32) | n1;
 }
 

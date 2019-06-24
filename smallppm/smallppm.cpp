@@ -1817,6 +1817,9 @@ int main(int argc, char *argv[]) {
 	std::cout << vec1.Normal() << std::endl;
 	std::cout << vec1 / 3.0 << std::endl;
 	std::cout << Distance(vec1, vec2) << std::endl;
+	Vector3 vec3;
+	vec3 = vec1;
+	std::cout << vec3 << std::endl;
 	clock_t end = clock();
 
 	std::cout << "cost time: "<< (end - begin) / 1000.0 / 60.0 <<" min"<< std::endl;
