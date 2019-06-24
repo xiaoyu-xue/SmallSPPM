@@ -344,6 +344,11 @@ FORCE_INLINE void Normalize(Vector<dim, T> &a) {
 	a.Normalize();
 }
 
+template<int dim, typename T>
+FORCE_INLINE real Distance(const Vector<dim, T> &a, const Vector<dim, T> &b) {
+	return (b - a).Length();
+}
+
 using Vector2 = Vector<2, real>;
 using Vector2i = Vector<2, int>;
 using Vector2f = Vector<2, float>;
