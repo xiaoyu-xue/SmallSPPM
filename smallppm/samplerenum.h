@@ -7,10 +7,10 @@
 class SamplerEnum {
 public:
 	//SamplerEnum(){}
-	//SamplerEnum(unsigned width, unsigned height){}
-	virtual unsigned long long GetIndex(unsigned sampleNum, unsigned x, unsigned y) const = 0;
-	virtual double SampleX(unsigned x, double u) const = 0;
-	virtual double SampleY(unsigned y, double v) const = 0;
+	//SamplerEnum(uint32 width, uint32 height){}
+	virtual uint64 GetIndex(uint32 sampleNum, uint32 x, uint32 y) const = 0;
+	virtual real SampleX(uint32 x, real u) const = 0;
+	virtual real SampleY(uint32 y, real v) const = 0;
 };
 
 
@@ -25,15 +25,15 @@ class HaltonEnum : public SamplerEnum
 {
 public:
 	// Initialize the enumeration for the given resolution.
-	HaltonEnum(unsigned width, unsigned height);
+	HaltonEnum(uint32 width, uint32 height);
 
 	// Return how many samples per pixel can be queried before sample index overflow occurs.
-	unsigned long long get_max_samples_per_pixel() const { return ~0ull / m_increment; }
+	uint64 get_max_samples_per_pixel() const { return ~0ull / m_increment; }
 
 	// Return the index of the i-th sample falling into the given pixel (x, y) within the
 	// previously given resolution bounds. i must be smaller than the value returned by
 	// get_max_samples_per_pixel.
-	unsigned long long get_index(unsigned long long i, unsigned x, unsigned y) const;
+	uint64 get_index(uint64 i, uint32 x, uint32 y) const;
 
 	// Scale the x-component of a sample in [0,1) to [0,width).
 	float scale_x(float x) const;
@@ -41,38 +41,38 @@ public:
 	// Scale the y-component of a sample in [0,1) to [0,height).
 	float scale_y(float y) const;
 
-	unsigned long long GetIndex(unsigned sampleNum, unsigned x, unsigned y) const override {
+	uint64 GetIndex(uint32 sampleNum, uint32 x, uint32 y) const override {
 		return get_index(sampleNum, x, y);
 	}
 
-	double SampleX(unsigned x, double u) const override {
+	real SampleX(uint32 x, real u) const override {
 		return scale_x(u) - (float)x;
 	}
 
-	double SampleY(unsigned y, double v) const override {
+	real SampleY(uint32 y, real v) const override {
 		return scale_y(v) - (float)y;
 	}
 
 private:
 	static std::pair<int, int> extended_euclid(int a, int b);
-	static unsigned long long halton2_inverse(unsigned long long i, unsigned digits);
-	static unsigned long long halton3_inverse(unsigned long long i, unsigned digits);
+	static uint64 halton2_inverse(uint64 i, uint32 digits);
+	static uint64 halton3_inverse(uint64 i, uint32 digits);
 
-	unsigned m_p2; // Smallest integer with 2^m_p2 >= width.
-	unsigned m_p3; // Smallest integer with 3^m_p3 >= height.
-	unsigned m_x; // 3^m_p3 * ((2^m_p2)^(-1) mod 3^m_p3).
-	unsigned m_y; // 2^m_p2 * ((3^m_p3)^(-1) mod 2^m_p2).
+	uint32 m_p2; // Smallest integer with 2^m_p2 >= width.
+	uint32 m_p3; // Smallest integer with 3^m_p3 >= height.
+	uint32 m_x; // 3^m_p3 * ((2^m_p2)^(-1) mod 3^m_p3).
+	uint32 m_y; // 2^m_p2 * ((3^m_p3)^(-1) mod 2^m_p2).
 	float m_scale_x; // 2^m_p2.
 	float m_scale_y; // 3^m_p3.
-	unsigned long long m_increment; // Product of prime powers, i.e. m_res2 * m_res3.
+	uint64 m_increment; // Product of prime powers, i.e. m_res2 * m_res3.
 };
 
-HaltonEnum::HaltonEnum(unsigned width, unsigned height)
+HaltonEnum::HaltonEnum(uint32 width, uint32 height)
 {
 	assert(width && height);
 
 	m_p2 = 0;
-	unsigned w = 1;
+	uint32 w = 1;
 	while (w < width) // Find 2^m_p2 >= width.
 	{
 		++m_p2;
@@ -81,7 +81,7 @@ HaltonEnum::HaltonEnum(unsigned width, unsigned height)
 	m_scale_x = float(w);
 
 	m_p3 = 0;
-	unsigned h = 1;
+	uint32 h = 1;
 	while (h < height) // Find 3^m_p3 >= height.
 	{
 		++m_p3;
@@ -93,21 +93,21 @@ HaltonEnum::HaltonEnum(unsigned width, unsigned height)
 
 	// Determine the multiplicative inverses.
 	const std::pair<int, int> inv = extended_euclid(static_cast<int>(h), static_cast<int>(w));
-	const unsigned inv2 = (inv.first < 0) ? (inv.first + w) : (inv.first % w);
-	const unsigned inv3 = (inv.second < 0) ? (inv.second + h) : (inv.second % h);
+	const uint32 inv2 = (inv.first < 0) ? (inv.first + w) : (inv.first % w);
+	const uint32 inv3 = (inv.second < 0) ? (inv.second + h) : (inv.second % h);
 	assert((!inv2 && w == 1) || (inv2 > 0 && (h * inv2) % w == 1));
 	assert((!inv3 && h == 1) || (inv3 > 0 && (w * inv3) % h == 1));
 	m_x = h * inv2;
 	m_y = w * inv3;
 }
 
-inline unsigned long long HaltonEnum::get_index(const unsigned long long i, const unsigned x, const unsigned y) const
+inline uint64 HaltonEnum::get_index(const uint64 i, const uint32 x, const uint32 y) const
 {
 	// Promote to 64 bits to avoid overflow.
-	const unsigned long long hx = halton2_inverse(x, m_p2);
-	const unsigned long long hy = halton3_inverse(y, m_p3);
+	const uint64 hx = halton2_inverse(x, m_p2);
+	const uint64 hy = halton3_inverse(y, m_p3);
 	// Apply Chinese remainder theorem.
-	const unsigned long long  offset = (hx * m_x + hy * m_y) % m_increment;
+	const uint64  offset = (hx * m_x + hy * m_y) % m_increment;
 	return offset + i * m_increment;
 }
 
@@ -131,16 +131,16 @@ inline std::pair<int, int> HaltonEnum::extended_euclid(const int a, const int b)
 	return std::make_pair(st.second, st.first - q * st.second);
 }
 
-inline unsigned long long HaltonEnum::halton2_inverse(unsigned long long index, const unsigned digits)
+inline uint64 HaltonEnum::halton2_inverse(uint64 index, const uint32 digits)
 {
 	index = reverse_bit64(index);
 	return index >> (64 - digits);
 }
 
-inline unsigned long long HaltonEnum::halton3_inverse(unsigned long long index, const unsigned digits)
+inline uint64 HaltonEnum::halton3_inverse(uint64 index, const uint32 digits)
 {
-	unsigned result = 0;
-	for (unsigned d = 0; d < digits; ++d)
+	uint32 result = 0;
+	for (uint32 d = 0; d < digits; ++d)
 	{
 		result = result * 3 + index % 3;
 		index /= 3;
