@@ -346,7 +346,7 @@ FORCE_INLINE void Normalize(Vector<dim, T> &a) {
 
 template<int dim, typename T>
 FORCE_INLINE real Distance(const Vector<dim, T> &a, const Vector<dim, T> &b) {
-	return (a - b).Length();
+	return (b - a).Length();
 }
 
 using Vector2 = Vector<2, real>;
