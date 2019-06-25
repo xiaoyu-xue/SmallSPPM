@@ -123,5 +123,5 @@ private:
 	}
 	static PrimeList primeList;
 };
-PrimeList RegularHaltonSampler::primeList;
+
 

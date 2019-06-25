@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include "tbb/parallel_for.h"
 
 class Spinlock {
 protected:
@@ -41,3 +42,7 @@ public:
 	}
 };
 
+template<typename Range, typename T>
+void ParallelFor(Range begin, Range end, const T &target) {
+	tbb::parallel_for(begin, end, target);
+}

@@ -67,7 +67,7 @@ private:
 	uint64 m_increment; // Product of prime powers, i.e. m_res2 * m_res3.
 };
 
-HaltonEnum::HaltonEnum(uint32 width, uint32 height)
+inline HaltonEnum::HaltonEnum(uint32 width, uint32 height)
 {
 	assert(width && height);
 

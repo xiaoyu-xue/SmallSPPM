@@ -3,10 +3,11 @@
 #include "utils.h"
 #include "linagl.h"
 #include <vector>
-#include "threading.h"
+//#include "threading.h"
 #include "AABB.h"
 #include "hitpoint.h"
 #include <mutex>
+#include "threading.h"
 
 class HashGrid {
 public:
@@ -58,25 +59,28 @@ public:
 
 		//for (HPoint &hp : hitPoints) {
 		int hitPointNum = (int)hitPoints.size();
-#pragma omp parallel for schedule(guided)
-		for (int i = 0; i < hitPointNum; ++i) {
+//#pragma omp parallel for schedule(guided)
+		//for (int i = 0; i < hitPointNum; ++i) {
+		ParallelFor(0, hitPointNum, [&](int i) {
 			HPoint &hp = hitPoints[i];
-			if (!hp.used) continue;
-			Vec BMin = ((hp.pos - irad) - hpbbox.minPoint) * invHashCellSize;
-			Vec BMax = ((hp.pos + irad) - hpbbox.minPoint) * invHashCellSize;
-			for (int iz = abs(int(BMin.z)); iz <= abs(int(BMax.z)); iz++)
-			{
-				for (int iy = abs(int(BMin.y)); iy <= abs(int(BMax.y)); iy++)
+			if (hp.used) {
+				Vec BMin = ((hp.pos - irad) - hpbbox.minPoint) * invHashCellSize;
+				Vec BMax = ((hp.pos + irad) - hpbbox.minPoint) * invHashCellSize;
+				for (int iz = abs(int(BMin.z)); iz <= abs(int(BMax.z)); iz++)
 				{
-					for (int ix = abs(int(BMin.x)); ix <= abs(int(BMax.x)); ix++)
+					for (int iy = abs(int(BMin.y)); iy <= abs(int(BMax.y)); iy++)
 					{
-						int hv = hash(ix, iy, iz);
-						std::lock_guard<Spinlock> lock(hashGridSpinlocks[hv]);
-						hashGrid[hv].push_back(&hp);
+						for (int ix = abs(int(BMin.x)); ix <= abs(int(BMax.x)); ix++)
+						{
+							int hv = hash(ix, iy, iz);
+							std::lock_guard<Spinlock> lock(hashGridSpinlocks[hv]);
+							hashGrid[hv].push_back(&hp);
+						}
 					}
 				}
 			}
-		}
+		});
+		//}
 	}
 
 	std::vector<HPoint*>& GetGrid(const Vec &point) {
@@ -90,6 +94,7 @@ public:
 		// it is also significantly faster.
 		return hashGrid[hash(ix, iy, iz)];
 	}
+
 
 	void ClearHashGrid() {
 		for (auto &e : hashGrid) {

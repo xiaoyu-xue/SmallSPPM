@@ -16,11 +16,4 @@ inline uint64 reverse_bit64(uint64 n) {
 	return (n0 << 32) | n1;
 }
 
-int IsPrime(int a) noexcept {
-	ASSERT(a >= 2);
-	for (int i = 2; i * i <= a; i++) {
-		if (a % i == 0)
-			return false;
-	}
-	return true;
-}
+int IsPrime(int a) noexcept;

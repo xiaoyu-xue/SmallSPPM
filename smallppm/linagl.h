@@ -3,6 +3,8 @@
 #include "utils.h"
 #include <string.h>
 #include <iostream>
+#include <algorithm>
+#include <vector>
 
 template<int dim, typename T>
 struct VectorBase {
@@ -69,7 +71,9 @@ struct Vector : public VectorBase<dim_, T> {
 		memcpy(&(this->d[0]), a, sizeof(T) * dim);
 	}
 
-	FORCE_INLINE Vector(const std::vector<T> &a) {
+	
+	template<typename T_>
+	FORCE_INLINE Vector(const std::vector<T_> &a) {
 		for (int i = 0; i < dim; ++i) {
 			this->d[i] = a[i];
 		}
@@ -400,9 +404,6 @@ struct Vec {
 	}
 };
 
-Vec operator*(real a, Vec b) { return Vec(a * b.x, a * b.y, a * b.z); }
+Vec operator*(real a, Vec b);
 
-std::ostream& operator<<(std::ostream &os, const Vec &v) {
-	os << v.x << " " << v.y << " " << v.z;
-	return os;
-}
+std::ostream& operator<<(std::ostream &os, const Vec &v);

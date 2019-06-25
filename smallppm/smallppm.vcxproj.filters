@@ -61,9 +61,30 @@
     <Filter Include="Header Files\integrator">
       <UniqueIdentifier>{b9d48280-0fee-4b49-a70b-47ec5777e88d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\integrator">
+      <UniqueIdentifier>{64b9aebf-2e1d-4f2a-ac60-d185ccdd28be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sampler">
+      <UniqueIdentifier>{d55fbb99-cbd6-4e6c-a885-79cb51e834bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\math">
+      <UniqueIdentifier>{0b7e81bd-41d5-479e-803c-d4ccf463111a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="smallppm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sampler.cpp">
+      <Filter>Source Files\sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="sampling.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="linagl.cpp">
+      <Filter>Source Files\math</Filter>
+    </ClCompile>
+    <ClCompile Include="lowdiscrepency.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

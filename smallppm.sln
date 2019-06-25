@@ -6,8 +6,14 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smallppm", "smallppm\smallppm.vcxproj", "{621CF667-B13C-4FB2-8C21-CA70D2FC4284}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sppm_exe", "sppm_exe\sppm_exe.vcxproj", "{FF11BF69-259E-4989-A91B-4107E3CEF697}"
+	ProjectSection(ProjectDependencies) = postProject
+		{621CF667-B13C-4FB2-8C21-CA70D2FC4284} = {621CF667-B13C-4FB2-8C21-CA70D2FC4284}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{CB4EC115-EA47-42F7-8CA6-DF92498593C8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{621CF667-B13C-4FB2-8C21-CA70D2FC4284} = {621CF667-B13C-4FB2-8C21-CA70D2FC4284}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

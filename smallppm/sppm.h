@@ -124,8 +124,9 @@ public:
 		Initialize(resX, resY);
 		for (int iter = 0; iter < nIterations; ++iter) {
 			//std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(resX * resY));
-#pragma omp parallel for schedule(guided)
-			for (int y = 0; y < resY; y++) {
+//#pragma omp parallel for schedule(guided)
+			//for (int y = 0; y < resY; y++) {
+			ParallelFor(0, resY, [&](int y) {
 				//fprintf(stderr, "\rHitPointPass %5.2f%%", 100.0*y / (h - 1));
 				for (int x = 0; x < resX; x++) {
 					int pixel = x + y * resX;
@@ -140,21 +141,26 @@ public:
 					Ray ray = scene.GetCamera()->GenerateRay(x, y, pixelSample);
 					TraceEyePath(scene, rand, ray, pixel);
 				}
-			}
+			});
+
+			//}
 
 			hashGrid.BuildHashGrid(hitPoints);
 			{
 				//fprintf(stderr, "\n");
 
 				//fprintf(stderr, "\rPhotonPass %5.2f%%", percentage);
-#pragma omp parallel for schedule(guided)
-				for (int j = 0; j < nPhotonsPerRenderStage; j++) {
+//#pragma omp parallel for schedule(guided)
+				//for (int j = 0; j < nPhotonsPerRenderStage; j++) {
+				ParallelFor((int64)0, nPhotonsPerRenderStage, [&](int64 j) {
 					Ray ray;
 					Vec photonFlux;
 					RandomStateSequence rand(sampler, iter * nPhotonsPerRenderStage + j);
 					GeneratePhoton(scene, &ray, &photonFlux, rand(), Vec(rand(), rand(), rand()), Vec(rand(), rand(), rand()));
 					TracePhoton(scene, rand, ray, photonFlux);
-				}
+				});
+		
+				//}
 				//fprintf(stderr, "\n");
 
 			}
@@ -166,12 +172,15 @@ public:
 
 		// density estimation
 		std::cout << "\nflux size: " << flux.size() << std::endl;
-#pragma omp parallel for schedule(guided)
-		for (int i = 0; i < flux.size(); ++i) {
+//#pragma omp parallel for schedule(guided)
+		//for (int i = 0; i < flux.size(); ++i) {
+		ParallelFor(0, (int)flux.size(), [&](int i) {
 			c[i] = c[i] + flux[i] * (1.0 / (PI * radius2[i] * nIterations * nPhotonsPerRenderStage))
 				+ directillum[i] / nIterations;
 			//c[i] = c[i] + directillum[i] / nIterations;
-		}
+		});
+
+		//}
 		scene.GetCamera()->GetFilm()->SetImage(c);
 	}
 

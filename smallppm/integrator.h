@@ -6,7 +6,7 @@
 #include "visibility.h"
 
 
-real PowerHeuristic(int nf, real fPdf, int ng, real gPdf) {
+FORCE_INLINE real PowerHeuristic(int nf, real fPdf, int ng, real gPdf) {
 	real f = nf * fPdf, g = ng * gPdf;
 	return (f * f) / (f * f + g * g);
 }
