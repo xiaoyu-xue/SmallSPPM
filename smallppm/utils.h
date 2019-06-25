@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 
-
 /***************** Type ******************/
 using uchar = unsigned char;
 
@@ -38,3 +37,18 @@ using real = float32;
 #else
 #define FORCE_INLINE inline __attribute__((always_inline))
 #endif
+
+
+
+
+/****************** Constant *********************/
+
+const real PI = 3.14159265358979;
+const real INV_PI = 0.31830988618379067154;
+const real PiOver2 = 1.57079632679489661923;
+const real PiOver4 = 0.78539816339744830961;
+const real eps = 1e-6;
+const real Inf = 1e20;
+const real rayeps = 1e-4;
+const real shadowRayEps = 1e-4;
+const real nEps = 1e-6;
