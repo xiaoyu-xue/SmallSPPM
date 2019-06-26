@@ -70,6 +70,9 @@
     <Filter Include="Source Files\math">
       <UniqueIdentifier>{0b7e81bd-41d5-479e-803c-d4ccf463111a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\sampling">
+      <UniqueIdentifier>{36674d5d-bec0-47a2-af5d-e3302c554aa0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="smallppm.cpp">
@@ -78,14 +81,14 @@
     <ClCompile Include="sampler.cpp">
       <Filter>Source Files\sampler</Filter>
     </ClCompile>
-    <ClCompile Include="sampling.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="linagl.cpp">
       <Filter>Source Files\math</Filter>
     </ClCompile>
     <ClCompile Include="lowdiscrepency.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sampling.cpp">
+      <Filter>Source Files\sampling</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
