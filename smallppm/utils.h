@@ -6,8 +6,9 @@
 
 
 #include <stdint.h>
+#include "def.h"
 
-
+NAMESPACE_BEGIN
 
 /***************** Type ******************/
 using uchar = unsigned char;
@@ -38,3 +39,20 @@ using real = float32;
 #else
 #define FORCE_INLINE inline __attribute__((always_inline))
 #endif
+
+
+
+
+/****************** Constant *********************/
+
+constexpr real PI = 3.14159265358979;
+constexpr real INV_PI = 0.31830988618379067154;
+constexpr real PiOver2 = 1.57079632679489661923;
+constexpr real PiOver4 = 0.78539816339744830961;
+constexpr real eps = 1e-6;
+constexpr real Inf = 1e20;
+constexpr real rayeps = 1e-4;
+constexpr real shadowRayEps = 1e-4;
+constexpr real nEps = 1e-6;
+
+NAMESPACE_END

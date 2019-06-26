@@ -1,6 +1,9 @@
 #pragma once
 #include "def.h"
 #include "utils.h"
+
+NAMESPACE_BEGIN
+
 inline uint32 reverse_bit32(uint32 n) {
 	n = (n << 16) | (n >> 16);
 	n = ((n & 0x00ff00ff) << 8) | ((n & 0xff00ff00) >> 8);
@@ -16,11 +19,6 @@ inline uint64 reverse_bit64(uint64 n) {
 	return (n0 << 32) | n1;
 }
 
-int IsPrime(int a) noexcept {
-	ASSERT(a >= 2);
-	for (int i = 2; i * i <= a; i++) {
-		if (a % i == 0)
-			return false;
-	}
-	return true;
-}
+int IsPrime(int a) noexcept;
+
+NAMESPACE_END

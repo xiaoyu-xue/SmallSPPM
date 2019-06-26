@@ -22,7 +22,7 @@
     <ProjectGuid>{621CF667-B13C-4FB2-8C21-CA70D2FC4284}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>smallppm</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -39,13 +39,13 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -103,11 +103,20 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>..\external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\external\lib\tbb;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>tbb.lib;tbbmalloc.lib;tbb_debug.lib;tbbmalloc_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Lib>
+      <AdditionalDependencies>tbb_debug.lib;tbbmalloc_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>..\external\lib\tbb;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -138,7 +147,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <OpenMPSupport>true</OpenMPSupport>
+      <OpenMPSupport>false</OpenMPSupport>
+      <AdditionalIncludeDirectories>..\external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -146,22 +156,56 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>tbb.lib;tbbmalloc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>..\external\lib\tbb;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="linagl.cpp" />
+    <ClCompile Include="lowdiscrepency.cpp" />
+    <ClCompile Include="sampler.cpp" />
+    <ClCompile Include="sampling.cpp" />
     <ClCompile Include="smallppm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="svpng.inc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AABB.h" />
+    <ClInclude Include="arealight.h" />
+    <ClInclude Include="bsdf.h" />
+    <ClInclude Include="camera.h" />
     <ClInclude Include="def.h" />
+    <ClInclude Include="film.h" />
+    <ClInclude Include="filter.h" />
+    <ClInclude Include="geometry_util.h" />
     <ClInclude Include="halton.h" />
+    <ClInclude Include="hashgrid.h" />
+    <ClInclude Include="hitpoint.h" />
+    <ClInclude Include="integrator.h" />
+    <ClInclude Include="intersection.h" />
+    <ClInclude Include="light.h" />
     <ClInclude Include="linagl.h" />
     <ClInclude Include="lowdiscrepency.h" />
+    <ClInclude Include="material.h" />
+    <ClInclude Include="phinhole.h" />
+    <ClInclude Include="ray.h" />
+    <ClInclude Include="renderer.h" />
     <ClInclude Include="rng.h" />
     <ClInclude Include="sampler.h" />
-    <ClInclude Include="samplerenum.h" />
+    <ClInclude Include="sampler_enum.h" />
+    <ClInclude Include="sampling.h" />
+    <ClInclude Include="scalar.h" />
+    <ClInclude Include="scene.h" />
+    <ClInclude Include="shape.h" />
+    <ClInclude Include="sphere.h" />
+    <ClInclude Include="sppm.h" />
+    <ClInclude Include="threading.h" />
     <ClInclude Include="utils.h" />
+    <ClInclude Include="visibility.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

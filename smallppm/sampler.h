@@ -4,6 +4,8 @@
 #include <random>
 #include "lowdiscrepency.h"
 
+NAMESPACE_BEGIN
+
 class Sampler {
 public:
 	virtual double Sample(unsigned int d, unsigned long long i) = 0;
@@ -123,5 +125,6 @@ private:
 	}
 	static PrimeList primeList;
 };
-PrimeList RegularHaltonSampler::primeList;
 
+
+NAMESPACE_END

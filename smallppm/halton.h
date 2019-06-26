@@ -31,6 +31,8 @@
 
 // Compute points of the Halton sequence with with digit-permutations for different bases.
 
+NAMESPACE_BEGIN
+
 class HaltonSampler: public Sampler
 {
 public:
@@ -632,8 +634,8 @@ void HaltonSampler::init_random(Rng &rand)
 		perms[base].resize(base);
 		for (uint32 i = 0; i < base; ++i)
 			perms[base][i] = i;
-		std::random_shuffle(perms[base].begin(), perms[base].end(), rand);
-		//std::shuffle(perms[base].begin(), perms[base].end(), rand);
+		//std::random_shuffle(perms[base].begin(), perms[base].end(), rand);
+		std::shuffle(perms[base].begin(), perms[base].end(), rand.GetRngEngine());
 	}
 	init_tables(perms);
 }
@@ -3300,3 +3302,4 @@ inline float HaltonSampler::halton1619(const uint64 index) const
 		m_perm1619[(index / 2621161ull) % 1619ull]) * float(0x1.fffffcp-1 / 4243659659ull); // Results in [0,1).
 }
 
+NAMESPACE_END

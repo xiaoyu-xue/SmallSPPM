@@ -19,16 +19,77 @@
     <Filter Include="Header Files\math">
       <UniqueIdentifier>{84bb62b6-de73-4d8b-b518-cbbdab4c9518}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\sampling">
+      <UniqueIdentifier>{cd7aefdc-9723-469c-9ef4-3bb4911934d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\geometry">
+      <UniqueIdentifier>{ce5ee37a-5e40-482a-ad58-0ca146e0b0b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\intersection">
+      <UniqueIdentifier>{51496eee-9e5c-4d9f-81de-f352392862e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\bsdf">
+      <UniqueIdentifier>{b58fc185-e144-426a-ac73-0b9e359e08cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\material">
+      <UniqueIdentifier>{ecc57799-064d-48a8-8e0b-cace23490af7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\shape">
+      <UniqueIdentifier>{95db4930-870c-4d70-88fc-fce7c2815962}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\light">
+      <UniqueIdentifier>{6a641580-bc79-4791-b46f-2095060cc506}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\imageio">
+      <UniqueIdentifier>{c7b93930-8784-4885-a3ab-f5528ef3f967}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\film">
+      <UniqueIdentifier>{a3b056e9-e4c8-4660-b820-1083f98decf5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\filter">
+      <UniqueIdentifier>{1417554e-f18c-44df-99b4-cfabb53158e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\camera">
+      <UniqueIdentifier>{6105c7e8-a235-456c-aa52-fffc1a733ed5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\scene">
+      <UniqueIdentifier>{0a4f9b8e-e506-4e48-bccf-7bdbb5dd5ddb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\integrator">
+      <UniqueIdentifier>{b9d48280-0fee-4b49-a70b-47ec5777e88d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\integrator">
+      <UniqueIdentifier>{64b9aebf-2e1d-4f2a-ac60-d185ccdd28be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sampler">
+      <UniqueIdentifier>{d55fbb99-cbd6-4e6c-a885-79cb51e834bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\math">
+      <UniqueIdentifier>{0b7e81bd-41d5-479e-803c-d4ccf463111a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sampling">
+      <UniqueIdentifier>{36674d5d-bec0-47a2-af5d-e3302c554aa0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\system">
+      <UniqueIdentifier>{17b52b70-e539-4b64-961f-91158fd34758}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="smallppm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="svpng.inc">
-      <Filter>Header Files</Filter>
-    </None>
+    <ClCompile Include="sampler.cpp">
+      <Filter>Source Files\sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="linagl.cpp">
+      <Filter>Source Files\math</Filter>
+    </ClCompile>
+    <ClCompile Include="lowdiscrepency.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sampling.cpp">
+      <Filter>Source Files\sampling</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lowdiscrepency.h">
@@ -46,14 +107,91 @@
     <ClInclude Include="rng.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="samplerenum.h">
-      <Filter>Header Files\sampler</Filter>
-    </ClInclude>
     <ClInclude Include="linagl.h">
       <Filter>Header Files\math</Filter>
     </ClInclude>
     <ClInclude Include="utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="sampling.h">
+      <Filter>Header Files\sampling</Filter>
+    </ClInclude>
+    <ClInclude Include="scalar.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="threading.h">
+      <Filter>Header Files\system</Filter>
+    </ClInclude>
+    <ClInclude Include="AABB.h">
+      <Filter>Header Files\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="ray.h">
+      <Filter>Header Files\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="intersection.h">
+      <Filter>Header Files\intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="bsdf.h">
+      <Filter>Header Files\bsdf</Filter>
+    </ClInclude>
+    <ClInclude Include="material.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="shape.h">
+      <Filter>Header Files\shape</Filter>
+    </ClInclude>
+    <ClInclude Include="sphere.h">
+      <Filter>Header Files\shape</Filter>
+    </ClInclude>
+    <ClInclude Include="light.h">
+      <Filter>Header Files\light</Filter>
+    </ClInclude>
+    <ClInclude Include="arealight.h">
+      <Filter>Header Files\light</Filter>
+    </ClInclude>
+    <ClInclude Include="filter.h">
+      <Filter>Header Files\filter</Filter>
+    </ClInclude>
+    <ClInclude Include="film.h">
+      <Filter>Header Files\film</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Header Files\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="phinhole.h">
+      <Filter>Header Files\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="visibility.h">
+      <Filter>Header Files\intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
+      <Filter>Header Files\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="integrator.h">
+      <Filter>Header Files\integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="hashgrid.h">
+      <Filter>Header Files\integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="sppm.h">
+      <Filter>Header Files\integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="hitpoint.h">
+      <Filter>Header Files\integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sampler_enum.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry_util.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="svpng.inc">
+      <Filter>Header Files\imageio</Filter>
+    </None>
   </ItemGroup>
 </Project>
