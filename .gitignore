@@ -2,8 +2,7 @@
 *.exe
 *.cbp
 *.depend
-*.lib
-*.dll
+
 bin/
 obj/
 .exe
