@@ -14,7 +14,7 @@ obj/
 x64/
 Debug/
 ipch/
-
+*.sln
 *.db
 *.filters
 *.user
