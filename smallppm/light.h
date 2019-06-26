@@ -4,6 +4,8 @@
 #include "intersection.h"
 #include "shape.h"
 
+NAMESPACE_BEGIN
+
 class Light {
 public:
 	Light() {}
@@ -24,3 +26,5 @@ public:
 protected:
 	virtual void SampleOnLight(Vec *pos, Vec *dir, Vec *lightNorm, real *pdfPos, real *pdfDir, Vec u, Vec v) const = 0;
 };
+
+NAMESPACE_END

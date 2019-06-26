@@ -4,6 +4,8 @@
 #include <cassert>
 #include "lowdiscrepency.h"
 
+NAMESPACE_BEGIN
+
 class SamplerEnum {
 public:
 	//SamplerEnum(){}
@@ -36,21 +38,21 @@ public:
 	uint64 get_index(uint64 i, uint32 x, uint32 y) const;
 
 	// Scale the x-component of a sample in [0,1) to [0,width).
-	float scale_x(float x) const;
+	real scale_x(real x) const;
 
 	// Scale the y-component of a sample in [0,1) to [0,height).
-	float scale_y(float y) const;
+	real scale_y(real y) const;
 
 	uint64 GetIndex(uint32 sampleNum, uint32 x, uint32 y) const override {
 		return get_index(sampleNum, x, y);
 	}
 
 	real SampleX(uint32 x, real u) const override {
-		return scale_x(u) - (float)x;
+		return scale_x(u) - (real)x;
 	}
 
 	real SampleY(uint32 y, real v) const override {
-		return scale_y(v) - (float)y;
+		return scale_y(v) - (real)y;
 	}
 
 private:
@@ -62,8 +64,8 @@ private:
 	uint32 m_p3; // Smallest integer with 3^m_p3 >= height.
 	uint32 m_x; // 3^m_p3 * ((2^m_p2)^(-1) mod 3^m_p3).
 	uint32 m_y; // 2^m_p2 * ((3^m_p3)^(-1) mod 2^m_p2).
-	float m_scale_x; // 2^m_p2.
-	float m_scale_y; // 3^m_p3.
+	real m_scale_x; // 2^m_p2.
+	real m_scale_y; // 3^m_p3.
 	uint64 m_increment; // Product of prime powers, i.e. m_res2 * m_res3.
 };
 
@@ -78,7 +80,7 @@ inline HaltonEnum::HaltonEnum(uint32 width, uint32 height)
 		++m_p2;
 		w *= 2;
 	}
-	m_scale_x = float(w);
+	m_scale_x = real(w);
 
 	m_p3 = 0;
 	uint32 h = 1;
@@ -87,7 +89,7 @@ inline HaltonEnum::HaltonEnum(uint32 width, uint32 height)
 		++m_p3;
 		h *= 3;
 	}
-	m_scale_y = float(h);
+	m_scale_y = real(h);
 
 	m_increment = w * h; // There's exactly one sample per pixel.
 
@@ -111,12 +113,12 @@ inline uint64 HaltonEnum::get_index(const uint64 i, const uint32 x, const uint32
 	return offset + i * m_increment;
 }
 
-inline float HaltonEnum::scale_x(const float x) const
+inline real HaltonEnum::scale_x(const real x) const
 {
 	return x * m_scale_x;
 }
 
-inline float HaltonEnum::scale_y(const float y) const
+inline real HaltonEnum::scale_y(const real y) const
 {
 	return y * m_scale_y;
 }
@@ -147,3 +149,5 @@ inline uint64 HaltonEnum::halton3_inverse(uint64 index, const uint32 digits)
 	}
 	return result;
 }
+
+NAMESPACE_END

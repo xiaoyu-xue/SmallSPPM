@@ -5,6 +5,8 @@
 #include "ray.h"
 #include "intersection.h"
 
+NAMESPACE_BEGIN
+
 class Camera {
 public:
 	Camera(const std::shared_ptr<Film> &pFilm) {
@@ -19,3 +21,5 @@ public:
 protected:
 	std::shared_ptr<Film> film;
 };
+
+NAMESPACE_END

@@ -7,6 +7,8 @@
 #include "sampling.h"
 #include "geometry_util.h"
 
+NAMESPACE_BEGIN
+
 class Sphere : public Shape {
 public:
 	Sphere(real radius, Vec position, Vec emission, Vec color, ReflectionType reflType) :
@@ -133,3 +135,5 @@ public:
 private:
 	real rad; Vec p;
 };
+
+NAMESPACE_END

@@ -6,6 +6,8 @@
 #include "intersection.h"
 #include "bsdf.h"
 
+NAMESPACE_BEGIN
+
 class Shape {
 public:
 	Shape(ReflectionType type, const Vec &color, const Vec &emission, bool isL = false) :
@@ -59,3 +61,5 @@ private:
 	bool isLight;
 	int shapeId;
 };
+
+NAMESPACE_END

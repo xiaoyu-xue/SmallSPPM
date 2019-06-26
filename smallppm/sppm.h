@@ -8,6 +8,8 @@
 #include "hitpoint.h"
 #include "hashgrid.h"
 
+NAMESPACE_BEGIN
+
 class SPPM : public Integrator {
 public:
 	SPPM(int iterations, int nPhotonsPerStage, int maxDepth, real initialRadius, real alpha, const std::shared_ptr<Sampler> &pSampler,
@@ -214,3 +216,5 @@ private:
 	const int64 nPhotonsPerRenderStage;
 	const real alpha;
 };
+
+NAMESPACE_END

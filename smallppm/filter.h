@@ -2,6 +2,8 @@
 
 #include "utils.h"
 
+NAMESPACE_BEGIN
+
 class Filter
 {
 protected:
@@ -34,3 +36,5 @@ public:
 		return 1.0;
 	}
 };
+
+NAMESPACE_END

@@ -3,11 +3,12 @@
 #include "utils.h"
 #include "linagl.h"
 #include <vector>
-//#include "threading.h"
 #include "AABB.h"
 #include "hitpoint.h"
 #include <mutex>
 #include "threading.h"
+
+NAMESPACE_BEGIN
 
 class HashGrid {
 public:
@@ -110,3 +111,6 @@ private:
 	real irad;
 	AABB hpbbox;
 };
+
+
+NAMESPACE_END

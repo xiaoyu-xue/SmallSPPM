@@ -1,5 +1,7 @@
 #include "sampling.h"
 
+NAMESPACE_BEGIN
+
 Vec ConcentricSampleDisk(const Vec &u) {
 	// Map uniform Random numbers to $[-1,1]^2$
 	Vec uOffset = 2.f * u - Vec(1, 1);
@@ -38,4 +40,8 @@ real BalanceHeuristic(int nf, real fPdf, int ng, real gPdf) {
 }
 
 
-real CosineHemispherePdf(real cosTheta) { return cosTheta * INV_PI; }
+real CosineHemispherePdf(real cosTheta) { 
+	return cosTheta * INV_PI; 
+}
+
+NAMESPACE_END

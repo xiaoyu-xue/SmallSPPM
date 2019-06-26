@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <vector>
 
+NAMESPACE_BEGIN
+
 template<int dim, typename T>
 struct VectorBase {
 	static constexpr int elements = dim;
@@ -407,3 +409,6 @@ struct Vec {
 Vec operator*(real a, Vec b);
 
 std::ostream& operator<<(std::ostream &os, const Vec &v);
+
+
+NAMESPACE_END

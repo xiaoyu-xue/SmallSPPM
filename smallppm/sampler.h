@@ -4,6 +4,8 @@
 #include <random>
 #include "lowdiscrepency.h"
 
+NAMESPACE_BEGIN
+
 class Sampler {
 public:
 	virtual double Sample(unsigned int d, unsigned long long i) = 0;
@@ -125,3 +127,4 @@ private:
 };
 
 
+NAMESPACE_END

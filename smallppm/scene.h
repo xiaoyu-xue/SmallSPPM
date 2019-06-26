@@ -5,6 +5,8 @@
 #include "light.h"
 #include "sampling.h"
 
+NAMESPACE_BEGIN
+
 class Scene {
 public:
 
@@ -101,4 +103,4 @@ private:
 	int shapeNum;
 };
 
-
+NAMESPACE_END

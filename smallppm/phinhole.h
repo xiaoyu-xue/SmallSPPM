@@ -2,6 +2,8 @@
 
 #include "camera.h"
 
+NAMESPACE_BEGIN
+
 class PinHoleCamera : public Camera {
 public:
 	PinHoleCamera(const std::shared_ptr<Film> &pFilm, const Vec &position,
@@ -69,3 +71,4 @@ private:
 
 };
 
+NAMESPACE_END

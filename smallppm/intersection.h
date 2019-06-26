@@ -3,6 +3,8 @@
 #include "linagl.h"
 #include "ray.h"
 
+NAMESPACE_BEGIN
+
 struct Intersection {
 	Intersection() {}
 	Vec hit, n, nl, wo;
@@ -14,3 +16,4 @@ struct Intersection {
 	}
 };
 
+NAMESPACE_END

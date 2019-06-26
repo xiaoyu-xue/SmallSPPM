@@ -2,6 +2,8 @@
 
 #include "intersection.h"
 
+NAMESPACE_BEGIN
+
 class VisibilityTester {
 public:
 	VisibilityTester() {}
@@ -17,3 +19,5 @@ public:
 private:
 	Intersection p0, p1;
 };
+
+NAMESPACE_END

@@ -7,6 +7,8 @@
 #include "def.h"
 #include "linagl.h"
 
+NAMESPACE_BEGIN
+
 struct Distribution1D
 {
 public:
@@ -145,15 +147,14 @@ private:
 
 
 
-
-
-
-
 Vec ConcentricSampleDisk(const Vec &u);
 
 Vec UniformSampleSphere(const Vec &u);
+
 Vec CosineSampleHemisphere(const Vec &u);
+
 real BalanceHeuristic(int nf, real fPdf, int ng, real gPdf);
 
-
 real CosineHemispherePdf(real cosTheta);
+
+NAMESPACE_END

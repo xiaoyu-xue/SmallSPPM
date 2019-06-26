@@ -2,6 +2,8 @@
 
 #include "linagl.h"
 
+NAMESPACE_BEGIN
+
 struct Ray {
 	Ray() {
 		tMax = Inf;
@@ -10,3 +12,5 @@ struct Ray {
 	Vec o, d;
 	real tMax;
 };
+
+NAMESPACE_END

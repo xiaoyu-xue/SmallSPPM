@@ -3,6 +3,8 @@
 #include "utils.h"
 #include "linagl.h"
 
+NAMESPACE_BEGIN
+
 struct HPoint {
 	Vec importance, pos, nrm, flux, outDir;
 	real r2;
@@ -10,3 +12,5 @@ struct HPoint {
 	int64 pix;
 	bool used;
 };
+
+NAMESPACE_END

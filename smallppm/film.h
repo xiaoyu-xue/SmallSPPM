@@ -9,6 +9,8 @@
 #include <vector>
 #include "threading.h"
 
+NAMESPACE_BEGIN
+
 class Film {
 protected:
 	struct Pixel
@@ -229,3 +231,5 @@ private:
 	std::vector<Spinlock> bufferLocks;
 
 };
+
+NAMESPACE_END

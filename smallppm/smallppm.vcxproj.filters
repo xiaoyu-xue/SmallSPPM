@@ -22,9 +22,6 @@
     <Filter Include="Header Files\sampling">
       <UniqueIdentifier>{cd7aefdc-9723-469c-9ef4-3bb4911934d5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\threading">
-      <UniqueIdentifier>{17b52b70-e539-4b64-961f-91158fd34758}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\geometry">
       <UniqueIdentifier>{ce5ee37a-5e40-482a-ad58-0ca146e0b0b5}</UniqueIdentifier>
     </Filter>
@@ -73,6 +70,9 @@
     <Filter Include="Source Files\sampling">
       <UniqueIdentifier>{36674d5d-bec0-47a2-af5d-e3302c554aa0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\system">
+      <UniqueIdentifier>{17b52b70-e539-4b64-961f-91158fd34758}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="smallppm.cpp">
@@ -120,7 +120,7 @@
       <Filter>Header Files\math</Filter>
     </ClInclude>
     <ClInclude Include="threading.h">
-      <Filter>Header Files\threading</Filter>
+      <Filter>Header Files\system</Filter>
     </ClInclude>
     <ClInclude Include="AABB.h">
       <Filter>Header Files\geometry</Filter>

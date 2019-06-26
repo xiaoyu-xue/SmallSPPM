@@ -3,6 +3,8 @@
 #include "integrator.h"
 #include "scene.h"
 
+NAMESPACE_BEGIN
+
 class Renderer {
 public:
 	Renderer(const std::shared_ptr<Scene> &pScene, const std::shared_ptr<Integrator> &pIntegrator,
@@ -18,3 +20,5 @@ private:
 	std::shared_ptr<Integrator> integrator;
 	std::shared_ptr<Film> film;
 };
+
+NAMESPACE_END

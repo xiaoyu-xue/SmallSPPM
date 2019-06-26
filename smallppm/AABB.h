@@ -2,6 +2,9 @@
 
 #include "linagl.h"
 #include <algorithm>
+
+NAMESPACE_BEGIN
+
 struct AABB {
 	Vec minPoint, maxPoint; // axis aligned bounding box
 	inline void fit(const Vec &p)
@@ -18,3 +21,5 @@ struct AABB {
 		maxPoint = Vec(-1e20, -1e20, -1e20);
 	}
 };
+
+NAMESPACE_END

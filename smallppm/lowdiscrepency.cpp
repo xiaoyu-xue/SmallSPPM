@@ -1,5 +1,7 @@
 #include "lowdiscrepency.h"
 
+NAMESPACE_BEGIN
+
 int IsPrime(int a) noexcept {
 	ASSERT(a >= 2);
 	for (int i = 2; i * i <= a; i++) {
@@ -8,3 +10,5 @@ int IsPrime(int a) noexcept {
 	}
 	return true;
 }
+
+NAMESPACE_END

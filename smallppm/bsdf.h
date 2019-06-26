@@ -4,6 +4,8 @@
 #include "utils.h"
 #include "intersection.h"
 
+NAMESPACE_BEGIN
+
 class BSDF {
 public:
 	BSDF(const Intersection &isect) : n(isect.n), nl(isect.nl) {}
@@ -195,3 +197,6 @@ private:
 	Vec Fa;
 	TransportMode transportMode;
 };
+
+
+NAMESPACE_END

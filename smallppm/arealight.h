@@ -6,6 +6,8 @@
 #include "sampling.h"
 #include "geometry_util.h"
 
+NAMESPACE_BEGIN
+
 class AreaLight : public Light {
 public:
 	AreaLight(const std::shared_ptr<Shape>& pShape) : shape(pShape) {}
@@ -60,3 +62,5 @@ protected:
 private:
 	std::shared_ptr<Shape> shape;
 };
+
+NAMESPACE_END
