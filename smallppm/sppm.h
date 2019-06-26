@@ -5,10 +5,17 @@
 #include "integrator.h"
 #include "sampler_enum.h"
 #include "sampler.h"
-#include "hitpoint.h"
 #include "hashgrid.h"
 
 NAMESPACE_BEGIN
+
+struct HPoint {
+	Vec importance, pos, nrm, flux, outDir;
+	real r2;
+	int64 n; // n = N / ALPHA in the paper
+	int64 pix;
+	bool used;
+};
 
 class SPPM : public Integrator {
 public:
@@ -126,15 +133,11 @@ public:
 		Initialize(resX, resY);
 		for (int iter = 0; iter < nIterations; ++iter) {
 			//std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(resX * resY));
-//#pragma omp parallel for schedule(guided)
-			//for (int y = 0; y < resY; y++) {
+			//Trace eye_path
 			ParallelFor(0, resY, [&](int y) {
-				//fprintf(stderr, "\rHitPointPass %5.2f%%", 100.0*y / (h - 1));
 				for (int x = 0; x < resX; x++) {
 					int pixel = x + y * resX;
 					hitPoints[pixel].used = false;
-					//RandomStateSequence rand(randomSampler, iter);
-					//RandomStateSequence rand(sampler, (int64)iter * resX * resY + pixel);
 					uint64 instance = samplerEnum->GetIndex(iter, x, y);
 					RandomStateSequence rand(sampler, instance);
 					real u = samplerEnum->SampleX(x, rand());
@@ -145,44 +148,38 @@ public:
 				}
 			});
 
-			//}
-
-			hashGrid.BuildHashGrid(hitPoints);
-			{
-				//fprintf(stderr, "\n");
-
-				//fprintf(stderr, "\rPhotonPass %5.2f%%", percentage);
-//#pragma omp parallel for schedule(guided)
-				//for (int j = 0; j < nPhotonsPerRenderStage; j++) {
-				ParallelFor((int64)0, nPhotonsPerRenderStage, [&](int64 j) {
-					Ray ray;
-					Vec photonFlux;
-					RandomStateSequence rand(sampler, iter * nPhotonsPerRenderStage + j);
-					GeneratePhoton(scene, &ray, &photonFlux, rand(), Vec(rand(), rand(), rand()), Vec(rand(), rand(), rand()));
-					TracePhoton(scene, rand, ray, photonFlux);
-				});
-		
-				//}
-				//fprintf(stderr, "\n");
-
-			}
 			hashGrid.ClearHashGrid();
+			real searchRadius2 = 0.0;
+			for (int i = 0; i < (int)hitPoints.size(); ++i) {
+				HPoint &hp = hitPoints[i];
+				if (hp.used) {
+					searchRadius2 = std::max(searchRadius2, radius2[i]);
+					hashGrid.AddPoint(std::move(std::pair<Vec, HPoint*>(hp.pos, &hp)));
+				}
+			}
+			hashGrid.BuildHashGrid(std::sqrt(searchRadius2));
+
+			//Trace photon
+			ParallelFor((int64)0, nPhotonsPerRenderStage, [&](int64 j) {
+				Ray ray;
+				Vec photonFlux;
+				RandomStateSequence rand(sampler, iter * nPhotonsPerRenderStage + j);
+				GeneratePhoton(scene, &ray, &photonFlux, rand(), Vec(rand(), rand(), rand()), Vec(rand(), rand(), rand()));
+				TracePhoton(scene, rand, ray, photonFlux);
+			});
+
 
 			real percentage = 100.*(iter + 1) / nIterations;
 			fprintf(stderr, "\rIterations: %5.2f%%", percentage);
 		}
 
 		// density estimation
-		std::cout << "\nflux size: " << flux.size() << std::endl;
-//#pragma omp parallel for schedule(guided)
-		//for (int i = 0; i < flux.size(); ++i) {
+		std::cout << "\nFlux size: " << flux.size() << std::endl;
 		ParallelFor(0, (int)flux.size(), [&](int i) {
 			c[i] = c[i] + flux[i] * (1.0 / (PI * radius2[i] * nIterations * nPhotonsPerRenderStage))
 				+ directillum[i] / nIterations;
 			//c[i] = c[i] + directillum[i] / nIterations;
 		});
-
-		//}
 		scene.GetCamera()->GetFilm()->SetImage(c);
 	}
 
@@ -201,7 +198,7 @@ private:
 		}
 	}
 
-	HashGrid hashGrid;
+	HashGrid<HPoint*> hashGrid;
 	std::shared_ptr<Sampler> sampler;
 	std::shared_ptr<SamplerEnum> samplerEnum;
 	std::vector<real> radius2;

@@ -7,7 +7,7 @@ NAMESPACE_BEGIN
 
 struct AABB {
 	Vec minPoint, maxPoint; // axis aligned bounding box
-	inline void fit(const Vec &p)
+	inline void Fit(const Vec &p)
 	{
 		if (p.x < minPoint.x) minPoint.x = p.x; // min
 		if (p.y < minPoint.y) minPoint.y = p.y; // min
@@ -16,7 +16,7 @@ struct AABB {
 		maxPoint.y = std::max(p.y, maxPoint.y);
 		maxPoint.z = std::max(p.z, maxPoint.z);
 	}
-	inline void reset() {
+	inline void Reset() {
 		minPoint = Vec(1e20, 1e20, 1e20);
 		maxPoint = Vec(-1e20, -1e20, -1e20);
 	}
