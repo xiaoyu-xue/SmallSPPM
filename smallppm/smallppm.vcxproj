@@ -191,6 +191,7 @@
     <ClInclude Include="linagl.h" />
     <ClInclude Include="lowdiscrepency.h" />
     <ClInclude Include="material.h" />
+    <ClInclude Include="math_utils.h" />
     <ClInclude Include="phinhole.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="renderer.h" />

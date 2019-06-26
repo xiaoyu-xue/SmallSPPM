@@ -106,15 +106,21 @@ copy /y "$(SolutionDir)\external\lib\tbb\tbbmalloc.dll" "$(OutDir)"</Command>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\external\smallppm;..\external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\smallppm;..\external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\external\lib\gtest;..\external\lib\gmock;..\external\lib\tbb;..\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>gtest.lib;gmock.lib;tbb.lib;tbbmalloc.lib;tbb_debug.lib;tbbmalloc_debug.lib;smallppm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
       <Command>copy /y "$(SolutionDir)\external\lib\tbb\tbb_debug.dll" "$(OutDir)"
-copy /y "$(SolutionDir)\external\lib\tbb\tbbmalloc_debug.dll" "$(OutDir)"</Command>
+copy /y "$(SolutionDir)\external\lib\tbb\tbbmalloc_debug.dll" "$(OutDir)"
+copy /y "$(SolutionDir)\external\lib\gtest\gtest.pdb" "$(OutDir)"
+copy /y "$(SolutionDir)\external\lib\gtest\gtest_main.pdb" "$(OutDir)"
+copy /y "$(SolutionDir)\external\lib\gmock\gmock.pdb" "$(OutDir)"
+copy /y "$(SolutionDir)\external\lib\gmock\gmock_main.pdb" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
