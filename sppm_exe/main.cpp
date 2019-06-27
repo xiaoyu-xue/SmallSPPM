@@ -36,7 +36,7 @@
 //#define DEBUG_TRANSMIT
 
 const real ALPHA = 0.66666667;
-const int64  render_stage_number = 2000000;
+const int64  render_stage_number = 200000;
 
 
 

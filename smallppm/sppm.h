@@ -149,15 +149,15 @@ public:
 			});
 
 			hashGrid.ClearHashGrid();
-			real searchRadius2 = 0.0;
+			real maxRadius2 = 0.0;
 			for (int i = 0; i < (int)hitPoints.size(); ++i) {
 				HPoint &hp = hitPoints[i];
 				if (hp.used) {
-					searchRadius2 = std::max(searchRadius2, radius2[i]);
-					hashGrid.AddPoint(std::move(std::pair<Vec, HPoint*>(hp.pos, &hp)));
+					maxRadius2 = std::max(maxRadius2, radius2[i]);
+					hashGrid.AddPoint(std::move(std::pair<Vec, HPoint*>(hp.pos, &hp)), std::sqrt(radius2[i]));
 				}
 			}
-			hashGrid.BuildHashGrid(std::sqrt(searchRadius2));
+			hashGrid.BuildHashGrid(std::sqrt(maxRadius2));
 
 			//Trace photon
 			ParallelFor((int64)0, nPhotonsPerRenderStage, [&](int64 j) {
