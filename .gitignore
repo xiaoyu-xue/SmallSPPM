@@ -15,6 +15,7 @@ obj/
 x64/
 Debug/
 ipch/
+external/lib/
 *.sln
 *.db
 *.filters

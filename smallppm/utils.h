@@ -29,9 +29,9 @@ using float32 = float;
 using float64 = double;
 
 #ifdef USING_DOUBLE
-using real = float64;
+using real = double;
 #else
-using real = float32;
+using real = float;
 #endif
 
 #ifdef _WIN64
@@ -54,5 +54,6 @@ constexpr real Inf = 1e20;
 constexpr real rayeps = 1e-4;
 constexpr real shadowRayEps = 1e-4;
 constexpr real nEps = 1e-6;
+constexpr float64 NumericalEps = 1e-6;
 
 NAMESPACE_END

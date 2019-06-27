@@ -58,10 +58,13 @@ struct VectorBase<4, T> {
 	};
 };
 
+
 template<int dim_, typename T>
 struct Vector : public VectorBase<dim_, T> {
 	static constexpr int dim = dim_;
 	static constexpr int elements = dim_;
+
+	using type = T;
 
 	FORCE_INLINE Vector() {
 		for (int i = 0; i < dim; ++i) {
@@ -151,6 +154,14 @@ struct Vector : public VectorBase<dim_, T> {
 		return ret;
 	}
 
+	FORCE_INLINE Vector operator-() const {
+		Vector ret;
+		for (int i = 0; i < dim; ++i) {
+			ret.d[i] = -this->d[i];
+		}
+		return ret;
+	}
+
 	FORCE_INLINE Vector operator*(const Vector &a) const {
 		Vector ret;
 		for (int i = 0; i < dim; ++i) {
@@ -236,11 +247,11 @@ struct Vector : public VectorBase<dim_, T> {
 
 	FORCE_INLINE bool operator!=(const Vector &a) const {
 		for (int i = 0; i < dim; ++i) {
-			if (this->d[i] == a.d[i]) {
-				return false;
+			if (this->d[i] != a.d[i]) {
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	FORCE_INLINE T Dot(const Vector &a) const {
@@ -409,6 +420,5 @@ struct Vec {
 Vec operator*(real a, Vec b);
 
 std::ostream& operator<<(std::ostream &os, const Vec &v);
-
 
 NAMESPACE_END

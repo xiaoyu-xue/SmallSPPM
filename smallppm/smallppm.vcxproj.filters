@@ -188,6 +188,9 @@
     <ClInclude Include="geometry_util.h">
       <Filter>Header Files\math</Filter>
     </ClInclude>
+    <ClInclude Include="math_utils.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="svpng.inc">
