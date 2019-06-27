@@ -68,9 +68,12 @@ int main(int argc, char *argv[]) {
 
 	std::shared_ptr<Camera> camera = std::shared_ptr<Camera>(new PinHoleCamera(film, camPos, cz, cx, cy, fovy, filmDis));
 	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
-	std::shared_ptr<Sampler> haltonSampler = std::shared_ptr<Sampler>(new HaltonSampler());
+	std::shared_ptr<Sampler> haltonSampler = std::shared_ptr<Sampler>(new HaltonSampler(w, h));
+	std::shared_ptr<Sampler> regularHaltonSampler = std::shared_ptr<Sampler>(new RegularHaltonSampler());;
+	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
 	std::shared_ptr<SamplerEnum> haltonSamplerEnum = std::shared_ptr<SamplerEnum>(new HaltonEnum((unsigned)w, (unsigned)h));
-	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 0.8, ALPHA, haltonSampler, haltonSamplerEnum));
+	std::shared_ptr<Integrator> integrator = 
+		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 2.0, ALPHA, true, haltonSampler, haltonSamplerEnum));
 	fprintf(stderr, "Load Scene ...\n");
 	//scene->SetCamera(cam, cx, cy);
 	scene->SetCamera(camera);
@@ -89,7 +92,7 @@ int main(int argc, char *argv[]) {
 	std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape));
 	scene->AddLight(light0);
 	scene->Initialize();
-	film->SetFileName("cornellbox.bmp");
+	film->SetFileName("cornellbox2.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
 	

@@ -209,6 +209,9 @@
     <ClInclude Include="numeric_utils.h">
       <Filter>Header Files\numeric</Filter>
     </ClInclude>
+    <ClInclude Include="image_io.h">
+      <Filter>Header Files\imageio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="svpng.inc">

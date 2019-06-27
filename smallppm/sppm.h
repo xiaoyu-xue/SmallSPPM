@@ -6,6 +6,7 @@
 #include "sampler_enum.h"
 #include "sampler.h"
 #include "hashgrid.h"
+#include "image_io.h"
 
 NAMESPACE_BEGIN
 
@@ -15,13 +16,16 @@ struct HPoint {
 	int64 n; // n = N / ALPHA in the paper
 	int64 pix;
 	bool used;
+
+	int64 m;
+	HPoint(): m(0){}
 };
 
 class SPPM : public Integrator {
 public:
-	SPPM(int iterations, int nPhotonsPerStage, int maxDepth, real initialRadius, real alpha, const std::shared_ptr<Sampler> &pSampler,
+	SPPM(int iterations, int nPhotonsPerStage, int maxDepth, real initialRadius, real alpha, bool batchShrink, const std::shared_ptr<Sampler> &pSampler,
 		const std::shared_ptr<SamplerEnum> &pSmplerEnum) :
-		nIterations(iterations), nPhotonsPerRenderStage(nPhotonsPerStage),
+		nIterations(iterations), nPhotonsPerRenderStage(nPhotonsPerStage), batchShrink(batchShrink),
 		maxDepth(maxDepth), initialRadius(initialRadius), alpha(alpha), sampler(pSampler), samplerEnum(pSmplerEnum)
 	{
 
@@ -74,9 +78,7 @@ public:
 				else {
 					Vec Ld = hp.importance * DirectIllumination(scene, isect, bsdf, rand(), Vec(rand(), rand(), rand()), Vec(rand(), rand(), rand()));
 					directillum[hp.pix] = directillum[hp.pix] + Ld;
-
 				}
-
 				return;
 			}
 		}
@@ -103,27 +105,70 @@ public:
 				if (i > 0) {
 					std::vector<HPoint*> &hp = hashGrid.GetGrid(isect.hit);
 					for (HPoint* hitpoint : hp) {
+						//Racing condition is rare in QMC
+						std::lock_guard<Spinlock> lock(pixelLocks[hitpoint->pix]);
 						Vec v = hitpoint->pos - isect.hit;
 						if ((hitpoint->nrm.dot(isect.n) > 1e-3) && (v.dot(v) <= radius2[hitpoint->pix])) {
-							// unlike N in the paper, hitpoint->n stores "N / ALPHA" to make it an integer value
-							real g = (photonNums[hitpoint->pix] * alpha + alpha) / (photonNums[hitpoint->pix] * alpha + 1.0);
-							radius2[hitpoint->pix] = radius2[hitpoint->pix] * g;
-							photonNums[hitpoint->pix]++;
-							Vec contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.d) * photonFlux;
-							flux[hitpoint->pix] = (flux[hitpoint->pix] + contribution) * g;
+							if (!batchShrink) {
+								// unlike N in the paper, hitpoint->n stores "N / ALPHA" to make it an integer value
+								real g = (photonNums[hitpoint->pix] * alpha + alpha) / (photonNums[hitpoint->pix] * alpha + 1.0);
+								radius2[hitpoint->pix] = radius2[hitpoint->pix] * g;
+								photonNums[hitpoint->pix] += 1;
+								Vec contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.d) * photonFlux;
+								flux[hitpoint->pix] = (flux[hitpoint->pix] + contribution) * g;
+							}
+							else {
+								hitpoint->m++;
+								Vec contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.d) * photonFlux;
+								flux[hitpoint->pix] = (flux[hitpoint->pix] + contribution);
+							}
 						}
 					}
 				}
-				real p = estimation.maxValue();
+				//real p = estimation.maxValue();
+				real p = std::min(1.0, (estimation * photonFlux).Y() / photonFlux.Y());
 				if (p < 1) {
-					if (rand() < p) photonFlux = photonFlux / p;
-					else break;
+					if (rand() < p) {
+						photonFlux = photonFlux / p;
+					}
+					else {
+						break;
+					}
 				}
 				photonFlux = photonFlux * estimation;
 				r.o = isect.hit + wi * rayeps + wi.dot(isect.n) * nEps * isect.n;
 				r.d = wi;
 			}
 		}
+	}
+
+	void GenerateRadiusImage(const Scene &scene) {
+		int resX = scene.GetCamera()->GetFilm()->resX;
+		int resY = scene.GetCamera()->GetFilm()->resY;
+		std::vector<Vec> radImg(resX * resY);
+		real minRadius2 = Inf, maxRadius2 = 0.0, avgRadius = 0.0;
+		for (int y = 0; y < resY; ++y) {
+			for (int x = 0; x < resX; ++x) {
+				int index = x + y * resX;
+				minRadius2 = std::min(minRadius2, radius2[index]);
+				maxRadius2 = std::max(maxRadius2, radius2[index]);
+				avgRadius += std::sqrt(radius2[index]);
+			}
+		}
+		std::cout << "minRasius: " << std::sqrt(minRadius2) << std::endl;
+		std::cout << "avgRasius: " << avgRadius / resX / resY << std::endl;
+		for (int y = 0; y < resY; ++y) {
+			for (int x = 0; x < resX; ++x) {
+				int index = x + y * resX;
+				real val = 1.0 - (std::sqrt(radius2[index]) - std::sqrt(minRadius2)) /
+					(std::sqrt(maxRadius2) - std::sqrt(minRadius2));
+				radImg[index].x = val;
+				radImg[index].y = val;
+				radImg[index].z = val;
+			}
+		}
+
+		ImageIO::WriteBmpFile("rad_image.bmp", radImg, resX, resY, 2.2);
 	}
 
 	void Render(const Scene &scene) {
@@ -168,6 +213,20 @@ public:
 				TracePhoton(scene, rand, ray, photonFlux);
 			});
 
+			//Update flux, radius, photonNums if batchShrink
+			if(batchShrink) {
+				size_t nHitPoints = hitPoints.size();
+				ParallelFor(size_t(0), nHitPoints, [&](size_t i) {
+					HPoint &hp = hitPoints[i];
+					if (hp.m > 0) {
+						real g = (photonNums[hp.pix] + alpha * hp.m) / (photonNums[hp.pix] + hp.m);
+						radius2[hp.pix] = radius2[hp.pix] * g;
+						flux[hp.pix] = flux[hp.pix] * g;
+						photonNums[hp.pix] = photonNums[hp.pix] + alpha * hp.m;
+						hp.m = 0;
+					}
+				});
+			}
 
 			real percentage = 100.*(iter + 1) / nIterations;
 			fprintf(stderr, "\rIterations: %5.2f%%", percentage);
@@ -181,6 +240,7 @@ public:
 			//c[i] = c[i] + directillum[i] / nIterations;
 		});
 		scene.GetCamera()->GetFilm()->SetImage(c);
+		GenerateRadiusImage(scene);
 	}
 
 private:
@@ -191,10 +251,12 @@ private:
 		hitPoints.resize(w * h);
 		directillum.resize(w * h);
 		c.resize(w * h);
+		pixelLocks.resize(w * h);
 		for (int i = 0; i < w * h; ++i) {
 			radius2[i] = initialRadius * initialRadius;
 			photonNums[i] = 0;
 			flux[i] = Vec();
+			hitPoints[i].m = 0;
 		}
 	}
 
@@ -202,16 +264,19 @@ private:
 	std::shared_ptr<Sampler> sampler;
 	std::shared_ptr<SamplerEnum> samplerEnum;
 	std::vector<real> radius2;
-	std::vector<int64> photonNums;
+	//std::vector<int64> photonNums;
+	std::vector<real> photonNums;
 	std::vector<Vec> flux;
 	std::vector<Vec> directillum;
 	std::vector<HPoint> hitPoints;
 	std::vector<Vec> c;
+	std::vector<Spinlock> pixelLocks;
 	const real initialRadius;
 	const int maxDepth;
 	const int nIterations;
 	const int64 nPhotonsPerRenderStage;
 	const real alpha;
+	bool batchShrink;
 };
 
 NAMESPACE_END
