@@ -164,6 +164,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="efloat.cpp" />
     <ClCompile Include="linagl.cpp" />
     <ClCompile Include="lowdiscrepency.cpp" />
     <ClCompile Include="sampler.cpp" />
@@ -179,6 +180,7 @@
     <ClInclude Include="bsdf.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="def.h" />
+    <ClInclude Include="efloat.h" />
     <ClInclude Include="film.h" />
     <ClInclude Include="filter.h" />
     <ClInclude Include="geometry_util.h" />
@@ -192,6 +194,8 @@
     <ClInclude Include="lowdiscrepency.h" />
     <ClInclude Include="material.h" />
     <ClInclude Include="math_utils.h" />
+    <ClInclude Include="memory.h" />
+    <ClInclude Include="numeric_utils.h" />
     <ClInclude Include="phinhole.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="renderer.h" />
