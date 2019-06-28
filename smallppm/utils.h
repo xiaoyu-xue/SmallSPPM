@@ -57,6 +57,7 @@ constexpr real Inf = 1e20;
 constexpr real rayeps = 1e-4;
 constexpr real shadowRayEps = 1e-4;
 constexpr real nEps = 1e-6;
+constexpr real PhtotonEdgeEps = 0.0009;
 constexpr float64 NumericalEps = 1e-6;
 constexpr real MachineEps = std::numeric_limits<real>::epsilon() * 0.5;
 constexpr real MaxReal = std::numeric_limits<real>::max();

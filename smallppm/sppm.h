@@ -106,7 +106,7 @@ public:
 						//Use spinlock, but racing condition is rare when using QMC
 						//std::lock_guard<Spinlock> lock(pixelLocks[hitpoint->pix]);
 						Vec v = hitpoint->pos - isect.hit;
-						if ((hitpoint->nrm.dot(isect.n) > eps) && (v.dot(v) <= radius2[hitpoint->pix])) {
+						if ((hitpoint->nrm.dot(isect.n) > PhtotonEdgeEps) && (v.dot(v) <= radius2[hitpoint->pix])) {
 							if (!batchShrink) {
 								// unlike N in the paper, hitpoint->n stores "N / ALPHA" to make it an integer value
 								real g = (photonNums[hitpoint->pix] * alpha + alpha) / (photonNums[hitpoint->pix] * alpha + 1.0);

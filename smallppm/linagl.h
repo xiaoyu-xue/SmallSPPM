@@ -90,6 +90,12 @@ struct Vector : public VectorBase<dim_, T> {
 		}
 	}
 
+	FORCE_INLINE Vector(Vector &&a) {
+		for (int i = 0; i < dim; ++i) {
+			this->d[i] = std::move(a.d[i]);
+		}
+	}
+
 	FORCE_INLINE Vector(T a) {
 		for (int i = 0; i < dim; ++i) {
 			this->d[i] = a;
@@ -136,6 +142,16 @@ struct Vector : public VectorBase<dim_, T> {
 
 	FORCE_INLINE const T& operator()(int i) const {
 		return this->d[i];
+	}
+
+	FORCE_INLINE Vector& operator=(const Vector &a) {
+		memcpy(&(this->d[0]), &(a.d[0]), sizeof(T) * dim);
+		return *this;
+	}
+
+	FORCE_INLINE Vector& operator=(Vector &&a) {
+		memcpy(&(this->d[0]), &(a.d[0]), sizeof(T) * dim);
+		return *this;
 	}
 
 	FORCE_INLINE Vector operator+(const Vector &a) const {
@@ -420,5 +436,197 @@ struct Vec {
 Vec operator*(real a, Vec b);
 
 std::ostream& operator<<(std::ostream &os, const Vec &v);
+
+
+
+
+template<int dim_, typename T>
+struct Matrix {
+	static constexpr int dim = dim_;
+	using type = T;
+	Vector<dim, T> d[dim];
+
+	FORCE_INLINE Matrix() {
+		for (int i = 0; i < dim; ++i) {
+			d[i] = std::move(Vector<dim, T>());
+		}
+	}
+
+	FORCE_INLINE Matrix(const Matrix<dim, T> &m) {
+		for (int i = 0; i < dim; ++i) {
+			for (int j = 0; j < dim; ++j) {
+				d[i][j] = m.d[i][j];
+			}
+		}
+	}
+
+	FORCE_INLINE Matrix(T a) {
+		for (int i = 0; i < dim; ++i) {
+			for (int j = 0; j < dim; ++j) {
+				d[i][j] = a;
+			}
+		}
+	}
+
+	FORCE_INLINE Matrix(const Matrix &m) {
+		*this = m;
+	}
+
+	FORCE_INLINE Matrix(const Vector<dim, T> &v) {
+		for (int i = 0; i < dim; i++)
+			this->d[i][i] = v[i];
+	}
+
+	template <
+		typename F,
+		typename = std::enable_if_t<std::is_convertible<
+		F,
+		std::function<Vector<dim__, T>(int)>>::value,
+		int>>
+		FORCE_INLINE explicit Matrix(const F &f) {
+		for (int i = 0; i < dim; i++)
+			this->d[i] = f(i);
+	}
+
+	template<typename = std::enable_if_t<dim == 2, int>>
+	FORCE_INLINE Matrix(const Vector<dim, T> &v0, const Vector<dim, T> &v1) {
+		d[0] = v0;
+		d[1] = v1;
+	}
+
+	template<typename = std::enable_if_t<dim == 2, int>>
+	FORCE_INLINE Matrix(T m00, T m01,
+						T m10, T m11) {
+		d[0][0] = m00; d[1][0] = m01;
+		d[0][1] = m10; d[1][1] = m11;
+	}
+
+	template<typename = std::enable_if_t<dim == 3, int>>
+	FORCE_INLINE Matrix(const Vector<dim, T> &v0, const Vector<dim, T> &v1, const Vector<dim, T> &v2) {
+		d[0] = v0;
+		d[1] = v1;
+		d[2] = v2;
+	}
+
+	template<typename = std::enable_if_t<dim == 3, int>>
+	FORCE_INLINE Matrix(T m00, T m01, T m02,
+						T m10, T m11, T m12,
+						T m20, T m21, T m22) {
+		d[0][0] = m00; d[1][0] = m01; d[2][0] = m02;
+		d[0][1] = m10; d[1][1] = m11; d[2][1] = m12;
+		d[0][2] = m20; d[1][2] = m21; d[2][2] = m22;
+	}
+
+	template<typename = std::enable_if_t<dim == 4, int>>
+	FORCE_INLINE Matrix(const Vector<dim, T> &v0, const Vector<dim, T> &v1, 
+		const Vector<dim, T> &v2, const Vector<dim, T> &v3) {
+		d[0] = v0;
+		d[1] = v1;
+		d[2] = v2;
+		d[3] = v3;
+	}
+
+	template<typename = std::enable_if_t<dim == 3, int>>
+	FORCE_INLINE Matrix(T m00, T m01, T m02, T m03,
+						T m10, T m11, T m12, T m13,
+						T m20, T m21, T m22, T m23,
+						T m30, T m31, T m32, T m33) {
+		d[0][0] = m00; d[1][0] = m01; d[2][0] = m02; d[3][0] = m03;
+		d[0][1] = m10; d[1][1] = m11; d[2][1] = m12; d[3][1] = m13;
+		d[2][2] = m20; d[1][2] = m21; d[2][2] = m22; d[3][2] = m23;
+		d[0][3] = m30; d[1][3] = m31; d[2][3] = m32; d[3][3] = m33;
+	}
+
+	FORCE_INLINE Matrix& operator=(const Matrix &m) {
+		for (int i = 0; i < dim; ++i) {
+			this->d[i] = m.d[i];
+		}
+		return *this;
+	}
+
+	FORCE_INLINE Matrix& operator=(Matrix &&m) {
+		for (int i = 0; i < dim; ++i) {
+			this->d[i] = std::move(m.d[i]);
+		}
+		return *this;
+	}
+
+	FORCE_INLINE Vector<dim, T>& operator[](int i) {
+		return d[i];
+	}
+
+	FORCE_INLINE const T& operator()(int i, int j) {
+		return d[j][i];
+	}
+
+	FORCE_INLINE T& operator()(int i, int j) {
+		return d[j][i];
+	}
+
+	FORCE_INLINE Matrix operator+(const Matrix &a) const {
+		return Matrix([=](int i) {this->d[i] + a.d[i]; });
+	}
+
+	FORCE_INLINE Matrix& operator+=(const Matrix &a) {
+		for (int i = 0; i < dim; ++i) {
+			this->d[i] += a.d[i];
+		}
+		return *this;
+	}
+
+	FORCE_INLINE Matrix operator-(const Matrix &a) const {
+		return Matrix([=](int i) {this->d[i] - a.d[i]; });
+	}
+
+	FORCE_INLINE Matrix& operator-=(const Matrix &a) {
+		for (int i = 0; i < dim; ++i) {
+			this->d[i] -= a.d[i];
+		}
+		return *this;
+	}
+
+	FORCE_INLINE Vector<dim, T> operator*(const Vector<dim, T> &a) const {
+		Vector<dim, T> ret(d[0] * a.d[0]);
+		for (int i = 1; i < dim; ++i) {
+			ret += d[i] * a.d[i];
+		}
+		return ret;
+	}
+
+	FORCE_INLINE Matrix operator*(const Matrix &a) const {
+		return Matrix([=](int i) {(*this) * a[i]; });
+	}
+
+	FORCE_INLINE Matrix operator*(real a) const {
+		return Matrix([=](int i) {(*this)[i] * a; });
+	}
+
+	FORCE_INLINE Matrix& operator*=(const Matrix &a) {
+		Matrix mat([&](int i) {(*this) * a[i]; });
+		*this = std::move(mat);
+		return *this;
+	}
+
+	FORCE_INLINE Matrix& operator*=(real a) {
+		for (int i = 0; i < dim; ++i) {
+			d[i] *= a;
+		}
+		return *this;
+	}
+
+	FORCE_INLINE Matrix operator/(real a) const {
+		return Matrix([=](int i) {(*this)[i] / a; });
+	}
+
+	FORCE_INLINE Matrix& operator/=(real a) {
+		for (int i = 0; i < dim; ++i) {
+			d[i] /= a;
+		}
+		return *this;
+	}
+};
+
+
+
 
 NAMESPACE_END

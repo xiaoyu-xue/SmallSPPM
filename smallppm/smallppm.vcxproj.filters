@@ -79,6 +79,9 @@
     <Filter Include="Source Files\numeric">
       <UniqueIdentifier>{373f84cf-13b9-4871-b61e-eea158613a25}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\primitive">
+      <UniqueIdentifier>{c1659d2b-8d11-4b68-a0fa-ac3f9fde1b15}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="smallppm.cpp">
@@ -208,6 +211,9 @@
     </ClInclude>
     <ClInclude Include="image_io.h">
       <Filter>Header Files\imageio</Filter>
+    </ClInclude>
+    <ClInclude Include="primitive.h">
+      <Filter>Header Files\primitive</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

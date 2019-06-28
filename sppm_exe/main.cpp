@@ -36,7 +36,7 @@
 //#define DEBUG_TRANSMIT
 
 //const real ALPHA = 0.66666667;
-const real ALPHA = 0.70;
+const real ALPHA = 0.75;
 const int64  render_stage_number = 2000000;
 
 
@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
 	std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape));
 	scene->AddLight(light0);
 	scene->Initialize();
-	film->SetFileName("cornellbox7.bmp");
+	film->SetFileName("cornellbox8.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
 	
