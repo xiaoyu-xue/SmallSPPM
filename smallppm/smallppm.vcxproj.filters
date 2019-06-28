@@ -185,9 +185,6 @@
     <ClInclude Include="sppm.h">
       <Filter>Header Files\integrator</Filter>
     </ClInclude>
-    <ClInclude Include="hitpoint.h">
-      <Filter>Header Files\integrator</Filter>
-    </ClInclude>
     <ClInclude Include="renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>

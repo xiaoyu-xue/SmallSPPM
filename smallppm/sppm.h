@@ -16,9 +16,7 @@ struct HPoint {
 	int64 n; // n = N / ALPHA in the paper
 	int64 pix;
 	bool used;
-
 	int64 m;
-	HPoint(): m(0){}
 };
 
 class SPPM : public Integrator {
@@ -105,10 +103,10 @@ public:
 				if (i > 0) {
 					std::vector<HPoint*> &hp = hashGrid.GetGrid(isect.hit);
 					for (HPoint* hitpoint : hp) {
-						//Racing condition is rare in QMC
-						std::lock_guard<Spinlock> lock(pixelLocks[hitpoint->pix]);
+						//Use spinlock, but racing condition is rare when using QMC
+						//std::lock_guard<Spinlock> lock(pixelLocks[hitpoint->pix]);
 						Vec v = hitpoint->pos - isect.hit;
-						if ((hitpoint->nrm.dot(isect.n) > 1e-3) && (v.dot(v) <= radius2[hitpoint->pix])) {
+						if ((hitpoint->nrm.dot(isect.n) > eps) && (v.dot(v) <= radius2[hitpoint->pix])) {
 							if (!batchShrink) {
 								// unlike N in the paper, hitpoint->n stores "N / ALPHA" to make it an integer value
 								real g = (photonNums[hitpoint->pix] * alpha + alpha) / (photonNums[hitpoint->pix] * alpha + 1.0);
@@ -177,7 +175,6 @@ public:
 		int resY = scene.GetCamera()->GetFilm()->resY;
 		Initialize(resX, resY);
 		for (int iter = 0; iter < nIterations; ++iter) {
-			//std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(resX * resY));
 			//Trace eye_path
 			ParallelFor(0, resY, [&](int y) {
 				for (int x = 0; x < resX; x++) {
@@ -202,7 +199,7 @@ public:
 					hashGrid.AddPoint(std::move(std::pair<Vec, HPoint*>(hp.pos, &hp)), std::sqrt(radius2[i]));
 				}
 			}
-			hashGrid.BuildHashGrid(std::sqrt(maxRadius2));
+			hashGrid.BuildHashGrid(std::sqrt(maxRadius2) + eps);
 
 			//Trace photon
 			ParallelFor((int64)0, nPhotonsPerRenderStage, [&](int64 j) {
@@ -240,7 +237,7 @@ public:
 			//c[i] = c[i] + directillum[i] / nIterations;
 		});
 		scene.GetCamera()->GetFilm()->SetImage(c);
-		GenerateRadiusImage(scene);
+		//GenerateRadiusImage(scene);
 	}
 
 private:
