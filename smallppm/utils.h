@@ -6,6 +6,7 @@
 
 
 #include <stdint.h>
+#include <algorithm>
 #include "def.h"
 
 NAMESPACE_BEGIN
@@ -30,8 +31,10 @@ using float64 = double;
 
 #ifdef USING_DOUBLE
 using real = double;
+using real_bit = uint64;
 #else
 using real = float;
+using real_bit = uint32;
 #endif
 
 #ifdef _WIN64
@@ -55,5 +58,8 @@ constexpr real rayeps = 1e-4;
 constexpr real shadowRayEps = 1e-4;
 constexpr real nEps = 1e-6;
 constexpr float64 NumericalEps = 1e-6;
+constexpr real MachineEps = std::numeric_limits<real>::epsilon() * 0.5;
+constexpr real MaxReal = std::numeric_limits<real>::max();
+constexpr real Infinity = std::numeric_limits<real>::infinity();
 
 NAMESPACE_END

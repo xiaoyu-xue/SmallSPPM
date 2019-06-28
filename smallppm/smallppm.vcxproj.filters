@@ -73,6 +73,12 @@
     <Filter Include="Header Files\system">
       <UniqueIdentifier>{17b52b70-e539-4b64-961f-91158fd34758}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\numeric">
+      <UniqueIdentifier>{1d1011f0-f04c-48d9-809c-fadcef0bb2b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\numeric">
+      <UniqueIdentifier>{373f84cf-13b9-4871-b61e-eea158613a25}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="smallppm.cpp">
@@ -89,6 +95,9 @@
     </ClCompile>
     <ClCompile Include="sampling.cpp">
       <Filter>Source Files\sampling</Filter>
+    </ClCompile>
+    <ClCompile Include="efloat.cpp">
+      <Filter>Source Files\numeric</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -176,9 +185,6 @@
     <ClInclude Include="sppm.h">
       <Filter>Header Files\integrator</Filter>
     </ClInclude>
-    <ClInclude Include="hitpoint.h">
-      <Filter>Header Files\integrator</Filter>
-    </ClInclude>
     <ClInclude Include="renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -190,6 +196,18 @@
     </ClInclude>
     <ClInclude Include="math_utils.h">
       <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="memory.h">
+      <Filter>Header Files\system</Filter>
+    </ClInclude>
+    <ClInclude Include="efloat.h">
+      <Filter>Header Files\numeric</Filter>
+    </ClInclude>
+    <ClInclude Include="numeric_utils.h">
+      <Filter>Header Files\numeric</Filter>
+    </ClInclude>
+    <ClInclude Include="image_io.h">
+      <Filter>Header Files\imageio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

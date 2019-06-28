@@ -218,7 +218,7 @@ int main(int argc, char *argv[]) {
 	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
 	std::shared_ptr<Sampler> haltonSampler = std::shared_ptr<Sampler>(new HaltonSampler());
 	std::shared_ptr<SamplerEnum> haltonSamplerEnum = std::shared_ptr<SamplerEnum>(new HaltonEnum((unsigned)w, (unsigned)h));
-	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 0.8, ALPHA, haltonSampler, haltonSamplerEnum));
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 0.8, ALPHA, true, haltonSampler, haltonSamplerEnum));
 	fprintf(stderr, "Load Scene ...\n");
 	//scene->SetCamera(cam, cx, cy);
 	scene->SetCamera(camera);

@@ -4,7 +4,6 @@
 #include "linagl.h"
 #include <vector>
 #include "AABB.h"
-#include "hitpoint.h"
 #include <mutex>
 #include "threading.h"
 

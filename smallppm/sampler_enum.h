@@ -8,11 +8,19 @@ NAMESPACE_BEGIN
 
 class SamplerEnum {
 public:
-	//SamplerEnum(){}
-	//SamplerEnum(uint32 width, uint32 height){}
-	virtual uint64 GetIndex(uint32 sampleNum, uint32 x, uint32 y) const = 0;
-	virtual real SampleX(uint32 x, real u) const = 0;
-	virtual real SampleY(uint32 y, real v) const = 0;
+	SamplerEnum(){}
+	SamplerEnum(uint32 width, uint32 height): resX(width), resY(height) {}
+	virtual uint64 GetIndex(uint32 sampleNum, uint32 x, uint32 y) const {
+		return sampleNum * y;
+	}
+	virtual real SampleX(uint32 x, real u) const {
+		return u;
+	}
+	virtual real SampleY(uint32 y, real v) const {
+		return v;
+	}
+private:
+	uint32 resX, resY;
 };
 
 
@@ -69,7 +77,7 @@ private:
 	uint64 m_increment; // Product of prime powers, i.e. m_res2 * m_res3.
 };
 
-inline HaltonEnum::HaltonEnum(uint32 width, uint32 height)
+inline HaltonEnum::HaltonEnum(uint32 width, uint32 height) : SamplerEnum(width, height)
 {
 	assert(width && height);
 
