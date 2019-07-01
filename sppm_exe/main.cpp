@@ -37,7 +37,7 @@
 
 //const real ALPHA = 0.66666667;
 const real ALPHA = 0.75;
-const int64  render_stage_number = 2000000;
+const int64  render_stage_number = 200000;
 
 
 
@@ -55,14 +55,14 @@ int main(int argc, char *argv[]) {
 	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
 
 	// trace eye rays and store measurement points
-	//Ray cam(Vec(50, 48, 295.6), Vec(0, -0.042612, -1).norm());
-	//Vec cx = Vec(w*.5135 / h), cy = (cx%cam.d).norm()*.5135, *c = new Vec[w*h], vw;
+	//Ray cam(Vec3(50, 48, 295.6), Vec3(0, -0.042612, -1).norm());
+	//Vec3 cx = Vec3(w*.5135 / h), cy = (cx%cam.d).norm()*.5135, *c = new Vec3[w*h], vw;
 
-	Vec camPos(50, 52, 295.6), cz(0, -0.042612, -1);
+	Vec3 camPos(50, 52, 295.6), cz(0, -0.042612, -1);
 	//real filmDis = cz.length();
 	real filmDis = 1.0;
-	Vec cx = Vec(w * .5135 / h).norm();
-	Vec cy = (cx % cz).norm();
+	Vec3 cx = Vec3(w * .5135 / h, 0, 0).Norm();
+	Vec3 cy = (cx.Cross(cz)).Norm();
 	real fovy = 28.7993;
 
 	//std::cout << camPos + cz << std::endl << cy << std::endl;
@@ -78,22 +78,22 @@ int main(int argc, char *argv[]) {
 	fprintf(stderr, "Load Scene ...\n");
 	//scene->SetCamera(cam, cx, cy);
 	scene->SetCamera(camera);
-	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(1e5 + 1, 40.8, 81.6), Vec(), Vec(.75, .25, .25), DIFF)));//Left
-	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(-1e5 + 99, 40.8, 81.6), Vec(), Vec(.25, .25, .75), DIFF)));//Right
-	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, 40.8, 1e5), Vec(), Vec(.75, .75, .75), DIFF)));//Back
-	//scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, 40.8, -1e5 + 170), Vec(), Vec(.75, .75, .75), DIFF)));//Frnt
-	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, 1e5, 81.6), Vec(), Vec(.75, .75, .75), DIFF)));//Botm
-	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec(50, -1e5 + 81.6, 81.6), Vec(), Vec(.75, .75, .75), DIFF)));//Top
-	scene->AddShape(std::shared_ptr<Shape>(new Sphere(16.5, Vec(27, 16.5, 47), Vec(), Vec(1, 1, 1), REFR)));//Mirr
-	//scene->AddShape(std::shared_ptr<Shape>(new Sphere(7.0, Vec(27, 16.5, 47), Vec(), Vec(.25, .25, .75), DIFF)));//Mirr
-	scene->AddShape(std::shared_ptr<Shape>(new Sphere(16.5, Vec(73, 26.5, 78), Vec(), Vec(1, 1, 1), REFR)));//Glass
-	scene->AddShape(std::shared_ptr<Shape>(new Sphere(9.5, Vec(53, 9.5, 88), Vec(), Vec(1, 1, 1), REFR)));//Glass
-	scene->AddShape(std::shared_ptr<Shape>(new Sphere(9.5, Vec(23, 0.0, 98), Vec(), Vec(1, 1, 1), DIFF)));//Glass
-	std::shared_ptr<Shape> lightShape = std::shared_ptr<Shape>(new Sphere(8.0, Vec(50, 81.6 - 16.5, 81.6), Vec(0.3, 0.3, 0.3) * 100, Vec(), DIFF));//Lite
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec3(1e5 + 1, 40.8, 81.6), Vec3(), Vec3(.75, .25, .25), DIFF)));//Left
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec3(-1e5 + 99, 40.8, 81.6), Vec3(), Vec3(.25, .25, .75), DIFF)));//Right
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec3(50, 40.8, 1e5), Vec3(), Vec3(.75, .75, .75), DIFF)));//Back
+	//scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec3(50, 40.8, -1e5 + 170), Vec3(), Vec3(.75, .75, .75), DIFF)));//Frnt
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec3(50, 1e5, 81.6), Vec3(), Vec3(.75, .75, .75), DIFF)));//Botm
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(1e5, Vec3(50, -1e5 + 81.6, 81.6), Vec3(), Vec3(.75, .75, .75), DIFF)));//Top
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(16.5, Vec3(27, 16.5, 47), Vec3(), Vec3(1, 1, 1), REFR)));//Glass
+	//scene->AddShape(std::shared_ptr<Shape>(new Sphere(7.0, Vec3(27, 16.5, 47), Vec3(), Vec3(.25, .25, .75), DIFF)));//Mirr
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(16.5, Vec3(73, 26.5, 78), Vec3(), Vec3(1, 1, 1), REFR)));//Glass
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(9.5, Vec3(53, 9.5, 88), Vec3(), Vec3(1, 1, 1), REFR)));//Glass
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(9.5, Vec3(23, 0.0, 98), Vec3(), Vec3(1, 1, 1), DIFF)));//DIFF
+	std::shared_ptr<Shape> lightShape = std::shared_ptr<Shape>(new Sphere(8.0, Vec3(50, 81.6 - 16.5, 81.6), Vec3(0.3, 0.3, 0.3) * 100, Vec3(), DIFF));//Lite
 	std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape));
 	scene->AddLight(light0);
 	scene->Initialize();
-	film->SetFileName("cornellbox8.bmp");
+	film->SetFileName("cornellbox9.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
 	

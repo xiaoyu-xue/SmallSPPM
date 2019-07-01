@@ -63,7 +63,7 @@ public:
 	// dimension must be smaller than the value returned by get_num_dimensions().
 	float sample(uint32 dimension, uint64 index) const;
 
-	real Sample(uint32 d, uint64 i) {
+	real Sample(uint32 d, uint64 i) override {
 		return sample(d, i);
 	}
 

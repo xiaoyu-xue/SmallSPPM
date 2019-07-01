@@ -102,7 +102,7 @@ private:
 
 class RegularHaltonSampler : public Sampler {
 public:
-	double Sample(unsigned int d, unsigned long long i) {
+	double Sample(unsigned int d, unsigned long long i) override {
 		ASSERT(d < (unsigned)primeList.GetPrimesNum());
 		double val = hal(d, i + 1);  // The first one is evil...
 		return val;

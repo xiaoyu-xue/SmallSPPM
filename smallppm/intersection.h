@@ -7,11 +7,11 @@ NAMESPACE_BEGIN
 
 struct Intersection {
 	Intersection() {}
-	Vec hit, n, nl, wo;
+	Vec3 hit, n, nl, wo;
 	Ray SpawnTo(const Intersection &isect) const {
-		Vec dir = isect.hit - (hit + nl * nEps);
-		real d = dir.length();
-		dir.normalize();
+		Vec3 dir = isect.hit - (hit + nl * nEps);
+		real d = dir.Length();
+		dir.Normalize();
 		return Ray(hit + dir * rayeps + nl * rayeps, dir, d - shadowRayEps);
 	}
 };

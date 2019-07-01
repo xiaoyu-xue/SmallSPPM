@@ -11,13 +11,13 @@ NAMESPACE_BEGIN
 
 class Sphere : public Shape {
 public:
-	Sphere(real radius, Vec position, Vec emission, Vec color, ReflectionType reflType) :
-		rad(radius), p(position), Shape(reflType, color, emission, emission != Vec()) {}
+	Sphere(real radius, Vec3 position, Vec3 emission, Vec3 color, ReflectionType reflType) :
+		rad(radius), p(position), Shape(reflType, color, emission, emission != Vec3()) {}
 
-	real Intersect(const Ray &r, Intersection *isect) const {
+	real Intersect(const Ray &r, Intersection *isect) const override {
 		// ray-sphere Intersection returns distance
-		Vec op = p - r.o;
-		real t, b = op.dot(r.d), det = b * b - op.dot(op) + rad * rad;
+		Vec3 op = p - r.o;
+		real t, b = op.Dot(r.d), det = b * b - op.Dot(op) + rad * rad;
 		if (det < 0) {
 			return Inf;
 		}
@@ -27,16 +27,16 @@ public:
 		t = (t = b - det) > 1e-4 ? t : ((t = b + det) > 1e-4 ? t : Inf);
 
 		isect->hit = r.o + r.d * t;
-		isect->n = (isect->hit - p).norm();
-		isect->nl = isect->n.dot(r.d) < 0 ? isect->n : isect->n * -1;
+		isect->n = (isect->hit - p).Norm();
+		isect->nl = isect->n.Dot(r.d) < 0 ? isect->n : isect->n * -1;
 		isect->wo = -1 * r.d;
 		return t;
 	}
 
-	bool Intersect(const Ray &r, Intersection *isect, real *t) const {
+	bool Intersect(const Ray &r, Intersection *isect, real *t) const override {
 		// ray-sphere Intersection returns distance
-		Vec op = p - r.o;
-		real b = op.dot(r.d), det = b * b - op.dot(op) + rad * rad;
+		Vec3 op = p - r.o;
+		real b = op.Dot(r.d), det = b * b - op.Dot(op) + rad * rad;
 		if (det < 0) {
 			*t = Inf;
 			return false;
@@ -47,18 +47,18 @@ public:
 		*t = ((*t) = b - det) > 1e-4 ? (*t) : (((*t) = b + det) > 1e-4 ? (*t) : Inf);
 
 		isect->hit = r.o + r.d * (*t);
-		isect->n = (isect->hit - p).norm();
-		isect->nl = isect->n.dot(r.d) < 0 ? isect->n : isect->n * -1;
+		isect->n = (isect->hit - p).Norm();
+		isect->nl = isect->n.Dot(r.d) < 0 ? isect->n : isect->n * -1;
 		isect->wo = -1 * r.d;
 
 		return (*t > 0 && *t < r.tMax);
 	}
 
 
-	bool Intersect(const Ray &r) const {
+	bool Intersect(const Ray &r) const override {
 		// ray-sphere Intersection returns distance
-		Vec op = p - r.o;
-		real t, b = op.dot(r.d), det = b * b - op.dot(op) + rad * rad;
+		Vec3 op = p - r.o;
+		real t, b = op.Dot(r.d), det = b * b - op.Dot(op) + rad * rad;
 		if (det < 0) {
 			return false;
 		}
@@ -70,41 +70,41 @@ public:
 		return t > 0 && t < r.tMax;
 	}
 
-	Vec Sample(real *pdf, Vec u) const {
+	Vec3 Sample(real *pdf, const Vec2 &u) const override {
 		*pdf = 1.0 / (4.0 * PI * rad * rad);
 		return UniformSampleSphere(u) * rad + p;
 	}
 
-	Vec Sample(const Intersection &isect, real *pdf, Vec u) const {
+	Vec3 Sample(const Intersection &isect, real *pdf, const Vec2 &u) const override {
 		/*
-		Vec sw = p - isect.hit, su = ((fabs(sw.x) > .1 ? Vec(0, 1) : Vec(1)) % sw).norm(), sv = sw % su;
-		real cos_a_max = sqrt(1 - rad * rad / (isect.hit - p).dot(isect.hit - p));
+		Vec3 sw = p - isect.hit, su = ((fabs(sw.x) > .1 ? Vec3(0, 1) : Vec3(1)) % sw).Norm(), sv = sw % su;
+		real cos_a_max = sqrt(1 - rad * rad / (isect.hit - p).Dot(isect.hit - p));
 		real zeta1 = u.x, zeta2 = u.y;
 		real cos_a = 1 - zeta1 + zeta1 * cos_a_max;
 		real sin_a = sqrt(1 - cos_a * cos_a);
 		real phi = 2 * PI * zeta2;
-		Vec dir = su * cos(phi) * sin_a + sv * sin(phi) * sin_a + sw * cos_a;
+		Vec3 dir = su * cos(phi) * sin_a + sv * sin(phi) * sin_a + sw * cos_a;
 		real omega = 2 * PI *(1 - cos_a_max);
 		*pdf = 1.0 / omega;
-		return isect.hit + dir.norm() * (sw.length() - rad);
-		//return dir.norm();*/
-		if ((p - isect.hit).length2() <= rad * rad) {
-			Vec lightPoint = Sample(pdf, u);
-			Vec wi = lightPoint - isect.hit;
-			if (wi.dot(wi) == 0)
+		return isect.hit + dir.Norm() * (sw.Length() - rad);
+		//return dir.Norm();*/
+		if ((p - isect.hit).Length2() <= rad * rad) {
+			Vec3 lightPoint = Sample(pdf, u);
+			Vec3 wi = lightPoint - isect.hit;
+			if (wi.Dot(wi) == 0)
 				*pdf = 0;
 			else {
-				real s = wi.length();
-				wi.normalize();
-				*pdf *= s / std::abs((lightPoint - p).norm().dot(-1 * wi));
+				real s = wi.Length();
+				wi.Normalize();
+				*pdf *= s / std::abs((lightPoint - p).Norm().Dot(-1 * wi));
 			}
 			if (std::isinf(*pdf)) *pdf = 0.f;
 			return lightPoint;
 		}
-		Vec localZ = (p - isect.hit);
-		real dis = localZ.length();
-		localZ.normalize();
-		Vec localX, localY;
+		Vec3 localZ = (p - isect.hit);
+		real dis = localZ.Length();
+		localZ.Normalize();
+		Vec3 localX, localY;
 		CoordinateSystem(localZ, &localX, &localY);
 		real sin2ThetaMax = rad * rad / (dis * dis);
 		real cosThetaMax = std::sqrt(std::max(1 - sin2ThetaMax, (real)0));
@@ -114,26 +114,26 @@ public:
 		real s = dis * cosTheta - std::sqrt(std::max(rad * rad - dis * dis * sinTheta * sinTheta, (real)0));
 		real cosAlpha = (dis * dis + rad * rad - s * s) / (2 * dis * rad);
 		real sinAlpha = std::sqrt(std::max(1 - cosAlpha * cosAlpha, (real)0));
-		Vec wi = sinAlpha * std::cos(phi) * localX + sinAlpha * std::sin(phi) * localY + cosTheta * localZ;
-		Vec nWorld = -1 * sinAlpha * std::cos(phi) * localX - sinAlpha * std::sin(phi) * localY - cosAlpha * localZ;
-		Vec lightPoint = p + rad * nWorld + nWorld * rayeps;
-		//Vec wi = sinTheta * std::cos(phi) * localX + sinTheta * std::sin(phi) * localY + cosTheta * localZ;
-		//Vec lightPoint = isect.hit + wi * s;
+		Vec3 wi = sinAlpha * std::cos(phi) * localX + sinAlpha * std::sin(phi) * localY + cosTheta * localZ;
+		Vec3 nWorld = -1 * sinAlpha * std::cos(phi) * localX - sinAlpha * std::sin(phi) * localY - cosAlpha * localZ;
+		Vec3 lightPoint = p + rad * nWorld + nWorld * rayeps;
+		//Vec3 wi = sinTheta * std::cos(phi) * localX + sinTheta * std::sin(phi) * localY + cosTheta * localZ;
+		//Vec3 lightPoint = isect.hit + wi * s;
 		*pdf = 1 / (2 * PI * (1 - cosThetaMax));
 
 		return lightPoint;
 	}
 
-	Vec GetNorm(const Vec & point) const {
-		return (point - p).norm();
+	Vec3 GetNorm(const Vec3 & point) const override {
+		return (point - p).Norm();
 	}
 
-	real Area() const {
+	real Area() const override {
 		return 4.0 * PI * rad * rad;
 	}
 
 private:
-	real rad; Vec p;
+	real rad; Vec3 p;
 };
 
 NAMESPACE_END

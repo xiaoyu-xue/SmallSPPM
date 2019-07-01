@@ -29,7 +29,7 @@ public:
 		uint32   mImportantColors; // 0 - all are important
 	};
 
-	static void WritePngFile(const std::string &filename, const std::vector<Vec> &image, uint32 resX, uint32 resY, real gamma = 2.2) {
+	static void WritePngFile(const std::string &filename, const std::vector<Vec3> &image, uint32 resX, uint32 resY, real gamma = 2.2) {
 		FILE* f = fopen(filename.c_str(), "wb");
 		typedef unsigned char byte;
 		byte *pngImage = new byte[resX * resY * 3];
@@ -47,7 +47,7 @@ public:
 		fclose(f);
 	}
 
-	static void WriteBmpFile(const std::string &filename, const std::vector<Vec> &image, uint32 resX, uint32 resY, real gamma = 2.2)
+	static void WriteBmpFile(const std::string &filename, const std::vector<Vec3> &image, uint32 resX, uint32 resY, real gamma = 2.2)
 	{
 		std::ofstream bmp(filename.c_str(), std::ios::binary);
 		BmpHeader header;
@@ -72,7 +72,7 @@ public:
 		{
 			for (size_t x = 0; x < resX; x++)
 			{
-				const Vec &rgbF = image[x + (resY - y - 1) * resX];
+				const Vec3 &rgbF = image[x + (resY - y - 1) * resX];
 				typedef unsigned char byte;
 				byte bgrB[3];
 				bgrB[0] = byte(toInt(rgbF.z, gamma));

@@ -84,9 +84,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="smallppm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sampler.cpp">
       <Filter>Source Files\sampler</Filter>
     </ClCompile>

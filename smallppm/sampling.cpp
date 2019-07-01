@@ -2,12 +2,12 @@
 
 NAMESPACE_BEGIN
 
-Vec ConcentricSampleDisk(const Vec &u) {
+Vec2 ConcentricSampleDisk(const Vec2 &u) {
 	// Map uniform Random numbers to $[-1,1]^2$
-	Vec uOffset = 2.f * u - Vec(1, 1);
+	Vec2 uOffset = 2.0 * u - Vec2(1, 1);
 
 	// Handle degeneracy at the origin
-	if (uOffset.x == 0 && uOffset.y == 0) return Vec(0, 0);
+	if (uOffset.x == 0 && uOffset.y == 0) return Vec2(0, 0);
 
 	// Apply concentric mapping to point
 	real theta, r;
@@ -19,20 +19,20 @@ Vec ConcentricSampleDisk(const Vec &u) {
 		r = uOffset.y;
 		theta = PiOver2 - PiOver4 * (uOffset.x / uOffset.y);
 	}
-	return r * Vec(std::cos(theta), std::sin(theta));
+	return r * Vec2(std::cos(theta), std::sin(theta));
 }
 
-Vec UniformSampleSphere(const Vec &u) {
+Vec3 UniformSampleSphere(const Vec2 &u) {
 	real z = 1 - 2 * u.x;
 	real r = std::sqrt(std::max((real)0, (real)1 - z * z));
 	real phi = 2 * PI * u.y;
-	return Vec(r * std::cos(phi), r * std::sin(phi), z);
+	return Vec3(r * std::cos(phi), r * std::sin(phi), z);
 }
 
-Vec CosineSampleHemisphere(const Vec &u) {
-	Vec d = ConcentricSampleDisk(u);
+Vec3 CosineSampleHemisphere(const Vec2 &u) {
+	Vec2 d = ConcentricSampleDisk(u);
 	real z = std::sqrt(std::max((real)0, 1 - d.x * d.x - d.y * d.y));
-	return Vec(d.x, d.y, z);
+	return Vec3(d.x, d.y, z);
 }
 
 real BalanceHeuristic(int nf, real fPdf, int ng, real gPdf) {

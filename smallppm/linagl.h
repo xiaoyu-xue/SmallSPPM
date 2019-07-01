@@ -204,6 +204,9 @@ struct Vector : public VectorBase<dim_, T> {
 
 	FORCE_INLINE Vector operator/(real a) const {
 		Vector ret;
+		if (a == 0) {
+			return ret;
+		}
 		for (int i = 0; i < dim; ++i) {
 			ret.d[i] = this->d[i] / a;
 		}
@@ -290,7 +293,7 @@ struct Vector : public VectorBase<dim_, T> {
 		return std::sqrt(Length2());
 	}
 
-	FORCE_INLINE Vector Normal() const {
+	FORCE_INLINE Vector Norm() const {
 		real invLen = (real)(1.0) / Length();
 		Vector ret(*this);
 		for (int i = 0; i < dim; ++i) {
@@ -378,6 +381,11 @@ FORCE_INLINE void Normalize(Vector<dim, T> &a) {
 }
 
 template<int dim, typename T>
+FORCE_INLINE real Distance2(const Vector<dim, T> &a, const Vector<dim, T> &b) {
+	return (b - a).Length2();
+}
+
+template<int dim, typename T>
 FORCE_INLINE real Distance(const Vector<dim, T> &a, const Vector<dim, T> &b) {
 	return (b - a).Length();
 }
@@ -397,45 +405,46 @@ using Vector4i = Vector<4, int>;
 using Vector4f = Vector<4, float>;
 using Vector4d = Vector<4, double>;
 
+using Vec3 = Vector3;
+using Vec2 = Vector2;
 
-
-struct Vec {
-	real x, y, z; // vector: position, also color (r,g,b)
-	Vec(real x_ = 0, real y_ = 0, real z_ = 0) { x = x_; y = y_; z = z_; }
-	inline Vec operator+(const Vec &b) const { return Vec(x + b.x, y + b.y, z + b.z); }
-	inline Vec operator-(const Vec &b) const { return Vec(x - b.x, y - b.y, z - b.z); }
-	inline Vec operator+(real b) const { return Vec(x + b, y + b, z + b); }
-	inline Vec operator-(real b) const { return Vec(x - b, y - b, z - b); }
-	inline Vec operator*(real b) const { return Vec(x * b, y * b, z * b); }
-	inline Vec operator*(const Vec &b) const { return Vec(x * b.x, y * b.y, z * b.z); }
-	inline Vec operator/(real b) const { if (b == 0) return Vec(); else return Vec(x / b, y / b, z / b); }
-	inline bool operator==(const Vec &b) const { return x == b.x && y == b.y && z == b.z; }
-	inline bool operator!=(const Vec &b) const { return x != b.x || y != b.y || z != b.z; }
-	inline Vec mul(const Vec &b) const { return Vec(x * b.x, y * b.y, z * b.z); }
-	inline Vec norm() { return (*this) * (1.0 / sqrt(x * x + y * y + z * z)); }
-	inline void normalize() {
-		real invLength = 1.0 / std::sqrt(x * x + y * y + z * z);
-		this->x *= invLength;
-		this->y *= invLength;
-		this->z *= invLength;
-	}
-	inline real dot(const Vec &b) const { return x * b.x + y * b.y + z * b.z; }
-	inline real length() const { return std::sqrt(x * x + y * y + z * z); }
-	inline real length2() const { return x * x + y * y + z * z; }
-	Vec operator%(Vec&b) const { return Vec(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x); }
-	real& operator[](int i) { return i == 0 ? x : i == 1 ? y : z; }
-	real maxValue() const {
-		return std::max(x, std::max(y, z));
-	}
-	real Y() const {
-		const real YWeight[3] = { 0.212671f, 0.715160f, 0.072169f };
-		return YWeight[0] * x + YWeight[1] * y + YWeight[2] * z;
-	}
-};
-
-Vec operator*(real a, Vec b);
-
-std::ostream& operator<<(std::ostream &os, const Vec &v);
+//struct Vec {
+//	real x, y, z; // vector: position, also color (r,g,b)
+//	Vec(real x_ = 0, real y_ = 0, real z_ = 0) { x = x_; y = y_; z = z_; }
+//	inline Vec operator+(const Vec &b) const { return Vec(x + b.x, y + b.y, z + b.z); }
+//	inline Vec operator-(const Vec &b) const { return Vec(x - b.x, y - b.y, z - b.z); }
+//	inline Vec operator+(real b) const { return Vec(x + b, y + b, z + b); }
+//	inline Vec operator-(real b) const { return Vec(x - b, y - b, z - b); }
+//	inline Vec operator*(real b) const { return Vec(x * b, y * b, z * b); }
+//	inline Vec operator*(const Vec &b) const { return Vec(x * b.x, y * b.y, z * b.z); }
+//	inline Vec operator/(real b) const { if (b == 0) return Vec(); else return Vec(x / b, y / b, z / b); }
+//	inline bool operator==(const Vec &b) const { return x == b.x && y == b.y && z == b.z; }
+//	inline bool operator!=(const Vec &b) const { return x != b.x || y != b.y || z != b.z; }
+//	inline Vec mul(const Vec &b) const { return Vec(x * b.x, y * b.y, z * b.z); }
+//	inline Vec norm() { return (*this) * (1.0 / sqrt(x * x + y * y + z * z)); }
+//	inline void normalize() {
+//		real invLength = 1.0 / std::sqrt(x * x + y * y + z * z);
+//		this->x *= invLength;
+//		this->y *= invLength;
+//		this->z *= invLength;
+//	}
+//	inline real dot(const Vec &b) const { return x * b.x + y * b.y + z * b.z; }
+//	inline real length() const { return std::sqrt(x * x + y * y + z * z); }
+//	inline real length2() const { return x * x + y * y + z * z; }
+//	Vec operator%(Vec&b) const { return Vec(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x); }
+//	real& operator[](int i) { return i == 0 ? x : i == 1 ? y : z; }
+//	real maxValue() const {
+//		return std::max(x, std::max(y, z));
+//	}
+//	real Y() const {
+//		const real YWeight[3] = { 0.212671f, 0.715160f, 0.072169f };
+//		return YWeight[0] * x + YWeight[1] * y + YWeight[2] * z;
+//	}
+//};
+//
+//Vec operator*(real a, Vec b);
+//
+//std::ostream& operator<<(std::ostream &os, const Vec &v);
 
 
 

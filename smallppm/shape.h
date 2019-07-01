@@ -10,23 +10,23 @@ NAMESPACE_BEGIN
 
 class Shape {
 public:
-	Shape(ReflectionType type, const Vec &color, const Vec &emission, bool isL = false) :
+	Shape(ReflectionType type, const Vec3 &color, const Vec3 &emission, bool isL = false) :
 		reflType(type), c(color), e(emission), isLight(isL) {}
 	virtual real Intersect(const Ray &r, Intersection *isect) const = 0;
 	virtual bool Intersect(const Ray &r, Intersection *isect, real *t) const = 0;
 	virtual bool Intersect(const Ray &r) const = 0;
-	virtual Vec Sample(real *pdf, Vec rand) const = 0;
-	virtual Vec Sample(const Intersection &isect, real *pdf, Vec u) const = 0;
+	virtual Vec3 Sample(real *pdf, const Vec2 &rand) const = 0;
+	virtual Vec3 Sample(const Intersection &isect, real *pdf, const Vec2 &u) const = 0;
 
-	virtual real Pdf(const Intersection &isect, const Vec &wi) const {
+	virtual real Pdf(const Intersection &isect, const Vec3 &wi) const {
 		Ray ray(isect.hit, wi);
 		Intersection lightPoint;
 		real t;
 		if (!Intersect(ray, &lightPoint, &t)) {
 			return 0;
 		}
-		Vec d = lightPoint.hit - isect.hit;
-		real pdf = d.dot(d) / (std::abs(lightPoint.n.dot(-1 * wi)) * Area());
+		Vec3 d = lightPoint.hit - isect.hit;
+		real pdf = d.Dot(d) / (std::abs(lightPoint.n.Dot(-1 * wi)) * Area());
 		if (std::isinf(pdf)) return 0;
 		return pdf;
 	}
@@ -46,9 +46,9 @@ public:
 
 	bool IsLight() const { return isLight; }
 
-	virtual Vec GetNorm(const Vec &point) const = 0;
+	virtual Vec3 GetNorm(const Vec3 &point) const = 0;
 
-	virtual Vec GetEmission() const { return e; }
+	virtual Vec3 GetEmission() const { return e; }
 
 	int GetId() const { return shapeId; }
 
@@ -57,7 +57,7 @@ public:
 	friend class Scene;
 private:
 	ReflectionType reflType;
-	Vec c, e;
+	Vec3 c, e;
 	bool isLight;
 	int shapeId;
 };

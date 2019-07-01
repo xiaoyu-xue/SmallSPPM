@@ -8,8 +8,8 @@ struct Ray {
 	Ray() {
 		tMax = Inf;
 	};
-	Ray(Vec o_, Vec d_, real tmax_ = Inf) : o(o_), d(d_), tMax(tmax_) {}
-	Vec o, d;
+	Ray(Vec3 o_, Vec3 d_, real tmax_ = Inf) : o(o_), d(d_), tMax(tmax_) {}
+	Vec3 o, d;
 	real tMax;
 };
 

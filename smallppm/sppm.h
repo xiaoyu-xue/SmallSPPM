@@ -11,7 +11,7 @@
 NAMESPACE_BEGIN
 
 struct HPoint {
-	Vec importance, pos, nrm, flux, outDir;
+	Vec3 importance, pos, nrm, flux, outDir;
 	real r2;
 	int64 n; // n = N / ALPHA in the paper
 	int64 pix;
@@ -29,35 +29,35 @@ public:
 
 	}
 
-	void GeneratePhoton(const Scene &scene, Ray *pr, Vec *f, real u, const Vec &v, const Vec &w) {
+	void GeneratePhoton(const Scene &scene, Ray *pr, Vec3 *f, real u, const Vec2 &v, const Vec2 &w) {
 		real lightPdf;
 		std::shared_ptr<Light> light = scene.SampleOneLight(&lightPdf, u);
-		Vec Le = light->Emission();
-		Vec pos, lightDir, lightNorm;
+		Vec3 Le = light->Emission();
+		Vec3 pos, lightDir, lightNorm;
 		real pdfPos, pdfDir;
 		light->SampleLight(&pos, &lightDir, &lightNorm, &pdfPos, &pdfDir, v, w);
 		pr->o = pos + lightDir * rayeps;
 		pr->d = lightDir;
-		real cosTheta = std::abs(lightNorm.dot(lightDir));
+		real cosTheta = std::abs(lightNorm.Dot(lightDir));
 		*f = Le * cosTheta / (pdfPos * pdfDir * lightPdf);
 	}
 
 	void TraceEyePath(const Scene &scene, StateSequence &rand, const Ray &ray, int64 pixel) {
 		Ray r = ray;
 		bool deltaBoundEvent = false;
-		Vec importance(1.0, 1.0, 1.0);
+		Vec3 importance(1.0, 1.0, 1.0);
 		for (int i = 0; i < maxDepth; ++i) {
 			real t;
 			Intersection isect;
 			std::shared_ptr<Shape> hitObj;
 			if (!scene.Intersect(r, &t, &isect, hitObj)) return;
 			std::shared_ptr<BSDF> bsdf = hitObj->GetBSDF(isect);
-			Vec wi;
+			Vec3 wi;
 			real pdf;
 			if (bsdf->IsDelta()) {
-				Vec f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec(rand(), rand(), rand()));
-				importance = f * std::abs(wi.dot(isect.n)) * importance / pdf;
-				r.o = isect.hit + wi * rayeps + wi.dot(isect.n) * nEps * isect.n;
+				Vec3 f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec3(rand(), rand(), rand()));
+				importance = f * std::abs(wi.Dot(isect.n)) * importance / pdf;
+				r.o = isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n;
 				r.d = wi;
 				deltaBoundEvent = true;
 			}
@@ -74,7 +74,7 @@ public:
 					directillum[hp.pix] = directillum[hp.pix] + importance * hitObj->GetEmission();
 				}
 				else {
-					Vec Ld = hp.importance * DirectIllumination(scene, isect, bsdf, rand(), Vec(rand(), rand(), rand()), Vec(rand(), rand(), rand()));
+					Vec3 Ld = hp.importance * DirectIllumination(scene, isect, bsdf, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()));
 					directillum[hp.pix] = directillum[hp.pix] + Ld;
 				}
 				return;
@@ -82,7 +82,7 @@ public:
 		}
 	}
 
-	void TracePhoton(const Scene &scene, StateSequence &rand, const Ray &ray, Vec photonFlux) {
+	void TracePhoton(const Scene &scene, StateSequence &rand, const Ray &ray, Vec3 photonFlux) {
 		Ray r = ray;
 		for (int i = 0; i < maxDepth; ++i) {
 			real t;
@@ -90,13 +90,13 @@ public:
 			std::shared_ptr<Shape> hitObj;
 			if (!scene.Intersect(r, &t, &isect, hitObj)) return;
 			std::shared_ptr<BSDF> bsdf = hitObj->GetBSDF(isect, TransportMode::Importance);
-			Vec wi;
+			Vec3 wi;
 			real pdf;
-			Vec f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec(rand(), rand(), rand()));
-			Vec estimation = f * std::abs(wi.dot(isect.n)) / pdf;
+			Vec3 f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec3(rand(), rand(), rand()));
+			Vec3 estimation = f * std::abs(wi.Dot(isect.n)) / pdf;
 			if (bsdf->IsDelta()) {
 				photonFlux = photonFlux * estimation;
-				r.o = isect.hit + wi * rayeps + wi.dot(isect.n) * nEps * isect.n;
+				r.o = isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n;
 				r.d = wi;
 			}
 			else {
@@ -105,19 +105,19 @@ public:
 					for (HPoint* hitpoint : hp) {
 						//Use spinlock, but racing condition is rare when using QMC
 						//std::lock_guard<Spinlock> lock(pixelLocks[hitpoint->pix]);
-						Vec v = hitpoint->pos - isect.hit;
-						if ((hitpoint->nrm.dot(isect.n) > PhtotonEdgeEps) && (v.dot(v) <= radius2[hitpoint->pix])) {
+						Vec3 v = hitpoint->pos - isect.hit;
+						if ((hitpoint->nrm.Dot(isect.n) > PhtotonEdgeEps) && (v.Dot(v) <= radius2[hitpoint->pix])) {
 							if (!batchShrink) {
 								// unlike N in the paper, hitpoint->n stores "N / ALPHA" to make it an integer value
 								real g = (photonNums[hitpoint->pix] * alpha + alpha) / (photonNums[hitpoint->pix] * alpha + 1.0);
 								radius2[hitpoint->pix] = radius2[hitpoint->pix] * g;
 								photonNums[hitpoint->pix] += 1;
-								Vec contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.d) * photonFlux;
+								Vec3 contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.d) * photonFlux;
 								flux[hitpoint->pix] = (flux[hitpoint->pix] + contribution) * g;
 							}
 							else {
 								hitpoint->m++;
-								Vec contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.d) * photonFlux;
+								Vec3 contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.d) * photonFlux;
 								flux[hitpoint->pix] = (flux[hitpoint->pix] + contribution);
 							}
 						}
@@ -134,7 +134,7 @@ public:
 					}
 				}
 				photonFlux = photonFlux * estimation;
-				r.o = isect.hit + wi * rayeps + wi.dot(isect.n) * nEps * isect.n;
+				r.o = isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n;
 				r.d = wi;
 			}
 		}
@@ -143,7 +143,7 @@ public:
 	void GenerateRadiusImage(const Scene &scene) {
 		int resX = scene.GetCamera()->GetFilm()->resX;
 		int resY = scene.GetCamera()->GetFilm()->resY;
-		std::vector<Vec> radImg(resX * resY);
+		std::vector<Vec3> radImg(resX * resY);
 		real minRadius2 = Inf, maxRadius2 = 0.0, avgRadius = 0.0;
 		for (int y = 0; y < resY; ++y) {
 			for (int x = 0; x < resX; ++x) {
@@ -169,7 +169,7 @@ public:
 		ImageIO::WriteBmpFile("rad_image.bmp", radImg, resX, resY, 2.2);
 	}
 
-	void Render(const Scene &scene) {
+	void Render(const Scene &scene) override {
 		fprintf(stderr, "Rendering ...\n");
 		int resX = scene.GetCamera()->GetFilm()->resX;
 		int resY = scene.GetCamera()->GetFilm()->resY;
@@ -184,7 +184,7 @@ public:
 					RandomStateSequence rand(sampler, instance);
 					real u = samplerEnum->SampleX(x, rand());
 					real v = samplerEnum->SampleY(y, rand());
-					Vec pixelSample(u, v, 0);
+					Vec2 pixelSample(u, v);
 					Ray ray = scene.GetCamera()->GenerateRay(x, y, pixelSample);
 					TraceEyePath(scene, rand, ray, pixel);
 				}
@@ -196,7 +196,7 @@ public:
 				HPoint &hp = hitPoints[i];
 				if (hp.used) {
 					maxRadius2 = std::max(maxRadius2, radius2[i]);
-					hashGrid.AddPoint(std::move(std::pair<Vec, HPoint*>(hp.pos, &hp)), std::sqrt(radius2[i]));
+					hashGrid.AddPoint(std::move(std::pair<Vec3, HPoint*>(hp.pos, &hp)), std::sqrt(radius2[i]));
 				}
 			}
 			hashGrid.BuildHashGrid(std::sqrt(maxRadius2) + eps);
@@ -204,9 +204,9 @@ public:
 			//Trace photon
 			ParallelFor((int64)0, nPhotonsPerRenderStage, [&](int64 j) {
 				Ray ray;
-				Vec photonFlux;
+				Vec3 photonFlux;
 				RandomStateSequence rand(sampler, iter * nPhotonsPerRenderStage + j);
-				GeneratePhoton(scene, &ray, &photonFlux, rand(), Vec(rand(), rand(), rand()), Vec(rand(), rand(), rand()));
+				GeneratePhoton(scene, &ray, &photonFlux, rand(), Vec2(rand(), rand()), Vec2(rand(), rand()));
 				TracePhoton(scene, rand, ray, photonFlux);
 			});
 
@@ -234,8 +234,14 @@ public:
 		ParallelFor(0, (int)flux.size(), [&](int i) {
 			c[i] = c[i] + flux[i] * (1.0 / (PI * radius2[i] * nIterations * nPhotonsPerRenderStage))
 				+ directillum[i] / nIterations;
+			//if (std::isnan(c[i].x)  || std::isnan(c[i].y)  || std::isnan(c[i].z)) {
+			//	std::cout << i % resX << " " << i / resX << " "<< i << std::endl;
+			//}
 			//c[i] = c[i] + directillum[i] / nIterations;
 		});
+		//std::cout << flux[591714] << " " << radius2[591714] << std::endl;
+		//int xIndex = 865, yIndex = 577;
+		//std::cout << c[xIndex + yIndex * resX] << std::endl;
 		scene.GetCamera()->GetFilm()->SetImage(c);
 		//GenerateRadiusImage(scene);
 	}
@@ -252,7 +258,7 @@ private:
 		for (int i = 0; i < w * h; ++i) {
 			radius2[i] = initialRadius * initialRadius;
 			photonNums[i] = 0;
-			flux[i] = Vec();
+			flux[i] = Vec3();
 			hitPoints[i].m = 0;
 		}
 	}
@@ -263,10 +269,10 @@ private:
 	std::vector<real> radius2;
 	//std::vector<int64> photonNums;
 	std::vector<real> photonNums;
-	std::vector<Vec> flux;
-	std::vector<Vec> directillum;
+	std::vector<Vec3> flux;
+	std::vector<Vec3> directillum;
 	std::vector<HPoint> hitPoints;
-	std::vector<Vec> c;
+	std::vector<Vec3> c;
 	std::vector<Spinlock> pixelLocks;
 	const real initialRadius;
 	const int maxDepth;

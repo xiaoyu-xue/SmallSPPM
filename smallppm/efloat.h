@@ -164,7 +164,7 @@ public:
 			<< "[" << ef.low << ", " << ef.high << "] ";
 #ifndef NDEBUG
 		//os << StringPrintf(", precise=%.30Lf", ef.vPrecise);
-		os << ", precise=" << ef.vPricese;
+		os << ", precise=" << ef.vPrecise;
 #endif // !NDEBUG
 		return os;
 	}
