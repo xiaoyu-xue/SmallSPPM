@@ -2,7 +2,8 @@
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
 #endif
-#define USING_DOUBLE
+
+//#define USING_DOUBLE
 
 
 #include <stdint.h>
@@ -48,18 +49,18 @@ using real_bit = uint32;
 
 /****************** Constant *********************/
 
-constexpr real PI = 3.14159265358979;
-constexpr real INV_PI = 0.31830988618379067154;
-constexpr real PiOver2 = 1.57079632679489661923;
-constexpr real PiOver4 = 0.78539816339744830961;
-constexpr real eps = 1e-6;
-constexpr real Inf = 1e20;
-constexpr real rayeps = 1e-4;
-constexpr real shadowRayEps = 1e-4;
-constexpr real nEps = 1e-6;
-constexpr real PhtotonEdgeEps = 0.0009;
+constexpr real PI = (real)3.14159265358979;
+constexpr real INV_PI = (real)0.31830988618379067154;
+constexpr real PiOver2 = (real)1.57079632679489661923;
+constexpr real PiOver4 = (real)0.78539816339744830961;
+constexpr real eps = (real)1e-6;
+constexpr real Inf = (real)1e20;
+constexpr real rayeps = (real)1e-4;
+constexpr real shadowRayEps = (real)1e-4;
+constexpr real nEps = (real)1e-6;
+constexpr real PhtotonEdgeEps = (real)0.0009;
 constexpr float64 NumericalEps = 1e-6;
-constexpr real MachineEps = std::numeric_limits<real>::epsilon() * 0.5;
+constexpr real MachineEps = std::numeric_limits<real>::epsilon() * (real)0.5;
 constexpr real MaxReal = std::numeric_limits<real>::max();
 constexpr real Infinity = std::numeric_limits<real>::infinity();
 

@@ -17,8 +17,8 @@ struct AABB {
 		maxPoint.z = std::max(p.z, maxPoint.z);
 	}
 	inline void Reset() {
-		minPoint = Vec3(1e20, 1e20, 1e20);
-		maxPoint = Vec3(-1e20, -1e20, -1e20);
+		minPoint = Vec3(Inf, Inf, Inf);
+		maxPoint = Vec3(-Inf, -Inf, -Inf);
 	}
 };
 

@@ -16,7 +16,7 @@ FORCE_INLINE void CoordinateSystem(const Vec3 &v1, Vec3 *v2, Vec3 *v3) {
 
 
 Vec3 Reflect(const Vec3 &inDir, const Vec3 &n) {
-	return 2.0 * inDir.Dot(n) * n - inDir;
+	return 2.f * inDir.Dot(n) * n - inDir;
 }
 
 NAMESPACE_END

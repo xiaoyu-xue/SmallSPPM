@@ -84,9 +84,10 @@ public:
 		}
 	}
 
-	static int toInt(real x, real gamma = 2.2) {
-		return int(pow(Clamp(x, 0.0, 1.0), 1 / gamma) * 255 + .5);
+	static int toInt(real x, real gamma = 2.2f) {
+		return int(pow(Clamp(x, 0.f, 1.f), 1 / gamma) * 255 + .5f);
 	}
+
 };
 
 NAMESPACE_END

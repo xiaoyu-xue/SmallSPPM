@@ -15,7 +15,7 @@ public:
 	void Initialize() {
 		Vec3 filmCenter = pos + cz * filmDistance;
 		//std::cout << "film cetner: " << filmCenter << std::endl;
-		film->heigh = filmDistance * std::tan(fovy * 0.5 * PI / 180) * 2.0;
+		film->heigh = filmDistance * std::tan(fovy * 0.5f * PI / 180) * 2.f;
 		film->width = film->heigh * film->aspect;
 		film->area = film->width * film->heigh;
 		/*
@@ -27,8 +27,8 @@ public:
 	}
 
 	Ray GenerateRay(int pixelX, int pixelY, const Vec2 &u, real offset) const override {
-		Vec3 dir = cx * ((pixelX + u.x) / film->resX - 0.5) * film->width +
-			cy * (-(pixelY + u.y) / film->resY + 0.5) * film->heigh + cz * filmDistance;
+		Vec3 dir = cx * ((pixelX + u.x) / film->resX - 0.5f) * film->width +
+			cy * (-(pixelY + u.y) / film->resY + 0.5f) * film->heigh + cz * filmDistance;
 		dir = dir.Norm();
 
 		return Ray(pos + dir * offset, dir);
@@ -48,7 +48,7 @@ public:
 		real distance = wi->Length();
 		*wi = wi->Norm();
 		real cosTheta = cz.Dot(-1 * (*wi));
-		*pdfW = 1.0 * (distance * distance) / cosTheta;
+		*pdfW = 1.f * (distance * distance) / cosTheta;
 		//*PdfW = 1.0 * (dis / CosTheta) * (dis / CosTheta) / CosTheta;
 		return We(Ray(isect.hit, -1 * (*wi)));
 	}

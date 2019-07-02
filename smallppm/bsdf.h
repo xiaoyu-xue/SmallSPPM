@@ -26,9 +26,9 @@ public:
 	}
 
 	Vec3 Sample_f(const Vec3 &wo, Vec3 *wi, real *pdf, const Vec3 &rand) const override {
-		real r1 = 2. * PI * rand[0], r2 = rand[1];
+		real r1 = 2.f * PI * rand[0], r2 = rand[1];
 		real r2s = sqrt(r2);
-		Vec3 w = nl, u = ((fabs(w.x) > .1 ? Vec3(0, 1, 0) : Vec3(1, 0, 0)).Cross(w)).Norm();
+		Vec3 w = nl, u = ((fabs(w.x) > .1f ? Vec3(0, 1, 0) : Vec3(1, 0, 0)).Cross(w)).Norm();
 		Vec3 v = w.Cross(u);
 		*wi = (u* cos(r1) * r2s + v * sin(r1) * r2s + w * sqrt(1 - r2)).Norm();
 		*pdf = Pdf(wo, *wi);
@@ -100,7 +100,7 @@ public:
 		real etaI = entering ? nc : nt;
 		real etaT = entering ? nt : nc;
 		Vec3 nForward = wo.Dot(n) > 0 ? n : -1 * n;
-		real P = Re * 0.5 + 0.25;
+		real P = Re * 0.5f + 0.25f;
 		if (rand.z < P) {
 			/*
 			*wi = (nl * 2.0 * nl.Dot(wo) - wo).Norm();
@@ -134,10 +134,10 @@ public:
 			real cosTheta = std::abs((*wi).Dot(nForward));
 			real eta = etaI / etaT;
 			if (transportMode == TransportMode::Radiance) {
-				return eta * eta * Fa * (1.0 - Re) / cosTheta;
+				return eta * eta * Fa * (1.f - Re) / cosTheta;
 			}
 			else {
-				return Fa * (1.0 - Re) / cosTheta;
+				return Fa * (1.f - Re) / cosTheta;
 			}
 		}
 	}
@@ -156,7 +156,7 @@ public:
 	}
 
 	real FrDielectric(real cosThetaI, real etaI, real etaT) const {
-		cosThetaI = Clamp(cosThetaI, -1, 1);
+		cosThetaI = Clamp(cosThetaI, -1.f, 1.f);
 		// Potentially swap indices of refraction
 		bool entering = cosThetaI > 0.f;
 		if (!entering) {

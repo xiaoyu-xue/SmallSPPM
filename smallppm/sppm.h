@@ -109,7 +109,7 @@ public:
 						if ((hitpoint->nrm.Dot(isect.n) > PhtotonEdgeEps) && (v.Dot(v) <= radius2[hitpoint->pix])) {
 							if (!batchShrink) {
 								// unlike N in the paper, hitpoint->n stores "N / ALPHA" to make it an integer value
-								real g = (photonNums[hitpoint->pix] * alpha + alpha) / (photonNums[hitpoint->pix] * alpha + 1.0);
+								real g = (photonNums[hitpoint->pix] * alpha + alpha) / (photonNums[hitpoint->pix] * alpha + 1.f);
 								radius2[hitpoint->pix] = radius2[hitpoint->pix] * g;
 								photonNums[hitpoint->pix] += 1;
 								Vec3 contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.d) * photonFlux;
@@ -124,7 +124,7 @@ public:
 					}
 				}
 				//real p = estimation.maxValue();
-				real p = std::min(1.0, (estimation * photonFlux).Y() / photonFlux.Y());
+				real p = std::min((real)1.0, (estimation * photonFlux).Y() / photonFlux.Y());
 				if (p < 1) {
 					if (rand() < p) {
 						photonFlux = photonFlux / p;
@@ -158,7 +158,7 @@ public:
 		for (int y = 0; y < resY; ++y) {
 			for (int x = 0; x < resX; ++x) {
 				int index = x + y * resX;
-				real val = 1.0 - (std::sqrt(radius2[index]) - std::sqrt(minRadius2)) /
+				real val = 1.f - (std::sqrt(radius2[index]) - std::sqrt(minRadius2)) /
 					(std::sqrt(maxRadius2) - std::sqrt(minRadius2));
 				radImg[index].x = val;
 				radImg[index].y = val;
@@ -166,7 +166,7 @@ public:
 			}
 		}
 
-		ImageIO::WriteBmpFile("rad_image.bmp", radImg, resX, resY, 2.2);
+		ImageIO::WriteBmpFile("rad_image.bmp", radImg, resX, resY, 2.2f);
 	}
 
 	void Render(const Scene &scene) override {
@@ -190,50 +190,50 @@ public:
 				}
 			});
 
-			hashGrid.ClearHashGrid();
-			real maxRadius2 = 0.0;
-			for (int i = 0; i < (int)hitPoints.size(); ++i) {
-				HPoint &hp = hitPoints[i];
-				if (hp.used) {
-					maxRadius2 = std::max(maxRadius2, radius2[i]);
-					hashGrid.AddPoint(std::move(std::pair<Vec3, HPoint*>(hp.pos, &hp)), std::sqrt(radius2[i]));
-				}
-			}
-			hashGrid.BuildHashGrid(std::sqrt(maxRadius2) + eps);
+			//hashGrid.ClearHashGrid();
+			//real maxRadius2 = 0.0;
+			//for (int i = 0; i < (int)hitPoints.size(); ++i) {
+			//	HPoint &hp = hitPoints[i];
+			//	if (hp.used) {
+			//		maxRadius2 = std::max(maxRadius2, radius2[i]);
+			//		hashGrid.AddPoint(std::move(std::pair<Vec3, HPoint*>(hp.pos, &hp)), std::sqrt(radius2[i]));
+			//	}
+			//}
+			//hashGrid.BuildHashGrid(std::sqrt(maxRadius2) + eps);
 
-			//Trace photon
-			ParallelFor((int64)0, nPhotonsPerRenderStage, [&](int64 j) {
-				Ray ray;
-				Vec3 photonFlux;
-				RandomStateSequence rand(sampler, iter * nPhotonsPerRenderStage + j);
-				GeneratePhoton(scene, &ray, &photonFlux, rand(), Vec2(rand(), rand()), Vec2(rand(), rand()));
-				TracePhoton(scene, rand, ray, photonFlux);
-			});
+			////Trace photon
+			//ParallelFor((int64)0, nPhotonsPerRenderStage, [&](int64 j) {
+			//	Ray ray;
+			//	Vec3 photonFlux;
+			//	RandomStateSequence rand(sampler, iter * nPhotonsPerRenderStage + j);
+			//	GeneratePhoton(scene, &ray, &photonFlux, rand(), Vec2(rand(), rand()), Vec2(rand(), rand()));
+			//	TracePhoton(scene, rand, ray, photonFlux);
+			//});
 
-			//Update flux, radius, photonNums if batchShrink
-			if(batchShrink) {
-				size_t nHitPoints = hitPoints.size();
-				ParallelFor(size_t(0), nHitPoints, [&](size_t i) {
-					HPoint &hp = hitPoints[i];
-					if (hp.m > 0) {
-						real g = (photonNums[hp.pix] + alpha * hp.m) / (photonNums[hp.pix] + hp.m);
-						radius2[hp.pix] = radius2[hp.pix] * g;
-						flux[hp.pix] = flux[hp.pix] * g;
-						photonNums[hp.pix] = photonNums[hp.pix] + alpha * hp.m;
-						hp.m = 0;
-					}
-				});
-			}
+			////Update flux, radius, photonNums if batchShrink
+			//if(batchShrink) {
+			//	size_t nHitPoints = hitPoints.size();
+			//	ParallelFor(size_t(0), nHitPoints, [&](size_t i) {
+			//		HPoint &hp = hitPoints[i];
+			//		if (hp.m > 0) {
+			//			real g = (photonNums[hp.pix] + alpha * hp.m) / (photonNums[hp.pix] + hp.m);
+			//			radius2[hp.pix] = radius2[hp.pix] * g;
+			//			flux[hp.pix] = flux[hp.pix] * g;
+			//			photonNums[hp.pix] = photonNums[hp.pix] + alpha * hp.m;
+			//			hp.m = 0;
+			//		}
+			//	});
+			//}
 
-			real percentage = 100.*(iter + 1) / nIterations;
+			real percentage = 100.f * (iter + 1) / nIterations;
 			fprintf(stderr, "\rIterations: %5.2f%%", percentage);
 		}
 
 		// density estimation
 		std::cout << "\nFlux size: " << flux.size() << std::endl;
 		ParallelFor(0, (int)flux.size(), [&](int i) {
-			c[i] = c[i] + flux[i] * (1.0 / (PI * radius2[i] * nIterations * nPhotonsPerRenderStage))
-				+ directillum[i] / nIterations;
+			c[i] = c[i] + flux[i] * (1.f / (PI * radius2[i] * nIterations * nPhotonsPerRenderStage))
+				+ directillum[i] / (real)nIterations;
 			//if (std::isnan(c[i].x)  || std::isnan(c[i].y)  || std::isnan(c[i].z)) {
 			//	std::cout << i % resX << " " << i / resX << " "<< i << std::endl;
 			//}

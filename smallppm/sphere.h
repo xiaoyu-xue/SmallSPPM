@@ -71,7 +71,7 @@ public:
 	}
 
 	Vec3 Sample(real *pdf, const Vec2 &u) const override {
-		*pdf = 1.0 / (4.0 * PI * rad * rad);
+		*pdf = 1.f / (4.f * PI * rad * rad);
 		return UniformSampleSphere(u) * rad + p;
 	}
 
@@ -129,7 +129,7 @@ public:
 	}
 
 	real Area() const override {
-		return 4.0 * PI * rad * rad;
+		return 4.f * PI * rad * rad;
 	}
 
 private:

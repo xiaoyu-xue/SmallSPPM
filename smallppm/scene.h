@@ -79,7 +79,7 @@ public:
 		}
 		else {
 			lightNum = std::min((int)(u * nLights), nLights - 1);
-			*lightPdf = 1.0 / nLights;
+			*lightPdf = 1.f / nLights;
 		}
 		return lights[lightNum];
 	}
