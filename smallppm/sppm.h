@@ -31,20 +31,45 @@ public:
 
 	}
 
+	//void GeneratePhoton(const Scene &scene, Ray *pr, Vec3 *f, real u, const Vec2 &v, const Vec2 &w) {
+	//	real lightPdf;
+	//	std::shared_ptr<Light> light = scene.SampleOneLight(&lightPdf, u);
+	//	Vec3 Le = light->Emission();
+	//	Vec3 pos, lightDir, lightNorm;
+	//	real pdfPos, pdfDir;
+	//	light->SampleLight(&pos, &lightDir, &lightNorm, &pdfPos, &pdfDir, v, w);
+	//	pr->o = pos + lightDir * rayeps;
+	//	pr->d = lightDir;
+	//	real cosTheta = std::abs(lightNorm.Dot(lightDir));
+	//	*f = Le * cosTheta / (pdfPos * pdfDir * lightPdf);
+	//}
+
 	void GeneratePhoton(const Scene &scene, Ray *pr, Vec3 *f, real u, const Vec2 &v, const Vec2 &w) {
 		real lightPdf;
 		std::shared_ptr<Light> light = scene.SampleOneLight(&lightPdf, u);
-		Vec3 Le = light->Emission();
-		Vec3 pos, lightDir, lightNorm;
+		//Vec3 Le = light->Emission();
+		//Vec3 pos, lightDir, lightNorm;
+		Vec3 lightDir;
+		Intersection lightPoint;
 		real pdfPos, pdfDir;
-		light->SampleLight(&pos, &lightDir, &lightNorm, &pdfPos, &pdfDir, v, w);
-		pr->o = pos + lightDir * rayeps;
-		pr->d = lightDir;
-		real cosTheta = std::abs(lightNorm.Dot(lightDir));
+		Vec3 Le = light->SampleLight(&lightPoint, &lightDir, &pdfPos, &pdfDir, v, w);
+		//light->SampleLight(&pos, &lightDir, &lightNorm, &pdfPos, &pdfDir, v, w);
+		//pr->o = pos + lightDir * rayeps;
+		//pr->d = lightDir;
+		*pr = lightPoint.SpawnRay(lightDir);
+		real cosTheta = std::abs(lightPoint.n.Dot(lightDir));
 		*f = Le * cosTheta / (pdfPos * pdfDir * lightPdf);
 	}
 
 	void TraceEyePath(const Scene &scene, StateSequence &rand, const Ray &ray, int64 pixel) {
+		{
+			//int x = 223, y = 387;
+			//if(pixel == x + scene.GetCamera()->GetFilm()->resX * y) {
+			//	debugPixel = 1;
+			//}else {
+			//	debugPixel = 0;
+			//}
+		}
 		Ray r = ray;
 		bool deltaBoundEvent = false;
 		Vec3 importance(1.0, 1.0, 1.0);
@@ -53,10 +78,20 @@ public:
 			Intersection isect;
 			std::shared_ptr<Shape> hitObj;
 			if (!scene.Intersect(r, &t, &isect, hitObj)) return;
+			{
+				int x = 223, y = 387;
+				if (pixel == x + scene.GetCamera()->GetFilm()->resX * y) {
+					std::cout << "ok" << std::endl;
+					debugPixel = 1;
+				}else {
+					debugPixel = 0;
+				}
+				//if(i == 0) debugPixel++;
+			}
 			std::shared_ptr<BSDF> bsdf = hitObj->GetBSDF(isect);
 			Vec3 wi;
 			real pdf;
-
+			//std::cout << hitObj->GetId() << std::endl;
 			//{
 			//	int x = 429, y = 363;
 			//	if (pixel == x + scene.GetCamera()->GetFilm()->resX * y) {
@@ -115,7 +150,8 @@ public:
 				photonFlux = photonFlux * estimation;
 				//r.o = isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n;
 				//r.d = wi;
-				r = Ray(isect.hit, wi, Inf, isect.rayEps);
+				//r = Ray(isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n, wi, Inf, isect.rayEps);
+				r = isect.SpawnRay(wi);
 			}
 			else {
 				if (i > 0) {
@@ -154,7 +190,8 @@ public:
 				photonFlux = photonFlux * estimation;
 				//r.o = isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n;
 				//r.d = wi;
-				r = Ray(isect.hit, wi, Inf, isect.rayEps);
+				//r = Ray(isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n, wi, Inf, isect.rayEps);
+				r = isect.SpawnRay(wi);
 			}
 		}
 	}

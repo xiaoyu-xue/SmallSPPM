@@ -14,16 +14,18 @@ public:
 	Vec3 DirectIllumination(const Intersection &isect, const std::shared_ptr<BSDF> &bsdf,
 		const Vec3 &importance, Vec3 *dir, Intersection *lightPoint, const Vec2 &u) const override {
 		real pdf;
-		lightPoint->hit = shape->Sample(isect, &pdf, u);
-		lightPoint->n = lightPoint->nl = shape->GetNorm(lightPoint->hit);
+		//lightPoint->hit = shape->Sample(isect, &pdf, u);
+		//lightPoint->n = lightPoint->nl = shape->GetNorm(lightPoint->hit);
+		*lightPoint = shape->Sample(isect, &pdf, u);
 		*dir = (lightPoint->hit - isect.hit).Norm();
 		Vec3 f = bsdf->f(isect.wo, *dir);
 		return importance * f * std::abs((*dir).Dot(isect.n)) * Emission() / pdf;
 	}
 
 	Vec3 Sample_Li(const Intersection &isect, Vec3 *wi, real *pdf, Intersection *lightPoint, const Vec2 &u) const override {
-		lightPoint->hit = shape->Sample(isect, pdf, u);
-		lightPoint->n = lightPoint->nl = shape->GetNorm(lightPoint->hit);
+		//lightPoint->hit = shape->Sample(isect, pdf, u);
+		//lightPoint->n = lightPoint->nl = shape->GetNorm(lightPoint->hit);
+		*lightPoint = shape->Sample(isect, pdf, u);
 		*wi = (lightPoint->hit - isect.hit).Norm();
 		return Emission();
 	}
@@ -48,15 +50,26 @@ public:
 
 	std::shared_ptr<Shape> GetShapePtr() const override { return shape; }
 protected:
-	void SampleOnLight(Vec3 *pos, Vec3 *dir, Vec3 *lightNorm, real *pdfPos, real *pdfDir, const Vec2 &u, const Vec2 &v) const override{
+	//void SampleOnLight(Vec3 *pos, Vec3 *dir, Vec3 *lightNorm, real *pdfPos, real *pdfDir, const Vec2 &u, const Vec2 &v) const override{
+	//	//sample a position
+	//	*pos = shape->Sample(pdfPos, u);
+	//	*lightNorm = shape->GetNorm(*pos);
+	//	Vec3 ss, ts;
+	//	CoordinateSystem(*lightNorm, &ss, &ts);
+	//	Vec3 dirLocal = CosineSampleHemisphere(v);
+	//	real cosTheta = dirLocal.z;
+	//	*dir = (ss * dirLocal.x + ts * dirLocal.y + *lightNorm * dirLocal.z).Norm();
+	//	*pdfDir = CosineHemispherePdf(cosTheta);
+	//}
+
+	void SampleOnLight(Intersection *isect, Vec3 *dir, real *pdfPos, real *pdfDir, const Vec2 &u, const Vec2 &v) const override {
 		//sample a position
-		*pos = shape->Sample(pdfPos, u);
-		*lightNorm = shape->GetNorm(*pos);
+		*isect = shape->Sample(pdfPos, u);
 		Vec3 ss, ts;
-		CoordinateSystem(*lightNorm, &ss, &ts);
+		CoordinateSystem(isect->n, &ss, &ts);
 		Vec3 dirLocal = CosineSampleHemisphere(v);
 		real cosTheta = dirLocal.z;
-		*dir = (ss * dirLocal.x + ts * dirLocal.y + *lightNorm * dirLocal.z).Norm();
+		*dir = (ss * dirLocal.x + ts * dirLocal.y + isect->n * dirLocal.z).Norm();
 		*pdfDir = CosineHemispherePdf(cosTheta);
 	}
 private:

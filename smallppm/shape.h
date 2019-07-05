@@ -12,11 +12,11 @@ class Shape {
 public:
 	Shape(ReflectionType type, const Vec3 &color, const Vec3 &emission, bool isL = false) :
 		reflType(type), c(color), e(emission), isLight(isL) {}
-	virtual real Intersect(const Ray &r, Intersection *isect) const = 0;
+	//virtual real Intersect(const Ray &r, Intersection *isect) const = 0;
 	virtual bool Intersect(const Ray &r, Intersection *isect, real *t) const = 0;
 	virtual bool Intersect(const Ray &r) const = 0;
-	virtual Vec3 Sample(real *pdf, const Vec2 &rand) const = 0;
-	virtual Vec3 Sample(const Intersection &isect, real *pdf, const Vec2 &u) const = 0;
+	virtual Intersection Sample(real *pdf, const Vec2 &rand) const = 0;
+	virtual Intersection Sample(const Intersection &isect, real *pdf, const Vec2 &u) const = 0;
 
 	virtual real Pdf(const Intersection &isect, const Vec3 &wi) const {
 		Ray ray(isect.hit, wi);

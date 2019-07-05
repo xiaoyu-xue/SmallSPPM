@@ -3,6 +3,7 @@
 #include "linagl.h"
 #include <algorithm>
 #include "utils.h"
+#include "efloat.h"
 
 NAMESPACE_BEGIN
 
@@ -19,4 +20,25 @@ Vec3 Reflect(const Vec3 &inDir, const Vec3 &n) {
 	return 2.f * inDir.Dot(n) * n - inDir;
 }
 
+inline Vec3 OffsetRayOrigin(const Vec3 &p, const Vec3 &pError,
+	const Vec3 &n, const Vec3 &w) {
+	real d = Dot(Abs(n), pError);
+#ifdef USING_DOUBLE
+	// We have tons of precision; for now bump up the offset a bunch just
+	// to be extra sure that we start on the right side of the surface
+	// (In case of any bugs in the epsilons code...)
+	d *= 1024.;
+#endif
+	Vec3 offset = d * Vec3(n);
+	if (Dot(w, n) < 0) offset = -offset;
+	Vec3 po = p + offset;
+	// Round offset point _po_ away from _p_
+	for (int i = 0; i < 3; ++i) {
+		if (offset[i] > 0)
+			po[i] = NextFloatUp(po[i]);
+		else if (offset[i] < 0)
+			po[i] = NextFloatDown(po[i]);
+	}
+	return po;
+}
 NAMESPACE_END

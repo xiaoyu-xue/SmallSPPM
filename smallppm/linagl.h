@@ -390,6 +390,15 @@ FORCE_INLINE real Distance(const Vector<dim, T> &a, const Vector<dim, T> &b) {
 	return (b - a).Length();
 }
 
+template<int dim, typename T>
+FORCE_INLINE Vector<dim, T> Abs(const Vector<dim, T> &a) {
+	Vector<dim, T> ret;
+	for(int i = 0; i < dim; ++i) {
+		ret.d[i] = std::abs(a.d[i]);
+	}
+	return ret;
+}
+
 using Vector2 = Vector<2, real>;
 using Vector2i = Vector<2, int>;
 using Vector2f = Vector<2, float>;

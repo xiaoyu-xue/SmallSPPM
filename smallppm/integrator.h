@@ -51,12 +51,21 @@ public:
 				real scatteringPdf = bsdf->Pdf(isect.wo, wi);
 				Vec3 f = bsdf->f(isect.wo, wi);
 				VisibilityTester visibilityTester(isect, lightPoint);
+				{
+					if (debugPixel == 1) {
+						std::cout << Distance(lightPoint.hit, Vec3(50, 81.6f - 16.5f, 81.6f)) << std::endl;
+					}
+				}
 				if (!visibilityTester.Unoccluded(scene)) {
 					//if (debugPixel == 1) {
 					//	//std::cout << "ok" << std::endl;
 					//}
 					weight1 = PowerHeuristic(1, pdf, 1, scatteringPdf);
 					L1 = Li * f * std::abs(isect.n.Dot(wi)) / pdf;
+
+					//std::cout << "ok" << std::endl;
+					//std::cout << Li << std::endl;
+					debugPixel++;
 				}
 				//else {
 				//	if (debugPixel == 1) {
@@ -80,17 +89,20 @@ public:
 			if (pdf != 0) {
 				real lightPdf = light->Pdf_Li(isect, wi);
 				weight2 = PowerHeuristic(1, pdf, 1, lightPdf);
-				if (scene.Intersect(Ray(isect.hit, wi, Inf, isect.rayEps), &t, &intersection, hitObj) && hitObj->IsLight()) {
+				if (scene.Intersect(isect.SpawnRay(wi), &t, &intersection, hitObj) && hitObj->IsLight()) {
 					L2 = hitObj->GetEmission() * f * std::abs(isect.n.Dot(wi)) / pdf;
 				}
+				//if (scene.Intersect(Ray(isect.hit, wi, Inf, isect.rayEps), &t, &intersection, hitObj) && hitObj->IsLight()) {
+				//	L2 = hitObj->GetEmission() * f * std::abs(isect.n.Dot(wi)) / pdf;
+				//}
 				/*if (scene.Intersect(Ray(isect.hit + wi * rayeps, wi), &t, &intersection, hitObj) && hitObj->IsLight()) {
 					L2 = hitObj->GetEmission() * f * std::abs(isect.n.Dot(wi)) / pdf;
 				}*/
 			}
 		}
-		//return L1 / lightSamplingPdf;
+		return L1 / lightSamplingPdf;
 		//return L2 / lightSamplingPdf;
-		return  (L1 * weight1 + L2 * weight2) / lightSamplingPdf;
+		//return  (L1 * weight1 + L2 * weight2) / lightSamplingPdf;
 
 	}
 };

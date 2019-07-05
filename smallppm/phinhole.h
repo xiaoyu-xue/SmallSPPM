@@ -31,7 +31,7 @@ public:
 			cy * (-(pixelY + u.y) / film->resY + 0.5f) * film->heigh + cz * filmDistance;
 		dir = dir.Norm();
 
-		return Ray(pos + dir * offset, dir);
+		return Ray(pos + dir * offset, dir, Inf, 0);
 	}
 
 	Vec3 We(const Ray &ray) const override {

@@ -44,7 +44,7 @@ public:
 
 template<typename Range, typename T>
 void ParallelFor(Range begin, Range end, const T &target) {
-	//tbb::task_arena limited_arena(1);
-	//limited_arena.execute([&]() {tbb::parallel_for(begin, end, target); });
-	tbb::parallel_for(begin, end, target);
+	tbb::task_arena limited_arena(1);
+	limited_arena.execute([&]() {tbb::parallel_for(begin, end, target); });
+	//tbb::parallel_for(begin, end, target);
 }

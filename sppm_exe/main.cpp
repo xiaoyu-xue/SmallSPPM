@@ -87,16 +87,16 @@ int main(int argc, char *argv[]) {
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(16.5f, Vec3(27, 16.5f, 47), Vec3(), Vec3(1, 1, 1), REFR)));//Glass
 	//**scene->AddShape(std::shared_ptr<Shape>(new Sphere(7.0, Vec3(27, 16.5, 47), Vec3(), Vec3(.25, .25, .75), DIFF)));//Mirr
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(16.5f, Vec3(73, 26.5f, 78), Vec3(), Vec3(1, 1, 1), REFR)));//Glass
-	scene->AddShape(std::shared_ptr<Shape>(new Sphere(9.5f, Vec3(53, 9.0f, 88), Vec3(), Vec3(1, 1, 1), REFR)));//Glass
+	scene->AddShape(std::shared_ptr<Shape>(new Sphere(9.5f, Vec3(53, 9.5f, 88), Vec3(), Vec3(1, 1, 1), REFR)));//Glass
 	scene->AddShape(std::shared_ptr<Shape>(new Sphere(9.5f, Vec3(23, 0.0f, 98), Vec3(), Vec3(1, 1, 1), DIFF)));//DIFF
 	std::shared_ptr<Shape> lightShape = std::shared_ptr<Shape>(new Sphere(8.f, Vec3(50, 81.6f - 16.5f, 81.6f), Vec3(0.3f, 0.3f, 0.3f) * 100, Vec3(), DIFF));//Lite
 	std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape));
 	scene->AddLight(light0);
 	scene->Initialize();
-	film->SetFileName("cornellbox17.bmp");
+	film->SetFileName("cornellbox20.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
-	
+	std::cout << debugPixel << std::endl;
 	clock_t end = clock();
 
 
