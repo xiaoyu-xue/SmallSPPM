@@ -8,6 +8,8 @@
 #include "hashgrid.h"
 #include "image_io.h"
 
+#include "debug_utils.h"
+
 NAMESPACE_BEGIN
 
 struct HPoint {
@@ -54,11 +56,26 @@ public:
 			std::shared_ptr<BSDF> bsdf = hitObj->GetBSDF(isect);
 			Vec3 wi;
 			real pdf;
+
+			//{
+			//	int x = 429, y = 363;
+			//	if (pixel == x + scene.GetCamera()->GetFilm()->resX * y) {
+			//		debugPixel = 1;
+			//		std::cout << "isect: " << isect.hit << " " << isect.rayEps << std::endl;
+			//		//std::cout << isect.hit << "\n" << isect.nl <<"\n" << isect.nl << "\n" << t << std::endl;
+			//	}
+			//	else {
+			//		debugPixel = 0;
+			//	}
+			//}
+
+
 			if (bsdf->IsDelta()) {
 				Vec3 f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec3(rand(), rand(), rand()));
 				importance = f * std::abs(wi.Dot(isect.n)) * importance / pdf;
-				r.o = isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n;
-				r.d = wi;
+				//r.o = isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n;
+				//r.d = wi;
+				r = Ray(isect.hit, wi, Inf, isect.rayEps);
 				deltaBoundEvent = true;
 			}
 			else {
@@ -96,8 +113,9 @@ public:
 			Vec3 estimation = f * std::abs(wi.Dot(isect.n)) / pdf;
 			if (bsdf->IsDelta()) {
 				photonFlux = photonFlux * estimation;
-				r.o = isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n;
-				r.d = wi;
+				//r.o = isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n;
+				//r.d = wi;
+				r = Ray(isect.hit, wi, Inf, isect.rayEps);
 			}
 			else {
 				if (i > 0) {
@@ -134,8 +152,9 @@ public:
 					}
 				}
 				photonFlux = photonFlux * estimation;
-				r.o = isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n;
-				r.d = wi;
+				//r.o = isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n;
+				//r.d = wi;
+				r = Ray(isect.hit, wi, Inf, isect.rayEps);
 			}
 		}
 	}
@@ -240,7 +259,7 @@ public:
 			//c[i] = c[i] + directillum[i] / nIterations;
 		});
 		//std::cout << flux[591714] << " " << radius2[591714] << std::endl;
-		//int xIndex = 865, yIndex = 577;
+		//int xIndex = 429, yIndex = 363;
 		//std::cout << c[xIndex + yIndex * resX] << std::endl;
 		scene.GetCamera()->GetFilm()->SetImage(c);
 		//GenerateRadiusImage(scene);

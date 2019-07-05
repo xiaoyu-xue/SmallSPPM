@@ -7,7 +7,7 @@ class Rng {
 public:
 	Rng(int seed = 123) : rng(seed){}
 
-	double operator()() {
+	real operator()() {
 		return uniform(rng);
 	}
 
@@ -25,7 +25,7 @@ public:
 
 private:
 	std::mt19937_64 rng;
-	std::uniform_real_distribution<double> uniform;
+	std::uniform_real_distribution<real> uniform;
 };
 
 NAMESPACE_END

@@ -18,18 +18,23 @@ public:
 		// ray-sphere Intersection returns distance
 		Vec3 op = p - r.o;
 		real t, b = op.Dot(r.d), det = b * b - op.Dot(op) + rad * rad;
+		//float64 b = (float64)op.x * (float64)r.d.x + (float64)op.y * (float64)r.d.y + (float64)op.z * (float64)r.d.z;
+		//float64 det = b * b - ((float64)op.x * (float64)op.x + (float64)op.y * (float64)op.y + (float64)op.z * (float64)op.z)
+		//	+ (float64)rad * (float64)rad;
+		//real t;
 		if (det < 0) {
-			return Inf;
+			return r.tMax;
 		}
 		else {
 			det = sqrt(det);
 		}
-		t = (t = b - det) > 1e-4 ? t : ((t = b + det) > 1e-4 ? t : Inf);
+		t = (t = b - det) > 1e-4 ? t : ((t = b + det) > 1e-4 ? t : r.tMax);
 
 		isect->hit = r.o + r.d * t;
 		isect->n = (isect->hit - p).Norm();
 		isect->nl = isect->n.Dot(r.d) < 0 ? isect->n : isect->n * -1;
 		isect->wo = -1 * r.d;
+		isect->rayEps = 5e-4f * t;
 		return t;
 	}
 
@@ -37,21 +42,29 @@ public:
 		// ray-sphere Intersection returns distance
 		Vec3 op = p - r.o;
 		real b = op.Dot(r.d), det = b * b - op.Dot(op) + rad * rad;
+		//float64 b = (float64)op.x * (float64)r.d.x + (float64)op.y * (float64)r.d.y + (float64)op.z * (float64)r.d.z;
+		//float64 det = b * b - ((float64)op.x * (float64)op.x + (float64)op.y * (float64)op.y + (float64)op.z * (float64)op.z) 
+		//	+ (float64)rad * (float64)rad;
+		//float64 tt;
 		if (det < 0) {
-			*t = Inf;
+			*t = r.tMax;
 			return false;
 		}
 		else {
-			det = sqrt(det);
+			det = std::sqrt(det);
 		}
-		*t = ((*t) = b - det) > 1e-4 ? (*t) : (((*t) = b + det) > 1e-4 ? (*t) : Inf);
 
+		*t = ((*t) = b - det) > 1e-6 ? (*t) : (((*t) = b + det) > 1e-6 ? (*t) : r.tMax);
+		//tt = ((tt) = b - det) > 1e-6 ? (tt) : (((tt) = b + det) > 1e-6 ? (tt) : r.tMax);
+		//*t = tt;
+		//isect->hit = r.o + r.d * tt;
 		isect->hit = r.o + r.d * (*t);
 		isect->n = (isect->hit - p).Norm();
 		isect->nl = isect->n.Dot(r.d) < 0 ? isect->n : isect->n * -1;
 		isect->wo = -1 * r.d;
+		isect->rayEps = 5e-4f * (*t);
 
-		return (*t > 0 && *t < r.tMax);
+		return (*t > r.tMin && *t < r.tMax);
 	}
 
 
@@ -59,15 +72,19 @@ public:
 		// ray-sphere Intersection returns distance
 		Vec3 op = p - r.o;
 		real t, b = op.Dot(r.d), det = b * b - op.Dot(op) + rad * rad;
+		//float64 b = (float64)op.x * (float64)r.d.x + (float64)op.y * (float64)r.d.y + (float64)op.z * (float64)r.d.z;
+		//float64 det = b * b - ((float64)op.x * (float64)op.x + (float64)op.y * (float64)op.y + (float64)op.z * (float64)op.z)
+		//	+ (float64)rad * (float64)rad;
+		//float64 t;
 		if (det < 0) {
 			return false;
 		}
 		else {
 			det = sqrt(det);
 		}
-		t = (t = b - det) > 1e-4 ? t : ((t = b + det) > 1e-4 ? t : Inf);
+		t = (t = b - det) > 1e-4 ? t : ((t = b + det) > 1e-4 ? t : r.tMax);
 
-		return t > 0 && t < r.tMax;
+		return t > r.tMin  && t < r.tMax;
 	}
 
 	Vec3 Sample(real *pdf, const Vec2 &u) const override {

@@ -5,6 +5,8 @@
 #include "light.h"
 #include "sampling.h"
 
+#include "debug_utils.h"
+
 NAMESPACE_BEGIN
 
 class Scene {
@@ -46,12 +48,16 @@ public:
 				}
 			}
 		}
-		return *t < r.tMax;
+		return  (*t > r.tMin && *t < r.tMax);
 	}
 
 	bool Intersect(const Ray &r) const {
 		for (auto shape : shapes) {
 			if (shape->Intersect(r)) {
+				//if (debugPixel == 1) {
+				//	std::cout << "ray: " << r.o << " " << r.d << " " << r.tMin << " " << r.tMax << std::endl;
+				//	std::cout << "Unoccluded: "<< shape->GetId() << std::endl;
+				//}
 				return true;
 			}
 		}

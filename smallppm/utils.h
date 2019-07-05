@@ -3,7 +3,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-//#define USING_DOUBLE
+#define USING_DOUBLE
 
 
 #include <stdint.h>
@@ -54,7 +54,8 @@ constexpr real INV_PI = (real)0.31830988618379067154;
 constexpr real PiOver2 = (real)1.57079632679489661923;
 constexpr real PiOver4 = (real)0.78539816339744830961;
 constexpr real eps = (real)1e-6;
-constexpr real Inf = (real)1e20;
+//constexpr real Inf = (real)1e20;
+constexpr real Inf = std::numeric_limits<real>::infinity();
 constexpr real rayeps = (real)1e-4;
 constexpr real shadowRayEps = (real)1e-4;
 constexpr real nEps = (real)1e-6;

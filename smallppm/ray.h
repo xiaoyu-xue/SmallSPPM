@@ -9,9 +9,10 @@ struct Ray {
 	Ray() {
 		tMax = Inf;
 	};
-	Ray(Vec3 o_, Vec3 d_, real tmax_ = Inf) : o(o_ + d_ * rayeps), d(d_), tMax(tmax_ - rayeps) {}
+	Ray(Vec3 o_, Vec3 d_, real tmax_ = Inf, real tmin_ = 0.f) : 
+		o(o_ + d_ * rayeps), d(d_), tMax(tmax_), tMin(tmin_) {}
 	Vec3 o, d;
-	real tMax;
+	real tMin, tMax;
 };
 
 NAMESPACE_END

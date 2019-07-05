@@ -164,6 +164,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="debug_utils.cpp" />
     <ClCompile Include="efloat.cpp" />
     <ClCompile Include="linagl.cpp" />
     <ClCompile Include="lowdiscrepency.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="arealight.h" />
     <ClInclude Include="bsdf.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="debug_utils.h" />
     <ClInclude Include="def.h" />
     <ClInclude Include="efloat.h" />
     <ClInclude Include="film.h" />
