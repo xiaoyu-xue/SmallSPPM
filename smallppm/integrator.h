@@ -47,15 +47,25 @@ public:
 			Intersection lightPoint;
 			real pdf;
 			Vec3 Li = light->Sample_Li(isect, &wi, &pdf, &lightPoint, u);
+			//{
+			//	if (debugPixel == 1) {
+			//		std::cout << "lightSamplePdf: " << pdf << std::endl;
+			//	}
+			//}
 			if (pdf > 0) {
 				real scatteringPdf = bsdf->Pdf(isect.wo, wi);
 				Vec3 f = bsdf->f(isect.wo, wi);
 				VisibilityTester visibilityTester(isect, lightPoint);
-				{
-					if (debugPixel == 1) {
-						std::cout << Distance(lightPoint.hit, Vec3(50, 81.6f - 16.5f, 81.6f)) << std::endl;
-					}
-				}
+				//{ 
+				//	{
+				//		if (debugPixel == 1) {
+				//			std::cout << Distance(lightPoint.hit, Vec3(50, 81.6f - 16.5f, 81.6f)) << std::endl;
+				//			std::cout << "test n: " << isect.n.Dot(lightPoint.hit - isect.hit) 
+				//				<< " " << isect.nl.Dot(lightPoint.hit - isect.hit) << std::endl;
+				//		}
+				//	}
+
+				//}
 				if (!visibilityTester.Unoccluded(scene)) {
 					//if (debugPixel == 1) {
 					//	//std::cout << "ok" << std::endl;
@@ -63,9 +73,14 @@ public:
 					weight1 = PowerHeuristic(1, pdf, 1, scatteringPdf);
 					L1 = Li * f * std::abs(isect.n.Dot(wi)) / pdf;
 
+					//if (debugPixel == 1) {
+					//	std::cout << "sample light: weight " << weight1 << " cos: " << std::abs(isect.n.Dot(wi)) << " Li " << Li
+					//		<< " pdf: " << pdf << std::endl;
+					//}
+
 					//std::cout << "ok" << std::endl;
 					//std::cout << Li << std::endl;
-					debugPixel++;
+					//debugPixel++;
 				}
 				//else {
 				//	if (debugPixel == 1) {
@@ -85,9 +100,16 @@ public:
 			Vec3 f = bsdf->Sample_f(isect.wo, &wi, &pdf, v);
 			Intersection intersection;
 			std::shared_ptr<Shape> hitObj;
-			real t;
+			real t = Inf;
 			if (pdf != 0) {
 				real lightPdf = light->Pdf_Li(isect, wi);
+
+				//{
+				//	if (debugPixel == 1) {
+				//		std::cout << "lightSamplingPdf2: " << lightPdf << std::endl;
+
+				//	}
+				//}
 				weight2 = PowerHeuristic(1, pdf, 1, lightPdf);
 				if (scene.Intersect(isect.SpawnRay(wi), &t, &intersection, hitObj) && hitObj->IsLight()) {
 					L2 = hitObj->GetEmission() * f * std::abs(isect.n.Dot(wi)) / pdf;
@@ -100,9 +122,9 @@ public:
 				}*/
 			}
 		}
-		return L1 / lightSamplingPdf;
+		//return L1 / lightSamplingPdf;
 		//return L2 / lightSamplingPdf;
-		//return  (L1 * weight1 + L2 * weight2) / lightSamplingPdf;
+		return (L1 * weight1 + L2 * weight2) / lightSamplingPdf;
 
 	}
 };

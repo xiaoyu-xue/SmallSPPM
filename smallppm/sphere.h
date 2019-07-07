@@ -6,6 +6,7 @@
 #include "ray.h"
 #include "sampling.h"
 #include "geometry_util.h"
+#include "debug_utils.h"
 
 NAMESPACE_BEGIN
 
@@ -38,128 +39,192 @@ public:
 	//	return t;
 	//}
 
-	//bool Intersect(const Ray &r, Intersection *isect, real *t) const override {
-	//	// ray-sphere Intersection returns distance
-	//	Vec3 op = p - r.o;
-	//	real b = op.Dot(r.d), det = b * b - op.Dot(op) + rad * rad;
-	//	//float64 b = (float64)op.x * (float64)r.d.x + (float64)op.y * (float64)r.d.y + (float64)op.z * (float64)r.d.z;
-	//	//float64 det = b * b - ((float64)op.x * (float64)op.x + (float64)op.y * (float64)op.y + (float64)op.z * (float64)op.z) 
-	//	//	+ (float64)rad * (float64)rad;
-	//	//float64 tt;
-	//	if (det < 0) {
-	//		*t = r.tMax;
-	//		return false;
-	//	}
-	//	else {
-	//		det = std::sqrt(det);
-	//	}
+	bool Intersect(const Ray &r, Intersection *isect, real *t) const override {
+		// ray-sphere Intersection returns distance
+		//Vec3 op = p - r.o;
+		//real b = op.Dot(r.d), det = b * b - op.Dot(op) + rad * rad;
+		
+		
+		//float64 b = (float64)op.x * (float64)r.d.x + (float64)op.y * (float64)r.d.y + (float64)op.z * (float64)r.d.z;
+		//float64 det = b * b - ((float64)op.x * (float64)op.x + (float64)op.y * (float64)op.y + (float64)op.z * (float64)op.z) 
+		//	+ (float64)rad * (float64)rad;
+		//float64 tt;
 
-	//	*t = ((*t) = b - det) > 1e-6 ? (*t) : (((*t) = b + det) > 1e-6 ? (*t) : r.tMax);
-	//	//tt = ((tt) = b - det) > 1e-6 ? (tt) : (((tt) = b + det) > 1e-6 ? (tt) : r.tMax);
-	//	//*t = tt;
-	//	//isect->hit = r.o + r.d * tt;
-	//	isect->hit = r.o + r.d * (*t);
-	//	isect->n = (isect->hit - p).Norm();
-	//	isect->nl = isect->n.Dot(r.d) < 0 ? isect->n : isect->n * -1;
-	//	isect->wo = -1 * r.d;
-	//	isect->rayEps = 5e-4f * (*t);
+		Vec3 v = r.o - p;
+		float64 vd = v.Dot(r.d), d2 = r.d.Dot(r.d), v2 = v.Dot(v);
+		float64 tt;
+		float64 det = vd * vd - d2 * v2 + d2 * rad * rad;
 
-	//	return (*t > r.tMin && *t < r.tMax);
-	//}
 
-	bool Intersect(const Ray& r, Intersection* isect, real* t) const override {
-		EReal ox(r.o.x), oy(r.o.y), oz(r.o.z);
-		EReal dx(r.d.x), dy(r.d.y), dz(r.d.z);
-		EReal px(p.x), py(p.y), pz(p.z);
-		EReal vx = ox - px, vy = oy - py, vz = oz - pz;
-		EReal a = dx * dx + dy * dy + dz * dz;
-		EReal b = 2 * (vx * dx + vy * dy + vz * dz);
-		EReal c = vx * vx + vy * vy + vz * vz - EReal(rad) * EReal(rad);
-
-		EReal t0, t1;
-		if(!Quadratic(a, b, c, &t0, &t1)) {
+		if (det < 0) {
+			*t = r.tMax;
 			return false;
 		}
-
-		// Check quadric shape _t0_ and _t1_ for nearest intersection
-		if (t0.UpperBound() > r.tMax || t1.LowerBound() <= r.tMin) return false;
-		EReal tShapeHit = t0;
-		if (tShapeHit.LowerBound() <= 0) {
-			tShapeHit = t1;
-			if (tShapeHit.UpperBound() > r.tMax) return false;
+		else {
+			det = std::sqrt(det);
 		}
 
-		Vec3 pHit = r((real)tShapeHit);
-		// Refine sphere intersection point
-		pHit *= rad / Distance(pHit, Vec3(0, 0, 0));
+		//*t = ((*t) = b - det) > 1e-6 ? (*t) : (((*t) = b + det) > 1e-6 ? (*t) : r.tMax);
 
-		Vec3 pError = gamma(5) * Abs(pHit);
+		tt = (-vd - det) / d2;
+		if (tt < 1e-4) {
+			tt = (-vd + det) / d2;
+			if (tt < 1e-4) {
+				tt = r.tMax;
+			}
+		}
 
-		*t = (real)tShapeHit;
-		isect->hit = pHit;
+		//tt = ((tt) = b - det) > 1e-6 ? (tt) : (((tt) = b + det) > 1e-6 ? (tt) : r.tMax);
+
+
+		*t = tt;
+		isect->hit = r.o + r.d * tt;
+		//isect->hit = r.o + r.d * (*t);
+		Vec3 scaledDir = (isect->hit - p) * rad / Distance(isect->hit, p);
+		isect->hit = p + scaledDir;
 		isect->n = (isect->hit - p).Norm();
 		isect->nl = isect->n.Dot(r.d) < 0 ? isect->n : isect->n * -1;
 		isect->wo = -1 * r.d;
-		isect->pError = pError;
+		//isect->pError = gamma(5) * Abs(isect->hit);
+		//isect->pError = Vec3(1e-4f, 1e-4f, 1e-4f);
 
-		//std::cout << "ok " << std::endl;
-		//std::cout << (real)tShapeHit << std::endl;
-		return true;
+		//real vdError = vd * gamma(2 + 1);
+		//real sqrtDetError = vd * gamma(4) + d2 * v2 * gamma(4) + d2 * rad * rad * gamma(1);
+		//real tError = vd / d2 * gamma(3) + sqrtDetError / d2 * gamma(2);
+		//Vec3 hitError = gamma(1) * Abs(r.o) + tError * (1 + gamma(2)) * Abs(r.d) + gamma(2) * Abs(tt * r.d);
+		//isect->pError = hitError;
+		isect->pError = Abs(p) * gamma(1) + Abs(scaledDir) * gamma(6);
+		//std::cout << isect->pError << std::endl;
+		//return (*t > r.tMin && *t < r.tMax);
+		return (*t > r.tMin && *t < r.tMax);
 	}
 
+	//bool Intersect(const Ray& r, Intersection* isect, real* t) const override {
+	//	EReal ox(r.o.x), oy(r.o.y), oz(r.o.z);
+	//	EReal dx(r.d.x), dy(r.d.y), dz(r.d.z);
+	//	EReal px(p.x), py(p.y), pz(p.z);
+	//	EReal vx = ox - px, vy = oy - py, vz = oz - pz;
+	//	EReal a = dx * dx + dy * dy + dz * dz;
+	//	EReal b = 2 * (vx * dx + vy * dy + vz * dz);
+	//	EReal c = vx * vx + vy * vy + vz * vz - EReal(rad) * EReal(rad);
 
-	//bool Intersect(const Ray &r) const override {
-	//	// ray-sphere Intersection returns distance
-	//	Vec3 op = p - r.o;
-	//	real t, b = op.Dot(r.d), det = b * b - op.Dot(op) + rad * rad;
-	//	//float64 b = (float64)op.x * (float64)r.d.x + (float64)op.y * (float64)r.d.y + (float64)op.z * (float64)r.d.z;
-	//	//float64 det = b * b - ((float64)op.x * (float64)op.x + (float64)op.y * (float64)op.y + (float64)op.z * (float64)op.z)
-	//	//	+ (float64)rad * (float64)rad;
-	//	//float64 t;
-	//	if (det < 0) {
+	//	EReal t0, t1;
+	//	if(!Quadratic(a, b, c, &t0, &t1)) {
 	//		return false;
 	//	}
-	//	else {
-	//		det = sqrt(det);
+	//	if (debugPixel == 1) {
+	//		std::cout << "Quadratuc pass " << std::endl;
 	//	}
-	//	t = (t = b - det) > 1e-4 ? t : ((t = b + det) > 1e-4 ? t : r.tMax);
+	//	// Check quadric shape _t0_ and _t1_ for nearest intersection
+	//	if (t0.UpperBound() > r.tMax || t1.LowerBound() <= r.tMin) return false;
+	//	EReal tShapeHit = t0;
+	//	if (tShapeHit.LowerBound() <= 0) {
+	//		tShapeHit = t1;
+	//		if (tShapeHit.UpperBound() > r.tMax) return false;
+	//	}
 
-	//	return t > r.tMin  && t < r.tMax;
+	//	Vec3 pHit = r((real)tShapeHit);
+	//	// Refine sphere intersection point
+	//	pHit = p + (pHit - p) * (rad / Distance(pHit, p));
+
+	//	//Vec3 pError = gamma(5) * Abs(pHit);
+	//	//Vec3 pError = gamma(7) * Abs(pHit - p) + gamma(1) * p;
+	//	Vec3 pError = gamma(5) * Abs(pHit);
+	//	//std::cout << pError << std::endl;
+
+	//	*t = (real)tShapeHit;
+	//	isect->hit = pHit;
+	//	isect->n = (isect->hit - p).Norm();
+	//	isect->nl = isect->n.Dot(r.d) < 0 ? isect->n : isect->n * -1;
+	//	//{
+	//	//	if (debugPixel == 1) {
+	//	//		std::cout << "sign of n: " <<isect->n.Dot(r.d) << std::endl;
+	//	//	}
+	//	//}
+	//	isect->wo = -1 * r.d;
+	//	isect->pError = pError;
+
+	//	//std::cout << "ok " << std::endl;
+	//	//std::cout << (real)tShapeHit << std::endl;
+	//	return true;
 	//}
 
-	bool Intersect(const Ray& r) const override {
-		EReal ox(r.o.x), oy(r.o.y), oz(r.o.z);
-		EReal dx(r.d.x), dy(r.d.y), dz(r.d.z);
-		EReal px(p.x), py(p.y), pz(p.z);
-		EReal vx = ox - px, vy = oy - py, vz = oz - pz;
-		EReal a = dx * dx + dy * dy + dz * dz;
-		EReal b = 2 * (vx * dx + vy * dy + vz * dz);
-		EReal c = vx * vx + vy * vy + vz * vz - EReal(rad) * EReal(rad);
 
-		EReal t0, t1;
-		if (!Quadratic(a, b, c, &t0, &t1)) {
+	bool Intersect(const Ray &r) const override {
+		// ray-sphere Intersection returns distance
+		Vec3 op = p - r.o;
+		//real t, b = op.Dot(r.d), det = b * b - op.Dot(op) + rad * rad;
+
+		//float64 b = (float64)op.x * (float64)r.d.x + (float64)op.y * (float64)r.d.y + (float64)op.z * (float64)r.d.z;
+		//float64 det = b * b - ((float64)op.x * (float64)op.x + (float64)op.y * (float64)op.y + (float64)op.z * (float64)op.z)
+		//	+ (float64)rad * (float64)rad;
+		//float64 t;
+
+		Vec3 v = r.o - p;
+		float64 vd = v.Dot(r.d), d2 = r.d.Dot(r.d), v2 = v.Dot(v);
+		float64 t;
+		float64 det = vd * vd - d2 * v.Dot(v) + d2 * rad * rad;
+
+
+		if (det < 0) {
 			return false;
 		}
+		else {
+			det = sqrt(det);
+		}
+		//t = (t = b - det) > 1e-4 ? t : ((t = b + det) > 1e-4 ? t : r.tMax);
 
-		// Check quadric shape _t0_ and _t1_ for nearest intersection
-		if (t0.UpperBound() > r.tMax || t1.LowerBound() <= r.tMin) return false;
-		EReal tShapeHit = t0;
-		if (tShapeHit.LowerBound() <= 0) {
-			tShapeHit = t1;
-			if (tShapeHit.UpperBound() > r.tMax) return false;
+		t = (-vd - det) / d2;
+		if (t < 1e-4) {
+			t = (-vd + det) / d2;
+			if (t < 1e-4) {
+				t = r.tMax;
+			}
 		}
 
-		return true;
+		//real vdError = vd * gamma(2 + 1);
+		//real sqrtDetError = vd * gamma(4) + d2 * v2 * gamma(4) + d2 * rad * rad * gamma(1);
+		//real tError = vd / d2 * gamma(3) + sqrtDetError / d2 * gamma(2);
+
+		//std::cout << "tmin: " << r.tMin << ", t: " << t << ", tmax: " << r.tMax << std::endl;
+		return (t > r.tMin  && t < r.tMax);
 	}
+
+	//bool Intersect(const Ray& r) const override {
+	//	EReal ox(r.o.x), oy(r.o.y), oz(r.o.z);
+	//	EReal dx(r.d.x), dy(r.d.y), dz(r.d.z);
+	//	EReal px(p.x), py(p.y), pz(p.z);
+	//	EReal vx = ox - px, vy = oy - py, vz = oz - pz;
+	//	EReal a = dx * dx + dy * dy + dz * dz;
+	//	EReal b = 2 * (vx * dx + vy * dy + vz * dz);
+	//	EReal c = vx * vx + vy * vy + vz * vz - EReal(rad) * EReal(rad);
+
+	//	EReal t0, t1;
+	//	if (!Quadratic(a, b, c, &t0, &t1)) {
+	//		return false;
+	//	}
+
+	//	// Check quadric shape _t0_ and _t1_ for nearest intersection
+	//	if (t0.UpperBound() > r.tMax || t1.LowerBound() <= r.tMin) return false;
+	//	EReal tShapeHit = t0;
+	//	if (tShapeHit.LowerBound() <= 0) {
+	//		tShapeHit = t1;
+	//		if (tShapeHit.UpperBound() > r.tMax) return false;
+	//	}
+
+	//	return true;
+	//}
 
 	Intersection Sample(real *pdf, const Vec2 &u) const override {
 		*pdf = 1.f / (4.f * PI * rad * rad);
 		Vec3 pHit = UniformSampleSphere(u) * rad + p;
-		Vec3 pError = gamma(5) * Abs(pHit);
+		Vec3 scaledDir((pHit - p) * rad / Distance(pHit, p));
 		Intersection isect;
-		isect.hit = pHit;
+		isect.hit = p + scaledDir;
 		isect.n = (pHit - p).Norm();
 		isect.nl = isect.n;
+
+		Vec3 pError = Abs(p) * gamma(1) + Abs(scaledDir) * gamma(6);
 		isect.pError = pError;
 		return isect;
 	}

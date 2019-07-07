@@ -42,6 +42,11 @@ public:
 			real ti;
 			if (shapes[i]->Intersect(r, &intersection, &ti)) {
 				//std::cout << ti << std::endl;
+				//{
+				//	if (debugPixel == 1) {
+				//		std::cout << "ti: " << ti  << " GeometryId: " << shapes[i]->GetId() << std::endl;
+				//	}
+				//}
 				if (ti < *t) {
 					*t = ti;
 					*isect = intersection;
@@ -55,15 +60,6 @@ public:
 	bool Intersect(const Ray &r) const {
 		for (auto shape : shapes) {
 			if (shape->Intersect(r)) {
-				if (debugPixel == 1) {
-					std::cout << "ray: " << r.o << " " << r.d << " " << r.tMin << " " << r.tMax << std::endl;
-					std::cout << "Unoccluded: "<< shape->GetId() << std::endl;
-					Intersection debugIsect;
-					real debugT;
-					shape->Intersect(r, &debugIsect, &debugT);
-					std::cout << debugT << std::endl;
-					std::cout << debugIsect.hit << std::endl;
-				}
 				return true;
 			}
 		}

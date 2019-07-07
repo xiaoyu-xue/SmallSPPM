@@ -4,6 +4,7 @@
 #include <algorithm>
 #include "utils.h"
 #include "efloat.h"
+#include "debug_utils.h"
 
 NAMESPACE_BEGIN
 
@@ -29,9 +30,13 @@ inline Vec3 OffsetRayOrigin(const Vec3 &p, const Vec3 &pError,
 	// (In case of any bugs in the epsilons code...)
 	d *= 1024.;
 #endif
-	Vec3 offset = d * Vec3(n);
-	if (Dot(w, n) < 0) offset = -offset;
+	Vec3 offset = d * n;// +n * 1e-4f;
+
+	if (Dot(w, n) < 0) {
+		offset = -offset;
+	}
 	Vec3 po = p + offset;
+
 	// Round offset point _po_ away from _p_
 	for (int i = 0; i < 3; ++i) {
 		if (offset[i] > 0)
@@ -39,6 +44,7 @@ inline Vec3 OffsetRayOrigin(const Vec3 &p, const Vec3 &pError,
 		else if (offset[i] < 0)
 			po[i] = NextFloatDown(po[i]);
 	}
+
 	return po;
 }
 NAMESPACE_END

@@ -101,7 +101,13 @@ public:
 		real etaT = entering ? nt : nc;
 		Vec3 nForward = wo.Dot(n) > 0 ? n : -1 * n;
 		real P = Re * 0.5f + 0.25f;
+		//real P = Re;
 		if (rand.z < P) {
+			//{
+			//	if (debugPixel == 1) {
+			//		std::cout << "Reflection" << std::endl;
+			//	}
+			//}
 			/*
 			*wi = (nl * 2.0 * nl.Dot(wo) - wo).Norm();
 			*pdf = P;
@@ -120,6 +126,11 @@ public:
 			real cosTheta = std::abs((*wi).Dot(n));
 			return nnt * nnt * Fa * (1.0 - Re) / cosTheta;
 			*/
+			//{
+			//	if (debugPixel == 1) {
+			//		std::cout << "Refraction" << std::endl;
+			//	}
+			//}
 			real cosThetaI = wo.Dot(nForward);
 			real sinThetaI = std::sqrt(std::max(1 - cosThetaI * cosThetaI, (real)0));
 			real sinThetaT = sinThetaI * etaI / etaT;

@@ -22,14 +22,14 @@ struct Intersection {
 	//}
 
 	Ray SpawnTo(const Intersection &it) const {
-		Vec3 origin = OffsetRayOrigin(hit, pError, n, it.hit - hit);
-		Vec3 target = OffsetRayOrigin(it.hit, it.pError, it.n, origin - it.hit);
+		Vec3 origin = OffsetRayOrigin(hit, pError, nl, it.hit - hit);
+		Vec3 target = OffsetRayOrigin(it.hit, it.pError, it.nl, origin - it.hit);
 		Vec3 d = target - origin;
 		return Ray(origin, d, 1 - shadowRayEps, 0.f);
 	}
 
 	Ray SpawnRay(const Vec3 &d) const {
-		Vec3 o = OffsetRayOrigin(hit, pError, n, d);
+		Vec3 o = OffsetRayOrigin(hit, pError, nl, d);
 		return Ray(o, d, Infinity, 0.f);
 	}
 
