@@ -37,13 +37,12 @@
 
 //const real ALPHA = 0.66666667;
 const real ALPHA = 0.75;
-const int64  render_stage_number = 5000000;
+const int64  render_stage_number = 20000;
 
 
 
 
 int main(int argc, char *argv[]) {
-
 
 	clock_t begin = clock();
 
@@ -93,7 +92,7 @@ int main(int argc, char *argv[]) {
 	std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape));
 	scene->AddLight(light0);
 	scene->Initialize();
-	film->SetFileName("cornellbox21.bmp");
+	film->SetFileName("cornellbox23.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
 	clock_t end = clock();

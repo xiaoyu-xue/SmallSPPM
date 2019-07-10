@@ -3,7 +3,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#define USING_DOUBLE
+//#define USING_DOUBLE
+
 #define ISE_SSE
 
 #include <stdint.h>

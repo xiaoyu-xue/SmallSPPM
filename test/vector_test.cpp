@@ -5,12 +5,14 @@
 TEST(TestOstreamOperator, Ostream) {
 	{
 		std::ostringstream os;
-		os << Vector3(1, 2, 3);
+		Vector3 a(1, 2, 3);
+		os << a;
 		EXPECT_EQ(os.str(), "[ 1, 2, 3 ]");
 	}
 	{
 		std::ostringstream os;
-		os << Vector3(1.3, 2.5, 3.7);
+		Vector3 a(1.3, 2.5, 3.7);
+		os << a;
 		EXPECT_EQ(os.str(), "[ 1.3, 2.5, 3.7 ]");
 	}
 };

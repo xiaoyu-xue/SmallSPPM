@@ -47,7 +47,7 @@ public:
 		hpbbox.Fit(point.first);
 	}
 
-	void BuildHashGrid(real maxRadius = 0.8) {
+	void BuildHashGrid(real maxRadius = 0.8f) {
 		// find the bounding box of all the measurement points
 		//hpbbox.Reset();
 		//for (const std::pair<Vec3, T> &hp : hitPoints) {
@@ -69,7 +69,7 @@ public:
 		}
 
 		// make each grid cell two times larger than the initial radius
-		invHashCellSize = 1.0 / (searchRadius * 2.0);
+		invHashCellSize = 1.f / (searchRadius * 2.f);
 		hashNum = vphoton;
 
 		// build the hash table
