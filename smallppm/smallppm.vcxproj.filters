@@ -82,6 +82,9 @@
     <Filter Include="Header Files\primitive">
       <UniqueIdentifier>{c1659d2b-8d11-4b68-a0fa-ac3f9fde1b15}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\simd">
+      <UniqueIdentifier>{5968d54f-34f4-4aa6-ad01-e5db02e23e4d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sampler.cpp">
@@ -217,6 +220,9 @@
     </ClInclude>
     <ClInclude Include="debug_utils.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sse.h">
+      <Filter>Header Files\simd</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

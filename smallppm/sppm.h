@@ -53,9 +53,6 @@ public:
 		Intersection lightPoint;
 		real pdfPos, pdfDir;
 		Vec3 Le = light->SampleLight(&lightPoint, &lightDir, &pdfPos, &pdfDir, v, w);
-		//light->SampleLight(&pos, &lightDir, &lightNorm, &pdfPos, &pdfDir, v, w);
-		//pr->o = pos + lightDir * rayeps;
-		//pr->d = lightDir;
 		*pr = lightPoint.SpawnRay(lightDir);
 		real cosTheta = std::abs(lightPoint.n.Dot(lightDir));
 		*f = Le * cosTheta / (pdfPos * pdfDir * lightPdf);

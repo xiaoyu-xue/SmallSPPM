@@ -3,8 +3,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-//#define USING_DOUBLE
-
+#define USING_DOUBLE
+#define ISE_SSE
 
 #include <stdint.h>
 #include <algorithm>
@@ -42,6 +42,10 @@ using real_bit = uint32;
 #define FORCE_INLINE __forceinline
 #else
 #define FORCE_INLINE inline __attribute__((always_inline))
+#endif
+
+#if defined(_MSC_VER)
+#define ALIGNED(x) __declspec(align(x))
 #endif
 
 
