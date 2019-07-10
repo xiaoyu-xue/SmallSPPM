@@ -41,19 +41,9 @@ public:
 
 	bool Intersect(const Ray &r, Intersection *isect, real *t) const override {
 		// ray-sphere Intersection returns distance
-		//Vec3 op = p - r.o;
-		//real b = op.Dot(r.d), det = b * b - op.Dot(op) + rad * rad;
-		
-		
-		//float64 b = (float64)op.x * (float64)r.d.x + (float64)op.y * (float64)r.d.y + (float64)op.z * (float64)r.d.z;
-		//float64 det = b * b - ((float64)op.x * (float64)op.x + (float64)op.y * (float64)op.y + (float64)op.z * (float64)op.z) 
-		//	+ (float64)rad * (float64)rad;
-		//float64 tt;
-
 		Vec3 v = r.o - p;
-		float64 vd = v.Dot(r.d), d2 = r.d.Dot(r.d), v2 = v.Dot(v);
-		float64 tt;
-		float64 det = vd * vd - d2 * v2 + d2 * rad * rad;
+		real vd = v.Dot(r.d), d2 = r.d.Dot(r.d), v2 = v.Dot(v);
+		real det = vd * vd - d2 * v2 + d2 * rad * rad;
 
 
 		if (det < 0) {
@@ -64,22 +54,15 @@ public:
 			det = std::sqrt(det);
 		}
 
-		//*t = ((*t) = b - det) > 1e-6 ? (*t) : (((*t) = b + det) > 1e-6 ? (*t) : r.tMax);
-
-		tt = (-vd - det) / d2;
-		if (tt < 1e-4) {
-			tt = (-vd + det) / d2;
-			if (tt < 1e-4) {
-				tt = r.tMax;
+		*t = (-vd - det) / d2;
+		if (*t < 1e-4) {
+			*t = (-vd + det) / d2;
+			if (*t < 1e-4) {
+				*t = r.tMax;
 			}
 		}
 
-		//tt = ((tt) = b - det) > 1e-6 ? (tt) : (((tt) = b + det) > 1e-6 ? (tt) : r.tMax);
-
-
-		*t = tt;
-		isect->hit = r.o + r.d * tt;
-		//isect->hit = r.o + r.d * (*t);
+		isect->hit = r.o + r.d * (*t);
 		Vec3 scaledDir = (isect->hit - p) * rad / Distance(isect->hit, p);
 		isect->hit = p + scaledDir;
 		isect->n = (isect->hit - p).Norm();
@@ -95,7 +78,6 @@ public:
 		//isect->pError = hitError;
 		isect->pError = Abs(p) * gamma(1) + Abs(scaledDir) * gamma(6);
 		//std::cout << isect->pError << std::endl;
-		//return (*t > r.tMin && *t < r.tMax);
 		return (*t > r.tMin && *t < r.tMax);
 	}
 
@@ -153,18 +135,11 @@ public:
 	bool Intersect(const Ray &r) const override {
 		// ray-sphere Intersection returns distance
 		Vec3 op = p - r.o;
-		//real t, b = op.Dot(r.d), det = b * b - op.Dot(op) + rad * rad;
-
-		//float64 b = (float64)op.x * (float64)r.d.x + (float64)op.y * (float64)r.d.y + (float64)op.z * (float64)r.d.z;
-		//float64 det = b * b - ((float64)op.x * (float64)op.x + (float64)op.y * (float64)op.y + (float64)op.z * (float64)op.z)
-		//	+ (float64)rad * (float64)rad;
-		//float64 t;
 
 		Vec3 v = r.o - p;
-		float64 vd = v.Dot(r.d), d2 = r.d.Dot(r.d), v2 = v.Dot(v);
-		float64 t;
-		float64 det = vd * vd - d2 * v.Dot(v) + d2 * rad * rad;
-
+		real vd = v.Dot(r.d), d2 = r.d.Dot(r.d), v2 = v.Dot(v);
+		real t;
+		real det = vd * vd - d2 * v.Dot(v) + d2 * rad * rad;
 
 		if (det < 0) {
 			return false;
@@ -172,8 +147,6 @@ public:
 		else {
 			det = sqrt(det);
 		}
-		//t = (t = b - det) > 1e-4 ? t : ((t = b + det) > 1e-4 ? t : r.tMax);
-
 		t = (-vd - det) / d2;
 		if (t < 1e-4) {
 			t = (-vd + det) / d2;

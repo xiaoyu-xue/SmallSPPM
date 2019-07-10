@@ -125,10 +125,14 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 		std::is_same<T_, float32>::value && ISE_ >= IntrinsicSet::SSE;
 
 	template <int dim__, typename T_, IntrinsicSet ISE_>
+	static constexpr bool SIMD_4_64F = (dim__ == 3 || dim__ == 4) &&
+		std::is_same<T_, float32>::value && ISE_ >= IntrinsicSet::SSE;
+
+	template <int dim__, typename T_, IntrinsicSet ISE_>
 	static constexpr bool NOT_SIMD_4_32F = !SIMD_4_32F<dim__, T_, ISE_>;
 
-	template <IntrinsicSet ISE_>
-	static constexpr bool SIMD_NONE = ISE_ < IntrinsicSet::SSE;
+	template <int dim__, typename T_, IntrinsicSet ISE_>
+	static constexpr bool SIMD_NONE = !SIMD_4_32F<dim__, T_, ISE_>;
 
 	template<int dim__, typename T_, IntrinsicSet ISE_>
 	static constexpr bool SSE_4_32F = (dim__ == 3 || dim__ == 4) &&
@@ -142,20 +146,18 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 		}
 	}
 
-	//template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-	//	typename = std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> >
-	//explicit FORCE_INLINE Vector() : VectorBase(_mm_set_ps1(0.f)) { }
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0>
+	explicit FORCE_INLINE Vector() : VectorBase(_mm_set_ps1(0.f)) { }
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> >
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0 >
 	explicit FORCE_INLINE Vector(__m128 v) : VectorBase<dim__, T_, ISE_>(v) { }
 
-#ifdef ISE_SSE
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> >
+		std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0>
 	explicit FORCE_INLINE Vector(real x, real y, real z, real w = 0.f) :
 		VectorBase<dim__, T_, ISE_>(_mm_set_ps(w, z, y, x)) { }
-#endif
 
 
 	FORCE_INLINE Vector(T *a) {
@@ -188,19 +190,19 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 		}
 	}
 
-	template<int dim__ = dim, typename T_ = T, typename = std::enable_if_t<dim == 1, int>>
+	template<int dim__ = dim, typename T_ = T, typename std::enable_if_t<dim__ == 1, int> = 0>
 	FORCE_INLINE Vector(T x) {
 		this->d[0] = x;
 	}
 
-	template<int dim__ = dim, typename T_ = T, typename = std::enable_if_t<dim == 2, int>>
+	template<int dim__ = dim, typename T_ = T, typename std::enable_if_t<dim__ == 2, int> = 0>
 	FORCE_INLINE Vector(T x, T y) {
 		this->d[0] = x;
 		this->d[1] = y;
 	}
-#ifndef USING_SIMD
+
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE, 
-		typename = std::enable_if_t<dim == 3 && SIMD_NONE<ISE_>, int>>
+		typename std::enable_if_t<dim__ == 3 && ISE_ == IntrinsicSet::None, int> = 0>
 	FORCE_INLINE Vector(T x, T y, T z) {
 		this->d[0] = x;
 		this->d[1] = y;
@@ -208,14 +210,14 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<dim == 4 && SIMD_NONE<ISE_>, int>>
+		typename std::enable_if_t<dim__ == 4 && ISE_ == IntrinsicSet::None, int> = 0>
 	FORCE_INLINE Vector(T x, T y, T z, T w) {
 		this->d[0] = x;
 		this->d[1] = y;
 		this->d[2] = z;
 		this->d[3] = w;
 	}
-#endif
+
 	FORCE_INLINE T& operator[](int i) {
 		return this->d[i];
 	}
@@ -233,17 +235,19 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	FORCE_INLINE Vector& operator=(const Vector &a) {
-		memcpy(&(this->d[0]), &(a.d[0]), sizeof(T) * dim);
+		//memcpy(&(this->d[0]), &(a.d[0]), sizeof(T) * dim);
+		memcpy(this, &a, sizeof(*this));
 		return *this;
 	}
 
 	FORCE_INLINE Vector& operator=(Vector &&a) {
-		memcpy(&(this->d[0]), &(a.d[0]), sizeof(T) * dim);
+		//memcpy(&(this->d[0]), &(a.d[0]), sizeof(T) * dim);
+		memcpy(this, &a, sizeof(*this));
 		return *this;
 	}
 
-	template<int dim__ = dim_, IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SIMD_NONE<ISE_>, int> >
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SIMD_NONE<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE Vector operator+(const Vector &a) const {
 		Vector ret;
 		for (int i = 0; i < dim; ++i) {
@@ -253,13 +257,13 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> >
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0>
 	FORCE_INLINE Vector operator+(const Vector &a) const {
 		return Vector(_mm_add_ps(this->v, a.v));
 	}
 
-	template<IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SIMD_NONE<ISE_>, int> >
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SIMD_NONE<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE Vector operator-(const Vector &a) const {
 		Vector ret;
 		for (int i = 0; i < dim; ++i) {
@@ -269,13 +273,13 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> >
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0>
 	FORCE_INLINE Vector operator-(const Vector &a) const {
 		return Vector(_mm_sub_ps(this->v, a.v));
 	}
 
-	template<IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SIMD_NONE<ISE_>, int> >
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SIMD_NONE<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE Vector operator-() const {
 		Vector ret;
 		for (int i = 0; i < dim; ++i) {
@@ -285,13 +289,13 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> >
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE Vector operator-() const {
 		return Vector(_mm_mul_ps(this->v, _mm_set_ps1(-1.f)));
 	}
 
-	template<IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SIMD_NONE<ISE_>, int> >
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SIMD_NONE<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE Vector operator*(const Vector &a) const {
 		Vector ret;
 		for (int i = 0; i < dim; ++i) {
@@ -301,13 +305,13 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> >
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0>
 	FORCE_INLINE Vector operator*(const Vector &a) const {
 		return Vector(_mm_mul_ps(this->v, a.v));
 	}
 
-	template<IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SIMD_NONE<ISE_>, int> >
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SIMD_NONE<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE Vector operator*(real a) const {
 		Vector ret;
 		for (int i = 0; i < dim; ++i) {
@@ -317,13 +321,13 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> >
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE Vector operator*(float32 a) const {
 		return Vector(_mm_mul_ps(this->v, _mm_set_ps1(a)));
 	}
 
-	template<IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SIMD_NONE<ISE_>, int> >
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SIMD_NONE<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE Vector operator/(const Vector &a) const {
 		Vector ret;
 		for (int i = 0; i < dim; ++i) {
@@ -333,13 +337,13 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> >
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE Vector operator/(const Vector &a) const {
 		return Vector(_mm_div_ps(this->v, a.v));
 	}
 
-	template<IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SIMD_NONE<ISE_>, int> >
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SIMD_NONE<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE Vector operator/(real a) const {
 		Vector ret;
 		if (a == 0) {
@@ -352,14 +356,14 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> >
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE Vector operator/(float32 a) const {
 		if(a == 0) return Vector(_mm_set_ps1(0.f));
 		return Vector(_mm_div_ps(this->v, _mm_set_ps1(a)));
 	}
 
-	template<IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SIMD_NONE<ISE_>, int> >
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SIMD_NONE<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE Vector& operator+=(const Vector &a) {
 		for (int i = 0; i < dim; ++i) {
 			this->d[i] += a.d[i];
@@ -368,14 +372,14 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> >
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0>
 	FORCE_INLINE Vector& operator+=(const Vector &a) {
 		this->v = _mm_add_ps(this->v, a.v);
 		return *this;
 	}
 
-	template<IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SIMD_NONE<ISE_>, int> >
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SIMD_NONE<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE Vector& operator-=(const Vector &a) {
 		for (int i = 0; i < dim; ++i) {
 			this->d[i] -= a.d[i];
@@ -384,14 +388,14 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> >
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0>
 		FORCE_INLINE Vector& operator-=(const Vector &a) {
 		this->v = _mm_sub_ps(this->v, a.v);
 		return *this;
 	}
 
-	template<IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SIMD_NONE<ISE_>, int> >
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SIMD_NONE<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE Vector& operator*=(const Vector &a) {
 		for (int i = 0; i < dim; ++i) {
 			this->d[i] *= a.d[i];
@@ -400,14 +404,14 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> >
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0>
 	FORCE_INLINE Vector& operator*=(const Vector &a) {
 		this->v = _mm_mul_ps(this->v, a.v);
 		return *this;
 	}
 
-	template<IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SIMD_NONE<ISE_>, int> >
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SIMD_NONE<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE Vector& operator*=(real a) {
 		for (int i = 0; i < dim; ++i) {
 			this->d[i] *= a;
@@ -416,14 +420,14 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> >
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0>
 	FORCE_INLINE Vector& operator*=(real a) {
 		this->v = _mm_mul_ps(this->v, _mm_set_ps1(a));
 		return *this;
 	}
 
-	template<IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SIMD_NONE<ISE_>, int> >
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SIMD_NONE<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE Vector& operator/=(const Vector &a) {
 		for (int i = 0; i < dim; ++i) {
 			this->d[i] /= a.d[i];
@@ -433,14 +437,14 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> >
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0>
 	FORCE_INLINE Vector& operator/=(const Vector &a) {
 		this->v = _mm_div_ps(this->v, a.v);
 		return *this;
 	}
 
-	template<IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SIMD_NONE<ISE_>, int> >
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SIMD_NONE<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE Vector& operator/=(real a) {
 		for (int i = 0; i < dim; ++i) {
 			this->d[i] /= a;
@@ -449,7 +453,7 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> >
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE Vector& operator/=(real a) {
 		this->v = _mm_div_ps(this->v, _mm_set_ps1(a));
 		return *this;
@@ -473,8 +477,8 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 		return false;
 	}
 
-	template<IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SIMD_NONE<ISE_>, int> >
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SIMD_NONE<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE T Dot(const Vector &a) const {
 		T ret = T(0);
 		for (int i = 0; i < dim; ++i) {
@@ -484,7 +488,7 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> >
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0>
 	FORCE_INLINE real Dot(const Vector &a) const {
 		return _mm_cvtss_f32(_mm_dp_ps(this->v, a.v, 0xf1));
 	}
@@ -497,8 +501,8 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 		return std::sqrt(Length2());
 	}
 
-	template<IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SIMD_NONE<ISE_>, int> >
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SIMD_NONE<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE Vector Norm() const {
 		real invLen = (real)(1.0) / Length();
 		Vector ret(*this);
@@ -509,13 +513,13 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> >
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0>
 	FORCE_INLINE Vector Norm() const {
-		return Vector(_mm_div_ps(this->v, _mm_set_ps1(this->dot(*this))));
+		return Vector(_mm_div_ps(this->v, _mm_set_ps1(this->Length())));
 	}
 
-	template<IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SIMD_NONE<ISE_>, int> >
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SIMD_NONE<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE void Normalize() {
 		real invLen = (real)(1.0) / Length();
 		for (int i = 0; i < dim; ++i) {
@@ -524,9 +528,9 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename = std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> >
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE void Normalize() {
-		this->v = _mm_div_ps(this->v, _mm_set_ps1(this->Dot(*this)));
+		this->v = _mm_div_ps(this->v, _mm_set_ps1(this->Length()));
 	}
 
 	FORCE_INLINE T MaxVal() const {
@@ -545,7 +549,7 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 		return ret;
 	}
 
-	template<int dim__ = dim, typename T, typename = std::enable_if_t<dim__ == 3, int>>
+	template<int dim__ = dim, typename T, typename std::enable_if_t<dim__ == 3, int> = 0>
 	FORCE_INLINE Vector Cross(const Vector<dim__, T> &a) const {
 		return Vector<dim__, T>(this->y * a.z - this->z * a.y, this->z * a.x - this->x * a.z, this->x * a.y - this->y * a.x);
 	}
@@ -604,7 +608,7 @@ FORCE_INLINE real Distance(const Vector<dim, T, ISE> &a, const Vector<dim, T, IS
 }
 
 template<int dim, typename T, IntrinsicSet ISE>
-FORCE_INLINE Vector<dim, T> Abs(const Vector<dim, T, ISE> &a) {
+FORCE_INLINE Vector<dim, T, ISE> Abs(const Vector<dim, T, ISE> &a) {
 	Vector<dim, T, ISE> ret;
 	for(int i = 0; i < dim; ++i) {
 		ret.d[i] = std::abs(a.d[i]);
