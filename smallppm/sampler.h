@@ -8,7 +8,7 @@ NAMESPACE_BEGIN
 
 class Sampler {
 public:
-	virtual double Sample(unsigned int d, unsigned long long i) = 0;
+	virtual real Sample(unsigned int d, unsigned long long i) = 0;
 };
 
 class StateSequence {
@@ -16,9 +16,9 @@ protected:
 	int cursor = 0;
 
 public:
-	virtual double Sample() = 0;
+	virtual real Sample() = 0;
 
-	virtual double operator()() {
+	virtual real operator()() {
 		return Sample();
 	}
 
@@ -47,9 +47,9 @@ public:
 		: sampler(sampler), instance(instance) {
 	}
 
-	double Sample() override {
+	real Sample() override {
 		//assert_info(sampler != nullptr, "null sampler");
-		double ret = sampler->Sample(cursor++, instance);
+		real ret = sampler->Sample(cursor++, instance);
 		//assert_info(ret >= 0, "sampler output should be non-neg");
 		if (ret > 1 + 1e-5f) {
 			printf("Warning: sampler returns value > 1: [%f]", ret);
@@ -67,13 +67,13 @@ public:
 
 	}
 
-	double Sample(unsigned int d, unsigned long long i) {
+	real Sample(unsigned int d, unsigned long long i) {
 		return uniform(rng);
 		//return Rand();
 	}
 private:
 	std::mt19937_64 rng;
-	std::uniform_real_distribution<double> uniform;
+	std::uniform_real_distribution<real> uniform;
 };
 
 class PrimeList {
@@ -102,9 +102,9 @@ private:
 
 class RegularHaltonSampler : public Sampler {
 public:
-	double Sample(unsigned int d, unsigned long long i) {
+	real Sample(unsigned int d, unsigned long long i) override {
 		ASSERT(d < (unsigned)primeList.GetPrimesNum());
-		double val = hal(d, i + 1);  // The first one is evil...
+		real val = hal(d, i + 1);  // The first one is evil...
 		return val;
 	}
 
@@ -113,9 +113,9 @@ private:
 		return i == 0 ? i : p - i;
 	}
 
-	double hal(const int d, long long j) const {
+	real hal(const int d, long long j) const {
 		const int p = primeList.GetPrime(d);
-		double h = 0.0, f = 1.0 / p, fct = f;
+		real h = 0.f, f = 1.f / p, fct = f;
 		while (j > 0) {
 			h += rev(j % p, p) * fct;
 			j /= p;

@@ -79,11 +79,14 @@
     <Filter Include="Source Files\numeric">
       <UniqueIdentifier>{373f84cf-13b9-4871-b61e-eea158613a25}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\primitive">
+      <UniqueIdentifier>{c1659d2b-8d11-4b68-a0fa-ac3f9fde1b15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\simd">
+      <UniqueIdentifier>{5968d54f-34f4-4aa6-ad01-e5db02e23e4d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="smallppm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sampler.cpp">
       <Filter>Source Files\sampler</Filter>
     </ClCompile>
@@ -98,6 +101,9 @@
     </ClCompile>
     <ClCompile Include="efloat.cpp">
       <Filter>Source Files\numeric</Filter>
+    </ClCompile>
+    <ClCompile Include="debug_utils.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -208,6 +214,15 @@
     </ClInclude>
     <ClInclude Include="image_io.h">
       <Filter>Header Files\imageio</Filter>
+    </ClInclude>
+    <ClInclude Include="primitive.h">
+      <Filter>Header Files\primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="debug_utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sse.h">
+      <Filter>Header Files\simd</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -175,7 +175,7 @@ TEST(TestLength, Length) {
 TEST(TestNormalize, Normalize) {
 	{
 		Vector3 a(1, 2, 3), b(0.2672612419, 0.5345224838, 0.80178372573);
-		EXPECT_EQ(Equal(a.Normal(), b), true);
+		EXPECT_EQ(Equal(a.Norm(), b), true);
 	}
 	{
 		Vector3 a(1, 2, 3), b(0.2672612419, 0.5345224838, 0.80178372573);

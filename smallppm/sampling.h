@@ -147,11 +147,11 @@ private:
 
 
 
-Vec ConcentricSampleDisk(const Vec &u);
+Vec2 ConcentricSampleDisk(const Vec2 &u);
 
-Vec UniformSampleSphere(const Vec &u);
+Vec3 UniformSampleSphere(const Vec2 &u);
 
-Vec CosineSampleHemisphere(const Vec &u);
+Vec3 CosineSampleHemisphere(const Vec2 &u);
 
 real BalanceHeuristic(int nf, real fPdf, int ng, real gPdf);
 

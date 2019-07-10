@@ -3,20 +3,48 @@
 #include "linagl.h"
 #include <algorithm>
 #include "utils.h"
+#include "efloat.h"
+#include "debug_utils.h"
 
 NAMESPACE_BEGIN
 
-FORCE_INLINE void CoordinateSystem(const Vec &v1, Vec *v2, Vec *v3) {
+FORCE_INLINE void CoordinateSystem(const Vec3 &v1, Vec3 *v2, Vec3 *v3) {
 	if (std::abs(v1.x) > std::abs(v1.y))
-		*v2 = Vec(-v1.z, 0, v1.x) / std::sqrt(v1.x * v1.x + v1.z * v1.z);
+		*v2 = Vec3(-v1.z, 0, v1.x) / std::sqrt(v1.x * v1.x + v1.z * v1.z);
 	else
-		*v2 = Vec(0, v1.z, -v1.y) / std::sqrt(v1.y * v1.y + v1.z * v1.z);
-	*v3 = v1 % (*v2);
+		*v2 = Vec3(0, v1.z, -v1.y) / std::sqrt(v1.y * v1.y + v1.z * v1.z);
+	*v3 = v1.Cross(*v2);
 }
 
 
-Vec Reflect(const Vec &inDir, const Vec &n) {
-	return 2.0 * inDir.dot(n) * n - inDir;
+Vec3 Reflect(const Vec3 &inDir, const Vec3 &n) {
+	return 2.f * inDir.Dot(n) * n - inDir;
 }
 
+inline Vec3 OffsetRayOrigin(const Vec3 &p, const Vec3 &pError,
+	const Vec3 &n, const Vec3 &w) {
+	real d = Dot(Abs(n), pError);
+#ifdef USING_DOUBLE
+	// We have tons of precision; for now bump up the offset a bunch just
+	// to be extra sure that we start on the right side of the surface
+	// (In case of any bugs in the epsilons code...)
+	d *= 1024.;
+#endif
+	Vec3 offset = d * n;// +n * 1e-4f;
+
+	if (Dot(w, n) < 0) {
+		offset = -offset;
+	}
+	Vec3 po = p + offset;
+
+	// Round offset point _po_ away from _p_
+	for (int i = 0; i < 3; ++i) {
+		if (offset[i] > 0)
+			po[i] = NextFloatUp(po[i]);
+		else if (offset[i] < 0)
+			po[i] = NextFloatDown(po[i]);
+	}
+
+	return po;
+}
 NAMESPACE_END

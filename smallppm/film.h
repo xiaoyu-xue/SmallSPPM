@@ -15,8 +15,8 @@ class Film {
 protected:
 	struct Pixel
 	{
-		Vec color;
-		Vec splat;
+		Vec3 color;
+		Vec3 splat;
 		real weight;
 	};
 public:
@@ -27,7 +27,7 @@ public:
 	real Area() const {
 		return area;
 	}
-	void AddSample(real x, real y, const Vec &sample) {
+	void AddSample(real x, real y, const Vec3 &sample) {
 		x -= 0.5;
 		y -= 0.5;
 
@@ -54,7 +54,7 @@ public:
 		}
 	}
 
-	void AddSplat(real x, real y, const Vec& sample)
+	void AddSplat(real x, real y, const Vec3& sample)
 	{
 		int X = (int)(std::floor(x));
 		int Y = (int)(std::floor(y));
@@ -68,7 +68,7 @@ public:
 		pixel.splat = pixel.splat + sample;
 	}
 
-	void SetImage(const std::vector<Vec> &image) {
+	void SetImage(const std::vector<Vec3> &image) {
 		imageBuffer = image;
 	}
 
@@ -126,7 +126,7 @@ public:
 	real width, heigh;
 	real aspect;
 	real area;
-	Vec LL, LU, RL, RU;
+	Vec3 LL, LU, RL, RU;
 private:
 	//struct BmpHeader
 	//{
@@ -226,7 +226,7 @@ private:
 private:
 	std::string filename;
 	std::vector<Pixel> pixelBuffer;
-	std::vector<Vec> imageBuffer;
+	std::vector<Vec3> imageBuffer;
 	std::unique_ptr<Filter> filter;
 	std::vector<Spinlock> bufferLocks;
 

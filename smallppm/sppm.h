@@ -8,10 +8,12 @@
 #include "hashgrid.h"
 #include "image_io.h"
 
+#include "debug_utils.h"
+
 NAMESPACE_BEGIN
 
 struct HPoint {
-	Vec importance, pos, nrm, flux, outDir;
+	Vec3 importance, pos, nrm, flux, outDir;
 	real r2;
 	int64 n; // n = N / ALPHA in the paper
 	int64 pix;
@@ -29,36 +31,89 @@ public:
 
 	}
 
-	void GeneratePhoton(const Scene &scene, Ray *pr, Vec *f, real u, const Vec &v, const Vec &w) {
+	//void GeneratePhoton(const Scene &scene, Ray *pr, Vec3 *f, real u, const Vec2 &v, const Vec2 &w) {
+	//	real lightPdf;
+	//	std::shared_ptr<Light> light = scene.SampleOneLight(&lightPdf, u);
+	//	Vec3 Le = light->Emission();
+	//	Vec3 pos, lightDir, lightNorm;
+	//	real pdfPos, pdfDir;
+	//	light->SampleLight(&pos, &lightDir, &lightNorm, &pdfPos, &pdfDir, v, w);
+	//	pr->o = pos + lightDir * rayeps;
+	//	pr->d = lightDir;
+	//	real cosTheta = std::abs(lightNorm.Dot(lightDir));
+	//	*f = Le * cosTheta / (pdfPos * pdfDir * lightPdf);
+	//}
+
+	void GeneratePhoton(const Scene &scene, Ray *pr, Vec3 *f, real u, const Vec2 &v, const Vec2 &w) {
 		real lightPdf;
 		std::shared_ptr<Light> light = scene.SampleOneLight(&lightPdf, u);
-		Vec Le = light->Emission();
-		Vec pos, lightDir, lightNorm;
+		//Vec3 Le = light->Emission();
+		//Vec3 pos, lightDir, lightNorm;
+		Vec3 lightDir;
+		Intersection lightPoint;
 		real pdfPos, pdfDir;
-		light->SampleLight(&pos, &lightDir, &lightNorm, &pdfPos, &pdfDir, v, w);
-		pr->o = pos + lightDir * rayeps;
-		pr->d = lightDir;
-		real cosTheta = std::abs(lightNorm.dot(lightDir));
+		Vec3 Le = light->SampleLight(&lightPoint, &lightDir, &pdfPos, &pdfDir, v, w);
+		*pr = lightPoint.SpawnRay(lightDir);
+		real cosTheta = std::abs(lightPoint.n.Dot(lightDir));
 		*f = Le * cosTheta / (pdfPos * pdfDir * lightPdf);
 	}
 
 	void TraceEyePath(const Scene &scene, StateSequence &rand, const Ray &ray, int64 pixel) {
+		//{
+		//	int x = 365, y = 550;
+		//	if(pixel == x + scene.GetCamera()->GetFilm()->resX * y) {
+		//		debugPixel = 1;
+		//		std::cout << "--------------------------------------------------------" << std::endl;
+		//	}else {
+		//		debugPixel = 0;
+		//	}
+		//}
 		Ray r = ray;
 		bool deltaBoundEvent = false;
-		Vec importance(1.0, 1.0, 1.0);
+		Vec3 importance(1.0, 1.0, 1.0);
 		for (int i = 0; i < maxDepth; ++i) {
 			real t;
 			Intersection isect;
 			std::shared_ptr<Shape> hitObj;
+			//{
+			//	if (debugPixel == 1) {
+			//		std::cout << r << std::endl;
+			//		std::cout << "rad: " << Distance(r.o, Vec3(27, 16.5f, 47)) << std::endl;
+			//	}
+			//}
 			if (!scene.Intersect(r, &t, &isect, hitObj)) return;
+			//{
+			//	if (debugPixel == 1) {
+			//		std::cout << "hit obj: " << hitObj->GetId() << " hit: " << isect.hit << std::endl;
+			//		std::cout << "pError: " << isect.pError << std::endl;
+			//		std::cout << "rad: " << Distance(isect.hit, Vec3(27, 16.5f, 47)) << std::endl;
+			//	}
+			//}
 			std::shared_ptr<BSDF> bsdf = hitObj->GetBSDF(isect);
-			Vec wi;
+			Vec3 wi;
 			real pdf;
+
+			//{
+			//	int x = 223, y = 387;
+			//	if (pixel == x + scene.GetCamera()->GetFilm()->resX * y) {
+			//		//debugPixel = 1;
+			//		//std::cout << "isect: " << isect.hit << " " << isect.rayEps << std::endl;
+			//		//std::cout << "first hit:" << hitObj->GetId() << std::endl;
+			//		//std::cout << isect.hit << "\n" << isect.nl <<"\n" << isect.nl << "\n" << t << std::endl;
+			//	}
+			//	else {
+			//		debugPixel = 0;
+			//	}
+			//}
+
+
 			if (bsdf->IsDelta()) {
-				Vec f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec(rand(), rand(), rand()));
-				importance = f * std::abs(wi.dot(isect.n)) * importance / pdf;
-				r.o = isect.hit + wi * rayeps + wi.dot(isect.n) * nEps * isect.n;
-				r.d = wi;
+				Vec3 f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec3(rand(), rand(), rand()));
+				importance = f * std::abs(wi.Dot(isect.n)) * importance / pdf;
+				//r.o = isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n;
+				//r.d = wi;
+				//r = Ray(isect.hit, wi, Inf, isect.rayEps);
+				r = isect.SpawnRay(wi);
 				deltaBoundEvent = true;
 			}
 			else {
@@ -72,17 +127,28 @@ public:
 				hitPoints[pixel] = hp;
 				if ((i == 0 || deltaBoundEvent) && hitObj->IsLight()) {
 					directillum[hp.pix] = directillum[hp.pix] + importance * hitObj->GetEmission();
+					//{
+					//	if (debugPixel == 1) {
+					//		std::cout << "direction illumination(delta): " << hp.importance << " " << 
+					//			hitObj->GetEmission() << " " << directillum[hp.pix] << std::endl;
+					//	}
+					//}
 				}
 				else {
-					Vec Ld = hp.importance * DirectIllumination(scene, isect, bsdf, rand(), Vec(rand(), rand(), rand()), Vec(rand(), rand(), rand()));
+					Vec3 Ld = hp.importance * DirectIllumination(scene, isect, bsdf, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()));
 					directillum[hp.pix] = directillum[hp.pix] + Ld;
+					//{
+					//	if (debugPixel == 1) {
+					//		std::cout << "direction illumination: " << hp.importance << " " << Ld << " " << directillum[hp.pix] << std::endl;
+					//	}
+					//}
 				}
 				return;
 			}
 		}
 	}
 
-	void TracePhoton(const Scene &scene, StateSequence &rand, const Ray &ray, Vec photonFlux) {
+	void TracePhoton(const Scene &scene, StateSequence &rand, const Ray &ray, Vec3 photonFlux) {
 		Ray r = ray;
 		for (int i = 0; i < maxDepth; ++i) {
 			real t;
@@ -90,14 +156,16 @@ public:
 			std::shared_ptr<Shape> hitObj;
 			if (!scene.Intersect(r, &t, &isect, hitObj)) return;
 			std::shared_ptr<BSDF> bsdf = hitObj->GetBSDF(isect, TransportMode::Importance);
-			Vec wi;
+			Vec3 wi;
 			real pdf;
-			Vec f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec(rand(), rand(), rand()));
-			Vec estimation = f * std::abs(wi.dot(isect.n)) / pdf;
+			Vec3 f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec3(rand(), rand(), rand()));
+			Vec3 estimation = f * std::abs(wi.Dot(isect.n)) / pdf;
 			if (bsdf->IsDelta()) {
 				photonFlux = photonFlux * estimation;
-				r.o = isect.hit + wi * rayeps + wi.dot(isect.n) * nEps * isect.n;
-				r.d = wi;
+				//r.o = isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n;
+				//r.d = wi;
+				//r = Ray(isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n, wi, Inf, isect.rayEps);
+				r = isect.SpawnRay(wi);
 			}
 			else {
 				if (i > 0) {
@@ -105,26 +173,26 @@ public:
 					for (HPoint* hitpoint : hp) {
 						//Use spinlock, but racing condition is rare when using QMC
 						//std::lock_guard<Spinlock> lock(pixelLocks[hitpoint->pix]);
-						Vec v = hitpoint->pos - isect.hit;
-						if ((hitpoint->nrm.dot(isect.n) > eps) && (v.dot(v) <= radius2[hitpoint->pix])) {
+						Vec3 v = hitpoint->pos - isect.hit;
+						if ((hitpoint->nrm.Dot(isect.n) > PhtotonEdgeEps) && (v.Dot(v) <= radius2[hitpoint->pix])) {
 							if (!batchShrink) {
 								// unlike N in the paper, hitpoint->n stores "N / ALPHA" to make it an integer value
-								real g = (photonNums[hitpoint->pix] * alpha + alpha) / (photonNums[hitpoint->pix] * alpha + 1.0);
+								real g = (photonNums[hitpoint->pix] * alpha + alpha) / (photonNums[hitpoint->pix] * alpha + 1.f);
 								radius2[hitpoint->pix] = radius2[hitpoint->pix] * g;
 								photonNums[hitpoint->pix] += 1;
-								Vec contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.d) * photonFlux;
+								Vec3 contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.d) * photonFlux;
 								flux[hitpoint->pix] = (flux[hitpoint->pix] + contribution) * g;
 							}
 							else {
 								hitpoint->m++;
-								Vec contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.d) * photonFlux;
+								Vec3 contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.d) * photonFlux;
 								flux[hitpoint->pix] = (flux[hitpoint->pix] + contribution);
 							}
 						}
 					}
 				}
 				//real p = estimation.maxValue();
-				real p = std::min(1.0, (estimation * photonFlux).Y() / photonFlux.Y());
+				real p = std::min((real)1.0, (estimation * photonFlux).Y() / photonFlux.Y());
 				if (p < 1) {
 					if (rand() < p) {
 						photonFlux = photonFlux / p;
@@ -134,8 +202,10 @@ public:
 					}
 				}
 				photonFlux = photonFlux * estimation;
-				r.o = isect.hit + wi * rayeps + wi.dot(isect.n) * nEps * isect.n;
-				r.d = wi;
+				//r.o = isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n;
+				//r.d = wi;
+				//r = Ray(isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n, wi, Inf, isect.rayEps);
+				r = isect.SpawnRay(wi);
 			}
 		}
 	}
@@ -143,7 +213,7 @@ public:
 	void GenerateRadiusImage(const Scene &scene) {
 		int resX = scene.GetCamera()->GetFilm()->resX;
 		int resY = scene.GetCamera()->GetFilm()->resY;
-		std::vector<Vec> radImg(resX * resY);
+		std::vector<Vec3> radImg(resX * resY);
 		real minRadius2 = Inf, maxRadius2 = 0.0, avgRadius = 0.0;
 		for (int y = 0; y < resY; ++y) {
 			for (int x = 0; x < resX; ++x) {
@@ -158,7 +228,7 @@ public:
 		for (int y = 0; y < resY; ++y) {
 			for (int x = 0; x < resX; ++x) {
 				int index = x + y * resX;
-				real val = 1.0 - (std::sqrt(radius2[index]) - std::sqrt(minRadius2)) /
+				real val = 1.f - (std::sqrt(radius2[index]) - std::sqrt(minRadius2)) /
 					(std::sqrt(maxRadius2) - std::sqrt(minRadius2));
 				radImg[index].x = val;
 				radImg[index].y = val;
@@ -166,10 +236,10 @@ public:
 			}
 		}
 
-		ImageIO::WriteBmpFile("rad_image.bmp", radImg, resX, resY, 2.2);
+		ImageIO::WriteBmpFile("rad_image.bmp", radImg, resX, resY, 2.2f);
 	}
 
-	void Render(const Scene &scene) {
+	void Render(const Scene &scene) override {
 		fprintf(stderr, "Rendering ...\n");
 		int resX = scene.GetCamera()->GetFilm()->resX;
 		int resY = scene.GetCamera()->GetFilm()->resY;
@@ -184,7 +254,7 @@ public:
 					RandomStateSequence rand(sampler, instance);
 					real u = samplerEnum->SampleX(x, rand());
 					real v = samplerEnum->SampleY(y, rand());
-					Vec pixelSample(u, v, 0);
+					Vec2 pixelSample(u, v);
 					Ray ray = scene.GetCamera()->GenerateRay(x, y, pixelSample);
 					TraceEyePath(scene, rand, ray, pixel);
 				}
@@ -196,7 +266,7 @@ public:
 				HPoint &hp = hitPoints[i];
 				if (hp.used) {
 					maxRadius2 = std::max(maxRadius2, radius2[i]);
-					hashGrid.AddPoint(std::move(std::pair<Vec, HPoint*>(hp.pos, &hp)), std::sqrt(radius2[i]));
+					hashGrid.AddPoint(std::move(std::pair<Vec3, HPoint*>(hp.pos, &hp)), std::sqrt(radius2[i]));
 				}
 			}
 			hashGrid.BuildHashGrid(std::sqrt(maxRadius2) + eps);
@@ -204,9 +274,9 @@ public:
 			//Trace photon
 			ParallelFor((int64)0, nPhotonsPerRenderStage, [&](int64 j) {
 				Ray ray;
-				Vec photonFlux;
+				Vec3 photonFlux;
 				RandomStateSequence rand(sampler, iter * nPhotonsPerRenderStage + j);
-				GeneratePhoton(scene, &ray, &photonFlux, rand(), Vec(rand(), rand(), rand()), Vec(rand(), rand(), rand()));
+				GeneratePhoton(scene, &ray, &photonFlux, rand(), Vec2(rand(), rand()), Vec2(rand(), rand()));
 				TracePhoton(scene, rand, ray, photonFlux);
 			});
 
@@ -225,17 +295,37 @@ public:
 				});
 			}
 
-			real percentage = 100.*(iter + 1) / nIterations;
+			real percentage = 100.f * (iter + 1) / nIterations;
 			fprintf(stderr, "\rIterations: %5.2f%%", percentage);
 		}
 
 		// density estimation
 		std::cout << "\nFlux size: " << flux.size() << std::endl;
 		ParallelFor(0, (int)flux.size(), [&](int i) {
-			c[i] = c[i] + flux[i] * (1.0 / (PI * radius2[i] * nIterations * nPhotonsPerRenderStage))
-				+ directillum[i] / nIterations;
+			c[i] = c[i] + flux[i] * (1.f / (PI * radius2[i] * nIterations * nPhotonsPerRenderStage))
+				+ directillum[i] / (real)nIterations;
+			//if (std::isnan(c[i].x)  || std::isnan(c[i].y)  || std::isnan(c[i].z)) {
+			//	std::cout << i % resX << " " << i / resX << " "<< i << std::endl;
+			//}
 			//c[i] = c[i] + directillum[i] / nIterations;
 		});
+		//{
+		//	for (int x = 356; x <= 374; ++x) {
+		//		for (int y = 545; y <= 560; ++y) {
+		//			int index = x + y * resX;
+		//			if (c[index].x >= 1 || c[index].y >= 1 || c[index].z >= 1) {
+		//				std::cout << c[index] << std::endl;
+		//				std::cout << x << " " << y << std::endl;
+		//			}
+
+		//				
+		//		}
+		//	}
+		//	int x = 365, y = 550;
+		//	int index = x + y * resX;
+		//	std::cout << c[index] << std::endl;
+		//}
+		//std::cout << flux[591714] << " " << radius2[591714] << std::endl;
 		scene.GetCamera()->GetFilm()->SetImage(c);
 		//GenerateRadiusImage(scene);
 	}
@@ -252,7 +342,7 @@ private:
 		for (int i = 0; i < w * h; ++i) {
 			radius2[i] = initialRadius * initialRadius;
 			photonNums[i] = 0;
-			flux[i] = Vec();
+			flux[i] = Vec3();
 			hitPoints[i].m = 0;
 		}
 	}
@@ -263,10 +353,10 @@ private:
 	std::vector<real> radius2;
 	//std::vector<int64> photonNums;
 	std::vector<real> photonNums;
-	std::vector<Vec> flux;
-	std::vector<Vec> directillum;
+	std::vector<Vec3> flux;
+	std::vector<Vec3> directillum;
 	std::vector<HPoint> hitPoints;
-	std::vector<Vec> c;
+	std::vector<Vec3> c;
 	std::vector<Spinlock> pixelLocks;
 	const real initialRadius;
 	const int maxDepth;

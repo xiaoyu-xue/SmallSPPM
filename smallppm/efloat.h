@@ -158,13 +158,12 @@ public:
 	}
 
 	friend std::ostream &operator<<(std::ostream &os, const EReal &ef) {
-		//os << StringPrintf("v=%f (%a) - [%f, %f]",
-		//	ef.v, ef.v, ef.low, ef.high);
-		os << "v=" << ef.v << " - "
-			<< "[" << ef.low << ", " << ef.high << "] ";
+		printf("v=%f (%a) - [%f, %f]",	ef.v, ef.v, ef.low, ef.high);
+		//os << "v=" << ef.v << " - "
+		//	<< "[" << ef.low << ", " << ef.high << "] ";
 #ifndef NDEBUG
-		//os << StringPrintf(", precise=%.30Lf", ef.vPrecise);
-		os << ", precise=" << ef.vPricese;
+		printf(", precise=%.30Lf", ef.vPrecise);
+		//os << ", precise=" << ef.vPrecise;
 #endif // !NDEBUG
 		return os;
 	}
@@ -175,8 +174,8 @@ private:
 #ifndef NDEBUG
 	long double vPrecise;
 #endif  // NDEBUG
-	friend FORCE_INLINE EReal sqrt(EReal fe);
-	friend FORCE_INLINE EReal abs(EReal fe);
+	friend FORCE_INLINE EReal Sqrt(EReal fe);
+	friend FORCE_INLINE EReal Abs(EReal fe);
 	friend FORCE_INLINE bool Quadratic(EReal A, EReal B, EReal C, EReal *t0, EReal *t1);
 };
 
@@ -189,7 +188,7 @@ FORCE_INLINE EReal operator+(float f, EReal fe) { return EReal(f) + fe; }
 
 FORCE_INLINE EReal operator-(float f, EReal fe) { return EReal(f) - fe; }
 
-FORCE_INLINE EReal sqrt(EReal fe) {
+FORCE_INLINE EReal Sqrt(EReal fe) {
 	EReal r;
 	r.v = std::sqrt(fe.v);
 #ifndef NDEBUG
@@ -201,7 +200,7 @@ FORCE_INLINE EReal sqrt(EReal fe) {
 	return r;
 }
 
-FORCE_INLINE EReal abs(EReal fe) {
+FORCE_INLINE EReal Abs(EReal fe) {
 	if (fe.low >= 0)
 		// The entire interval is greater than zero, so we're all set.
 		return fe;

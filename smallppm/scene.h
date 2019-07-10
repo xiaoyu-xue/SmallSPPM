@@ -5,6 +5,8 @@
 #include "light.h"
 #include "sampling.h"
 
+#include "debug_utils.h"
+
 NAMESPACE_BEGIN
 
 class Scene {
@@ -39,6 +41,12 @@ public:
 			Intersection intersection;
 			real ti;
 			if (shapes[i]->Intersect(r, &intersection, &ti)) {
+				//std::cout << ti << std::endl;
+				//{
+				//	if (debugPixel == 1) {
+				//		std::cout << "ti: " << ti  << " GeometryId: " << shapes[i]->GetId() << std::endl;
+				//	}
+				//}
 				if (ti < *t) {
 					*t = ti;
 					*isect = intersection;
@@ -46,7 +54,7 @@ public:
 				}
 			}
 		}
-		return *t < r.tMax;
+		return  (*t > r.tMin && *t < r.tMax);
 	}
 
 	bool Intersect(const Ray &r) const {
@@ -79,7 +87,7 @@ public:
 		}
 		else {
 			lightNum = std::min((int)(u * nLights), nLights - 1);
-			*lightPdf = 1.0 / nLights;
+			*lightPdf = 1.f / nLights;
 		}
 		return lights[lightNum];
 	}

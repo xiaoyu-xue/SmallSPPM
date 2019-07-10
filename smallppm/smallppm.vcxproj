@@ -164,12 +164,12 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="debug_utils.cpp" />
     <ClCompile Include="efloat.cpp" />
     <ClCompile Include="linagl.cpp" />
     <ClCompile Include="lowdiscrepency.cpp" />
     <ClCompile Include="sampler.cpp" />
     <ClCompile Include="sampling.cpp" />
-    <ClCompile Include="smallppm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="svpng.inc" />
@@ -179,6 +179,7 @@
     <ClInclude Include="arealight.h" />
     <ClInclude Include="bsdf.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="debug_utils.h" />
     <ClInclude Include="def.h" />
     <ClInclude Include="efloat.h" />
     <ClInclude Include="film.h" />
@@ -197,6 +198,7 @@
     <ClInclude Include="memory.h" />
     <ClInclude Include="numeric_utils.h" />
     <ClInclude Include="phinhole.h" />
+    <ClInclude Include="primitive.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="rng.h" />
@@ -208,6 +210,7 @@
     <ClInclude Include="shape.h" />
     <ClInclude Include="sphere.h" />
     <ClInclude Include="sppm.h" />
+    <ClInclude Include="sse.h" />
     <ClInclude Include="threading.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="visibility.h" />

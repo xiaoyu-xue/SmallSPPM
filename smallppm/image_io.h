@@ -15,12 +15,12 @@ public:
 		uint32   mReserved01;      // 2x 2 reserved bytes
 		uint32   mDataOffset;      // Offset in bytes where data can be found (54)
 
-		uint32    mHeaderSize;      // 40B
-		uint32    mWidth;           // Width in pixels
-		uint32    mHeight;          // Height in pixels
+		uint32   mHeaderSize;      // 40B
+		uint32   mWidth;           // Width in pixels
+		uint32   mHeight;          // Height in pixels
 
-		int16  mColorPlates;     // Must be 1
-		int16  mBitsPerPixel;    // We use 24bpp
+		int16    mColorPlates;     // Must be 1
+		int16    mBitsPerPixel;    // We use 24bpp
 		uint32   mCompression;     // We use BI_RGB ~ 0, uncompressed
 		uint32   mImageSize;       // mWidth x mHeight x 3B
 		uint32   mHorizRes;        // Pixels per meter (75dpi ~ 2953ppm)
@@ -29,7 +29,7 @@ public:
 		uint32   mImportantColors; // 0 - all are important
 	};
 
-	static void WritePngFile(const std::string &filename, const std::vector<Vec> &image, uint32 resX, uint32 resY, real gamma = 2.2) {
+	static void WritePngFile(const std::string &filename, const std::vector<Vec3> &image, uint32 resX, uint32 resY, real gamma = 2.2) {
 		FILE* f = fopen(filename.c_str(), "wb");
 		typedef unsigned char byte;
 		byte *pngImage = new byte[resX * resY * 3];
@@ -47,7 +47,7 @@ public:
 		fclose(f);
 	}
 
-	static void WriteBmpFile(const std::string &filename, const std::vector<Vec> &image, uint32 resX, uint32 resY, real gamma = 2.2)
+	static void WriteBmpFile(const std::string &filename, const std::vector<Vec3> &image, uint32 resX, uint32 resY, real gamma = 2.2)
 	{
 		std::ofstream bmp(filename.c_str(), std::ios::binary);
 		BmpHeader header;
@@ -72,7 +72,7 @@ public:
 		{
 			for (size_t x = 0; x < resX; x++)
 			{
-				const Vec &rgbF = image[x + (resY - y - 1) * resX];
+				const Vec3 &rgbF = image[x + (resY - y - 1) * resX];
 				typedef unsigned char byte;
 				byte bgrB[3];
 				bgrB[0] = byte(toInt(rgbF.z, gamma));
@@ -84,9 +84,10 @@ public:
 		}
 	}
 
-	static int toInt(real x, real gamma = 2.2) {
-		return int(pow(Clamp(x, 0.0, 1.0), 1 / gamma) * 255 + .5);
+	static int toInt(real x, real gamma = 2.2f) {
+		return int(pow(Clamp(x, 0.f, 1.f), 1 / gamma) * 255 + .5f);
 	}
+
 };
 
 NAMESPACE_END

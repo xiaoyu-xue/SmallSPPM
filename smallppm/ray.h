@@ -1,6 +1,7 @@
 #pragma once
 
 #include "linagl.h"
+#include "utils.h"
 
 NAMESPACE_BEGIN
 
@@ -8,9 +9,18 @@ struct Ray {
 	Ray() {
 		tMax = Inf;
 	};
-	Ray(Vec o_, Vec d_, real tmax_ = Inf) : o(o_), d(d_), tMax(tmax_) {}
-	Vec o, d;
-	real tMax;
+	Ray(Vec3 o_, Vec3 d_, real tmax_ = Inf, real tmin_ = 0.f) : 
+		o(o_ + d_ * rayeps), d(d_), tMax(tmax_), tMin(tmin_) {}
+	Vec3 operator()(real t) const {
+		return o + d * t;
+	}
+	Vec3 o, d;
+	real tMin, tMax;
 };
+
+std::ostream& operator<<(std::ostream &os, const Ray &ray) {
+	os << "ray: " << "orig: " << ray.o << " dir: " << ray.d << " tMin: " << ray.tMin << " tMax: " << ray.tMax;
+	return os;
+}
 
 NAMESPACE_END
