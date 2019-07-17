@@ -1,10 +1,11 @@
 #pragma once
 
-#include "utils.h"
 #include <string.h>
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <functional>
+#include "utils.h"
 #include "sse.h"
 
 NAMESPACE_BEGIN
@@ -488,7 +489,13 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0>
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_> && dim__ = 3, int> = 0>
+		FORCE_INLINE real Dot(const Vector &a) const {
+		return _mm_cvtss_f32(_mm_dp_ps(this->v, a.v, 0x71));
+	}
+
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_> && dim__ = 4, int> = 0>
 	FORCE_INLINE real Dot(const Vector &a) const {
 		return _mm_cvtss_f32(_mm_dp_ps(this->v, a.v, 0xf1));
 	}
@@ -634,116 +641,94 @@ using Vector4d = Vector<4, double, defaultInstructionSet>;
 using Vec3 = Vector3;
 using Vec2 = Vector2;
 
-//struct Vec {
-//	real x, y, z; // vector: position, also color (r,g,b)
-//	Vec(real x_ = 0, real y_ = 0, real z_ = 0) { x = x_; y = y_; z = z_; }
-//	inline Vec operator+(const Vec &b) const { return Vec(x + b.x, y + b.y, z + b.z); }
-//	inline Vec operator-(const Vec &b) const { return Vec(x - b.x, y - b.y, z - b.z); }
-//	inline Vec operator+(real b) const { return Vec(x + b, y + b, z + b); }
-//	inline Vec operator-(real b) const { return Vec(x - b, y - b, z - b); }
-//	inline Vec operator*(real b) const { return Vec(x * b, y * b, z * b); }
-//	inline Vec operator*(const Vec &b) const { return Vec(x * b.x, y * b.y, z * b.z); }
-//	inline Vec operator/(real b) const { if (b == 0) return Vec(); else return Vec(x / b, y / b, z / b); }
-//	inline bool operator==(const Vec &b) const { return x == b.x && y == b.y && z == b.z; }
-//	inline bool operator!=(const Vec &b) const { return x != b.x || y != b.y || z != b.z; }
-//	inline Vec mul(const Vec &b) const { return Vec(x * b.x, y * b.y, z * b.z); }
-//	inline Vec norm() { return (*this) * (1.0 / sqrt(x * x + y * y + z * z)); }
-//	inline void normalize() {
-//		real invLength = 1.0 / std::sqrt(x * x + y * y + z * z);
-//		this->x *= invLength;
-//		this->y *= invLength;
-//		this->z *= invLength;
-//	}
-//	inline real dot(const Vec &b) const { return x * b.x + y * b.y + z * b.z; }
-//	inline real length() const { return std::sqrt(x * x + y * y + z * z); }
-//	inline real length2() const { return x * x + y * y + z * z; }
-//	Vec operator%(Vec&b) const { return Vec(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x); }
-//	real& operator[](int i) { return i == 0 ? x : i == 1 ? y : z; }
-//	real maxValue() const {
-//		return std::max(x, std::max(y, z));
-//	}
-//	real Y() const {
-//		const real YWeight[3] = { 0.212671f, 0.715160f, 0.072169f };
-//		return YWeight[0] * x + YWeight[1] * y + YWeight[2] * z;
-//	}
-//};
-//
-//Vec operator*(real a, Vec b);
-//
-//std::ostream& operator<<(std::ostream &os, const Vec &v);
 
-
-
-
-template<int dim_, typename T>
+template<int dim_, typename T, IntrinsicSet ISE>
 struct Matrix {
 	static constexpr int dim = dim_;
 	using type = T;
-	Vector<dim, T> d[dim];
+	Vector<dim, T, ISE> d[dim];
+
+	static constexpr bool SIMD_4_32F =
+		(dim_ == 3 || dim_ == 4) && std::is_same<T_, float32>::value &&
+		(ISE_ >= IntrinsicSet::SSE);
 
 	FORCE_INLINE Matrix() {
 		for (int i = 0; i < dim; ++i) {
-			d[i] = std::move(Vector<dim, T>());
+			d[i] = Vector<dim, T, ISE>();
+			d[i][i] = 1;
 		}
 	}
 
-	FORCE_INLINE Matrix(const Matrix<dim, T> &m) {
-		for (int i = 0; i < dim; ++i) {
-			for (int j = 0; j < dim; ++j) {
-				d[i][j] = m.d[i][j];
-			}
-		}
+	explicit FORCE_INLINE Matrix(const Matrix &m) {
+		*this = m;
 	}
 
 	FORCE_INLINE Matrix(T a) {
 		for (int i = 0; i < dim; ++i) {
-			for (int j = 0; j < dim; ++j) {
-				d[i][j] = a;
-			}
+			d[i][i] = a;
 		}
 	}
 
-	FORCE_INLINE Matrix(const Matrix &m) {
-		*this = m;
-	}
-
-	FORCE_INLINE Matrix(const Vector<dim, T> &v) {
+	FORCE_INLINE Matrix(const Vector<dim, T, ISE> &v) {
 		for (int i = 0; i < dim; i++)
 			this->d[i][i] = v[i];
 	}
 
-	template <
-		typename F,
-		typename = std::enable_if_t<std::is_convertible<
-		F,
-		std::function<Vector<dim__, T>(int)>>::value,
-		int>>
-		FORCE_INLINE explicit Matrix(const F &f) {
+	template<int dim__ = dim, typename T_, 
+		typename std::enable_if_t<dim__ == 2> = 0>
+	FORCE_INLINE Matrix(const Vector<dim__, T_> &v0, const Vector<dim__, T_> &v1) {
+		this->d[0] = v0;
+		this->d[1] = v1;
+	}
+
+	template<int dim__ = dim, typename T_,
+		typename std::enable_if_t<dim__ == 3> = 0>
+	FORCE_INLINE Matrix(const Vector<dim__, T_> &v0, const Vector<dim__, T_> &v1, const Vector<dim__, T_> &v2) {
+		this->d[0] = v0;
+		this->d[1] = v1;
+		this->d[2] = v2;
+	}
+
+	template<int dim__ = dim, typename T_,
+		typename std::enable_if_t<dim__ == 4> = 0>
+	FORCE_INLINE Matrix(const Vector<dim__, T_> &v0, const Vector<dim__, T_> &v1, 
+		const Vector<dim__, T_> &v2, const Vector<dim__, T_> &v3) {
+		this->d[0] = v0;
+		this->d[1] = v1;
+		this->d[2] = v2;
+		this->d[3] = v3;
+	}
+
+	template <typename F, 
+		typename std::enable_if_t<
+		std::is_convertible<F, std::function<Vector<dim, T, ISE>(int)>>::value,
+		int> = 0>
+	explicit FORCE_INLINE Matrix(const F &f) {
 		for (int i = 0; i < dim; i++)
 			this->d[i] = f(i);
 	}
 
-	template<typename = std::enable_if_t<dim == 2, int>>
+	template<int dim__ = dim, typename std::enable_if_t<dim__ == 2, int> = 0>
 	FORCE_INLINE Matrix(const Vector<dim, T> &v0, const Vector<dim, T> &v1) {
 		d[0] = v0;
 		d[1] = v1;
 	}
 
-	template<typename = std::enable_if_t<dim == 2, int>>
+	template<int dim__ = dim, typename std::enable_if_t<dim__ == 2, int> = 0>
 	FORCE_INLINE Matrix(T m00, T m01,
 						T m10, T m11) {
 		d[0][0] = m00; d[1][0] = m01;
 		d[0][1] = m10; d[1][1] = m11;
 	}
 
-	template<typename = std::enable_if_t<dim == 3, int>>
+	template<int dim__ = dim, typename std::enable_if_t<dim_ == 3, int> = 0>
 	FORCE_INLINE Matrix(const Vector<dim, T> &v0, const Vector<dim, T> &v1, const Vector<dim, T> &v2) {
 		d[0] = v0;
 		d[1] = v1;
 		d[2] = v2;
 	}
 
-	template<typename = std::enable_if_t<dim == 3, int>>
+	template<int dim__ = dim, typename = std::enable_if_t<dim__ == 3, int> = 0>
 	FORCE_INLINE Matrix(T m00, T m01, T m02,
 						T m10, T m11, T m12,
 						T m20, T m21, T m22) {
@@ -752,7 +737,7 @@ struct Matrix {
 		d[0][2] = m20; d[1][2] = m21; d[2][2] = m22;
 	}
 
-	template<typename = std::enable_if_t<dim == 4, int>>
+	template<int dim__ = dim, typename std::enable_if_t<dim__ == 4, int> = 0>
 	FORCE_INLINE Matrix(const Vector<dim, T> &v0, const Vector<dim, T> &v1, 
 		const Vector<dim, T> &v2, const Vector<dim, T> &v3) {
 		d[0] = v0;
@@ -761,7 +746,7 @@ struct Matrix {
 		d[3] = v3;
 	}
 
-	template<typename = std::enable_if_t<dim == 3, int>>
+	template<int dim__ = dim, typename std::enable_if_t<dim__ == 3, int> = 0>
 	FORCE_INLINE Matrix(T m00, T m01, T m02, T m03,
 						T m10, T m11, T m12, T m13,
 						T m20, T m21, T m22, T m23,
@@ -781,7 +766,7 @@ struct Matrix {
 
 	FORCE_INLINE Matrix& operator=(Matrix &&m) {
 		for (int i = 0; i < dim; ++i) {
-			this->d[i] = std::move(m.d[i]);
+			this->d[i] = m.d[i];
 		}
 		return *this;
 	}
@@ -790,7 +775,7 @@ struct Matrix {
 		return d[i];
 	}
 
-	FORCE_INLINE const T& operator()(int i, int j) {
+	FORCE_INLINE const T& operator()(int i, int j) const {
 		return d[j][i];
 	}
 
@@ -820,8 +805,8 @@ struct Matrix {
 		return *this;
 	}
 
-	FORCE_INLINE Vector<dim, T> operator*(const Vector<dim, T> &a) const {
-		Vector<dim, T> ret(d[0] * a.d[0]);
+	FORCE_INLINE Vector<dim, T, ISE> operator*(const Vector<dim, T, ISE> &a) const {
+		Vector<dim, T, ISE> ret(d[0] * a.d[0]);
 		for (int i = 1; i < dim; ++i) {
 			ret += d[i] * a.d[i];
 		}
@@ -862,6 +847,16 @@ struct Matrix {
 };
 
 
+using Matrix2 = Matrix<2, real, defaultInstructionSet>;
+using Matrix3 = Matrix<3, real, defaultInstructionSet>;
+using Matrix4 = Matrix<4, real, defaultInstructionSet>;
 
+using Matrix2f = Matrix<2, float32, defaultInstructionSet>;
+using Matrix3f = Matrix<3, float32, defaultInstructionSet>;
+using Matrix4f = Matrix<4, float32, defaultInstructionSet>;
+
+using Matrix2d = Matrix<2, float64, defaultInstructionSet>;
+using Matrix3d = Matrix<3, float64, defaultInstructionSet>;
+using Matrix4d = Matrix<4, float64, defaultInstructionSet>;
 
 NAMESPACE_END

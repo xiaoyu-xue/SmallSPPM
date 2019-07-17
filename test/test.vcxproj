@@ -138,6 +138,7 @@ copy /y "$(SolutionDir)\external\lib\gmock\gmock_main.pdb" "$(OutDir)"</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="matrix_test.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="vector_test.cpp" />
   </ItemGroup>
