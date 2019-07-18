@@ -224,6 +224,9 @@
     <ClInclude Include="sse.h">
       <Filter>Header Files\simd</Filter>
     </ClInclude>
+    <ClInclude Include="avx.h">
+      <Filter>Header Files\simd</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="svpng.inc">

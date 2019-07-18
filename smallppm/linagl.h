@@ -7,6 +7,7 @@
 #include <functional>
 #include "utils.h"
 #include "sse.h"
+#include "avx.h"
 
 NAMESPACE_BEGIN
 
@@ -203,7 +204,8 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE, 
-		typename std::enable_if_t<dim__ == 3 && ISE_ == IntrinsicSet::None, int> = 0>
+		typename std::enable_if_t<dim__ == 3 && ((ISE_ == IntrinsicSet::None) || (ISE_ >= IntrinsicSet::SSE && !std::is_same<T_, float32>::value))
+			, int> = 0>
 	FORCE_INLINE Vector(T x, T y, T z) {
 		this->d[0] = x;
 		this->d[1] = y;
@@ -211,7 +213,8 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename std::enable_if_t<dim__ == 4 && ISE_ == IntrinsicSet::None, int> = 0>
+		typename std::enable_if_t<dim__ == 4 && ((ISE_ == IntrinsicSet::None) || (ISE_ >= IntrinsicSet::SSE && !std::is_same<T_, float32>::value))
+		, int> = 0>
 	FORCE_INLINE Vector(T x, T y, T z, T w) {
 		this->d[0] = x;
 		this->d[1] = y;
@@ -292,7 +295,7 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
 		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_>, int> = 0 >
 	FORCE_INLINE Vector operator-() const {
-		return Vector(_mm_mul_ps(this->v, _mm_set_ps1(-1.f)));
+		return Vector(_mm_sub_ps(_mm_set_ps1(0.f), this->v));
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
@@ -489,13 +492,13 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_> && dim__ = 3, int> = 0>
-		FORCE_INLINE real Dot(const Vector &a) const {
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_> && dim__ == 3, int> = 0>
+	FORCE_INLINE real Dot(const Vector &a) const {
 		return _mm_cvtss_f32(_mm_dp_ps(this->v, a.v, 0x71));
 	}
 
 	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
-		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_> && dim__ = 4, int> = 0>
+		typename std::enable_if_t<SSE_4_32F<dim__, T_, ISE_> && dim__ == 4, int> = 0>
 	FORCE_INLINE real Dot(const Vector &a) const {
 		return _mm_cvtss_f32(_mm_dp_ps(this->v, a.v, 0xf1));
 	}
@@ -564,6 +567,35 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	FORCE_INLINE real Y()  const {
 		const real YWeight[3] = { (real)0.212671, (real)0.715160, (real)0.072169f };
 		return YWeight[0] * this->x + YWeight[1] * this->y + YWeight[2] * this->z;
+	}
+
+	template <int a,
+		int b,
+		int c,
+		int d,
+		int dim__ = dim,
+		typename T_ = T,
+		IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<!SIMD_4_32F<dim__, T_, ISE_>, int> = 0>
+	FORCE_INLINE Vector Permute() const {
+		return Vector(this->d[a], this->d[b], this->d[c], this->d[d]);
+	}
+
+	template <int a,
+		int b,
+		int c,
+		int d,
+		int dim__ = dim,
+		typename T_ = T,
+		IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SIMD_4_32F<dim__, T_, ISE_>, int> = 0>
+	FORCE_INLINE Vector Permute() const {
+		return Vector(_mm_permute_ps(this->v, _MM_SHUFFLE(a, b, c, d)));
+	}
+
+	template <int a, int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE>
+	FORCE_INLINE Vector Broadcast() const {
+		return Permute<a, a, a, a>();
 	}
 };
 
@@ -642,15 +674,43 @@ using Vec3 = Vector3;
 using Vec2 = Vector2;
 
 
+// FMA: a * b + c
+template <typename T>
+FORCE_INLINE typename std::enable_if<T::simd && (defaultInstructionSet >= IntrinsicSet::AVX), T>::type
+fused_mul_add(const T &a, const T &b, const T &c) {
+	return T(_mm_fmadd_ps(a, b, c));
+}
+
+template <typename T>
+FORCE_INLINE typename std::enable_if<!T::simd || (defaultInstructionSet < IntrinsicSet::AVX), T>::type
+fused_mul_add(const T &a, const T &b, const T &c) {
+	return a * b + c;
+}
+
+
 template<int dim_, typename T, IntrinsicSet ISE>
 struct Matrix {
 	static constexpr int dim = dim_;
 	using type = T;
 	Vector<dim, T, ISE> d[dim];
 
+	template<int dim__, typename T_, IntrinsicSet ISE_>
 	static constexpr bool SIMD_4_32F =
-		(dim_ == 3 || dim_ == 4) && std::is_same<T_, float32>::value &&
+		(dim__ == 3 || dim__ == 4) && std::is_same<T_, float32>::value &&
 		(ISE_ >= IntrinsicSet::SSE);
+
+
+	template <
+		typename F,
+		std::enable_if_t<std::is_convertible<
+		F,
+		std::function<Vector<dim_, T, ISE>(int)>>::value,
+		int> = 0>
+	FORCE_INLINE Matrix& Set(const F &f) {
+		for (int i = 0; i < dim; i++)
+			this->d[i] = f(i);
+		return *this;
+	}
 
 	FORCE_INLINE Matrix() {
 		for (int i = 0; i < dim; ++i) {
@@ -788,10 +848,7 @@ struct Matrix {
 	}
 
 	FORCE_INLINE Matrix& operator+=(const Matrix &a) {
-		for (int i = 0; i < dim; ++i) {
-			this->d[i] += a.d[i];
-		}
-		return *this;
+		return this->Set([&](int i) {return this->d[i] + a[i]; });
 	}
 
 	FORCE_INLINE Matrix operator-(const Matrix &a) const {
@@ -799,17 +856,45 @@ struct Matrix {
 	}
 
 	FORCE_INLINE Matrix& operator-=(const Matrix &a) {
-		for (int i = 0; i < dim; ++i) {
-			this->d[i] -= a.d[i];
-		}
-		return *this;
+		return this->Set([&](int i) {return this->d[i] - a[i]; });
 	}
 
+	FORCE_INLINE bool operator==(const Matrix &a) const {
+		for (int i = 0; i < dim; i++)
+			for (int j = 0; j < dim; j++)
+				if (d[i][j] != a[i][j])
+					return false;
+		return true;
+	}
+
+	FORCE_INLINE bool operator!=(const Matrix &o) const {
+		for (int i = 0; i < dim; i++)
+			for (int j = 0; j < dim; j++)
+				if (d[i][j] != o[i][j])
+					return true;
+		return false;
+	}
+
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<!SIMD_4_32F<dim__, T_, ISE_>, int> = 0>
 	FORCE_INLINE Vector<dim, T, ISE> operator*(const Vector<dim, T, ISE> &a) const {
 		Vector<dim, T, ISE> ret(d[0] * a.d[0]);
 		for (int i = 1; i < dim; ++i) {
 			ret += d[i] * a.d[i];
 		}
+		return ret;
+	}
+
+	// Matrix3
+	template <int dim__ = dim,
+		typename T_ = T,
+		IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SIMD_4_32F<dim__, T_, ISE_> && dim__ == 3,
+		int> = 0>
+	FORCE_INLINE Vector<dim, T, ISE> operator*(const Vector<dim, T, ISE> &a) const {
+		Vector<dim, T, ISE> ret = a.template broadcast<2>() * d[2];
+		ret = fused_mul_add(d[1], a.template broadcast<1>(), ret);
+		ret = fused_mul_add(d[0], a.template broadcast<0>(), ret);
 		return ret;
 	}
 
@@ -843,6 +928,36 @@ struct Matrix {
 			d[i] /= a;
 		}
 		return *this;
+	}
+
+	FORCE_INLINE T FrobeniusNorm2() const {
+		T sum = d[0].Length2();
+		for (int i = 1; i < dim; i++) {
+			sum += d[i].Length2();
+		}
+		return sum;
+	}
+
+	FORCE_INLINE auto FrobeniusNorm() const {
+		return std::sqrt(FrobeniusNorm2());
+	}
+
+	FORCE_INLINE Matrix Transpose() const {
+		Matrix ret;
+		for (int i = 0; i < dim; i++) {
+			for (int j = 0; j < dim; j++) {
+				ret[i][j] = d[j][i];
+			}
+		}
+		return ret;
+	}
+
+	FORCE_INLINE static Matrix Identidy() {
+		return Matrix(1.f);
+	}
+
+	FORCE_INLINE static Matrix Zeros() {
+		return Matrix();
 	}
 };
 

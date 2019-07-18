@@ -188,3 +188,10 @@ TEST(TestNormalize, Normalize) {
 		EXPECT_EQ(Equal(a, b), true);
 	}
 }
+
+TEST(TestPermute, Permute) {
+	{
+		Vector4i a(1, 2, 3, 4);
+		EXPECT_EQ((a.Permute<2, 0, 3, 1>()) == Vector4i(3, 1, 4, 2), true);
+	}
+}

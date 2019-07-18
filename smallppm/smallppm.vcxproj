@@ -177,6 +177,7 @@
   <ItemGroup>
     <ClInclude Include="AABB.h" />
     <ClInclude Include="arealight.h" />
+    <ClInclude Include="avx.h" />
     <ClInclude Include="bsdf.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="debug_utils.h" />
