@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string.h>
+#include <cstring>
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -719,7 +719,7 @@ struct Matrix {
 		}
 	}
 
-	explicit FORCE_INLINE Matrix(const Matrix &m) {
+	FORCE_INLINE Matrix(const Matrix &m) {
 		*this = m;
 	}
 
@@ -736,14 +736,14 @@ struct Matrix {
 
 	template<int dim__ = dim, typename T_, 
 		typename std::enable_if_t<dim__ == 2> = 0>
-	FORCE_INLINE Matrix(const Vector<dim__, T_> &v0, const Vector<dim__, T_> &v1) {
+	FORCE_INLINE Matrix(const Vector<dim__, T_, ISE> &v0, const Vector<dim__, T_, ISE> &v1) {
 		this->d[0] = v0;
 		this->d[1] = v1;
 	}
 
 	template<int dim__ = dim, typename T_,
 		typename std::enable_if_t<dim__ == 3> = 0>
-	FORCE_INLINE Matrix(const Vector<dim__, T_> &v0, const Vector<dim__, T_> &v1, const Vector<dim__, T_> &v2) {
+	FORCE_INLINE Matrix(const Vector<dim__, T_, ISE> &v0, const Vector<dim__, T_, ISE> &v1, const Vector<dim__, T_, ISE> &v2) {
 		this->d[0] = v0;
 		this->d[1] = v1;
 		this->d[2] = v2;
@@ -751,8 +751,8 @@ struct Matrix {
 
 	template<int dim__ = dim, typename T_,
 		typename std::enable_if_t<dim__ == 4> = 0>
-	FORCE_INLINE Matrix(const Vector<dim__, T_> &v0, const Vector<dim__, T_> &v1, 
-		const Vector<dim__, T_> &v2, const Vector<dim__, T_> &v3) {
+	FORCE_INLINE Matrix(const Vector<dim__, T_, ISE> &v0, const Vector<dim__, T_, ISE> &v1,
+		const Vector<dim__, T_, ISE> &v2, const Vector<dim__, T_, ISE> &v3) {
 		this->d[0] = v0;
 		this->d[1] = v1;
 		this->d[2] = v2;
@@ -763,15 +763,9 @@ struct Matrix {
 		typename std::enable_if_t<
 		std::is_convertible<F, std::function<Vector<dim, T, ISE>(int)>>::value,
 		int> = 0>
-	explicit FORCE_INLINE Matrix(const F &f) {
+	FORCE_INLINE Matrix(const F &f) {
 		for (int i = 0; i < dim; i++)
 			this->d[i] = f(i);
-	}
-
-	template<int dim__ = dim, typename std::enable_if_t<dim__ == 2, int> = 0>
-	FORCE_INLINE Matrix(const Vector<dim, T> &v0, const Vector<dim, T> &v1) {
-		d[0] = v0;
-		d[1] = v1;
 	}
 
 	template<int dim__ = dim, typename std::enable_if_t<dim__ == 2, int> = 0>
@@ -781,14 +775,8 @@ struct Matrix {
 		d[0][1] = m10; d[1][1] = m11;
 	}
 
-	template<int dim__ = dim, typename std::enable_if_t<dim_ == 3, int> = 0>
-	FORCE_INLINE Matrix(const Vector<dim, T> &v0, const Vector<dim, T> &v1, const Vector<dim, T> &v2) {
-		d[0] = v0;
-		d[1] = v1;
-		d[2] = v2;
-	}
 
-	template<int dim__ = dim, typename = std::enable_if_t<dim__ == 3, int> = 0>
+	template<int dim__ = dim, typename std::enable_if_t<dim__ == 3, int> = 0>
 	FORCE_INLINE Matrix(T m00, T m01, T m02,
 						T m10, T m11, T m12,
 						T m20, T m21, T m22) {
@@ -798,22 +786,13 @@ struct Matrix {
 	}
 
 	template<int dim__ = dim, typename std::enable_if_t<dim__ == 4, int> = 0>
-	FORCE_INLINE Matrix(const Vector<dim, T> &v0, const Vector<dim, T> &v1, 
-		const Vector<dim, T> &v2, const Vector<dim, T> &v3) {
-		d[0] = v0;
-		d[1] = v1;
-		d[2] = v2;
-		d[3] = v3;
-	}
-
-	template<int dim__ = dim, typename std::enable_if_t<dim__ == 3, int> = 0>
 	FORCE_INLINE Matrix(T m00, T m01, T m02, T m03,
 						T m10, T m11, T m12, T m13,
 						T m20, T m21, T m22, T m23,
 						T m30, T m31, T m32, T m33) {
 		d[0][0] = m00; d[1][0] = m01; d[2][0] = m02; d[3][0] = m03;
 		d[0][1] = m10; d[1][1] = m11; d[2][1] = m12; d[3][1] = m13;
-		d[2][2] = m20; d[1][2] = m21; d[2][2] = m22; d[3][2] = m23;
+		d[0][2] = m20; d[1][2] = m21; d[2][2] = m22; d[3][2] = m23;
 		d[0][3] = m30; d[1][3] = m31; d[2][3] = m32; d[3][3] = m33;
 	}
 
@@ -831,7 +810,11 @@ struct Matrix {
 		return *this;
 	}
 
-	FORCE_INLINE Vector<dim, T>& operator[](int i) {
+	FORCE_INLINE const Vector<dim, T, ISE>& operator[](int i) const {
+		return d[i];
+	}
+
+	FORCE_INLINE Vector<dim, T, ISE>& operator[](int i) {
 		return d[i];
 	}
 
@@ -844,7 +827,7 @@ struct Matrix {
 	}
 
 	FORCE_INLINE Matrix operator+(const Matrix &a) const {
-		return Matrix([=](int i) {this->d[i] + a.d[i]; });
+		return Matrix([=](int i) {return this->d[i] + a.d[i]; });
 	}
 
 	FORCE_INLINE Matrix& operator+=(const Matrix &a) {
@@ -852,7 +835,7 @@ struct Matrix {
 	}
 
 	FORCE_INLINE Matrix operator-(const Matrix &a) const {
-		return Matrix([=](int i) {this->d[i] - a.d[i]; });
+		return Matrix([=](int i) {return this->d[i] - a.d[i]; });
 	}
 
 	FORCE_INLINE Matrix& operator-=(const Matrix &a) {
@@ -899,15 +882,15 @@ struct Matrix {
 	}
 
 	FORCE_INLINE Matrix operator*(const Matrix &a) const {
-		return Matrix([=](int i) {(*this) * a[i]; });
+		return Matrix([&](int i) {return (*this) * a[i]; });
 	}
 
 	FORCE_INLINE Matrix operator*(real a) const {
-		return Matrix([=](int i) {(*this)[i] * a; });
+		return Matrix([&](int i) {return (*this)[i] * a; });
 	}
 
 	FORCE_INLINE Matrix& operator*=(const Matrix &a) {
-		Matrix mat([&](int i) {(*this) * a[i]; });
+		Matrix mat([&](int i) {return (*this) * a[i]; });
 		*this = std::move(mat);
 		return *this;
 	}
@@ -920,7 +903,7 @@ struct Matrix {
 	}
 
 	FORCE_INLINE Matrix operator/(real a) const {
-		return Matrix([=](int i) {(*this)[i] / a; });
+		return Matrix([=](int i) {return (*this)[i] / a; });
 	}
 
 	FORCE_INLINE Matrix& operator/=(real a) {
@@ -959,7 +942,304 @@ struct Matrix {
 	FORCE_INLINE static Matrix Zeros() {
 		return Matrix();
 	}
+
+	FORCE_INLINE T MaxVal() const {
+		T ret = d[0].MaxVal();
+		for (int i = 1; i < dim; ++i) {
+			ret = std::max(ret, d[i].MaxVal());
+		}
+		return ret;
+	}
+
+	FORCE_INLINE T MinVal() const {
+		T ret = d[0].MinVal();
+		for (int i = 1; i < dim; ++i) {
+			ret = std::min(ret, d[i].MinVal());
+		}
+		return ret;
+	}
 };
+
+template<int dim, typename T, IntrinsicSet ISE>
+std::ostream& operator<<(std::ostream &os, const Matrix<dim, T, ISE> &mat) {
+	os << "[ ";
+	for (int i = 0; i < dim; ++i) {
+		if (i != 0) {
+			os << "  ";
+		}
+		for (int j = 0; j < dim; ++j) {
+			os << mat(i, j) << " ";
+		}
+		if (i != dim - 1) {
+			os << std::endl;
+		}
+	}
+	os << "]";
+	return os;
+}
+
+template<int dim, typename T, IntrinsicSet ISE>
+FORCE_INLINE Matrix<dim, T, ISE> operator*(real a, const Matrix<dim, T, ISE> & b) {
+	return b * a;
+}
+
+template <typename T, IntrinsicSet ISE>
+T Determinant(const Matrix<4, T, ISE> &m) {
+	// This function is adopted from GLM
+	/*
+	================================================================================
+	OpenGL Mathematics (GLM)
+	--------------------------------------------------------------------------------
+	GLM is licensed under The Happy Bunny License and MIT License
+
+	================================================================================
+	The Happy Bunny License (Modified MIT License)
+	--------------------------------------------------------------------------------
+	Copyright (c) 2005 - 2014 G-Truc Creation
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in
+	all copies or substantial portions of the Software.
+
+	Restrictions:
+	 By making use of the Software for military purposes, you choose to make a
+	 Bunny unhappy.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+
+	================================================================================
+	The MIT License
+	--------------------------------------------------------------------------------
+	Copyright (c) 2005 - 2014 G-Truc Creation
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in
+	all copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+	 */
+
+	T Coef00 = m[2][2] * m[3][3] - m[3][2] * m[2][3];
+	T Coef02 = m[1][2] * m[3][3] - m[3][2] * m[1][3];
+	T Coef03 = m[1][2] * m[2][3] - m[2][2] * m[1][3];
+
+	T Coef04 = m[2][1] * m[3][3] - m[3][1] * m[2][3];
+	T Coef06 = m[1][1] * m[3][3] - m[3][1] * m[1][3];
+	T Coef07 = m[1][1] * m[2][3] - m[2][1] * m[1][3];
+
+	T Coef08 = m[2][1] * m[3][2] - m[3][1] * m[2][2];
+	T Coef10 = m[1][1] * m[3][2] - m[3][1] * m[1][2];
+	T Coef11 = m[1][1] * m[2][2] - m[2][1] * m[1][2];
+
+	T Coef12 = m[2][0] * m[3][3] - m[3][0] * m[2][3];
+	T Coef14 = m[1][0] * m[3][3] - m[3][0] * m[1][3];
+	T Coef15 = m[1][0] * m[2][3] - m[2][0] * m[1][3];
+
+	T Coef16 = m[2][0] * m[3][2] - m[3][0] * m[2][2];
+	T Coef18 = m[1][0] * m[3][2] - m[3][0] * m[1][2];
+	T Coef19 = m[1][0] * m[2][2] - m[2][0] * m[1][2];
+
+	T Coef20 = m[2][0] * m[3][1] - m[3][0] * m[2][1];
+	T Coef22 = m[1][0] * m[3][1] - m[3][0] * m[1][1];
+	T Coef23 = m[1][0] * m[2][1] - m[2][0] * m[1][1];
+
+	Vector<4, T, ISE> Fac0(Coef00, Coef00, Coef02, Coef03);
+	Vector<4, T, ISE> Fac1(Coef04, Coef04, Coef06, Coef07);
+	Vector<4, T, ISE> Fac2(Coef08, Coef08, Coef10, Coef11);
+	Vector<4, T, ISE> Fac3(Coef12, Coef12, Coef14, Coef15);
+	Vector<4, T, ISE> Fac4(Coef16, Coef16, Coef18, Coef19);
+	Vector<4, T, ISE> Fac5(Coef20, Coef20, Coef22, Coef23);
+
+	Vector<4, T, ISE> Vec0(m[1][0], m[0][0], m[0][0], m[0][0]);
+	Vector<4, T, ISE> Vec1(m[1][1], m[0][1], m[0][1], m[0][1]);
+	Vector<4, T, ISE> Vec2(m[1][2], m[0][2], m[0][2], m[0][2]);
+	Vector<4, T, ISE> Vec3(m[1][3], m[0][3], m[0][3], m[0][3]);
+
+	Vector<4, T, ISE> Inv0(Vec1 * Fac0 - Vec2 * Fac1 + Vec3 * Fac2);
+	Vector<4, T, ISE> Inv1(Vec0 * Fac0 - Vec2 * Fac3 + Vec3 * Fac4);
+	Vector<4, T, ISE> Inv2(Vec0 * Fac1 - Vec1 * Fac3 + Vec3 * Fac5);
+	Vector<4, T, ISE> Inv3(Vec0 * Fac2 - Vec1 * Fac4 + Vec2 * Fac5);
+
+	Vector<4, T, ISE> SignA(+1, -1, +1, -1);
+	Vector<4, T, ISE> SignB(-1, +1, -1, +1);
+	Matrix<4, T, ISE> Inverse(Inv0 * SignA, Inv1 * SignB, Inv2 * SignA,
+		Inv3 * SignB);
+
+	Vector<4, T, ISE> Row0(Inverse[0][0], Inverse[1][0], Inverse[2][0], Inverse[3][0]);
+
+	Vector<4, T, ISE> Dot0(m[0] * Row0);
+	T Dot1 = (Dot0.x + Dot0.y) + (Dot0.z + Dot0.w);
+
+	return Dot1;
+}
+
+
+template <typename T, IntrinsicSet ISE>
+Matrix<4, T, ISE> Inversed(const Matrix<4, T, ISE> &m) {
+	// This function is copied from GLM
+	/*
+	================================================================================
+	OpenGL Mathematics (GLM)
+	--------------------------------------------------------------------------------
+	GLM is licensed under The Happy Bunny License and MIT License
+
+	================================================================================
+	The Happy Bunny License (Modified MIT License)
+	--------------------------------------------------------------------------------
+	Copyright (c) 2005 - 2014 G-Truc Creation
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in
+	all copies or substantial portions of the Software.
+
+	Restrictions:
+	 By making use of the Software for military purposes, you choose to make a
+	 Bunny unhappy.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+
+	================================================================================
+	The MIT License
+	--------------------------------------------------------------------------------
+	Copyright (c) 2005 - 2014 G-Truc Creation
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in
+	all copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+	 */
+
+	T Coef00 = m[2][2] * m[3][3] - m[3][2] * m[2][3];
+	T Coef02 = m[1][2] * m[3][3] - m[3][2] * m[1][3];
+	T Coef03 = m[1][2] * m[2][3] - m[2][2] * m[1][3];
+
+	T Coef04 = m[2][1] * m[3][3] - m[3][1] * m[2][3];
+	T Coef06 = m[1][1] * m[3][3] - m[3][1] * m[1][3];
+	T Coef07 = m[1][1] * m[2][3] - m[2][1] * m[1][3];
+
+	T Coef08 = m[2][1] * m[3][2] - m[3][1] * m[2][2];
+	T Coef10 = m[1][1] * m[3][2] - m[3][1] * m[1][2];
+	T Coef11 = m[1][1] * m[2][2] - m[2][1] * m[1][2];
+
+	T Coef12 = m[2][0] * m[3][3] - m[3][0] * m[2][3];
+	T Coef14 = m[1][0] * m[3][3] - m[3][0] * m[1][3];
+	T Coef15 = m[1][0] * m[2][3] - m[2][0] * m[1][3];
+
+	T Coef16 = m[2][0] * m[3][2] - m[3][0] * m[2][2];
+	T Coef18 = m[1][0] * m[3][2] - m[3][0] * m[1][2];
+	T Coef19 = m[1][0] * m[2][2] - m[2][0] * m[1][2];
+
+	T Coef20 = m[2][0] * m[3][1] - m[3][0] * m[2][1];
+	T Coef22 = m[1][0] * m[3][1] - m[3][0] * m[1][1];
+	T Coef23 = m[1][0] * m[2][1] - m[2][0] * m[1][1];
+
+
+	Vector<4, T, ISE> Fac0(Coef00, Coef00, Coef02, Coef03);
+	Vector<4, T, ISE> Fac1(Coef04, Coef04, Coef06, Coef07);
+	Vector<4, T, ISE> Fac2(Coef08, Coef08, Coef10, Coef11);
+	Vector<4, T, ISE> Fac3(Coef12, Coef12, Coef14, Coef15);
+	Vector<4, T, ISE> Fac4(Coef16, Coef16, Coef18, Coef19);
+	Vector<4, T, ISE> Fac5(Coef20, Coef20, Coef22, Coef23);
+
+	Vector<4, T, ISE> Vec0(m[1][0], m[0][0], m[0][0], m[0][0]);
+	Vector<4, T, ISE> Vec1(m[1][1], m[0][1], m[0][1], m[0][1]);
+	Vector<4, T, ISE> Vec2(m[1][2], m[0][2], m[0][2], m[0][2]);
+	Vector<4, T, ISE> Vec3(m[1][3], m[0][3], m[0][3], m[0][3]);
+
+	Vector<4, T, ISE> Inv0(Vec1 * Fac0 - Vec2 * Fac1 + Vec3 * Fac2);
+	Vector<4, T, ISE> Inv1(Vec0 * Fac0 - Vec2 * Fac3 + Vec3 * Fac4);
+	Vector<4, T, ISE> Inv2(Vec0 * Fac1 - Vec1 * Fac3 + Vec3 * Fac5);
+	Vector<4, T, ISE> Inv3(Vec0 * Fac2 - Vec1 * Fac4 + Vec2 * Fac5);
+
+	Vector<4, T, ISE> SignA(+1, -1, +1, -1);
+	Vector<4, T, ISE> SignB(-1, +1, -1, +1);
+	Matrix<4, T, ISE> Inverse(Inv0 * SignA, Inv1 * SignB, Inv2 * SignA,
+		Inv3 * SignB);
+
+	Vector<4, T, ISE> Row0(Inverse[0][0], Inverse[1][0], Inverse[2][0], Inverse[3][0]);
+
+	Vector<4, T, ISE> Dot0(m[0] * Row0);
+	T Dot1 = (Dot0.x + Dot0.y) + (Dot0.z + Dot0.w);
+
+	T OneOverDeterminant = static_cast<T>(1) / Dot1;
+
+	return Inverse * OneOverDeterminant;
+}
+
+
+template <typename T, IntrinsicSet ISE>
+FORCE_INLINE Matrix<2, T, ISE> Inversed(const Matrix<2, T, ISE> &mat) {
+	T det = Determinant(mat);
+	return static_cast<T>(1) / det *
+		Matrix<2, T, ISE>(Vector<2, T, ISE>(mat[1][1], -mat[0][1]),
+			Vector<2, T, ISE>(-mat[1][0], mat[0][0]));
+}
+
+template <typename T, IntrinsicSet ISE>
+Matrix<3, T, ISE> inversed(const Matrix<3, T, ISE> &mat) {
+	T det = Determinant(mat);
+	return T(1.0) / det *
+		Matrix<3, T, ISE>(
+			Vector<3, T, ISE>(mat[1][1] * mat[2][2] - mat[2][1] * mat[1][2],
+				mat[2][1] * mat[0][2] - mat[0][1] * mat[2][2],
+				mat[0][1] * mat[1][2] - mat[1][1] * mat[0][2]),
+			Vector<3, T, ISE>(mat[2][0] * mat[1][2] - mat[1][0] * mat[2][2],
+				mat[0][0] * mat[2][2] - mat[2][0] * mat[0][2],
+				mat[1][0] * mat[0][2] - mat[0][0] * mat[1][2]),
+			Vector<3, T, ISE>(
+				mat[1][0] * mat[2][1] - mat[2][0] * mat[1][1],
+				mat[2][0] * mat[0][1] - mat[0][0] * mat[2][1],
+				mat[0][0] * mat[1][1] - mat[1][0] * mat[0][1]));
+}
 
 
 using Matrix2 = Matrix<2, real, defaultInstructionSet>;

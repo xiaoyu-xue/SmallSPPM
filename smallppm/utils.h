@@ -5,7 +5,7 @@
 
 //#define USING_DOUBLE
 
-#define ISE_SSE
+#define ISE_NONE
 
 #include <stdint.h>
 #include <algorithm>

@@ -2,7 +2,7 @@
 #include "gtest/gtest.h"
 #include "math_utils.h"
 
-TEST(TestOstreamOperator, Ostream) {
+TEST(TestVectorOstreamOperator, Ostream) {
 	{
 		std::ostringstream os;
 		os << Vector3(1, 2, 3);
@@ -15,7 +15,7 @@ TEST(TestOstreamOperator, Ostream) {
 	}
 };
 
-TEST(TestOperatorIsEqual, IsEqual) {
+TEST(TestVectorOperatorIsEqual, IsEqual) {
 	{
 		EXPECT_EQ(Vector3(1.1, 2.2, 3.3) == Vector3(1.1, 2.2, 3.3), true);
 	}
@@ -24,7 +24,7 @@ TEST(TestOperatorIsEqual, IsEqual) {
 	}
 }
 
-TEST(TestOperatorEqual, Equal) {
+TEST(TestVectorOperatorEqual, Equal) {
 	{
 		Vector3 a, b(1, 2, 3);
 		a = b;
@@ -32,7 +32,7 @@ TEST(TestOperatorEqual, Equal) {
 	}
 }
 
-TEST(TestOperatorNotEqual, NotEqual) {
+TEST(TestVectorOperatorNotEqual, NotEqual) {
 	{
 		EXPECT_EQ(Vector3(1.1, 2.2, 3.3) != Vector3(1.1, 2.2, 3.3), false);
 	}
@@ -41,7 +41,7 @@ TEST(TestOperatorNotEqual, NotEqual) {
 	}
 }
 
-TEST(TestOperatorPlus, Plus) {
+TEST(TestVectorOperatorPlus, Plus) {
 	{
 		Vector3 a(1, 2, 3), b(3, 4, 5), c(4, 6, 8);
 		EXPECT_EQ(a + b == c, true);
@@ -53,7 +53,7 @@ TEST(TestOperatorPlus, Plus) {
 	}
 }
 
-TEST(TestOperatorMinus, Minus) {
+TEST(TestVectorOperatorMinus, Minus) {
 	{
 		Vector3 a(1, 2, 3), b(3, 4, 5), c(-2, -2, -2);
 		EXPECT_EQ(a - b == c, true);
@@ -69,7 +69,7 @@ TEST(TestOperatorMinus, Minus) {
 	}
 }
 
-TEST(TestOperatorMul, Mul) {
+TEST(TestVectorOperatorMul, Mul) {
 	{
 		Vector3 a(1, 2, 3), b(3, 4, 5), c(3, 8, 15);
 		EXPECT_EQ(a * b == c, true);
@@ -92,7 +92,7 @@ TEST(TestOperatorMul, Mul) {
 }
 
 
-TEST(TestOperatorDiv, Div) {
+TEST(TestVectorOperatorDiv, Div) {
 	{
 		Vector3 a(3, 8, 15), b(1, 2, 3), c(3, 4, 5);
 		EXPECT_EQ(a / b == c, true);
@@ -109,7 +109,7 @@ TEST(TestOperatorDiv, Div) {
 	}
 }
 
-TEST(TestDot, Dot) {
+TEST(TestVectorDot, Dot) {
 	{
 		Vector3 a(1, 2, 3), b(5, 6, 7);
 		real c = 38;
@@ -132,7 +132,7 @@ TEST(TestDot, Dot) {
 	}
 }
 
-TEST(TestCross, Cross) {
+TEST(TestVectorCross, Cross) {
 	{
 		Vector3 a(1, 2, 3), b(4, 5, 6), c(-3, 6, -3);
 		EXPECT_EQ(a.Cross(b) == c, true);
@@ -159,7 +159,7 @@ TEST(TestCross, Cross) {
 	}
 }
 
-TEST(TestLength, Length) {
+TEST(TestVectorLength, Length) {
 	{
 		Vector3 a(1, 2, 3);
 		real length2 = 14;
@@ -172,7 +172,7 @@ TEST(TestLength, Length) {
 	}
 }
 
-TEST(TestNormalize, Normalize) {
+TEST(TestVectorNormalize, Normalize) {
 	{
 		Vector3 a(1, 2, 3), b(0.2672612419, 0.5345224838, 0.80178372573);
 		EXPECT_EQ(Equal(a.Norm(), b), true);
@@ -189,9 +189,20 @@ TEST(TestNormalize, Normalize) {
 	}
 }
 
-TEST(TestPermute, Permute) {
+TEST(TestVectorPermute, Permute) {
 	{
 		Vector4i a(1, 2, 3, 4);
 		EXPECT_EQ((a.Permute<2, 0, 3, 1>()) == Vector4i(3, 1, 4, 2), true);
+	}
+}
+
+TEST(TestVectorMaxMinValue, MaxMinValue) {
+	{
+		Vector3 a(1, 2, 3);
+		EXPECT_EQ(a.MaxVal(), 3);
+	}
+	{
+		Vector3 a(1, 2, 3);
+		EXPECT_EQ(a.MinVal(), 1);
 	}
 }
