@@ -106,8 +106,21 @@ int main(int argc, char *argv[]) {
 											 6, 7, 8, 9,
 											 10, 11, 12, 13,
 											 14, 15, 16, 17);
-	std::cout << mat0 * mat1 << std::endl;
+	Vector<4, real, IntrinsicSet::None> vec0(1, 2, 3, 4);
 
-
+	Matrix<3, real, IntrinsicSet::None> mat2(1, 2, 3,
+											 4, 5, 6,
+											 7, 8, 9);
+	Matrix<3, real, IntrinsicSet::None> mat3(2, 3, 4,
+											 5, 6, 7,
+											 8, 9, 10);
+	Vector<3, real, IntrinsicSet::None> vec1(1, 2, 3);
+	std::cout << mat0 * mat1 * vec0 << std::endl;
+	Matrix<4, real, IntrinsicSet::None> mat(1, 5, 16, 3,
+											11, 13, 7, 21,
+											33, 20, 19, 8,
+											51, 71, 91, 67);
+	std::cout << Determinant(mat) << std::endl;
+	std::cout << Inverse(mat) << std::endl;
 	//_CrtDumpMemoryLeaks();
 }

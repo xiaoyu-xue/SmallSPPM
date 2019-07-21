@@ -796,6 +796,35 @@ struct Matrix {
 		d[0][3] = m30; d[1][3] = m31; d[2][3] = m32; d[3][3] = m33;
 	}
 
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<dim__ == 2, int> = 0>
+	FORCE_INLINE explicit Matrix(const Vector<dim, T, ISE> &v0, const Vector<dim, T, ISE>  &v1) {
+		static_assert(dim == 2, "Matrix dim must be 2");
+		this->d[0] = v0;
+		this->d[1] = v1;
+	}
+
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<dim__ == 3, int> = 0>
+	FORCE_INLINE explicit Matrix(const Vector<dim, T, ISE> &v0, const Vector<dim, T, ISE> &v1, 
+		const Vector<dim, T, ISE> &v2) {
+		static_assert(dim == 3, "Matrix dim must be 3");
+		this->d[0] = v0;
+		this->d[1] = v1;
+		this->d[2] = v2;
+	}
+
+	template<int dim__ = dim, typename T_ = T, IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<dim__ == 4, int> = 0>
+	FORCE_INLINE explicit Matrix(const Vector<dim, T, ISE> &v0, const Vector<dim, T, ISE> &v1,
+		const Vector<dim, T, ISE> &v2, const Vector<dim, T, ISE> &v3) {
+		static_assert(dim == 4, "Matrix dim must be 4");
+		this->d[0] = v0;
+		this->d[1] = v1;
+		this->d[2] = v2;
+		this->d[3] = v3;
+	}
+
 	FORCE_INLINE Matrix& operator=(const Matrix &m) {
 		for (int i = 0; i < dim; ++i) {
 			this->d[i] = m.d[i];
@@ -875,9 +904,23 @@ struct Matrix {
 		typename std::enable_if_t<SIMD_4_32F<dim__, T_, ISE_> && dim__ == 3,
 		int> = 0>
 	FORCE_INLINE Vector<dim, T, ISE> operator*(const Vector<dim, T, ISE> &a) const {
-		Vector<dim, T, ISE> ret = a.template broadcast<2>() * d[2];
-		ret = fused_mul_add(d[1], a.template broadcast<1>(), ret);
-		ret = fused_mul_add(d[0], a.template broadcast<0>(), ret);
+		Vector<dim, T, ISE> ret = a.template Broadcast<2>() * d[2];
+		ret = fused_mul_add(d[1], a.template Broadcast<1>(), ret);
+		ret = fused_mul_add(d[0], a.template Broadcast<0>(), ret);
+		return ret;
+	}
+
+	// Matrix4
+	template <int dim__ = dim,
+		typename T_ = T,
+		IntrinsicSet ISE_ = ISE,
+		typename std::enable_if_t<SIMD_4_32F<dim__, T_, ISE_> && dim__ == 4,
+		int> = 0>
+	FORCE_INLINE Vector<dim, T, ISE> operator*(const Vector<dim, T, ISE> &a) const {
+		Vector<dim, T, ISE> ret = a.template Broadcast<3>() * d[3];
+		ret = fused_mul_add(d[2], a.template Broadcast<2>(), ret);
+		ret = fused_mul_add(d[1], a.template Broadcast<1>(), ret);
+		ret = fused_mul_add(d[0], a.template Broadcast<0>(), ret);
 		return ret;
 	}
 
@@ -968,7 +1011,14 @@ std::ostream& operator<<(std::ostream &os, const Matrix<dim, T, ISE> &mat) {
 			os << "  ";
 		}
 		for (int j = 0; j < dim; ++j) {
-			os << mat(i, j) << " ";
+			os << mat(i, j);
+			if (j < dim - 1) {
+				os << ", ";
+			}
+			else {
+				os << " ";
+			}
+			
 		}
 		if (i != dim - 1) {
 			os << std::endl;
@@ -1225,7 +1275,7 @@ FORCE_INLINE Matrix<2, T, ISE> Inversed(const Matrix<2, T, ISE> &mat) {
 }
 
 template <typename T, IntrinsicSet ISE>
-Matrix<3, T, ISE> inversed(const Matrix<3, T, ISE> &mat) {
+Matrix<3, T, ISE> Inversed(const Matrix<3, T, ISE> &mat) {
 	T det = Determinant(mat);
 	return T(1.0) / det *
 		Matrix<3, T, ISE>(
@@ -1241,6 +1291,10 @@ Matrix<3, T, ISE> inversed(const Matrix<3, T, ISE> &mat) {
 				mat[0][0] * mat[1][1] - mat[1][0] * mat[0][1]));
 }
 
+template <int dim, typename T, IntrinsicSet ISE>
+FORCE_INLINE Matrix<dim, T, ISE> Inverse(const Matrix<dim, T, ISE> &m) {
+	return Inversed(m);
+}
 
 using Matrix2 = Matrix<2, real, defaultInstructionSet>;
 using Matrix3 = Matrix<3, real, defaultInstructionSet>;
