@@ -17,6 +17,11 @@ enum class IntrinsicSet {
 	AVX
 };
 
+enum class TensorType {
+	VECTOR,
+	MATRIX
+};
+
 #if defined ISE_NONE
 constexpr IntrinsicSet defaultInstructionSet = IntrinsicSet::None;
 #elif defined ISE_SSE
@@ -121,6 +126,7 @@ template<int dim_, typename T, IntrinsicSet ISE = defaultInstructionSet>
 struct Vector : public VectorBase<dim_, T, ISE> {
 	static constexpr int dim = dim_;
 	static constexpr int elements = dim_;
+	static constexpr TensorType tensorType = TensorType::VECTOR;
 
 	template <int dim__, typename T_, IntrinsicSet ISE_>
 	static constexpr bool SIMD_4_32F = (dim__ == 3 || dim__ == 4) &&
@@ -691,6 +697,7 @@ fused_mul_add(const T &a, const T &b, const T &c) {
 template<int dim_, typename T, IntrinsicSet ISE>
 struct Matrix {
 	static constexpr int dim = dim_;
+	static constexpr TensorType tensorType = TensorType::MATRIX;
 	using type = T;
 	Vector<dim, T, ISE> d[dim];
 

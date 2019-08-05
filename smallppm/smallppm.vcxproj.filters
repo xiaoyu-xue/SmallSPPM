@@ -227,6 +227,9 @@
     <ClInclude Include="avx.h">
       <Filter>Header Files\simd</Filter>
     </ClInclude>
+    <ClInclude Include="transform.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="svpng.inc">
