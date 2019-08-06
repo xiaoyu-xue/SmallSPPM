@@ -7,6 +7,13 @@ NAMESPACE_BEGIN
 
 struct AABB {
 	Vec3 minPoint, maxPoint; // axis aligned bounding box
+	AABB() {
+		
+	}
+	AABB(const Vec3 &minP, const Vec3 &maxP) {
+		minPoint = minP;
+		maxPoint = maxP;
+	}
 	inline void Fit(const Vec3 &p)
 	{
 		if (p.x < minPoint.x) minPoint.x = p.x; // min

@@ -722,7 +722,7 @@ struct Matrix {
 	FORCE_INLINE Matrix() {
 		for (int i = 0; i < dim; ++i) {
 			d[i] = Vector<dim, T, ISE>();
-			d[i][i] = 1;
+			//d[i][i] = 1;
 		}
 	}
 
@@ -985,7 +985,7 @@ struct Matrix {
 		return ret;
 	}
 
-	FORCE_INLINE static Matrix Identidy() {
+	FORCE_INLINE static Matrix Identity() {
 		return Matrix(1.f);
 	}
 
