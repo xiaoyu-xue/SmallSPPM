@@ -66,18 +66,22 @@ public:
 
 	FORCE_INLINE Vector3 operator()(const Vector3 &p) const;
 	FORCE_INLINE Vector3 operator()(const Vector3 &p, Vector3 *pError) const;
-	FORCE_INLINE Vector3 operator()(const Vector3 &p, const Vector3 &pError, 
-		Vector3 *absError) const;
-	FORCE_INLINE Vector3 TransformVector(const Vector3 &v) const;
-	FORCE_INLINE Vector3 TransformVector(const Vector3 &v, Vector3 *absError) const;
-	FORCE_INLINE Vector3 TransformVector(const Vector3 &v, const Vector3 &vError,
-		Vector3 *absError) const;
-	FORCE_INLINE Vector3 TransformNormal(const Vector3 &n) const;
-	FORCE_INLINE Ray operator()(const Ray &r, Vector3 *oError,
-		Vector3 *dError) const;
+	FORCE_INLINE Vector3 operator()(const Vector3 &p, const Vector3 &pError, Vector3 *absError) const;
+	FORCE_INLINE Ray operator()(const Ray &r, Vector3 *oError, Vector3 *dError) const;
 	FORCE_INLINE Ray operator()(const Ray &r) const;
 	FORCE_INLINE Transform operator*(const Transform &t) const;
 	FORCE_INLINE AABB operator()(const AABB &bound) const;
+	FORCE_INLINE Vector3 TransformPoint(const Vector3 &p) const;
+	FORCE_INLINE Vector3 TransformPoint(const Vector3 &p, Vector3 *pError) const;
+	FORCE_INLINE Vector3 TransformPoint(const Vector3 &p, const Vector3 &pError, Vector3 *absError) const;
+	FORCE_INLINE Vector3 TransformVector(const Vector3 &v) const;
+	FORCE_INLINE Vector3 TransformVector(const Vector3 &v, Vector3 *absError) const;
+	FORCE_INLINE Vector3 TransformVector(const Vector3 &v, const Vector3 &vError, Vector3 *absError) const;
+	FORCE_INLINE Vector3 TransformNormal(const Vector3 &n) const;
+	FORCE_INLINE Ray TransformRay(const Ray &r, Vector3 *oError, Vector3 *dError) const;
+	FORCE_INLINE Ray TransformRay(const Ray &r) const;
+	FORCE_INLINE AABB TransformAABB(const AABB &bound) const;
+
 private:
 	Matrix4 mat, invMat;
 };
@@ -235,6 +239,31 @@ FORCE_INLINE Transform Transform::operator*(const Transform &t) const {
 
 FORCE_INLINE AABB Transform::operator()(const AABB &bound) const {
 	return AABB((*this)(bound.minPoint), (*this)(bound.maxPoint));
+}
+
+FORCE_INLINE Vector3 Transform::TransformPoint(const Vector3 &p) const {
+	return (*this)(p);
+}
+
+FORCE_INLINE Vector3 Transform::TransformPoint(const Vector3 &p, Vector3 *pError) const {
+	return (*this)(p, pError);
+}
+
+FORCE_INLINE Vector3 Transform::TransformPoint(const Vector3 &p, const Vector3 &pError,
+	Vector3 *absError) const {
+	return (*this)(p, pError, absError);
+}
+
+FORCE_INLINE Ray Transform::TransformRay(const Ray &r, Vector3 *oError, Vector3 *dError) const {
+	return (*this)(r, oError, dError);
+}
+
+FORCE_INLINE Ray Transform::TransformRay(const Ray &r) const {
+	return (*this)(r);
+}
+
+FORCE_INLINE AABB Transform::TransformAABB(const AABB &bound) const {
+	return (*this)(bound);
 }
 
 NAMESPACE_END
