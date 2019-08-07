@@ -82,6 +82,15 @@ public:
 	FORCE_INLINE Ray TransformRay(const Ray &r) const;
 	FORCE_INLINE AABB TransformAABB(const AABB &bound) const;
 
+	static Transform Translate(const Vector3 &v);
+	static Transform Scale(real sx, real sy, real sz);
+	static Transform RotateX(real theta);
+	static Transform RotateY(real theta);
+	static Transform RotateZ(real theta);
+	static Transform Rotate(real theta, const Vector3 &axis);
+	static Transform LookAt(const Vector3 &pos, const Vector3 &look, const Vector3 &up);
+	static Transform Orthographic(real znear, real zfar);
+	static Transform Perspective(real fov, real znear, real zfar);
 private:
 	Matrix4 mat, invMat;
 };
