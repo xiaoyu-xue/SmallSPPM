@@ -1154,6 +1154,10 @@ T Determinant(const Matrix<4, T, ISE> &m) {
 	return Dot1;
 }
 
+template<int dim, typename T, IntrinsicSet ISE>
+Matrix<dim, T, ISE> Transpose(const Matrix<dim, T, ISE> &m) {
+	return m.Transpose();
+}
 
 template <typename T, IntrinsicSet ISE>
 Matrix<4, T, ISE> Inversed(const Matrix<4, T, ISE> &m) {
