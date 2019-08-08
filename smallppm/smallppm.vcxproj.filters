@@ -105,6 +105,9 @@
     <ClCompile Include="debug_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="transform.cpp">
+      <Filter>Source Files\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lowdiscrepency.h">
@@ -223,6 +226,12 @@
     </ClInclude>
     <ClInclude Include="sse.h">
       <Filter>Header Files\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="avx.h">
+      <Filter>Header Files\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="transform.h">
+      <Filter>Header Files\math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

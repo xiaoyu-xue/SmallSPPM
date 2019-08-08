@@ -86,6 +86,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\external\lib\gtest;..\external\lib\gmock;..\external\lib\tbb;..\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>gtest.lib;gmock.lib;smallppm.lib;tbb.lib;tbbmalloc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
       <Command>copy /y "$(SolutionDir)\external\lib\tbb\tbb.dll" "$(OutDir)"
@@ -138,6 +139,7 @@ copy /y "$(SolutionDir)\external\lib\gmock\gmock_main.pdb" "$(OutDir)"</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="matrix_test.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="vector_test.cpp" />
   </ItemGroup>

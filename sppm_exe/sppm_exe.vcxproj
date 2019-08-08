@@ -114,6 +114,7 @@ copy /y "$(SolutionDir)\external\lib\tbb\tbbmalloc.dll" "$(OutDir)"</Command>
     <Link>
       <AdditionalLibraryDirectories>..\external\lib\tbb;..\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>tbb.lib;tbbmalloc.lib;tbb_debug.lib;tbbmalloc_debug.lib;smallppm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
       <Command>copy /y "$(SolutionDir)\external\lib\tbb\tbb_debug.dll" "$(OutDir)"

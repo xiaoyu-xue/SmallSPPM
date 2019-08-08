@@ -170,6 +170,7 @@
     <ClCompile Include="lowdiscrepency.cpp" />
     <ClCompile Include="sampler.cpp" />
     <ClCompile Include="sampling.cpp" />
+    <ClCompile Include="transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="svpng.inc" />
@@ -177,6 +178,7 @@
   <ItemGroup>
     <ClInclude Include="AABB.h" />
     <ClInclude Include="arealight.h" />
+    <ClInclude Include="avx.h" />
     <ClInclude Include="bsdf.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="debug_utils.h" />
@@ -212,6 +214,7 @@
     <ClInclude Include="sppm.h" />
     <ClInclude Include="sse.h" />
     <ClInclude Include="threading.h" />
+    <ClInclude Include="transform.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="visibility.h" />
   </ItemGroup>
