@@ -27,6 +27,8 @@
 #include "phinhole.h"
 #include "sppm.h"
 
+#include "transform.h"
+
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
 #endif
@@ -98,29 +100,60 @@ int main(int argc, char *argv[]) {
 	//clock_t end = clock();
 	//std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
 
-	Matrix<4, real, IntrinsicSet::None> mat0(1, 2, 3, 4,
-											 5, 6, 7, 8,
-											 9, 10, 11, 12,
-											 13, 14, 15, 16);
-	Matrix<4, real, IntrinsicSet::None> mat1(2, 3, 4, 5,
-											 6, 7, 8, 9,
-											 10, 11, 12, 13,
-											 14, 15, 16, 17);
-	Vector<4, real, IntrinsicSet::None> vec0(1, 2, 3, 4);
+	//Matrix<4, real, IntrinsicSet::None> mat0(1, 2, 3, 4,
+	//										 5, 6, 7, 8,
+	//										 9, 10, 11, 12,
+	//										 13, 14, 15, 16);
+	//Matrix<4, real, IntrinsicSet::None> mat1(2, 3, 4, 5,
+	//										 6, 7, 8, 9,
+	//										 10, 11, 12, 13,
+	//										 14, 15, 16, 17);
+	//Vector<4, real, IntrinsicSet::None> vec0(1, 2, 3, 4);
 
-	Matrix<3, real, IntrinsicSet::None> mat2(1, 2, 3,
-											 4, 5, 6,
-											 7, 8, 9);
-	Matrix<3, real, IntrinsicSet::None> mat3(2, 3, 4,
-											 5, 6, 7,
-											 8, 9, 10);
-	Vector<3, real, IntrinsicSet::None> vec1(1, 2, 3);
-	std::cout << mat0 * mat1 * vec0 << std::endl;
-	Matrix<4, real, IntrinsicSet::None> mat(1, 5, 16, 3,
-											11, 13, 7, 21,
-											33, 20, 19, 8,
-											51, 71, 91, 67);
-	std::cout << Determinant(mat) << std::endl;
-	std::cout << Inverse(mat) << std::endl;
+	//Matrix<3, real, IntrinsicSet::None> mat2(1, 2, 3,
+	//										 4, 5, 6,
+	//										 7, 8, 9);
+	//Matrix<3, real, IntrinsicSet::None> mat3(2, 3, 4,
+	//										 5, 6, 7,
+	//										 8, 9, 10);
+	//Vector<3, real, IntrinsicSet::None> vec1(1, 2, 3);
+	//std::cout << mat0 * mat1 * vec0 << std::endl;
+	//Matrix<4, real, IntrinsicSet::None> mat(1, 5, 16, 3,
+	//										11, 13, 7, 21,
+	//										33, 20, 19, 8,
+	//										51, 71, 91, 67);
+	//std::cout << Determinant(mat) << std::endl;
+	//std::cout << Inverse(mat) << std::endl;
+	Vector3 p0(1, 2, 3);
+	Transform translate = Transform::Translate(Vector3(0.1, 0.2, 0.3));
+	Transform scale = Transform::Scale(1, 2, 3);
+	Vector3 p1 = translate.TransformPoint(p0);
+	std::cout << p1 << std::endl;
+	std::cout << scale.TransformPoint(p0) << std::endl;
+	std::cout << (translate * scale).TransformPoint(p0) << std::endl;
+	std::cout << translate.TransformVector(p0) << std::endl;
+	{
+		Sphere sphere(0.8f, Vec3(5.0f, 0.f, 0.f), Vec3(), Vec3(.75f, .25f, .25f), DIFF);
+		Ray ray(Vector3(0, 0, 0), Vector3(1.f, 0.f, 0.f));
+		real tHit;
+		Intersection isect;
+		sphere.Intersect(ray, &isect, &tHit);
+		std::cout << tHit << std::endl;
+	}
+	{
+		Sphere sphere(1.f, Vector3(0, 0, 0), Vec3(), Vec3(.75f, .25f, .25f), DIFF);
+		Ray ray(Vector3(0, 0, 0), Vector3(1.f, 0.f, 0.f));
+		Transform translate = Transform::Translate(Vec3(5.0f, 0.f, 0.f));
+		Transform scale = Transform::Scale(0.8f, 0.8f, 0.8f);
+		Transform transform = translate * scale;
+		Transform invTransform(transform.GetInverseMatrix(), transform.GetMatrix());
+		Ray transformedRay = invTransform.TransformRay(ray);
+		std::cout << ray << std::endl << transformedRay << std::endl;
+		real tHit;
+		Intersection isect;
+		sphere.Intersect(transformedRay, &isect, &tHit);
+		std::cout << tHit << std::endl;
+	}
+
 	//_CrtDumpMemoryLeaks();
 }

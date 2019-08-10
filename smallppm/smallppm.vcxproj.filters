@@ -85,6 +85,9 @@
     <Filter Include="Header Files\simd">
       <UniqueIdentifier>{5968d54f-34f4-4aa6-ad01-e5db02e23e4d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\geometry">
+      <UniqueIdentifier>{6242d077-5c20-4dd9-aea1-ebf4e12634a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sampler.cpp">
@@ -107,6 +110,9 @@
     </ClCompile>
     <ClCompile Include="transform.cpp">
       <Filter>Source Files\math</Filter>
+    </ClCompile>
+    <ClCompile Include="ray.cpp">
+      <Filter>Source Files\geometry</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

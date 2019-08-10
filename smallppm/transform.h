@@ -45,7 +45,12 @@ public:
 
 	Transform(const Matrix4 &m, const Matrix4 &invM) {
 		mat = m;
-		invMat = Inverse(invM);
+		invMat = invM;
+	}
+
+	Transform(const Transform &t) {
+		mat = t.mat;
+		invMat = t.invMat;
 	}
 
 	friend Transform Inverse(const Transform &t) {
@@ -209,7 +214,7 @@ FORCE_INLINE Vector3 Transform::TransformVector(const Vector3 &v, const Vector3 
 FORCE_INLINE Ray Transform::operator()(const Ray& r) const {
 	Vector3 oError;
 	Vector3 o = (*this)(r.o, &oError);
-	Vector3 d = (*this)(r.d);
+	Vector3 d = this->TransformVector(r.d);
 
 	real length2 = d.Length2();
 	real tMax = r.tMax, tMin = r.tMin;
@@ -224,7 +229,7 @@ FORCE_INLINE Ray Transform::operator()(const Ray& r) const {
 
 FORCE_INLINE Ray Transform::operator()(const Ray &r, Vector3 *oError, Vector3 *dError) const {
 	Vector3 o = (*this)(r.o, oError);
-	Vector3 d = (*this)(r.d, dError);
+	Vector3 d = this->TransformVector(r.d, dError);
 	real tMax = r.tMax;
 	real tMin = r.tMin;
 	real length2 = d.Length2();
