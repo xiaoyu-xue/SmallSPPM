@@ -39,7 +39,7 @@
 
 //const real ALPHA = 0.66666667;
 const real ALPHA = 0.75;
-const int64  render_stage_number = 2000;
+const int64  render_stage_number = 20000;
 
 void TestSppm(int argc, char* argv[]) {
 	clock_t begin = clock();
@@ -56,8 +56,8 @@ void TestSppm(int argc, char* argv[]) {
 	//Vec3 cx = Vec3(w*.5135 / h), cy = (cx%cam.d).norm()*.5135, *c = new Vec3[w*h], vw;
 
 	Vec3 camPos(50, 52, 295.6f);
-	//Vec3 cz(0, -0.042612f, -1);
-	Vec3 cz(0, 0, -1);
+	Vec3 cz(0, -0.042612f, -1);
+	//Vec3 cz(0, 0, -1);
 	//real filmDis = cz.length();
 	real filmDis = cz.Length();
 	Vec3 cx = Vec3(w * .5135f / h, 0, 0).Norm();
@@ -92,7 +92,7 @@ void TestSppm(int argc, char* argv[]) {
 	std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape));
 	scene->AddLight(light0);
 	scene->Initialize();
-	film->SetFileName("cornellbox28.bmp");
+	film->SetFileName("cornellbox29.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
 	clock_t end = clock();
@@ -114,10 +114,48 @@ void TestProjection() {
 	std::cout << pointRaster << std::endl;
 }
 
-int main(int argc, char *argv[]) {
-	//TestProjection();
-	TestSppm(argc, argv);
+void TestProjection2() {
+	int w = 1024, h = 768;
+	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(w, h));
+	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
 
+	Vec3 camPos(50, 52, 295.6f);
+	//Vec3 cz(0, -0.042612f, -1);
+	Vec3 cz(0, 0, -1);
+	real filmDis = cz.Length();
+	Vec3 cx = Vec3(w * .5135f / h, 0, 0).Norm();
+	Vec3 cy = (cx.Cross(cz)).Norm();
+	real fovy = 28.7993f;
+	std::shared_ptr<ProjectiveCamera> camera = std::shared_ptr<ProjectiveCamera>(new PinHoleCamera(film, camPos, cz, cx, cy, fovy, filmDis));
+	
+	//raster to ndc
+	{
+		std::cout << "raster to ndc:" << std::endl;
+		Vec3 rasterPoint(0, 0, 0.5);
+		Vec3 rasterToNDC = camera->RasterToNDC(rasterPoint);
+		std::cout << rasterToNDC << std::endl;
+	}
+
+	//ndc to camera
+	{
+		std::cout << "ndc to camera:" << std::endl;
+		Vec3 cameraPoint = camera->WorldToCamera(camera->GetFilm()->LU);
+		//cameraPoint.z = 1000;
+		std::cout << cameraPoint << std::endl;
+		Vec3 cameraToNDC = camera->CameraToNDC(cameraPoint);
+		std::cout << cameraToNDC << std::endl;
+
+		Vec3 ndcToCamera = camera->NDCToCamera(Vec3(-1, 1, -1));
+		std::cout << ndcToCamera << std::endl;
+	}
+
+}
+
+int main(int argc, char *argv[]) {
+
+	TestProjection2();
+
+	TestSppm(argc, argv);
 	//Matrix<4, real, IntrinsicSet::None> mat0(1, 2, 3, 4,
 	//										 5, 6, 7, 8,
 	//										 9, 10, 11, 12,

@@ -30,17 +30,15 @@ public:
 		//Vec3 dir = cx * ((pixelX + u.x) / film->resX - 0.5f) * film->width +
 		//	cy * (-(pixelY + u.y) / film->resY + 0.5f) * film->heigh + cz * filmDistance;
 		//Vec3 dir = cx * ((pixelX + u.x) / film->resX - 0.5f) * film->width +
-		//	cy * (-(pixelY + u.y) / film->resY + 0.5f) * film->heigh + cz * filmDistance;
-		//debug
-
+		//	cy * (-(pixelY + u.y) / film->resY + 0.5f) * film->heigh + czz * filmDistance;
 		//Vec3 sampledPoint = pos + dir;
 
 		//dir = dir.Norm();
 
-		Vec3 sampledPos = RasterToWorld(Vec3(pixelX + u.x, pixelY + u.y, 0));
-		//Vec3 sampledPos = RasterToCamera(Vec3(pixelX + u.x, pixelY + u.y, 0));
-		//Vec3 sampledPosWorld = CameraToWorld(sampledPos);
-		//Vec3 sampledPosDirect = RasterToWorld(Vec3(pixelX + u.x, pixelY + u.y, 0));
+		Vec3 sampledPos = RasterToWorld(Vec3(pixelX + u.x, pixelY + u.y, -1));
+		//Vec3 sampledPosCamera = RasterToCamera(Vec3(pixelX + u.x, pixelY + u.y, -1));
+		//Vec3 sampledPosWorld = CameraToWorld(sampledPosCamera);
+		//Vec3 sampledPosDirect = RasterToWorld(Vec3(pixelX + u.x, pixelY + u.y, -1));
 		////Vec3 dir = (sampledPos - pos).Norm();
 
 		//Vec3 LU_NDC = RasterToNDC(Vec3(0, 0, 0.5));

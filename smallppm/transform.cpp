@@ -130,9 +130,9 @@ Transform Transform::Perspective(real fovy, real aspect, real dis, real n, real 
 
 	real t = dis * std::tan(Radians(fovy) * 0.5);
 	real r = t * aspect;
-	Matrix4 persp(dis/ r, 0, 0, 0,
-				0, dis / t, 0, 0,
-				0, 0, -(f + n) / (f - n), -2 * f * n / (f - n),
-				0, 0, -1, 0);
+	Matrix4 persp(dis / r, 0, 0, 0,
+				  0, dis / t, 0, 0,
+				  0, 0, (f + n) / (f - n), -2 * f * n / (f - n),
+				  0, 0, 1, 0);
 	return Transform(persp, Inverse(persp));
 }

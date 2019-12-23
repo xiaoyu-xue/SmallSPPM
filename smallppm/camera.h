@@ -46,7 +46,7 @@ public:
 		std::cout << "WorldToCamera" << std::endl;
 		std::cout << WorldToCamera.GetMatrix() << std::endl;
 
-		CameraToNDC = Transform::Perspective(fovy, film->aspect, filmDistance, 0.0001f, 1000000.f);
+		CameraToNDC = Transform::Perspective(fovy, film->aspect, filmDistance, filmDistance, 100000.f);
 		std::cout << "CameraToNDC" << std::endl;
 		std::cout << CameraToNDC.GetMatrix() << std::endl;
 		NDCToCamera = Inverse(CameraToNDC);
@@ -54,7 +54,7 @@ public:
 		std::cout << NDCToCamera.GetMatrix() << std::endl;
 		NDCToRaster =
 			Transform::Scale(real(film->resX), real(film->resY), 1) *
-			Transform::Scale(0.5f, 0.5f, 1) * 
+			Transform::Scale(0.5f, -0.5f, 1) * 
 			Transform::Translate(Vec3(1, -1, 0));
 		std::cout << "NDCToRaster" << std::endl;
 		std::cout << NDCToRaster.GetMatrix() << std::endl;
@@ -89,7 +89,7 @@ protected:
 			<< "RL: " << film->RL << std::endl
 			<< "RR: " << film->RU << std::endl;
 	}
-
+public:
 	Vec3 pos, cx, cy, cz, czz;
 	real fovy;
 	real filmDistance;
