@@ -119,7 +119,7 @@ copy /y "$(SolutionDir)\external\lib\tbb\tbbmalloc.dll" "$(OutDir)"</Command>
     </Link>
     <PostBuildEvent>
       <Command>copy /y "$(SolutionDir)\external\lib\tbb\tbb_debug.dll" "$(OutDir)"
-copy /y "$(SolutionDir)\external\lib\tbb\tbbmalloc_debug.dll" "$(OutDir)"</Command>
+copy /y "$(SolutionDir)\external\lib\tbb\*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

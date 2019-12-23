@@ -39,7 +39,7 @@
 
 //const real ALPHA = 0.66666667;
 const real ALPHA = 0.75;
-const int64  render_stage_number = 200000;
+const int64  render_stage_number = 2000;
 
 void TestSppm(int argc, char* argv[]) {
 	clock_t begin = clock();
@@ -55,9 +55,11 @@ void TestSppm(int argc, char* argv[]) {
 	//Ray cam(Vec3(50, 48, 295.6), Vec3(0, -0.042612, -1).norm());
 	//Vec3 cx = Vec3(w*.5135 / h), cy = (cx%cam.d).norm()*.5135, *c = new Vec3[w*h], vw;
 
-	Vec3 camPos(50, 52, 295.6f), cz(0, -0.042612f, -1);
+	Vec3 camPos(50, 52, 295.6f);
+	//Vec3 cz(0, -0.042612f, -1);
+	Vec3 cz(0, 0, -1);
 	//real filmDis = cz.length();
-	real filmDis = 1.0f;
+	real filmDis = cz.Length();
 	Vec3 cx = Vec3(w * .5135f / h, 0, 0).Norm();
 	Vec3 cy = (cx.Cross(cz)).Norm();
 	real fovy = 28.7993f;
@@ -90,7 +92,7 @@ void TestSppm(int argc, char* argv[]) {
 	std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape));
 	scene->AddLight(light0);
 	scene->Initialize();
-	film->SetFileName("cornellbox27.bmp");
+	film->SetFileName("cornellbox28.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
 	clock_t end = clock();
@@ -98,12 +100,23 @@ void TestSppm(int argc, char* argv[]) {
 }
 
 void TestProjection() {
-
+	int resX = 800, resY = 600;
+	real aspect = real(resX) / real(resY);
+	real fovy = 60;
+	real filmDis = 1.f;
+	Transform camToNDC = Transform::Perspective(fovy, aspect, filmDis, 0.01, 1000000.f);
+	Vec3 point(0, 1, 5);
+	Vec3 pointNDC = camToNDC(point);
+	std::cout << pointNDC << std::endl;
+	Transform NDCToRaster = Transform::Scale(resX, resY, 1) * Transform::Scale(0.5f, 0.5f, 1) * Transform::Translate(Vec3(1, -1, 0));
+	Transform cameraToRaster = NDCToRaster * camToNDC;
+	Vec3 pointRaster = cameraToRaster(point);
+	std::cout << pointRaster << std::endl;
 }
 
 int main(int argc, char *argv[]) {
-
-	
+	//TestProjection();
+	TestSppm(argc, argv);
 
 	//Matrix<4, real, IntrinsicSet::None> mat0(1, 2, 3, 4,
 	//										 5, 6, 7, 8,

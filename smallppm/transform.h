@@ -95,7 +95,7 @@ public:
 	static Transform Rotate(real theta, const Vector3 &axis);
 	static Transform LookAt(const Vector3 &pos, const Vector3 &look, const Vector3 &up);
 	static Transform Orthographic(real znear, real zfar);
-	static Transform Perspective(real fov, real znear, real zfar);
+	static Transform Perspective(real fovy, real aspect, real dis, real znear, real zfar);
 private:
 	Matrix4 mat, invMat;
 };
