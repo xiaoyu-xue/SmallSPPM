@@ -17,11 +17,11 @@ FORCE_INLINE void CoordinateSystem(const Vec3 &v1, Vec3 *v2, Vec3 *v3) {
 }
 
 
-Vec3 Reflect(const Vec3 &inDir, const Vec3 &n) {
+FORCE_INLINE Vec3 Reflect(const Vec3 &inDir, const Vec3 &n) {
 	return 2.f * inDir.Dot(n) * n - inDir;
 }
 
-inline Vec3 OffsetRayOrigin(const Vec3 &p, const Vec3 &pError,
+FORCE_INLINE Vec3 OffsetRayOrigin(const Vec3 &p, const Vec3 &pError,
 	const Vec3 &n, const Vec3 &w) {
 	real d = Dot(Abs(n), pError);
 #ifdef USING_DOUBLE
