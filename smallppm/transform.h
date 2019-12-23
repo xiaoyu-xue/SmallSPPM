@@ -103,7 +103,7 @@ private:
 FORCE_INLINE Vector3 Transform::operator()(const Vector3 &p) const {
 	Vector4 pp(p.x, p.y, p.z, 1.0);
 	pp = mat * pp;
-	if(pp.w == 1) {
+	if(pp.w == 1 || pp.w == 0) {
 		return Vector3(pp.x, pp.y, pp.z);
 	}
 	else {
@@ -121,7 +121,7 @@ FORCE_INLINE Vector3 Transform::operator()(const Vector3 &p, Vector3 *pError) co
 	real zAbsSum = (std::abs(mat(2, 0) * p.x) + std::abs(mat(2, 1) * p.y) +
 		std::abs(mat(2, 2) * p.z) + std::abs(mat(2, 3)));
 	*pError = gamma(3) * Vector3(xAbsSum, yAbsSum, zAbsSum);
-	if(pp.w == 1) {
+	if(pp.w == 1 || pp.w == 0) {
 		return Vector3(pp.x, pp.y, pp.z);
 	}
 	else {
@@ -153,7 +153,7 @@ FORCE_INLINE Vector3 Transform::operator()(const Vector3 &p, const Vector3 &pErr
 		gamma(3) * (std::abs(mat(2, 0) * x) + std::abs(mat(2, 1) * y) +
 			std::abs(mat(2, 2) * z) + std::abs(mat(2, 3)));
 
-	if (pp.w == 1.) {
+	if (pp.w == 1.f || pp.w == 0) {
 		return Vector3(pp.x, pp.y, pp.z);
 	}
 	else {

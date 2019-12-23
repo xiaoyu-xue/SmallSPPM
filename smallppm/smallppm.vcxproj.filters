@@ -88,6 +88,9 @@
     <Filter Include="Source Files\geometry">
       <UniqueIdentifier>{6242d077-5c20-4dd9-aea1-ebf4e12634a2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\accel">
+      <UniqueIdentifier>{12581f52-ad65-4d90-9142-cbebdadcb448}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sampler.cpp">

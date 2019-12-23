@@ -5,6 +5,8 @@
 #include "svpng.inc"
 #include "scalar.h"
 #include <fstream>
+#include <stb/stb_image.h>
+
 NAMESPACE_BEGIN
 
 class ImageIO {
@@ -86,6 +88,10 @@ public:
 
 	static int toInt(real x, real gamma = 2.2f) {
 		return int(pow(Clamp(x, 0.f, 1.f), 1 / gamma) * 255 + .5f);
+	}
+
+	static void WriteImage(const std::string& filename, const std::vector<Vec3>& image, uint32 resX, uint32 resY, real gamma = 2.2) {
+
 	}
 
 };
