@@ -172,7 +172,7 @@ void TestSPPM2(int argc, char* argv[]) {
 
 	//Diffuse Ball1
 	std::shared_ptr<Shape> diffuseBallShape1 = std::shared_ptr<Shape>(new Sphere(9.5f, Vec3(23, 0.0f, 98)));
-	std::shared_ptr<Material> diffuseBallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
+	std::shared_ptr<Material> diffuseBallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(fullWhiteConstant));
 	std::shared_ptr<Primitive> diffuseBall1 = std::shared_ptr<Primitive>(new GeometryPrimitive(diffuseBallShape1, diffuseBallMaterial));
 	scene->AddPrimitive(diffuseBall1);
 
@@ -195,7 +195,7 @@ void TestSPPM2(int argc, char* argv[]) {
 	scene->AddPrimitive(glassBall2);
 
 	//Glass Ball3 new Sphere(9.5f, Vec3(53, 9.5f, 88)
-	std::shared_ptr<Shape> glassBallShape3 = std::shared_ptr<Shape>(new Sphere(16.5f, Vec3(27, 16.5f, 47)));
+	std::shared_ptr<Shape> glassBallShape3 = std::shared_ptr<Shape>(new Sphere(9.5f, Vec3(53, 9.5f, 88)));
 	std::shared_ptr<Primitive> glassBall3 = std::shared_ptr<Primitive>(new GeometryPrimitive(glassBallShape3, glassBallMaterial));
 	scene->AddPrimitive(glassBall3);
 
@@ -209,7 +209,7 @@ void TestSPPM2(int argc, char* argv[]) {
 
 
 	scene->Initialize();
-	film->SetFileName("cornellbox30.bmp");
+	film->SetFileName("cornellbox31.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
 	clock_t end = clock();

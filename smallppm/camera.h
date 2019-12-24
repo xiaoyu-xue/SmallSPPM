@@ -22,7 +22,6 @@ public:
 protected:
 
 	std::shared_ptr<Film> film;
-	//Transform CameraToNDC, NDCToRaster, RasterToNDC, RasterToCamera;
 };
 
 class ProjectiveCamera : public Camera {
