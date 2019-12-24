@@ -88,8 +88,17 @@
     <Filter Include="Source Files\geometry">
       <UniqueIdentifier>{6242d077-5c20-4dd9-aea1-ebf4e12634a2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\accel">
+    <Filter Include="Source Files\primitive">
+      <UniqueIdentifier>{5a74a1be-2f8a-40ca-8a65-59145923ad31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\accelerator">
       <UniqueIdentifier>{12581f52-ad65-4d90-9142-cbebdadcb448}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\texture">
+      <UniqueIdentifier>{13255c48-bdc5-429e-bde3-69df4b4a27ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\intersection">
+      <UniqueIdentifier>{c242105b-5d24-4fad-9628-80ef4819a1f7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -116,6 +125,12 @@
     </ClCompile>
     <ClCompile Include="ray.cpp">
       <Filter>Source Files\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="primitive.cpp">
+      <Filter>Source Files\primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="intersection.cpp">
+      <Filter>Source Files\intersection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -241,6 +256,27 @@
     </ClInclude>
     <ClInclude Include="transform.h">
       <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="diffuse.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="brute_force.h">
+      <Filter>Header Files\accelerator</Filter>
+    </ClInclude>
+    <ClInclude Include="accelerator.h">
+      <Filter>Header Files\accelerator</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>Header Files\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="constant_texture.h">
+      <Filter>Header Files\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="mirror.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="glass.h">
+      <Filter>Header Files\material</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

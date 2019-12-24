@@ -10,9 +10,6 @@ NAMESPACE_BEGIN
 
 class Shape {
 public:
-	Shape(ReflectionType type, const Vec3 &color, const Vec3 &emission, bool isL = false) :
-		reflType(type), c(color), e(emission), isLight(isL) {}
-	//virtual real Intersect(const Ray &r, Intersection *isect) const = 0;
 	virtual bool Intersect(const Ray &r, Intersection *isect, real *t) const = 0;
 	virtual bool Intersect(const Ray &r) const = 0;
 	virtual Intersection Sample(real *pdf, const Vec2 &rand) const = 0;
@@ -41,24 +38,7 @@ public:
 		return pdf;
 	}
 
-	virtual std::shared_ptr<BSDF> GetBSDF(const Intersection &isect, TransportMode mode = TransportMode::Radiance) const {
-		if (reflType == DIFF) {
-			return std::dynamic_pointer_cast<BSDF>(std::make_shared<DiffuseBSDF>(isect, c));
-		}
-		else if (reflType == SPEC) {
-			return std::dynamic_pointer_cast<BSDF>(std::make_shared<SpecularBSDF>(isect, c));
-		}
-		else if (reflType == REFR) {
-			return std::dynamic_pointer_cast<BSDF>(std::make_shared<TransmissionBSDF>(isect, c, mode));
-		}
-		return std::shared_ptr<BSDF>();
-	}
-
-	bool IsLight() const { return isLight; }
-
 	virtual Vec3 GetNorm(const Vec3 &point) const = 0;
-
-	virtual Vec3 GetEmission() const { return e; }
 
 	int GetId() const { return shapeId; }
 
@@ -66,9 +46,6 @@ public:
 
 	friend class Scene;
 private:
-	ReflectionType reflType;
-	Vec3 c, e;
-	bool isLight;
 	int shapeId;
 };
 

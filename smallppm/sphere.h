@@ -12,32 +12,7 @@ NAMESPACE_BEGIN
 
 class Sphere : public Shape {
 public:
-	Sphere(real radius, Vec3 position, Vec3 emission, Vec3 color, ReflectionType reflType) :
-		rad(radius), p(position), Shape(reflType, color, emission, emission != Vec3()) {}
-
-	//real Intersect(const Ray &r, Intersection *isect) const override {
-	//	// ray-sphere Intersection returns distance
-	//	Vec3 op = p - r.o;
-	//	real t, b = op.Dot(r.d), det = b * b - op.Dot(op) + rad * rad;
-	//	//float64 b = (float64)op.x * (float64)r.d.x + (float64)op.y * (float64)r.d.y + (float64)op.z * (float64)r.d.z;
-	//	//float64 det = b * b - ((float64)op.x * (float64)op.x + (float64)op.y * (float64)op.y + (float64)op.z * (float64)op.z)
-	//	//	+ (float64)rad * (float64)rad;
-	//	//real t;
-	//	if (det < 0) {
-	//		return r.tMax;
-	//	}
-	//	else {
-	//		det = sqrt(det);
-	//	}
-	//	t = (t = b - det) > 1e-4 ? t : ((t = b + det) > 1e-4 ? t : r.tMax);
-
-	//	isect->hit = r.o + r.d * t;
-	//	isect->n = (isect->hit - p).Norm();
-	//	isect->nl = isect->n.Dot(r.d) < 0 ? isect->n : isect->n * -1;
-	//	isect->wo = -1 * r.d;
-	//	isect->rayEps = 5e-4f * t;
-	//	return t;
-	//}
+	Sphere(real radius, Vec3 position) : Shape(), rad(radius), p(position) {}
 
 	bool Intersect(const Ray &r, Intersection *isect, real *t) const override {
 		// ray-sphere Intersection returns distance
@@ -81,56 +56,6 @@ public:
 		return (*t > r.tMin && *t < r.tMax);
 	}
 
-	//bool Intersect(const Ray& r, Intersection* isect, real* t) const override {
-	//	EReal ox(r.o.x), oy(r.o.y), oz(r.o.z);
-	//	EReal dx(r.d.x), dy(r.d.y), dz(r.d.z);
-	//	EReal px(p.x), py(p.y), pz(p.z);
-	//	EReal vx = ox - px, vy = oy - py, vz = oz - pz;
-	//	EReal a = dx * dx + dy * dy + dz * dz;
-	//	EReal b = 2 * (vx * dx + vy * dy + vz * dz);
-	//	EReal c = vx * vx + vy * vy + vz * vz - EReal(rad) * EReal(rad);
-
-	//	EReal t0, t1;
-	//	if(!Quadratic(a, b, c, &t0, &t1)) {
-	//		return false;
-	//	}
-	//	if (debugPixel == 1) {
-	//		std::cout << "Quadratuc pass " << std::endl;
-	//	}
-	//	// Check quadric shape _t0_ and _t1_ for nearest intersection
-	//	if (t0.UpperBound() > r.tMax || t1.LowerBound() <= r.tMin) return false;
-	//	EReal tShapeHit = t0;
-	//	if (tShapeHit.LowerBound() <= 0) {
-	//		tShapeHit = t1;
-	//		if (tShapeHit.UpperBound() > r.tMax) return false;
-	//	}
-
-	//	Vec3 pHit = r((real)tShapeHit);
-	//	// Refine sphere intersection point
-	//	pHit = p + (pHit - p) * (rad / Distance(pHit, p));
-
-	//	//Vec3 pError = gamma(5) * Abs(pHit);
-	//	//Vec3 pError = gamma(7) * Abs(pHit - p) + gamma(1) * p;
-	//	Vec3 pError = gamma(5) * Abs(pHit);
-	//	//std::cout << pError << std::endl;
-
-	//	*t = (real)tShapeHit;
-	//	isect->hit = pHit;
-	//	isect->n = (isect->hit - p).Norm();
-	//	isect->nl = isect->n.Dot(r.d) < 0 ? isect->n : isect->n * -1;
-	//	//{
-	//	//	if (debugPixel == 1) {
-	//	//		std::cout << "sign of n: " <<isect->n.Dot(r.d) << std::endl;
-	//	//	}
-	//	//}
-	//	isect->wo = -1 * r.d;
-	//	isect->pError = pError;
-
-	//	//std::cout << "ok " << std::endl;
-	//	//std::cout << (real)tShapeHit << std::endl;
-	//	return true;
-	//}
-
 
 	bool Intersect(const Ray &r) const override {
 		// ray-sphere Intersection returns distance
@@ -155,38 +80,8 @@ public:
 			}
 		}
 
-		//real vdError = vd * gamma(2 + 1);
-		//real sqrtDetError = vd * gamma(4) + d2 * v2 * gamma(4) + d2 * rad * rad * gamma(1);
-		//real tError = vd / d2 * gamma(3) + sqrtDetError / d2 * gamma(2);
-
-		//std::cout << "tmin: " << r.tMin << ", t: " << t << ", tmax: " << r.tMax << std::endl;
 		return (t > r.tMin  && t < r.tMax);
 	}
-
-	//bool Intersect(const Ray& r) const override {
-	//	EReal ox(r.o.x), oy(r.o.y), oz(r.o.z);
-	//	EReal dx(r.d.x), dy(r.d.y), dz(r.d.z);
-	//	EReal px(p.x), py(p.y), pz(p.z);
-	//	EReal vx = ox - px, vy = oy - py, vz = oz - pz;
-	//	EReal a = dx * dx + dy * dy + dz * dz;
-	//	EReal b = 2 * (vx * dx + vy * dy + vz * dz);
-	//	EReal c = vx * vx + vy * vy + vz * vz - EReal(rad) * EReal(rad);
-
-	//	EReal t0, t1;
-	//	if (!Quadratic(a, b, c, &t0, &t1)) {
-	//		return false;
-	//	}
-
-	//	// Check quadric shape _t0_ and _t1_ for nearest intersection
-	//	if (t0.UpperBound() > r.tMax || t1.LowerBound() <= r.tMin) return false;
-	//	EReal tShapeHit = t0;
-	//	if (tShapeHit.LowerBound() <= 0) {
-	//		tShapeHit = t1;
-	//		if (tShapeHit.UpperBound() > r.tMax) return false;
-	//	}
-
-	//	return true;
-	//}
 
 	Intersection Sample(real *pdf, const Vec2 &u) const override {
 		*pdf = 1.f / (4.f * PI * rad * rad);

@@ -3,6 +3,7 @@
 #include "linagl.h"
 #include "utils.h"
 #include "intersection.h"
+#include "scalar.h"
 
 NAMESPACE_BEGIN
 

@@ -31,45 +31,33 @@ public:
 		const Vec3& pCz, const Vec3& pCx, const Vec3& pCy, real pFovy, real dis) :
 		Camera(pFilm), pos(position), cx(pCx), cy(pCy), cz(pCz), fovy(pFovy), filmDistance(dis) {
 
-		czz = cz.Norm();
 		Initialize();
 
 		CameraToWorld = 
-			Transform(cx.x, cy.x, czz.x, pos.x,
-					  cx.y, cy.y, czz.y, pos.y,
-					  cx.z, cy.z, czz.z, pos.z,
+			Transform(cx.x, cy.x, cz.x, pos.x,
+					  cx.y, cy.y, cz.y, pos.y,
+					  cx.z, cy.z, cz.z, pos.z,
 					  0, 0, 0, 1.f);
-		std::cout << "CameraToWorld" << std::endl;
-		std::cout << CameraToWorld.GetMatrix() << std::endl;
 
 		WorldToCamera = Inverse(CameraToWorld);
-		std::cout << "WorldToCamera" << std::endl;
-		std::cout << WorldToCamera.GetMatrix() << std::endl;
 
 		CameraToNDC = Transform::Perspective(fovy, film->aspect, filmDistance, filmDistance, 100000.f);
-		std::cout << "CameraToNDC" << std::endl;
-		std::cout << CameraToNDC.GetMatrix() << std::endl;
+
 		NDCToCamera = Inverse(CameraToNDC);
-		std::cout << "NDCToCamera" << std::endl;
-		std::cout << NDCToCamera.GetMatrix() << std::endl;
+
 		NDCToRaster =
 			Transform::Scale(real(film->resX), real(film->resY), 1) *
 			Transform::Scale(0.5f, -0.5f, 1) * 
 			Transform::Translate(Vec3(1, -1, 0));
-		std::cout << "NDCToRaster" << std::endl;
-		std::cout << NDCToRaster.GetMatrix() << std::endl;
+
 		RasterToNDC = Inverse(NDCToRaster);
-		std::cout << "RasterToNDC" << std::endl;
-		std::cout << RasterToNDC.GetMatrix() << std::endl;
+
 		CameraToRaster = NDCToRaster * CameraToNDC;
-		std::cout << "CameraToRaster" << std::endl;
-		std::cout << CameraToRaster.GetMatrix() << std::endl;
+
 		RasterToCamera = NDCToCamera * RasterToNDC;
-		std::cout << "RasterToCamera" << std::endl;
-		std::cout << RasterToCamera.GetMatrix() << std::endl;
+
 		RasterToWorld = CameraToWorld * RasterToCamera;
-		std::cout << "RasterToWorld" << std::endl;
-		std::cout << RasterToWorld.GetMatrix() << std::endl;
+
 	}
 protected:
 

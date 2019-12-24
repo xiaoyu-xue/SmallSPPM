@@ -12,45 +12,11 @@ public:
 		//Initialize();
 	}
 
-	//void Initialize() {
-	//	//Vec3 filmCenter = pos + cz * filmDistance;
-	//	////std::cout << "film cetner: " << filmCenter << std::endl;
-	//	//film->heigh = filmDistance * std::tan(fovy * 0.5f * PI / 180) * 2.f;
-	//	//film->width = film->heigh * film->aspect;
-	//	//film->area = film->width * film->heigh;
-	//	/*
-	//	film->LU = filmCenter + cy * film->heigh * 0.5 - cx * film->width * 0.5;
-	//	film->LL = filmCenter - cy * film->heigh * 0.5 - cx * film->width * 0.5;
-	//	film->RU = filmCenter + cy * film->heigh * 0.5 + cx * film->width * 0.5;
-	//	film->RL = filmCenter - cy * film->heigh * 0.5 + cx * film->width * 0.5;
-	//	*/
-	//}
-
 	Ray GenerateRay(int pixelX, int pixelY, const Vec2 &u, real offset) const override {
 		//Vec3 dir = cx * ((pixelX + u.x) / film->resX - 0.5f) * film->width +
 		//	cy * (-(pixelY + u.y) / film->resY + 0.5f) * film->heigh + cz * filmDistance;
-		//Vec3 dir = cx * ((pixelX + u.x) / film->resX - 0.5f) * film->width +
-		//	cy * (-(pixelY + u.y) / film->resY + 0.5f) * film->heigh + czz * filmDistance;
-		//Vec3 sampledPoint = pos + dir;
 
-		//dir = dir.Norm();
-
-		Vec3 sampledPos = RasterToWorld(Vec3(pixelX + u.x, pixelY + u.y, -1));
-		//Vec3 sampledPosCamera = RasterToCamera(Vec3(pixelX + u.x, pixelY + u.y, -1));
-		//Vec3 sampledPosWorld = CameraToWorld(sampledPosCamera);
-		//Vec3 sampledPosDirect = RasterToWorld(Vec3(pixelX + u.x, pixelY + u.y, -1));
-		////Vec3 dir = (sampledPos - pos).Norm();
-
-		//Vec3 LU_NDC = RasterToNDC(Vec3(0, 0, 0.5));
-		//Vec3 LU_DNC_To_Raster = NDCToRaster(LU_NDC);
-		//Vec3 LU_Camera = NDCToCamera(LU_NDC);
-		//Vec3 LU_World = CameraToWorld(LU_Camera);
-		//Vec3 LU_Raster = (CameraToRaster * WorldToCamera)(LU_World);
-		//Vec3 LU_World_To_Camera = WorldToCamera(film->LU);
-		//Vec3 LU_Camera_To_NDC = CameraToNDC(LU_Camera);
-
-		//Vec3 LU_Camera_To_Raster = CameraToRaster(LU_World_To_Camera);
-		//Vec3 LU_Raster_To_Camera = RasterToCamera(LU_Camera_To_Raster);
+		Vec3 sampledPos = RasterToWorld(Vec3(pixelX + u.x, pixelY + u.y, 0));
 
 		Vec3 dir = (sampledPos - pos).Norm();
 		return Ray(pos + dir * offset, dir, Inf, 0);

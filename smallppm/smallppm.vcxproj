@@ -167,8 +167,10 @@
   <ItemGroup>
     <ClCompile Include="debug_utils.cpp" />
     <ClCompile Include="efloat.cpp" />
+    <ClCompile Include="intersection.cpp" />
     <ClCompile Include="linagl.cpp" />
     <ClCompile Include="lowdiscrepency.cpp" />
+    <ClCompile Include="primitive.cpp" />
     <ClCompile Include="ray.cpp" />
     <ClCompile Include="sampler.cpp" />
     <ClCompile Include="sampling.cpp" />
@@ -179,16 +181,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AABB.h" />
+    <ClInclude Include="accelerator.h" />
     <ClInclude Include="arealight.h" />
     <ClInclude Include="avx.h" />
+    <ClInclude Include="brute_force.h" />
     <ClInclude Include="bsdf.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="constant_texture.h" />
     <ClInclude Include="debug_utils.h" />
     <ClInclude Include="def.h" />
+    <ClInclude Include="diffuse.h" />
     <ClInclude Include="efloat.h" />
     <ClInclude Include="film.h" />
     <ClInclude Include="filter.h" />
     <ClInclude Include="geometry_util.h" />
+    <ClInclude Include="glass.h" />
     <ClInclude Include="halton.h" />
     <ClInclude Include="hashgrid.h" />
     <ClInclude Include="image_io.h" />
@@ -200,6 +207,7 @@
     <ClInclude Include="material.h" />
     <ClInclude Include="math_utils.h" />
     <ClInclude Include="memory.h" />
+    <ClInclude Include="mirror.h" />
     <ClInclude Include="numeric_utils.h" />
     <ClInclude Include="phinhole.h" />
     <ClInclude Include="primitive.h" />
@@ -215,6 +223,7 @@
     <ClInclude Include="sphere.h" />
     <ClInclude Include="sppm.h" />
     <ClInclude Include="sse.h" />
+    <ClInclude Include="texture.h" />
     <ClInclude Include="threading.h" />
     <ClInclude Include="transform.h" />
     <ClInclude Include="utils.h" />

@@ -11,6 +11,7 @@ NAMESPACE_BEGIN
 class AreaLight : public Light {
 public:
 	AreaLight(const std::shared_ptr<Shape>& pShape) : shape(pShape) {}
+	AreaLight(const std::shared_ptr<Shape>& pShape, const Vec3 & Lemit) : shape(pShape), Lemit(Lemit) {}
 	Vec3 DirectIllumination(const Intersection &isect, const std::shared_ptr<BSDF> &bsdf,
 		const Vec3 &importance, Vec3 *dir, Intersection *lightPoint, const Vec2 &u) const override {
 		real pdf;
@@ -35,7 +36,7 @@ public:
 	}
 
 	Vec3 Emission() const override {
-		return shape->GetEmission();
+		return Lemit;
 	}
 
 	int GetId() const override {
@@ -74,6 +75,7 @@ protected:
 	}
 private:
 	std::shared_ptr<Shape> shape;
+	Vec3 Lemit;
 };
 
 NAMESPACE_END
