@@ -66,7 +66,7 @@ public:
 		Vec3 n = (hit - p).Norm();
 		Vec3 nl = n.Dot(r.d) < 0 ? n : n * -1;
 		Vec3 wo = -1 * r.d;
-		Vec3 pError = Abs(p) * gamma(6) + Abs(scaledDir) * gamma(6);
+		Vec3 pError = Abs(p) * gamma(1) + Abs(scaledDir) * gamma(6);
 
 		if (ObjectToWorld) {
 			if (shapeId == 1) {
@@ -145,7 +145,7 @@ public:
 		Vec3 hit = p + scaledDir;
 		Vec3 n = (pHit - p).Norm();
 		Vec3 nl = isect.n;
-		Vec3 pError = Abs(p) * gamma(6) + Abs(scaledDir) * gamma(6);
+		Vec3 pError = Abs(p) * gamma(1) + Abs(scaledDir) * gamma(6);
 		if (ObjectToWorld) {
 			isect.hit = (*ObjectToWorld)(hit, pError, &isect.pError);
 			isect.n = (*ObjectToWorld).TransformNormal(n).Norm();
@@ -249,20 +249,62 @@ public:
 		real sinAlpha = std::sqrt(std::max(1 - cosAlpha * cosAlpha, (real)0));
 		Vec3 wi = sinAlpha * std::cos(phi) * localX + sinAlpha * std::sin(phi) * localY + cosTheta * localZ;
 		Vec3 nWorld = -1 * sinAlpha * std::cos(phi) * localX - sinAlpha * std::sin(phi) * localY - cosAlpha * localZ;
-		Vec3 pWorld = pCenter + rad * nWorld;
+		nWorld.Normalize();
+		Vec3 pWorld = pCenter + rad * nWorld / nWorld.Length() + rad * 1.5e-3 * nWorld.Norm();
 		//Projection into surface and more convenient to calculate error
-		Vec3 scaledDir = (pWorld - pCenter) * rad / Distance(pWorld, pCenter);
-		pWorld = pWorld + scaledDir;
+		//Vec3 scaledDir = (pWorld - pCenter) * rad / Distance(pWorld, pCenter);
+		//pWorld = pWorld + scaledDir;
 		//Vec3 wi = sinTheta * std::cos(phi) * localX + sinTheta * std::sin(phi) * localY + cosTheta * localZ;
 		//Vec3 lightPoint = isect.hit + wi * s;
 		*pdf = 1 / (2 * PI * (1 - cosThetaMax));
 		Intersection ret;
 		ret.hit = pWorld;
-		ret.n = nWorld.Norm();
+		ret.n = nWorld;
 		ret.nl = ret.n;
-		ret.pError = gamma(6) * Abs(pWorld) + gamma(6) * Abs(scaledDir);
-
+		//ret.pError = gamma(6) * Abs(pWorld) + gamma(6) * Abs(scaledDir);
+		ret.pError = gamma(5) * Abs(pWorld);
 		return ret;
+
+
+		//if ((p - isect.hit).Length2() <= rad * rad) {
+		//	Intersection lightPoint = Sample(pdf, u);
+		//	Vec3 wi = lightPoint.hit - isect.hit;
+		//	if (wi.Dot(wi) == 0)
+		//		*pdf = 0;
+		//	else {
+		//		real s = wi.Length();
+		//		wi.Normalize();
+		//		*pdf *= s / std::abs((lightPoint.hit - p).Norm().Dot(-1 * wi));
+		//	}
+		//	if (std::isinf(*pdf)) *pdf = 0.f;
+		//	return lightPoint;
+		//}
+		//Vec3 localZ = (p - isect.hit);
+		//real dis = localZ.Length();
+		//localZ.Normalize();
+		//Vec3 localX, localY;
+		//CoordinateSystem(localZ, &localX, &localY);
+		//real sin2ThetaMax = rad * rad / (dis * dis);
+		//real cosThetaMax = std::sqrt(std::max(1 - sin2ThetaMax, (real)0));
+		//real cosTheta = (1 - u[0]) + u[0] * cosThetaMax;
+		//real sinTheta = std::sqrt(std::max(1 - cosTheta * cosTheta, (real)0));
+		//real phi = 2 * PI * u[1];
+		//real s = dis * cosTheta - std::sqrt(std::max(rad * rad - dis * dis * sinTheta * sinTheta, (real)0));
+		//real cosAlpha = (dis * dis + rad * rad - s * s) / (2 * dis * rad);
+		//real sinAlpha = std::sqrt(std::max(1 - cosAlpha * cosAlpha, (real)0));
+		//Vec3 wi = sinAlpha * std::cos(phi) * localX + sinAlpha * std::sin(phi) * localY + cosTheta * localZ;
+		//Vec3 nWorld = -1 * sinAlpha * std::cos(phi) * localX - sinAlpha * std::sin(phi) * localY - cosAlpha * localZ;
+		//Vec3 pWorld = p + rad * nWorld + nWorld * rayeps;
+		////Vec3 wi = sinTheta * std::cos(phi) * localX + sinTheta * std::sin(phi) * localY + cosTheta * localZ;
+		////Vec3 lightPoint = isect.hit + wi * s;
+		//*pdf = 1 / (2 * PI * (1 - cosThetaMax));
+		//Intersection ret;
+		//ret.hit = pWorld;
+		//ret.n = nWorld;
+		//ret.nl = ret.n;
+		//ret.pError = gamma(5) * Abs(pWorld);
+		////std::cout << ret.hit << " " << ret.pError << std::endl;
+		//return ret;
 	}
 
 	Vec3 GetNorm(const Vec3 & point) const override {

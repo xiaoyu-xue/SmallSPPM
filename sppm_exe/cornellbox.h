@@ -63,10 +63,10 @@ public:
 		scene->AddPrimitive(glassBall1);
 
 		//Diffuse Ball2 new Sphere(7.0, Vec3(27, 16.5, 47), Vec3(), Vec3(.25, .25, .75)
-		std::shared_ptr<Shape> diffuseBallShape2 = std::shared_ptr<Shape>(new Sphere(7.0, Vec3(27, 16.5, 47)));
-		std::shared_ptr<Material> diffuseBallMaterial2 = std::shared_ptr<Material>(new DiffuseMaterial(blueConstant));
-		std::shared_ptr<Primitive> diffuseBall2 = std::shared_ptr<Primitive>(new GeometryPrimitive(diffuseBallShape2, diffuseBallMaterial2));
-		scene->AddPrimitive(diffuseBall2);
+		//std::shared_ptr<Shape> diffuseBallShape2 = std::shared_ptr<Shape>(new Sphere(7.0, Vec3(27, 16.5, 47)));
+		//std::shared_ptr<Material> diffuseBallMaterial2 = std::shared_ptr<Material>(new DiffuseMaterial(blueConstant));
+		//std::shared_ptr<Primitive> diffuseBall2 = std::shared_ptr<Primitive>(new GeometryPrimitive(diffuseBallShape2, diffuseBallMaterial2));
+		//scene->AddPrimitive(diffuseBall2);
 
 
 		//Glass Ball2 new Sphere(16.5f, Vec3(27, 16.5f, 47)
