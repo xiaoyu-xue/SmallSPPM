@@ -5,11 +5,18 @@
 #include "ray.h"
 #include "intersection.h"
 #include "bsdf.h"
+#include "transform.h"
 
 NAMESPACE_BEGIN
 
 class Shape {
 public:
+	Shape() {}
+	Shape(const Transform* ObjectToWorld, const Transform* WorldToObject) :
+		ObjectToWorld(ObjectToWorld), WorldToObject(WorldToObject) {
+
+	}
+	virtual ~Shape(){ }
 	virtual bool Intersect(const Ray &r, Intersection *isect, real *t) const = 0;
 	virtual bool Intersect(const Ray &r) const = 0;
 	virtual Intersection Sample(real *pdf, const Vec2 &rand) const = 0;
@@ -45,8 +52,11 @@ public:
 	virtual real Area() const = 0;
 
 	friend class Scene;
-private:
+
 	int shapeId;
+protected:
+
+	const Transform* ObjectToWorld, * WorldToObject;
 };
 
 NAMESPACE_END

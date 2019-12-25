@@ -1,5 +1,7 @@
 #include "primitive.h"
 
+NAMESPACE_BEGIN
+
 bool GeometryPrimitive::Intersect(const Ray& r, Intersection* isect, real* t) const {
 
 	return shape->Intersect(r, isect, t);
@@ -15,3 +17,6 @@ void GeometryPrimitive::ComputeScatteringFunction(Intersection* isect,
 		material->ComputeScatteringFunction(isect, mode);
 	}
 }
+
+
+NAMESPACE_END

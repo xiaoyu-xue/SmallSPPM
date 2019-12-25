@@ -4,6 +4,8 @@
 #include "material.h"
 #include "light.h"
 
+NAMESPACE_BEGIN
+
 class Primitive {
 public:
 
@@ -51,3 +53,14 @@ public:
 	std::shared_ptr<Material> material;
 	std::shared_ptr<Light> light;
 };
+
+
+class TransformedPrimitive : public Primitive {
+public:
+
+private:
+	std::shared_ptr<Primitive> primitive;
+};
+
+
+NAMESPACE_END

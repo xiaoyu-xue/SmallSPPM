@@ -3,6 +3,7 @@
 #include "ray.h"
 #include "numeric_utils.h"
 #include "AABB.h"
+#include "intersection.h"
 
 NAMESPACE_BEGIN
 
@@ -76,6 +77,7 @@ public:
 	FORCE_INLINE Ray operator()(const Ray &r) const;
 	FORCE_INLINE Transform operator*(const Transform &t) const;
 	FORCE_INLINE AABB operator()(const AABB &bound) const;
+	FORCE_INLINE Intersection operator()(const Intersection& isect) const;
 	FORCE_INLINE Vector3 TransformPoint(const Vector3 &p) const;
 	FORCE_INLINE Vector3 TransformPoint(const Vector3 &p, Vector3 *pError) const;
 	FORCE_INLINE Vector3 TransformPoint(const Vector3 &p, const Vector3 &pError, Vector3 *absError) const;
@@ -278,6 +280,16 @@ FORCE_INLINE Ray Transform::TransformRay(const Ray &r) const {
 
 FORCE_INLINE AABB Transform::TransformAABB(const AABB &bound) const {
 	return (*this)(bound);
+}
+
+FORCE_INLINE Intersection Transform::operator()(const Intersection& isect) const {
+	Intersection ret;
+	ret.hit = (*this)(isect.hit, isect.pError, &ret.pError);
+	ret.n = this->TransformNormal(isect.n);
+	ret.nl = this->TransformNormal(isect.nl);
+	ret.wo = this->TransformVector(isect.wo);
+
+	return ret;
 }
 
 NAMESPACE_END

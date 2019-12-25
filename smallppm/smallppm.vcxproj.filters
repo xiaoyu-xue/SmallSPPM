@@ -132,6 +132,9 @@
     <ClCompile Include="intersection.cpp">
       <Filter>Source Files\intersection</Filter>
     </ClCompile>
+    <ClCompile Include="AABB.cpp">
+      <Filter>Source Files\geometry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lowdiscrepency.h">

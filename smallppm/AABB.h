@@ -27,6 +27,8 @@ struct AABB {
 		minPoint = Vec3(Inf, Inf, Inf);
 		maxPoint = Vec3(-Inf, -Inf, -Inf);
 	}
+
+	static AABB Union(const AABB& a, const AABB& b);
 };
 
 NAMESPACE_END
