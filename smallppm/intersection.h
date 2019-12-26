@@ -13,6 +13,7 @@ class Primitive;
 class Intersection {
 public:
 	Vec3 hit, n, nl, wo;
+	Vec2 uv;
 	real rayEps;
 	Vec3 pError;
 

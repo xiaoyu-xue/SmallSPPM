@@ -12,6 +12,7 @@ public:
 	virtual Vec3 DirectIllumination(const Intersection &isect, const std::shared_ptr<BSDF> &bsdf,
 		const Vec3 &importance, Vec3 *dir, Intersection *lightPoint, const Vec2 &u) const = 0;
 	virtual Vec3 Emission() const = 0;
+	virtual Vec3 Emission(const Intersection& isect, const Vec3& w) const = 0;
 	//virtual Vec3 SampleLight(Vec3 *pos, Vec3 *dir, Vec3 *lightNorm, real *pdfPos, real *pdfDir, const Vec2 &u, const Vec2 &v) const {
 	//	SampleOnLight(pos, dir, lightNorm, pdfPos, pdfDir, u, v);
 	//	return Emission();

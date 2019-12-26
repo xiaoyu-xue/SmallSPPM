@@ -40,6 +40,9 @@ public:
 		std::shared_ptr<Shape> shape = primitive->GetShape();
 		if (shape) {
 			shape->shapeId = shapeNum;
+#ifdef _DEBUG
+			primitive->primitiveId = shapeNum;
+#endif
 			++shapeNum;
 		}
 		primitives.push_back(primitive);

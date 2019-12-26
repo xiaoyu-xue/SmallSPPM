@@ -100,6 +100,9 @@
     <Filter Include="Source Files\intersection">
       <UniqueIdentifier>{c242105b-5d24-4fad-9628-80ef4819a1f7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\shape">
+      <UniqueIdentifier>{613dda42-3b0b-4dd3-9353-09d43112486d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sampler.cpp">
@@ -134,6 +137,12 @@
     </ClCompile>
     <ClCompile Include="AABB.cpp">
       <Filter>Source Files\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="triangle.cpp">
+      <Filter>Source Files\shape</Filter>
+    </ClCompile>
+    <ClCompile Include="shape.cpp">
+      <Filter>Source Files\shape</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -280,6 +289,9 @@
     </ClInclude>
     <ClInclude Include="glass.h">
       <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="triangle.h">
+      <Filter>Header Files\shape</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

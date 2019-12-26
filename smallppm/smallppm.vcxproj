@@ -175,7 +175,9 @@
     <ClCompile Include="ray.cpp" />
     <ClCompile Include="sampler.cpp" />
     <ClCompile Include="sampling.cpp" />
+    <ClCompile Include="shape.cpp" />
     <ClCompile Include="transform.cpp" />
+    <ClCompile Include="triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="svpng.inc" />
@@ -227,6 +229,7 @@
     <ClInclude Include="texture.h" />
     <ClInclude Include="threading.h" />
     <ClInclude Include="transform.h" />
+    <ClInclude Include="triangle.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="visibility.h" />
   </ItemGroup>

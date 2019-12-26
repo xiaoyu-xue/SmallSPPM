@@ -28,7 +28,9 @@ struct AABB {
 		maxPoint = Vec3(-Inf, -Inf, -Inf);
 	}
 
-	static AABB Union(const AABB& a, const AABB& b);
+
 };
 
+AABB Union(const AABB& a, const AABB& b);
+AABB Union(const AABB& a, const Vec3& p);
 NAMESPACE_END

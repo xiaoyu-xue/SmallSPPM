@@ -1,6 +1,6 @@
 #include "AABB.h"
 
-AABB AABB::Union(const AABB& a, const AABB& b) {
+AABB Union(const AABB& a, const AABB& b) {
 
 	Vec3 minPoint(
 		std::min(a.minPoint.x, b.minPoint.x),
@@ -15,4 +15,19 @@ AABB AABB::Union(const AABB& a, const AABB& b) {
 	);
 
 	return AABB(minPoint, maxPoint);
+}
+
+AABB Union(const AABB& a, const Vec3& p) {
+	AABB ret = a;
+	ret.minPoint = Vec3(
+		std::min(ret.minPoint.x, p.x),
+		std::min(ret.minPoint.y, p.y),
+		std::min(ret.minPoint.z, p.z)
+	);
+	ret.maxPoint = Vec3(
+		std::max(ret.maxPoint.x, p.x),
+		std::max(ret.maxPoint.y, p.y),
+		std::max(ret.maxPoint.z, p.z)
+	);
+	return ret;
 }

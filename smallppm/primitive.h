@@ -18,6 +18,10 @@ public:
 	virtual std::shared_ptr<Light> GetLight() const = 0;
 	virtual bool IsLight() const = 0;
 	virtual ~Primitive(){}
+
+#ifdef _DEBUG
+	int primitiveId;
+#endif
 };
 
 

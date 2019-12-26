@@ -28,7 +28,7 @@ public:
 		//lightPoint->n = lightPoint->nl = shape->GetNorm(lightPoint->hit);
 		*lightPoint = shape->Sample(isect, pdf, u);
 		*wi = (lightPoint->hit - isect.hit).Norm();
-		return Emission();
+		return Emission(isect, *wi);
 	}
 
 	real Pdf_Li(const Intersection &isect, const Vec3 &wi) const override {
@@ -37,6 +37,11 @@ public:
 
 	Vec3 Emission() const override {
 		return Lemit;
+	}
+
+	Vec3 Emission(const Intersection &isect, const Vec3 &w) const override {
+		if (Dot(isect.nl, w) > 0) return Lemit;
+		else return Vec3(0, 0, 0);
 	}
 
 	int GetId() const override {

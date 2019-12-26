@@ -81,6 +81,10 @@ public:
 			Vec3 wi;
 			real pdf;
 
+#ifdef _DEBUG
+			int primitiveId = isect.primitive->primitiveId;
+#endif
+
 			//{
 			//	int x = 223, y = 387;
 			//	if (pixel == x + scene.GetCamera()->GetFilm()->resX * y) {
@@ -115,7 +119,7 @@ public:
 				hitPoints[pixel] = hp;
 				if ((i == 0 || deltaBoundEvent) && isect.primitive->IsLight()) {
 					std::shared_ptr<Light> emissionShape = isect.primitive->GetLight();
-					directillum[hp.pix] = directillum[hp.pix] + importance * emissionShape->Emission();
+					directillum[hp.pix] = directillum[hp.pix] + importance * emissionShape->Emission(isect, isect.wo);
 					//{
 					//	if (debugPixel == 1) {
 					//		std::cout << "direction illumination(delta): " << hp.importance << " " << 
