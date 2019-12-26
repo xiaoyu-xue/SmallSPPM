@@ -46,7 +46,7 @@
 
 //const real ALPHA = 0.66666667;
 const real ALPHA = 0.75;
-const int64  render_stage_number = 200000;
+const int64  render_stage_number = 20000;
 
 void TestSppm(int argc, char* argv[]) {
 	//clock_t begin = clock();

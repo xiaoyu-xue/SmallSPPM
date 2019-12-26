@@ -32,7 +32,7 @@ bool Triangle::Intersect(const Ray& ray, Intersection* isect, real* t) const {
 
 	// Compute triangle partial derivatives
 
-	float uvs[3][2];
+	real uvs[3][2];
 	GetUVs(uvs);
 
 
@@ -103,7 +103,7 @@ Intersection Triangle::Sample(real* pdf, const Vec2& rand) const {
 
 	Vec3 pAbsSum =
 		Abs(b[0] * p0) + Abs(b[1] * p1) + Abs((1 - b[0] - b[1]) * p2);
-	isect.pError = gamma(6) * Vector3f(pAbsSum.x, pAbsSum.y, pAbsSum.z);
+	isect.pError = gamma(6) * Vec3(pAbsSum.x, pAbsSum.y, pAbsSum.z);
 
 	*pdf = 1 / Area();
 
