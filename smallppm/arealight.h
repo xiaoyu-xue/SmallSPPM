@@ -20,7 +20,7 @@ public:
 		*lightPoint = shape->Sample(isect, &pdf, u);
 		*dir = (lightPoint->hit - isect.hit).Norm();
 		Vec3 f = bsdf->f(isect.wo, *dir);
-		return importance * f * std::abs((*dir).Dot(isect.n)) * Emission() / pdf;
+		return importance * f * std::abs((*dir).Dot(isect.n)) * Emission(*lightPoint, *dir) / pdf;
 	}
 
 	Vec3 Sample_Li(const Intersection &isect, Vec3 *wi, real *pdf, Intersection *lightPoint, const Vec2 &u) const override {

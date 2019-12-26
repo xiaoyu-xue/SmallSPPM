@@ -191,7 +191,7 @@ public:
 		Vec3 lightP1 = lightTransform(Vec3(6, 0, -6));
 		Vec3 lightP2 = lightTransform(Vec3(-6, 0, 6));
 		Vec3 lightP3 = lightTransform(Vec3(-6, 0, -6));
-		Vec3 lightNormal = Vec3(0, 1, 0);
+		Vec3 lightNormal = Vec3(0, -1, 0);
 		std::shared_ptr<Texture> lightTexture = std::shared_ptr<Texture>(new ConstantTexture(Vec3(0, 0, 0)));
 		std::shared_ptr<Shape> lightTriangleShape0 = 
 			std::shared_ptr<Shape>(new Triangle(lightP0, lightP1, lightP2, lightNormal));
