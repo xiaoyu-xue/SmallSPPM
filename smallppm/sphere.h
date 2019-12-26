@@ -13,9 +13,9 @@ NAMESPACE_BEGIN
 class Sphere : public Shape {
 public:
 
-	Sphere(real radius, Vec3 position, 
-		const Transform* ObjectToWorld = nullptr, const Transform* WorldToObject = nullptr) :
-		Shape(ObjectToWorld, WorldToObject), rad(radius), p(position) {
+	Sphere(const Transform* ObjectToWorld, const Transform* WorldToObject,
+		real radius, Vec3 position, bool inside = false) :
+		Shape(ObjectToWorld, WorldToObject), rad(radius), p(position), inside(inside) {
 
 	}
 
@@ -63,7 +63,7 @@ public:
 		Vec3 hit = r.o + r.d * (*t);
 		Vec3 scaledDir = (hit - p) * rad / Distance(hit, p);
 		hit = p + scaledDir;
-		Vec3 n = (hit - p).Norm();
+		Vec3 n = GetNorm(hit);
 		Vec3 nl = n.Dot(r.d) < 0 ? n : n * -1;
 		Vec3 wo = -1 * r.d;
 		Vec3 pError = Abs(p) * gamma(1) + Abs(scaledDir) * gamma(6);
@@ -143,7 +143,7 @@ public:
 		Vec3 scaledDir((pHit - p) * rad / Distance(pHit, p));
 		Intersection isect;
 		Vec3 hit = p + scaledDir;
-		Vec3 n = (pHit - p).Norm();
+		Vec3 n = GetNorm(hit);
 		Vec3 nl = isect.n;
 		Vec3 pError = Abs(p) * gamma(1) + Abs(scaledDir) * gamma(6);
 		if (ObjectToWorld) {
@@ -308,7 +308,9 @@ public:
 	}
 
 	Vec3 GetNorm(const Vec3 & point) const override {
-		return (point - p).Norm();
+		if (inside) return (p - point).Norm();
+		else return (point - p).Norm();
+		//return (point - p).Norm();
 	}
 
 	real Area() const override {
@@ -317,6 +319,7 @@ public:
 
 private:
 	real rad; Vec3 p;
+	bool inside;
 };
 
 NAMESPACE_END

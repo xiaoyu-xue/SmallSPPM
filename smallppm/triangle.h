@@ -7,8 +7,8 @@ NAMESPACE_BEGIN
 
 class Triangle : public Shape {
 public:
-	Triangle(const Vec3& p0, const Vec3& p1, const Vec3& p2, const Vec3& normal,
-		Transform* ObjectToWorld = nullptr, Transform* WorldToObject = nullptr) : 
+	Triangle(Transform* ObjectToWorld, Transform* WorldToObject,
+		const Vec3& p0, const Vec3& p1, const Vec3& p2, const Vec3& normal) : 
 		Shape(ObjectToWorld, WorldToObject), p0(p0), p1(p1), p2(p2), faceNormal(normal)
 	{
 

@@ -46,7 +46,7 @@
 
 //const real ALPHA = 0.66666667;
 const real ALPHA = 0.75;
-const int64  render_stage_number = 20000;
+const int64  render_stage_number = 200000;
 
 void TestSppm(int argc, char* argv[]) {
 	//clock_t begin = clock();
@@ -143,67 +143,67 @@ void TestSPPM2(int argc, char* argv[]) {
 
 
 	//Left
-	std::shared_ptr<Shape> leftWallShape = std::shared_ptr<Shape>(new Sphere(1e5f, Vec3(1e5f + 1, 40.8f, 81.6f)));
+	std::shared_ptr<Shape> leftWallShape = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 1e5f, Vec3(1e5f + 1, 40.8f, 81.6f)));
 	std::shared_ptr<Material> leftWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(redConstant));
 	std::shared_ptr<Primitive> leftWall = std::shared_ptr<Primitive>(new GeometryPrimitive(leftWallShape, leftWallMaterial));
 	scene->AddPrimitive(leftWall);
 
 	//Right
-	std::shared_ptr<Shape> rightWallShape = std::shared_ptr<Shape>(new Sphere(1e5f, Vec3(-1e5f + 99, 40.8f, 81.6f)));
+	std::shared_ptr<Shape> rightWallShape = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 1e5f, Vec3(-1e5f + 99, 40.8f, 81.6f)));
 	std::shared_ptr<Material> rightWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(blueConstant));
 	std::shared_ptr<Primitive> rightWall = std::shared_ptr<Primitive>(new GeometryPrimitive(rightWallShape, rightWallMaterial));
 	scene->AddPrimitive(rightWall);
 
 	//Back
-	std::shared_ptr<Shape> backWallShape = std::shared_ptr<Shape>(new Sphere(1e5f, Vec3(50, 40.8f, 1e5)));
+	std::shared_ptr<Shape> backWallShape = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 1e5f, Vec3(50, 40.8f, 1e5)));
 	std::shared_ptr<Material> backWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
 	std::shared_ptr<Primitive> backWall = std::shared_ptr<Primitive>(new GeometryPrimitive(backWallShape, backWallMaterial));
 	scene->AddPrimitive(backWall);
 
 	//Botom
-	std::shared_ptr<Shape> botomShape = std::shared_ptr<Shape>(new Sphere(1e5f, Vec3(50, 1e5, 81.6f)));
+	std::shared_ptr<Shape> botomShape = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 1e5f, Vec3(50, 1e5, 81.6f)));
 	std::shared_ptr<Material> botomMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
 	std::shared_ptr<Primitive> botom = std::shared_ptr<Primitive>(new GeometryPrimitive(botomShape, botomMaterial));
 	scene->AddPrimitive(botom);
 
 	//Top
-	std::shared_ptr<Shape> topShape = std::shared_ptr<Shape>(new Sphere(1e5f, Vec3(50, -1e5f + 81.6f, 81.6f)));
+	std::shared_ptr<Shape> topShape = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 1e5f, Vec3(50, -1e5f + 81.6f, 81.6f)));
 	std::shared_ptr<Material> topMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
 	std::shared_ptr<Primitive> top = std::shared_ptr<Primitive>(new GeometryPrimitive(topShape, topMaterial));
 	scene->AddPrimitive(top);
 
 	//Diffuse Ball1
-	std::shared_ptr<Shape> diffuseBallShape1 = std::shared_ptr<Shape>(new Sphere(9.5f, Vec3(23, 0.0f, 98)));
+	std::shared_ptr<Shape> diffuseBallShape1 = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 9.5f, Vec3(23, 0.0f, 98)));
 	std::shared_ptr<Material> diffuseBallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(fullWhiteConstant));
 	std::shared_ptr<Primitive> diffuseBall1 = std::shared_ptr<Primitive>(new GeometryPrimitive(diffuseBallShape1, diffuseBallMaterial));
 	scene->AddPrimitive(diffuseBall1);
 
 	//Glass Ball1
-	std::shared_ptr<Shape> glassBallShape1 = std::shared_ptr<Shape>(new Sphere(16.5f, Vec3(73, 26.5f, 78)));
+	std::shared_ptr<Shape> glassBallShape1 = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 16.5f, Vec3(73, 26.5f, 78)));
 	std::shared_ptr<Material> glassBallMaterial = std::shared_ptr<Material>(new GlassMaterial(fullWhiteConstant, fullWhiteConstant));
 	std::shared_ptr<Primitive> glassBall1 = std::shared_ptr<Primitive>(new GeometryPrimitive(glassBallShape1, glassBallMaterial));
 	scene->AddPrimitive(glassBall1);
 
 	//Diffuse Ball2 new Sphere(7.0, Vec3(27, 16.5, 47), Vec3(), Vec3(.25, .25, .75)
-	std::shared_ptr<Shape> diffuseBallShape2 = std::shared_ptr<Shape>(new Sphere(7.0, Vec3(27, 16.5, 47)));
+	std::shared_ptr<Shape> diffuseBallShape2 = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 7.0, Vec3(27, 16.5, 47)));
 	std::shared_ptr<Material> diffuseBallMaterial2 = std::shared_ptr<Material>(new DiffuseMaterial(blueConstant));
 	std::shared_ptr<Primitive> diffuseBall2 = std::shared_ptr<Primitive>(new GeometryPrimitive(diffuseBallShape2, diffuseBallMaterial2));
 	scene->AddPrimitive(diffuseBall2);
 
 
 	//Glass Ball2 new Sphere(16.5f, Vec3(27, 16.5f, 47)
-	std::shared_ptr<Shape> glassBallShape2 = std::shared_ptr<Shape>(new Sphere(16.5f, Vec3(27, 16.5f, 47)));
+	std::shared_ptr<Shape> glassBallShape2 = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 16.5f, Vec3(27, 16.5f, 47)));
 	std::shared_ptr<Primitive> glassBall2 = std::shared_ptr<Primitive>(new GeometryPrimitive(glassBallShape2, glassBallMaterial));
 	scene->AddPrimitive(glassBall2);
 
 	//Glass Ball3 new Sphere(9.5f, Vec3(53, 9.5f, 88)
-	std::shared_ptr<Shape> glassBallShape3 = std::shared_ptr<Shape>(new Sphere(9.5f, Vec3(53, 9.5f, 88)));
+	std::shared_ptr<Shape> glassBallShape3 = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 9.5f, Vec3(53, 9.5f, 88)));
 	std::shared_ptr<Primitive> glassBall3 = std::shared_ptr<Primitive>(new GeometryPrimitive(glassBallShape3, glassBallMaterial));
 	scene->AddPrimitive(glassBall3);
 
 	//Light
 	std::shared_ptr<Texture> lightTexture = std::shared_ptr<Texture>(new ConstantTexture(Vec3(0, 0, 0)));
-	std::shared_ptr<Shape> lightShape = std::shared_ptr<Shape>(new Sphere(8.f, Vec3(50, 81.6f - 16.5f, 81.6f)));//Lite
+	std::shared_ptr<Shape> lightShape = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 8.f, Vec3(50, 81.6f - 16.5f, 81.6f)));//Lite
 	std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape, Vec3(0.3f, 0.3f, 0.3f) * 100));
 	std::shared_ptr<Material> lightMaterial = std::shared_ptr<Material>(new DiffuseMaterial(lightTexture));
 	std::shared_ptr<Primitive> lightPrimitive = std::shared_ptr<Primitive>(new GeometryPrimitive(lightShape, lightMaterial, light0));
@@ -247,7 +247,7 @@ void TestSPPM3(int argc, char* argv[]) {
 	scene->SetCamera(camera);
 	scene->SetAccelerator(accelerator);
 
-	//CornellBoxSphere::SetScene(scene);
+	////CornellBoxSphere::SetScene(scene);
 	CornellBoxTriangle::SetScene(scene);
 
 	////texture
@@ -261,7 +261,7 @@ void TestSPPM3(int argc, char* argv[]) {
 	//Transform leftWallObjectToWorld = Transform::Translate(Vec3(1e5f + 1, 40.8f, 81.6f));
 	//Transform leftWallWorldToObject = Inverse(leftWallObjectToWorld);
 	//std::shared_ptr<Shape> leftWallShape = 
-	//	std::shared_ptr<Shape>(new Sphere(1e5f, Vec3(0, 0, 0), &leftWallObjectToWorld, &leftWallWorldToObject));
+	//	std::shared_ptr<Shape>(new Sphere(&leftWallObjectToWorld, &leftWallWorldToObject, 1e5f, Vec3(0, 0, 0), true));
 	//std::shared_ptr<Material> leftWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(redConstant));
 	//std::shared_ptr<Primitive> leftWall = std::shared_ptr<Primitive>(new GeometryPrimitive(leftWallShape, leftWallMaterial));
 	//scene->AddPrimitive(leftWall);
@@ -270,7 +270,7 @@ void TestSPPM3(int argc, char* argv[]) {
 	//Transform rightWallObjectToWorld = Transform::Translate(Vec3(-1e5f + 99, 40.8f, 81.6f));
 	//Transform rightWallWorldToObject = Inverse(rightWallObjectToWorld);
 	//std::shared_ptr<Shape> rightWallShape = 
-	//	std::shared_ptr<Shape>(new Sphere(1e5f, Vec3(0, 0, 0), &rightWallObjectToWorld, &rightWallWorldToObject));
+	//	std::shared_ptr<Shape>(new Sphere(&rightWallObjectToWorld, &rightWallWorldToObject, 1e5f, Vec3(0, 0, 0), true));
 	//std::shared_ptr<Material> rightWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(blueConstant));
 	//std::shared_ptr<Primitive> rightWall = std::shared_ptr<Primitive>(new GeometryPrimitive(rightWallShape, rightWallMaterial));
 	//scene->AddPrimitive(rightWall);
@@ -279,7 +279,7 @@ void TestSPPM3(int argc, char* argv[]) {
 	//Transform backWallObjectToWorld = Transform::Translate(Vec3(50, 40.8f, 1e5));
 	//Transform backWallWorldToObject = Inverse(backWallObjectToWorld);
 	//std::shared_ptr<Shape> backWallShape = 
-	//	std::shared_ptr<Shape>(new Sphere(1e5f, Vec3(0, 0, 0), &backWallObjectToWorld, &backWallWorldToObject));
+	//	std::shared_ptr<Shape>(new Sphere(&backWallObjectToWorld, &backWallWorldToObject, 1e5f, Vec3(0, 0, 0), true));
 	//std::shared_ptr<Material> backWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
 	//std::shared_ptr<Primitive> backWall = std::shared_ptr<Primitive>(new GeometryPrimitive(backWallShape, backWallMaterial));
 	//scene->AddPrimitive(backWall);
@@ -288,7 +288,7 @@ void TestSPPM3(int argc, char* argv[]) {
 	//Transform botomWallObjectToWorld = Transform::Translate(Vec3(50, 1e5, 81.6f));
 	//Transform botomWallWorldToObject = Inverse(botomWallObjectToWorld);
 	//std::shared_ptr<Shape> botomShape = 
-	//	std::shared_ptr<Shape>(new Sphere(1e5f, Vec3(0, 0, 0), &botomWallObjectToWorld, &botomWallWorldToObject));
+	//	std::shared_ptr<Shape>(new Sphere(&botomWallObjectToWorld, &botomWallWorldToObject, 1e5f, Vec3(0, 0, 0), true));
 	//std::shared_ptr<Material> botomMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
 	//std::shared_ptr<Primitive> botom = std::shared_ptr<Primitive>(new GeometryPrimitive(botomShape, botomMaterial));
 	//scene->AddPrimitive(botom);
@@ -297,7 +297,7 @@ void TestSPPM3(int argc, char* argv[]) {
 	//Transform topWallObjectToWorld = Transform::Translate(Vec3(50, -1e5f + 81.6f, 81.6f));
 	//Transform topWallWorldToObject = Inverse(topWallObjectToWorld);
 	//std::shared_ptr<Shape> topShape = 
-	//	std::shared_ptr<Shape>(new Sphere(1e5f, Vec3(0, 0, 0), &topWallObjectToWorld, &topWallWorldToObject));
+	//	std::shared_ptr<Shape>(new Sphere(&topWallObjectToWorld, &topWallWorldToObject, 1e5f, Vec3(0, 0, 0), true));
 	//std::shared_ptr<Material> topMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
 	//std::shared_ptr<Primitive> top = std::shared_ptr<Primitive>(new GeometryPrimitive(topShape, topMaterial));
 	//scene->AddPrimitive(top);
@@ -306,7 +306,7 @@ void TestSPPM3(int argc, char* argv[]) {
 	//Transform diffuseBall1ObjectToWorld = Transform::Translate(Vec3(23, 0.0f, 98));
 	//Transform diffuseBall1WorldToObject = Inverse(diffuseBall1ObjectToWorld);
 	//std::shared_ptr<Shape> diffuseBallShape1 = 
-	//	std::shared_ptr<Shape>(new Sphere(9.5f, Vec3(0, 0, 0), &diffuseBall1ObjectToWorld, &diffuseBall1WorldToObject));
+	//	std::shared_ptr<Shape>(new Sphere(&diffuseBall1ObjectToWorld, &diffuseBall1WorldToObject, 9.5f, Vec3(0, 0, 0)));
 	//std::shared_ptr<Material> diffuseBallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(fullWhiteConstant));
 	//std::shared_ptr<Primitive> diffuseBall1 = std::shared_ptr<Primitive>(new GeometryPrimitive(diffuseBallShape1, diffuseBallMaterial));
 	//scene->AddPrimitive(diffuseBall1);
@@ -315,7 +315,7 @@ void TestSPPM3(int argc, char* argv[]) {
 	//Transform glassBall1ObjectToWorld = Transform::Translate(Vec3(73, 26.5f, 78));
 	//Transform glassBall1WorldToObject = Inverse(glassBall1ObjectToWorld);
 	//std::shared_ptr<Shape> glassBallShape1 = 
-	//	std::shared_ptr<Shape>(new Sphere(16.5f, Vec3(0, 0, 0), &glassBall1ObjectToWorld, &glassBall1WorldToObject));
+	//	std::shared_ptr<Shape>(new Sphere(&glassBall1ObjectToWorld, &glassBall1WorldToObject, 16.5f, Vec3(0, 0, 0)));
 	//std::shared_ptr<Material> glassBallMaterial = std::shared_ptr<Material>(new GlassMaterial(fullWhiteConstant, fullWhiteConstant));
 	//std::shared_ptr<Primitive> glassBall1 = std::shared_ptr<Primitive>(new GeometryPrimitive(glassBallShape1, glassBallMaterial));
 	//scene->AddPrimitive(glassBall1);
@@ -324,7 +324,7 @@ void TestSPPM3(int argc, char* argv[]) {
 	////Transform diffuseBall2ObjectToWorld = Transform::Translate(Vec3(27, 16.5, 47));
 	////Transform diffuseBall2WorldToObject = Inverse(diffuseBall2ObjectToWorld);
 	////std::shared_ptr<Shape> diffuseBallShape2 = 
-	////	std::shared_ptr<Shape>(new Sphere(7.0, Vec3(0, 0, 0), &diffuseBall2ObjectToWorld, &diffuseBall2WorldToObject));
+	////	std::shared_ptr<Shape>(new Sphere(&diffuseBall2ObjectToWorld, &diffuseBall2WorldToObject, 7.0, Vec3(0, 0, 0)));
 	////std::shared_ptr<Material> diffuseBallMaterial2 = std::shared_ptr<Material>(new DiffuseMaterial(blueConstant));
 	////std::shared_ptr<Primitive> diffuseBall2 = std::shared_ptr<Primitive>(new GeometryPrimitive(diffuseBallShape2, diffuseBallMaterial2));
 	////scene->AddPrimitive(diffuseBall2);
@@ -334,7 +334,7 @@ void TestSPPM3(int argc, char* argv[]) {
 	//Transform glassBall2ObjectToWorld = Transform::Translate(Vec3(27, 16.5f, 47));
 	//Transform glassBall2WorldToObject = Inverse(glassBall2ObjectToWorld);
 	//std::shared_ptr<Shape> glassBallShape2 = 
-	//	std::shared_ptr<Shape>(new Sphere(16.5f, Vec3(0, 0, 0), &glassBall2ObjectToWorld, &glassBall2WorldToObject));
+	//	std::shared_ptr<Shape>(new Sphere(&glassBall2ObjectToWorld, &glassBall2WorldToObject, 16.5f, Vec3(0, 0, 0)));
 	//std::shared_ptr<Primitive> glassBall2 = std::shared_ptr<Primitive>(new GeometryPrimitive(glassBallShape2, glassBallMaterial));
 	//scene->AddPrimitive(glassBall2);
 
@@ -342,7 +342,7 @@ void TestSPPM3(int argc, char* argv[]) {
 	//Transform glassBall3ObjectToWorld = Transform::Translate(Vec3(53, 9.5f, 88));
 	//Transform glassBall3WorldToObject = Inverse(glassBall3ObjectToWorld);
 	//std::shared_ptr<Shape> glassBallShape3 = 
-	//	std::shared_ptr<Shape>(new Sphere(9.5f, Vec3(0, 0, 0), &glassBall3ObjectToWorld, &glassBall3WorldToObject));
+	//	std::shared_ptr<Shape>(new Sphere(&glassBall3ObjectToWorld, &glassBall3WorldToObject, 9.5f, Vec3(0, 0, 0)));
 	//std::shared_ptr<Primitive> glassBall3 = std::shared_ptr<Primitive>(new GeometryPrimitive(glassBallShape3, glassBallMaterial));
 	//scene->AddPrimitive(glassBall3);
 
@@ -351,7 +351,7 @@ void TestSPPM3(int argc, char* argv[]) {
 	//Transform sphereLightWorldToObject = Inverse(sphereLightObjectToWorld);
 	//std::shared_ptr<Texture> lightTexture = std::shared_ptr<Texture>(new ConstantTexture(Vec3(0, 0, 0)));
 	//std::shared_ptr<Shape> lightShape = 
-	//	std::shared_ptr<Shape>(new Sphere(8.f, Vec3(50, 81.6f - 16.5f, 81.6f), &sphereLightObjectToWorld, &sphereLightWorldToObject));//Lite
+	//	std::shared_ptr<Shape>(new Sphere(&sphereLightObjectToWorld, &sphereLightWorldToObject, 8.f, Vec3(50, 81.6f - 16.5f, 81.6f)));//Lite
 	//std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape, Vec3(0.3f, 0.3f, 0.3f) * 100));
 	//std::shared_ptr<Material> lightMaterial = std::shared_ptr<Material>(new DiffuseMaterial(lightTexture));
 	//std::shared_ptr<Primitive> lightPrimitive = std::shared_ptr<Primitive>(new GeometryPrimitive(lightShape, lightMaterial, light0));
@@ -360,7 +360,7 @@ void TestSPPM3(int argc, char* argv[]) {
 
 
 	scene->Initialize();
-	film->SetFileName("cornellbox40.bmp");
+	film->SetFileName("cornellbox42.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
 	clock_t end = clock();
