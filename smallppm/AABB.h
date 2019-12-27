@@ -55,6 +55,11 @@ struct AABB {
 	}
 };
 
+FORCE_INLINE std::ostream& operator<<(std::ostream &os, const AABB &aabb) {
+	os << "AABB: \n" << "minPoint: " << aabb.minPoint << std::endl << "maxPoint: " << aabb.maxPoint;
+	return os;
+}
+
 AABB Union(const AABB& a, const AABB& b);
 AABB Union(const AABB& a, const Vec3& p);
 NAMESPACE_END

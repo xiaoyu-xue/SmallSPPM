@@ -12,7 +12,7 @@ public:
 	virtual bool Intersect(const Ray& r, Intersection* isect, real* t) const = 0;
 	virtual bool Intersect(const Ray& r) const = 0;
 	virtual void ComputeScatteringFunction(Intersection* isect,
-		TransportMode mode = TransportMode::Radiance) = 0;
+		TransportMode mode = TransportMode::Radiance) const = 0;
 	virtual std::shared_ptr<Shape> GetShape() const = 0;
 	virtual std::shared_ptr<Material> GetMaterial() const = 0;
 	virtual std::shared_ptr<Light> GetLight() const = 0;
@@ -36,7 +36,7 @@ public:
 	}
 	bool Intersect(const Ray& r, Intersection* isect, real* t) const override;
 	bool Intersect(const Ray& r) const override;
-	void ComputeScatteringFunction(Intersection* isect, TransportMode mode = TransportMode::Radiance) override;
+	void ComputeScatteringFunction(Intersection* isect, TransportMode mode = TransportMode::Radiance) const override;
 
 	std::shared_ptr<Shape> GetShape() const override {
 		return shape;

@@ -17,14 +17,13 @@ public:
 	real rayEps;
 	Vec3 pError;
 
-	std::shared_ptr<Primitive> primitive;
+	const Primitive *primitive;
 	std::shared_ptr<BSDF> bsdf;
 
 	Intersection() { rayEps = 1e-3f; }
 
 	Intersection(const Vec3 &hit, const Vec3 &n, const Vec3 &nl, const Vec3 &wo, const Vec3 &pError):
-		hit(hit), n(n), nl(nl), wo(wo), pError(pError), rayEps(1e-3){
-		primitive = nullptr;
+		hit(hit), n(n), nl(nl), wo(wo), pError(pError), rayEps(1e-3), primitive(nullptr){
 		bsdf = nullptr;
 	}
 

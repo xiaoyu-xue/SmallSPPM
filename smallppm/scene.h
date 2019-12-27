@@ -94,8 +94,8 @@ public:
 	//	return false;
 	//}
 
-	bool Intersect(const Ray& r, real* t, Intersection* isect) const {
-		return accelerator->Intersect(r, t, isect);
+	bool Intersect(const Ray& r, Intersection* isect, real* t) const {
+		return accelerator->Intersect(r, isect, t);
 	}
 
 	bool Intersect(const Ray& r) const {
@@ -126,6 +126,10 @@ public:
 			*lightPdf = 1.f / nLights;
 		}
 		return lights[lightNum];
+	}
+
+	const std::vector<std::shared_ptr<Primitive>> GetPrimitives() const {
+		return primitives;
 	}
 
 private:

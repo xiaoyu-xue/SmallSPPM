@@ -15,9 +15,10 @@ public:
 		real emptyBonus = 0.5, int maxPrims = 1, int maxDepth = -1);
 	AABB WorldBound() const { return bounds; }
 	~KdTreeAccel();
-	virtual bool Intersect(const Ray& r, real* t, Intersection* isect) const = 0;
-	virtual bool Intersect(const Ray& r) const = 0;
-
+	virtual bool Intersect(const Ray& r, Intersection* isect, real* t) const override;
+	virtual bool Intersect(const Ray& r) const override;
+	//Todo
+	void SetPrimitives(const std::vector<std::shared_ptr<Primitive>>& a) override {}
 private:
 	// KdTreeAccel Private Methods
 	void buildTree(int nodeNum, const AABB& bounds,

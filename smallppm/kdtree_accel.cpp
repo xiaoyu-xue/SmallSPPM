@@ -222,7 +222,7 @@ retrySplit:
 		prims0, prims1 + nPrimitives, badRefines);
 }
 
-bool KdTreeAccel::Intersect(const Ray& ray, real* t, Intersection* isect) const const {
+bool KdTreeAccel::Intersect(const Ray& ray, Intersection* isect, real* t) const {
 	// Compute initial parametric range of ray inside kd-tree extent
 	real tMin, tMax;
 	if (!bounds.Intersect(ray, &tMin, &tMax)) {

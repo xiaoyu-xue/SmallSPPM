@@ -75,7 +75,7 @@ public:
 			real t;
 			Intersection isect;
 
-			if (!scene.Intersect(r, &t, &isect)) return;
+			if (!scene.Intersect(r,&isect, &t)) return;
 			isect.ComputeScatteringFunction();
 			std::shared_ptr<BSDF> bsdf = isect.bsdf;
 			Vec3 wi;
@@ -147,7 +147,7 @@ public:
 			real t;
 			Intersection isect;
 			std::shared_ptr<Shape> hitObj;
-			if (!scene.Intersect(r, &t, &isect)) return;
+			if (!scene.Intersect(r, &isect, &t)) return;
 
 			isect.ComputeScatteringFunction(TransportMode::Importance);
 			std::shared_ptr<BSDF> bsdf = isect.bsdf;

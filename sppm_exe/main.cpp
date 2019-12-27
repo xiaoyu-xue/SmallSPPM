@@ -26,6 +26,7 @@
 #include "arealight.h"
 #include "phinhole.h"
 #include "brute_force.h"
+#include "kdtree_accel.h"
 #include "sppm.h"
 #include "diffuse.h"
 #include "mirror.h"
@@ -46,7 +47,7 @@
 
 //const real ALPHA = 0.66666667;
 const real ALPHA = 0.75;
-const int64  render_stage_number = 600000;
+const int64  render_stage_number = 200000;
 
 void TestSppm(int argc, char* argv[]) {
 	//clock_t begin = clock();
@@ -407,7 +408,7 @@ void TestProjection() {
 void TestSPPM4(int argc, char* argv[]) {
 	clock_t begin = clock();
 
-	int resX = 800, resY = 800;
+	int resX = 1024, resY = 1024;
 	int nIterations = (argc == 2) ? atol(argv[1]) : 256;
 
 	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY));
@@ -430,21 +431,26 @@ void TestSPPM4(int argc, char* argv[]) {
 		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 0.05, alpha, false, haltonSampler, haltonSamplerEnum));
 	fprintf(stderr, "Load Scene ...\n");
 
+	CornellBoxTriangle2::SetScene(scene);
+
 	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BruteForce());
+	//std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new KdTreeAccel(scene->GetPrimitives()));
 	scene->SetCamera(camera);
 	scene->SetAccelerator(accelerator);
 
-	CornellBoxTriangle2::SetScene(scene);
-
 	scene->Initialize();
-	film->SetFileName("cornellboxTriangle1.bmp");
+	film->SetFileName("cornellboxTriangle_KdTree.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
 	clock_t end = clock();
 	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+
 }
 
 int main(int argc, char *argv[]) {
+	AABB aabb;
+	aabb = Union(Union(aabb, Vec3(-1, -2, -2)), Vec3(1, 2, 3));
+	std::cout << aabb << std::endl;
 
 	//TestSPPM3(argc, argv);
 	TestSPPM4(argc, argv);

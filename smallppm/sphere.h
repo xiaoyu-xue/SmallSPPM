@@ -17,12 +17,14 @@ public:
 		real radius, Vec3 position, bool inside = false) :
 		Shape(ObjectToWorld, WorldToObject), rad(radius), p(position), inside(inside) {
 
+		aabb = AABB(p - Vec3(rad, rad, rad), p + Vec3(rad, rad, rad));
 	}
 
 	bool Intersect(const Ray &ray, Intersection *isect, real *t) const override {
 		// ray-sphere Intersection returns distance
 
 		Ray r;
+		real tHit;
 		if (WorldToObject) {
 			r = (*WorldToObject)(ray);
 		}
@@ -36,18 +38,18 @@ public:
 
 
 		if (det < 0) {
-			*t = r.tMax;
+			//*t = r.tMax;
 			return false;
 		}
 		else {
 			det = std::sqrt(det);
 		}
 
-		*t = (-vd - det) / d2;
-		if (*t < 1e-4) {
-			*t = (-vd + det) / d2;
-			if (*t < 1e-4) {
-				*t = r.tMax;
+		tHit = (-vd - det) / d2;
+		if (tHit < r.tMin) {
+			tHit = (-vd + det) / d2;
+			if (tHit < r.tMin || tHit > r.tMax) {
+				return false;
 			}
 		}
 
@@ -59,8 +61,7 @@ public:
 		//isect->wo = -1 * r.d;
 		//isect->pError = Abs(p) * gamma(1) + Abs(scaledDir) * gamma(6);
 
-
-		Vec3 hit = r.o + r.d * (*t);
+		Vec3 hit = r.o + r.d * (tHit);
 		Vec3 scaledDir = (hit - p) * rad / Distance(hit, p);
 		hit = p + scaledDir;
 		Vec3 n = GetNorm(hit);
@@ -70,17 +71,14 @@ public:
 
 		if (ObjectToWorld) {
 			*isect = (*ObjectToWorld)(Intersection(hit, n, nl, wo, pError));
-			//if(shapeId == 0) std::cout << pError << std::endl << isect->pError << std::endl << std::endl;
 			const Transform o2w = *ObjectToWorld;
-			//*isect = Intersection(o2w(hit), o2w.TransformNormal(n), o2w.TransformNormal(nl), o2w.TransformVector(wo), pError);
 		}
 		else {
 			*isect = Intersection(hit, n, nl, wo, pError);
 		}
+		*t = tHit;
+		return true;
 
-
-		//std::cout << isect->pError << std::endl;
-		return (*t > r.tMin && *t < r.tMax);
 	}
 
 
@@ -88,6 +86,7 @@ public:
 		// ray-sphere Intersection returns distance
 
 		Ray r;
+		real tHit;
 		if (WorldToObject) {
 			r = (*WorldToObject)(ray);
 		}
@@ -96,10 +95,8 @@ public:
 		}
 
 		Vec3 op = p - r.o;
-
 		Vec3 v = r.o - p;
 		real vd = v.Dot(r.d), d2 = r.d.Dot(r.d), v2 = v.Dot(v);
-		real t;
 		real det = vd * vd - d2 * v.Dot(v) + d2 * rad * rad;
 
 		if (det < 0) {
@@ -108,15 +105,15 @@ public:
 		else {
 			det = sqrt(det);
 		}
-		t = (-vd - det) / d2;
-		if (t < 1e-4) {
-			t = (-vd + det) / d2;
-			if (t < 1e-4) {
-				t = r.tMax;
+		tHit = (-vd - det) / d2;
+		if (tHit < r.tMin) {
+			tHit = (-vd + det) / d2;
+			if (tHit < r.tMin || tHit > r.tMax) {
+				return false;
 			}
 		}
 
-		return (t > r.tMin  && t < r.tMax);
+		return true;
 	}
 
 	Intersection Sample(real *pdf, const Vec2 &u) const override {
@@ -314,12 +311,14 @@ public:
 	}
 
 	AABB ObjectBound() const override {
-		return AABB(Vec3(-rad, -rad, -rad), Vec3(rad, rad, rad));
+		return aabb;
 	}
 
 private:
 	real rad; Vec3 p;
 	bool inside;
+
+	AABB aabb;
 };
 
 NAMESPACE_END

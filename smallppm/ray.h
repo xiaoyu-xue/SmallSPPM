@@ -15,7 +15,7 @@ struct Ray {
 		return o + d * t;
 	}
 	Vec3 o, d;
-	real tMin, tMax;
+	mutable real tMin, tMax;
 };
 
 std::ostream& operator<<(std::ostream &os, const Ray &ray);
