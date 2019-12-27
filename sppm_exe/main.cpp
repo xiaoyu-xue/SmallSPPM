@@ -46,7 +46,7 @@
 
 //const real ALPHA = 0.66666667;
 const real ALPHA = 0.75;
-const int64  render_stage_number = 20000;
+const int64  render_stage_number = 600000;
 
 void TestSppm(int argc, char* argv[]) {
 	//clock_t begin = clock();
@@ -360,7 +360,7 @@ void TestSPPM3(int argc, char* argv[]) {
 
 
 	scene->Initialize();
-	film->SetFileName("cornellbox42.bmp");
+	film->SetFileName("cornellbox49.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
 	clock_t end = clock();
@@ -404,10 +404,50 @@ void TestProjection() {
 
 }
 
+void TestSPPM4(int argc, char* argv[]) {
+	clock_t begin = clock();
+
+	int resX = 800, resY = 800;
+	int nIterations = (argc == 2) ? atol(argv[1]) : 256;
+
+	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY));
+	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
+	Vec3 camPos(0, 0, 3);
+	Vec3 cz(0, 0, -1);
+	Vec3 cx = Vec3(1, 0, 0);
+	Vec3 cy = Vec3(0, 1, 0);
+	real filmDis = 1;
+	real fovy = 53.13010235415597f;
+
+	std::shared_ptr<Camera> camera = std::shared_ptr<Camera>(new PinHoleCamera(film, camPos, cz, cx, cy, fovy, filmDis));
+	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
+	std::shared_ptr<Sampler> haltonSampler = std::shared_ptr<Sampler>(new HaltonSampler(resX, resY));
+	std::shared_ptr<Sampler> regularHaltonSampler = std::shared_ptr<Sampler>(new RegularHaltonSampler());;
+	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
+	std::shared_ptr<SamplerEnum> haltonSamplerEnum = std::shared_ptr<SamplerEnum>(new HaltonEnum((unsigned)resX, (unsigned)resY));
+	real alpha = 0.6666667;
+	std::shared_ptr<Integrator> integrator =
+		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 0.05, alpha, false, haltonSampler, haltonSamplerEnum));
+	fprintf(stderr, "Load Scene ...\n");
+
+	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BruteForce());
+	scene->SetCamera(camera);
+	scene->SetAccelerator(accelerator);
+
+	CornellBoxTriangle2::SetScene(scene);
+
+	scene->Initialize();
+	film->SetFileName("cornellboxTriangle1.bmp");
+	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
+	renderer->Render();
+	clock_t end = clock();
+	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+}
+
 int main(int argc, char *argv[]) {
 
-	TestSPPM3(argc, argv);
-
+	//TestSPPM3(argc, argv);
+	TestSPPM4(argc, argv);
 	//Shape *triangle = new Triangle(Vec3(5, 0, 0), Vec3(5, 10, 0), Vec3(-5, 0, 0), Vec3(0, 0, 1));
 	//Ray ray(Vec3(0, 0, 2), Vec3(0, 0, -1));
 	//Intersection isect;

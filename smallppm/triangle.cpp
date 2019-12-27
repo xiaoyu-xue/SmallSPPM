@@ -52,7 +52,7 @@ bool Triangle::Intersect(const Ray& ray, Intersection* isect, real* t) const {
 	isect->hit = b0 * p0 + b1 * p1 + b2 * p2;
 	isect->uv = Vec2(u, v);
 	isect->n = faceNormal;
-	isect->nl = faceNormal;
+	isect->nl = isect->n.Dot(ray.d) < 0 ? isect->n : isect->n * -1;
 	isect->wo = -ray.d;
 	isect->pError = gamma(7) * Vec3(xAbsSum, yAbsSum, zAbsSum);
 

@@ -113,7 +113,7 @@ public:
 				hp.used = true;
 				hp.importance = importance;
 				hp.pos = isect.hit;
-				hp.nrm = isect.n;
+				hp.nrm = isect.nl;
 				hp.pix = pixel;
 				hp.outDir = -1 * r.d;
 				hitPoints[pixel] = hp;
@@ -170,7 +170,8 @@ public:
 						//Use spinlock, but racing condition is rare when using QMC
 						//std::lock_guard<Spinlock> lock(pixelLocks[hitpoint->pix]);
 						Vec3 v = hitpoint->pos - isect.hit;
-						if ((hitpoint->nrm.Dot(isect.n) > PhtotonEdgeEps) && (v.Dot(v) <= radius2[hitpoint->pix])) {
+						//if ((hitpoint->nrm.Dot(isect.n) > PhtotonEdgeEps) && (v.Dot(v) <= radius2[hitpoint->pix])) {						if ((hitpoint->nrm.Dot(isect.n) > PhtotonEdgeEps) && (v.Dot(v) <= radius2[hitpoint->pix])) {
+						if ((hitpoint->nrm.Dot(isect.nl) > 0.015) && (v.Dot(v) <= radius2[hitpoint->pix])) {
 							if (!batchShrink) {
 								// unlike N in the paper, hitpoint->n stores "N / ALPHA" to make it an integer value
 								real g = (photonNums[hitpoint->pix] * alpha + alpha) / (photonNums[hitpoint->pix] * alpha + 1.f);

@@ -17,6 +17,7 @@ public:
 	virtual std::shared_ptr<Material> GetMaterial() const = 0;
 	virtual std::shared_ptr<Light> GetLight() const = 0;
 	virtual bool IsLight() const = 0;
+	virtual AABB WorldBound() const = 0;
 	virtual ~Primitive(){}
 
 #ifdef _DEBUG
@@ -51,6 +52,10 @@ public:
 
 	bool IsLight() const override {
 		return light != nullptr;
+	}
+
+	AABB WorldBound() const override {
+		return shape->WorldBould();
 	}
 public:
 	std::shared_ptr<Shape> shape;

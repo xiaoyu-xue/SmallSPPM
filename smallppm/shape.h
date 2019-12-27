@@ -21,26 +21,21 @@ public:
 	virtual bool Intersect(const Ray &r) const = 0;
 	virtual Intersection Sample(real *pdf, const Vec2 &rand) const = 0;
 	virtual Intersection Sample(const Intersection& isect, real* pdf, const Vec2& u) const;
-
+	virtual AABB ObjectBound() const = 0;
+	virtual AABB WorldBould() const{
+		if(ObjectToWorld) return (*ObjectToWorld)(ObjectBound());
+		return ObjectBound();
+	}
 	virtual real Pdf(const Intersection &isect, const Vec3 &wi) const {
 		//Ray ray(isect.hit, wi);
 		Ray ray = isect.SpawnRay(wi);
 		Intersection lightPoint;
 		real t = Inf;
-		//if (debugPixel == 1) {
-		//	std::cout << "Pdf ray " << ray << std::endl;
-		//}
 		if (!Intersect(ray, &lightPoint, &t)) {
-			//if (debugPixel == 1) {
-			//	std::cout << "FindLightPdf_t: "<< t << std::endl;
-			//}
 			return 0;
 		}
 		Vec3 d = lightPoint.hit - isect.hit;
 		real pdf = d.Dot(d) / (std::abs(lightPoint.n.Dot(-1 * wi)) * Area());
-		//if (debugPixel == 1) {
-		//	std::cout << "FindLightPdf_ pdf: " << pdf << std::endl;
-		//}
 		if (std::isinf(pdf)) return 0;
 		return pdf;
 	}

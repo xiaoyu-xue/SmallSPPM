@@ -103,6 +103,12 @@
     <Filter Include="Source Files\shape">
       <UniqueIdentifier>{613dda42-3b0b-4dd3-9353-09d43112486d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\accelerator">
+      <UniqueIdentifier>{d5246745-fd46-4e45-b610-ec256b469a1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\system">
+      <UniqueIdentifier>{99fa6f3a-3c3b-47a3-b472-9d8a73c85c66}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sampler.cpp">
@@ -143,6 +149,12 @@
     </ClCompile>
     <ClCompile Include="shape.cpp">
       <Filter>Source Files\shape</Filter>
+    </ClCompile>
+    <ClCompile Include="kdtree_accel.cpp">
+      <Filter>Source Files\accelerator</Filter>
+    </ClCompile>
+    <ClCompile Include="memory.cpp">
+      <Filter>Source Files\system</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -292,6 +304,9 @@
     </ClInclude>
     <ClInclude Include="triangle.h">
       <Filter>Header Files\shape</Filter>
+    </ClInclude>
+    <ClInclude Include="kdtree_accel.h">
+      <Filter>Header Files\accelerator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

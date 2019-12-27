@@ -29,6 +29,11 @@ public:
 	real Area() const override {
 		return 0.5 * Cross(p1 - p0, p2 - p0).Length();
 	}
+
+	AABB ObjectBound() const override {
+		AABB ret(p0, p1);
+		return Union(ret, p2);
+	}
 private:
 	void GetUVs(real uv[3][2]) const {
 		uv[0][0] = 0.; uv[0][1] = 0.;

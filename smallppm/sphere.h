@@ -69,10 +69,6 @@ public:
 		Vec3 pError = Abs(p) * gamma(1) + Abs(scaledDir) * gamma(6);
 
 		if (ObjectToWorld) {
-			if (shapeId == 1) {
-				//std::cout << "r.tMin: " << r.tMin << ", " << "t: "<< *t << ", " << "t.tMax: "<< r.tMax << std::endl;
-				//std::cout << (*t > r.tMin&&* t < r.tMax) << std::endl;
-			}
 			*isect = (*ObjectToWorld)(Intersection(hit, n, nl, wo, pError));
 			//if(shapeId == 0) std::cout << pError << std::endl << isect->pError << std::endl << std::endl;
 			const Transform o2w = *ObjectToWorld;
@@ -308,13 +304,17 @@ public:
 	}
 
 	Vec3 GetNorm(const Vec3 & point) const override {
+		//return (point - p).Norm();
 		if (inside) return (p - point).Norm();
 		else return (point - p).Norm();
-		//return (point - p).Norm();
 	}
 
 	real Area() const override {
 		return 4.f * PI * rad * rad;
+	}
+
+	AABB ObjectBound() const override {
+		return AABB(Vec3(-rad, -rad, -rad), Vec3(rad, rad, rad));
 	}
 
 private:

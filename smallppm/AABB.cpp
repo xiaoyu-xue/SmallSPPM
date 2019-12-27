@@ -1,4 +1,28 @@
 #include "AABB.h"
+#include "numeric_utils.h"
+
+bool AABB::Intersect(const Ray& ray, real* hitt0, real* hitt1) const {
+	real t0 = 0, t1 = ray.tMax;
+	for (int i = 0; i < 3; ++i) {
+		// Update interval for _i_th bounding box slab
+		real invRayDir = 1 / ray.d[i];
+		real tNear = (minPoint[i] - ray.o[i]) * invRayDir;
+		real tFar = (maxPoint[i] - ray.o[i]) * invRayDir;
+
+		// Update parametric interval from slab intersection $t$ values
+		if (tNear > tFar) std::swap(tNear, tFar);
+
+		// Update _tFar_ to ensure robust ray--bounds intersection
+		tFar *= 1 + 2 * gamma(3);
+		t0 = tNear > t0 ? tNear : t0;
+		t1 = tFar < t1 ? tFar : t1;
+		if (t0 > t1) return false;
+	}
+	if (hitt0) *hitt0 = t0;
+	if (hitt1) *hitt1 = t1;
+	return true;
+}
+
 
 AABB Union(const AABB& a, const AABB& b) {
 
