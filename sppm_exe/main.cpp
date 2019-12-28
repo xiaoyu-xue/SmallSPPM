@@ -47,7 +47,7 @@
 
 //const real ALPHA = 0.66666667;
 const real ALPHA = 0.75;
-const int64  render_stage_number = 200000;
+const int64  render_stage_number = 500000;
 
 void TestSppm(int argc, char* argv[]) {
 	//clock_t begin = clock();
@@ -426,20 +426,20 @@ void TestSPPM4(int argc, char* argv[]) {
 	std::shared_ptr<Sampler> regularHaltonSampler = std::shared_ptr<Sampler>(new RegularHaltonSampler());;
 	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
 	std::shared_ptr<SamplerEnum> haltonSamplerEnum = std::shared_ptr<SamplerEnum>(new HaltonEnum((unsigned)resX, (unsigned)resY));
-	real alpha = 0.6666667;
+	real alpha = 0.66666667;
 	std::shared_ptr<Integrator> integrator =
 		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 0.05, alpha, false, haltonSampler, haltonSamplerEnum));
 	fprintf(stderr, "Load Scene ...\n");
 
 	CornellBoxTriangle2::SetScene(scene);
 
-	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BruteForce());
-	//std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new KdTreeAccel(scene->GetPrimitives()));
+	//std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BruteForce());
+	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new KdTreeAccel(scene->GetPrimitives()));
 	scene->SetCamera(camera);
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("cornellboxTriangle_KdTree.bmp");
+	film->SetFileName("cornellboxTriangle_test.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
 	clock_t end = clock();

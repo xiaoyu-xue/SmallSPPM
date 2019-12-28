@@ -302,12 +302,17 @@ public:
 
 
 		//Glass Ball
-		std::shared_ptr<Shape> glassBallShape = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 0.35f, Vec3(0.5f, -0.6f, 0.0f)));
+		std::shared_ptr<Shape> glassBallShape = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 0.35f, Vec3(0.5f, -0.6f, 0.3f)));
 		std::shared_ptr<Material> glassBallMaterial = std::shared_ptr<Material>(new GlassMaterial(fullWhiteConstant, fullWhiteConstant));
 		std::shared_ptr<Primitive> glassBall = std::shared_ptr<Primitive>(new GeometryPrimitive(glassBallShape, glassBallMaterial));
 		scene->AddPrimitive(glassBall);
 
-		
+		//Diffuse Ball
+		std::shared_ptr<Shape> diffuseBallShape = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 0.35f, Vec3(-0.5f, -0.6f, -0.3f)));
+		std::shared_ptr<Material> diffuseBallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
+		std::shared_ptr<Primitive> diffuseBall = std::shared_ptr<Primitive>(new GeometryPrimitive(diffuseBallShape, diffuseBallMaterial));
+		scene->AddPrimitive(diffuseBall);
+
 		//Light
 		Vec3 lightP0 = Vec3(0.25f, 0.965, 0.25f);
 		Vec3 lightP1 = Vec3(0.25f, 0.965, -0.25f);
