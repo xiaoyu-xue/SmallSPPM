@@ -288,6 +288,8 @@ FORCE_INLINE Intersection Transform::operator()(const Intersection& isect) const
 	ret.n = this->TransformNormal(isect.n);
 	ret.nl = this->TransformNormal(isect.nl);
 	ret.wo = this->TransformVector(isect.wo);
+	ret.dpdu = this->TransformVector(isect.dpdu);
+	ret.dpdv = this->TransformVector(isect.dpdv);
 
 	return ret;
 }

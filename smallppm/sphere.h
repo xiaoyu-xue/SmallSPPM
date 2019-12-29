@@ -32,9 +32,9 @@ public:
 			r = ray;
 		}
 
-		Vec3 v = r.o - p;
-		real vd = v.Dot(r.d), d2 = r.d.Dot(r.d), v2 = v.Dot(v);
-		real det = vd * vd - d2 * v2 + d2 * rad * rad;
+		Vec3 po = r.o - p;
+		real vd = po.Dot(r.d), d2 = r.d.Dot(r.d), po2 = po.Dot(po);
+		real det = vd * vd - d2 * po2 + d2 * rad * rad;
 
 
 		if (det < 0) {
@@ -69,12 +69,26 @@ public:
 		Vec3 wo = -1 * r.d;
 		Vec3 pError = Abs(p) * gamma(1) + Abs(scaledDir) * gamma(6);
 
+		//Compute dpdu, dpdv
+		Vec3 pHit = hit - p;
+		real phi = std::atan2(pHit.y, pHit.x);
+		if (phi < 0) phi += 2 * PI;
+		real u = phi / phiMax;
+		real theta = std::acos(Clamp(pHit.z / rad, -1, 1));
+		real v = (theta - thetaMin) / (thetaMax - thetaMin);
+
+		real zRadius = std::sqrt(pHit.x * pHit.x + pHit.y * pHit.y);
+		real invZRadius = 1 / zRadius;
+		real cosPhi = pHit.x * invZRadius;
+		real sinPhi = pHit.y * invZRadius;
+		Vec3 dpdu(-phiMax * pHit.y, phiMax * pHit.x, 0);
+		Vec3 dpdv = (thetaMax - thetaMin) * Vec3(pHit.z * cosPhi, pHit.z * sinPhi, -rad * std::sin(theta));
+		//CoordinateSystem(GetNorm(hit), &dpdu, &dpdv);
 		if (ObjectToWorld) {
-			*isect = (*ObjectToWorld)(Intersection(hit, n, nl, wo, pError));
-			const Transform o2w = *ObjectToWorld;
+			*isect = (*ObjectToWorld)(Intersection(hit, n, nl, dpdu, dpdv, wo, pError));
 		}
 		else {
-			*isect = Intersection(hit, n, nl, wo, pError);
+			*isect = Intersection(hit, n, nl, dpdu, dpdv, wo, pError);
 		}
 		*t = tHit;
 		return true;
@@ -139,6 +153,7 @@ public:
 		Vec3 n = GetNorm(hit);
 		Vec3 nl = isect.n;
 		Vec3 pError = Abs(p) * gamma(1) + Abs(scaledDir) * gamma(6);
+
 		if (ObjectToWorld) {
 			isect.hit = (*ObjectToWorld)(hit, pError, &isect.pError);
 			isect.n = (*ObjectToWorld).TransformNormal(n).Norm();
@@ -315,10 +330,13 @@ public:
 	}
 
 private:
-	real rad; Vec3 p;
+	real rad; 
+	Vec3 p;
 	bool inside;
-
 	AABB aabb;
+	const real thetaMin = 0;
+	const real thetaMax = PI;
+	const real phiMax = PI;
 };
 
 NAMESPACE_END

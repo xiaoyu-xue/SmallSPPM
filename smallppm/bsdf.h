@@ -4,18 +4,41 @@
 #include "utils.h"
 #include "intersection.h"
 #include "scalar.h"
+#include "transform.h"
+#include "sampling.h"
 
 NAMESPACE_BEGIN
 
 class BSDF {
 public:
-	BSDF(const Intersection &isect) : n(isect.n), nl(isect.nl) {}
+	BSDF(const Intersection &isect) : 
+		n(isect.n), nl(isect.nl), ss(isect.dpdu.Norm()), ts(Cross(nl, ss)) {
+		//Vec3 ss, ts;
+		//CoordinateSystem(isect.nl, &ss, &ts);
+		//LocalToWorld = Transform(
+		//	ss.x, ts.x, nl.x, 0,
+		//	ss.y, ts.y, nl.y, 0,
+		//	ss.z, ts.z, nl.z, 0,
+		//	0, 0, 0, 1);
+		//WorldToLocal = Inverse(LocalToWorld);
+	}
+	Vec3 WorldToLocal(const Vec3& v) const {
+		return Vec3(Dot(v, ss), Dot(v, ts), Dot(v, nl));
+	}
+	Vec3 LocalToWorld(const Vec3& v) const {
+		return Vec3(ss.x * v.x + ts.x * v.y + nl.x * v.z,
+			ss.y * v.x + ts.y * v.y + nl.y * v.z,
+			ss.z * v.x + ts.z * v.y + nl.z * v.z);
+	}
+	virtual ~BSDF(){}
 	virtual real Pdf(const Vec3 &wo, const Vec3 &wi) const = 0;
 	virtual Vec3 Sample_f(const Vec3 &wo, Vec3 *wi, real *pdf, const Vec3 &rand = Vec3(0, 0, 0)) const = 0;
 	virtual Vec3 f(const Vec3 &wo, const Vec3 &wi) const = 0;
 	virtual bool IsDelta() const { return false; }
 protected:
 	const Vec3 n, nl;
+	const Vec3 ss, ts;
+	//Transform LocalToWorld, WorldToLocal;
 };
 
 class DiffuseBSDF : public BSDF {
@@ -27,11 +50,15 @@ public:
 	}
 
 	Vec3 Sample_f(const Vec3 &wo, Vec3 *wi, real *pdf, const Vec3 &rand) const override {
-		real r1 = 2.f * PI * rand[0], r2 = rand[1];
-		real r2s = sqrt(r2);
-		Vec3 w = nl, u = ((fabs(w.x) > .1f ? Vec3(0, 1, 0) : Vec3(1, 0, 0)).Cross(w)).Norm();
-		Vec3 v = w.Cross(u);
-		*wi = (u* cos(r1) * r2s + v * sin(r1) * r2s + w * sqrt(1 - r2)).Norm();
+		//real r1 = 2.f * PI * rand[0], r2 = rand[1];
+		//real r2s = sqrt(r2);
+		//Vec3 w = nl, u = ((fabs(w.x) > .1f ? Vec3(0, 1, 0) : Vec3(1, 0, 0)).Cross(w)).Norm();
+		//Vec3 v = w.Cross(u);
+		//*wi = (u* cos(r1) * r2s + v * sin(r1) * r2s + w * sqrt(1 - r2)).Norm();
+
+
+		Vec3 wiLocal = CosineSampleHemisphere(Vec2(rand[0], rand[1]));
+		*wi = LocalToWorld(wiLocal);
 		*pdf = Pdf(wo, *wi);
 		return f(wo, *wi);
 	}

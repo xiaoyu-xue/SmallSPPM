@@ -308,6 +308,9 @@
     <ClInclude Include="kdtree_accel.h">
       <Filter>Header Files\accelerator</Filter>
     </ClInclude>
+    <ClInclude Include="microfacet.h">
+      <Filter>Header Files\bsdf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="svpng.inc">

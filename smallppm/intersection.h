@@ -13,6 +13,7 @@ class Primitive;
 class Intersection {
 public:
 	Vec3 hit, n, nl, wo;
+	Vec3 dpdu, dpdv;
 	Vec2 uv;
 	real rayEps;
 	Vec3 pError;
@@ -24,6 +25,12 @@ public:
 
 	Intersection(const Vec3 &hit, const Vec3 &n, const Vec3 &nl, const Vec3 &wo, const Vec3 &pError):
 		hit(hit), n(n), nl(nl), wo(wo), pError(pError), rayEps(1e-3), primitive(nullptr){
+		bsdf = nullptr;
+	}
+
+	Intersection(const Vec3& hit, const Vec3& n, const Vec3& nl, 
+		const Vec3& dpdu, const Vec3& dpdv, const Vec3& wo, const Vec3& pError) :
+		hit(hit), dpdu(dpdu), dpdv(dpdv), n(n), nl(nl), wo(wo), pError(pError), rayEps(1e-3), primitive(nullptr) {
 		bsdf = nullptr;
 	}
 

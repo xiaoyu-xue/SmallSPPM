@@ -37,9 +37,9 @@ bool Triangle::Intersect(const Ray& ray, Intersection* isect, real* t) const {
 
 
 	// Interpolate $(u,v)$ triangle parametric coordinates
-	float b0 = 1 - b1 - b2;
-	float u = b0 * uvs[0][0] + b1 * uvs[1][0] + b2 * uvs[2][0];
-	float v = b0 * uvs[0][1] + b1 * uvs[1][1] + b2 * uvs[2][1];
+	real b0 = 1 - b1 - b2;
+	real u = b0 * uvs[0][0] + b1 * uvs[1][0] + b2 * uvs[2][0];
+	real v = b0 * uvs[0][1] + b1 * uvs[1][1] + b2 * uvs[2][1];
 
 	real xAbsSum =
 		(std::abs(b0 * p0.x) + std::abs(b1 * p1.x) + std::abs(b2 * p2.x));
@@ -48,11 +48,31 @@ bool Triangle::Intersect(const Ray& ray, Intersection* isect, real* t) const {
 	real zAbsSum =
 		(std::abs(b0 * p0.z) + std::abs(b1 * p1.z) + std::abs(b2 * p2.z));
 
+	// Compute deltas for triangle partial derivatives
+	Vec3 dpdu, dpdv;
+	real du1 = uvs[0][0] - uvs[2][0];
+	real du2 = uvs[1][0] - uvs[2][0];
+	real dv1 = uvs[0][1] - uvs[2][1];
+	real dv2 = uvs[1][1] - uvs[2][1];
+	Vec3 dp1 = p0 - p2, dp2 = p1 - p2;
+	real determinant = du1 * dv2 - dv1 * du2;
+	if (std::abs(determinant) < 1e-8) {
+		// Handle zero determinant for triangle partial derivative matrix
+		CoordinateSystem(Cross(e2, e1).Norm(), &dpdu, &dpdv);
+	}
+	else {
+		real invdet = 1.f / determinant;
+		dpdu = (dv2 * dp1 - dv1 * dp2) * invdet;
+		dpdv = (-du2 * dp1 + du1 * dp2) * invdet;
+	}
+
 	*t = tHit;
 	isect->hit = b0 * p0 + b1 * p1 + b2 * p2;
 	isect->uv = Vec2(u, v);
 	isect->n = faceNormal;
 	isect->nl = isect->n.Dot(ray.d) < 0 ? isect->n : isect->n * -1;
+	isect->dpdu = dpdu;
+	isect->dpdv = dpdv;
 	isect->wo = -ray.d;
 	isect->pError = gamma(7) * Vec3(xAbsSum, yAbsSum, zAbsSum);
 
