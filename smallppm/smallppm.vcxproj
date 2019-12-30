@@ -22,32 +22,32 @@
     <ProjectGuid>{621CF667-B13C-4FB2-8C21-CA70D2FC4284}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>smallppm</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -104,6 +104,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -164,40 +165,55 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AABB.cpp" />
     <ClCompile Include="debug_utils.cpp" />
     <ClCompile Include="efloat.cpp" />
+    <ClCompile Include="intersection.cpp" />
+    <ClCompile Include="kdtree_accel.cpp" />
     <ClCompile Include="linagl.cpp" />
     <ClCompile Include="lowdiscrepency.cpp" />
+    <ClCompile Include="memory.cpp" />
+    <ClCompile Include="primitive.cpp" />
+    <ClCompile Include="ray.cpp" />
     <ClCompile Include="sampler.cpp" />
     <ClCompile Include="sampling.cpp" />
+    <ClCompile Include="shape.cpp" />
     <ClCompile Include="transform.cpp" />
+    <ClCompile Include="triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="svpng.inc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AABB.h" />
+    <ClInclude Include="accelerator.h" />
     <ClInclude Include="arealight.h" />
     <ClInclude Include="avx.h" />
+    <ClInclude Include="brute_force.h" />
     <ClInclude Include="bsdf.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="constant_texture.h" />
     <ClInclude Include="debug_utils.h" />
     <ClInclude Include="def.h" />
+    <ClInclude Include="diffuse.h" />
     <ClInclude Include="efloat.h" />
     <ClInclude Include="film.h" />
     <ClInclude Include="filter.h" />
     <ClInclude Include="geometry_util.h" />
+    <ClInclude Include="glass.h" />
     <ClInclude Include="halton.h" />
     <ClInclude Include="hashgrid.h" />
     <ClInclude Include="image_io.h" />
     <ClInclude Include="integrator.h" />
     <ClInclude Include="intersection.h" />
+    <ClInclude Include="kdtree_accel.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="linagl.h" />
     <ClInclude Include="lowdiscrepency.h" />
     <ClInclude Include="material.h" />
     <ClInclude Include="math_utils.h" />
     <ClInclude Include="memory.h" />
+    <ClInclude Include="mirror.h" />
     <ClInclude Include="numeric_utils.h" />
     <ClInclude Include="phinhole.h" />
     <ClInclude Include="primitive.h" />
@@ -213,8 +229,10 @@
     <ClInclude Include="sphere.h" />
     <ClInclude Include="sppm.h" />
     <ClInclude Include="sse.h" />
+    <ClInclude Include="texture.h" />
     <ClInclude Include="threading.h" />
     <ClInclude Include="transform.h" />
+    <ClInclude Include="triangle.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="visibility.h" />
   </ItemGroup>

@@ -35,6 +35,11 @@ Vec3 CosineSampleHemisphere(const Vec2 &u) {
 	return Vec3(d.x, d.y, z);
 }
 
+Vec2 UniformSampleTriangle(const Vec2& u) {
+	real su0 = std::sqrt(u[0]);
+	return Vec2(1 - su0, u[1] * su0);
+}
+
 real BalanceHeuristic(int nf, real fPdf, int ng, real gPdf) {
 	return (nf * fPdf) / (nf * fPdf + ng * gPdf);
 }

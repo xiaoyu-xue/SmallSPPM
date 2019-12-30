@@ -3,6 +3,7 @@
 #include "ray.h"
 #include "numeric_utils.h"
 #include "AABB.h"
+#include "intersection.h"
 
 NAMESPACE_BEGIN
 
@@ -45,7 +46,12 @@ public:
 
 	Transform(const Matrix4 &m, const Matrix4 &invM) {
 		mat = m;
-		invMat = Inverse(invM);
+		invMat = invM;
+	}
+
+	Transform(const Transform &t) {
+		mat = t.mat;
+		invMat = t.invMat;
 	}
 
 	friend Transform Inverse(const Transform &t) {
@@ -71,6 +77,7 @@ public:
 	FORCE_INLINE Ray operator()(const Ray &r) const;
 	FORCE_INLINE Transform operator*(const Transform &t) const;
 	FORCE_INLINE AABB operator()(const AABB &bound) const;
+	FORCE_INLINE Intersection operator()(const Intersection& isect) const;
 	FORCE_INLINE Vector3 TransformPoint(const Vector3 &p) const;
 	FORCE_INLINE Vector3 TransformPoint(const Vector3 &p, Vector3 *pError) const;
 	FORCE_INLINE Vector3 TransformPoint(const Vector3 &p, const Vector3 &pError, Vector3 *absError) const;
@@ -90,7 +97,7 @@ public:
 	static Transform Rotate(real theta, const Vector3 &axis);
 	static Transform LookAt(const Vector3 &pos, const Vector3 &look, const Vector3 &up);
 	static Transform Orthographic(real znear, real zfar);
-	static Transform Perspective(real fov, real znear, real zfar);
+	static Transform Perspective(real fovy, real aspect, real dis, real znear, real zfar);
 private:
 	Matrix4 mat, invMat;
 };
@@ -98,7 +105,7 @@ private:
 FORCE_INLINE Vector3 Transform::operator()(const Vector3 &p) const {
 	Vector4 pp(p.x, p.y, p.z, 1.0);
 	pp = mat * pp;
-	if(pp.w == 1) {
+	if(pp.w == 1 || pp.w == 0) {
 		return Vector3(pp.x, pp.y, pp.z);
 	}
 	else {
@@ -116,7 +123,7 @@ FORCE_INLINE Vector3 Transform::operator()(const Vector3 &p, Vector3 *pError) co
 	real zAbsSum = (std::abs(mat(2, 0) * p.x) + std::abs(mat(2, 1) * p.y) +
 		std::abs(mat(2, 2) * p.z) + std::abs(mat(2, 3)));
 	*pError = gamma(3) * Vector3(xAbsSum, yAbsSum, zAbsSum);
-	if(pp.w == 1) {
+	if(pp.w == 1 || pp.w == 0) {
 		return Vector3(pp.x, pp.y, pp.z);
 	}
 	else {
@@ -148,7 +155,7 @@ FORCE_INLINE Vector3 Transform::operator()(const Vector3 &p, const Vector3 &pErr
 		gamma(3) * (std::abs(mat(2, 0) * x) + std::abs(mat(2, 1) * y) +
 			std::abs(mat(2, 2) * z) + std::abs(mat(2, 3)));
 
-	if (pp.w == 1.) {
+	if (pp.w == 1.f || pp.w == 0) {
 		return Vector3(pp.x, pp.y, pp.z);
 	}
 	else {
@@ -209,7 +216,7 @@ FORCE_INLINE Vector3 Transform::TransformVector(const Vector3 &v, const Vector3 
 FORCE_INLINE Ray Transform::operator()(const Ray& r) const {
 	Vector3 oError;
 	Vector3 o = (*this)(r.o, &oError);
-	Vector3 d = (*this)(r.d);
+	Vector3 d = this->TransformVector(r.d);
 
 	real length2 = d.Length2();
 	real tMax = r.tMax, tMin = r.tMin;
@@ -224,7 +231,7 @@ FORCE_INLINE Ray Transform::operator()(const Ray& r) const {
 
 FORCE_INLINE Ray Transform::operator()(const Ray &r, Vector3 *oError, Vector3 *dError) const {
 	Vector3 o = (*this)(r.o, oError);
-	Vector3 d = (*this)(r.d, dError);
+	Vector3 d = this->TransformVector(r.d, dError);
 	real tMax = r.tMax;
 	real tMin = r.tMin;
 	real length2 = d.Length2();
@@ -273,6 +280,16 @@ FORCE_INLINE Ray Transform::TransformRay(const Ray &r) const {
 
 FORCE_INLINE AABB Transform::TransformAABB(const AABB &bound) const {
 	return (*this)(bound);
+}
+
+FORCE_INLINE Intersection Transform::operator()(const Intersection& isect) const {
+	Intersection ret;
+	ret.hit = (*this)(isect.hit, isect.pError, &ret.pError);
+	ret.n = this->TransformNormal(isect.n);
+	ret.nl = this->TransformNormal(isect.nl);
+	ret.wo = this->TransformVector(isect.wo);
+
+	return ret;
 }
 
 NAMESPACE_END

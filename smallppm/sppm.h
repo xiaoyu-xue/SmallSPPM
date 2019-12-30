@@ -74,24 +74,16 @@ public:
 		for (int i = 0; i < maxDepth; ++i) {
 			real t;
 			Intersection isect;
-			std::shared_ptr<Shape> hitObj;
-			//{
-			//	if (debugPixel == 1) {
-			//		std::cout << r << std::endl;
-			//		std::cout << "rad: " << Distance(r.o, Vec3(27, 16.5f, 47)) << std::endl;
-			//	}
-			//}
-			if (!scene.Intersect(r, &t, &isect, hitObj)) return;
-			//{
-			//	if (debugPixel == 1) {
-			//		std::cout << "hit obj: " << hitObj->GetId() << " hit: " << isect.hit << std::endl;
-			//		std::cout << "pError: " << isect.pError << std::endl;
-			//		std::cout << "rad: " << Distance(isect.hit, Vec3(27, 16.5f, 47)) << std::endl;
-			//	}
-			//}
-			std::shared_ptr<BSDF> bsdf = hitObj->GetBSDF(isect);
+
+			if (!scene.Intersect(r,&isect, &t)) return;
+			isect.ComputeScatteringFunction();
+			std::shared_ptr<BSDF> bsdf = isect.bsdf;
 			Vec3 wi;
 			real pdf;
+
+#ifdef _DEBUG
+			int primitiveId = isect.primitive->primitiveId;
+#endif
 
 			//{
 			//	int x = 223, y = 387;
@@ -121,12 +113,13 @@ public:
 				hp.used = true;
 				hp.importance = importance;
 				hp.pos = isect.hit;
-				hp.nrm = isect.n;
+				hp.nrm = isect.nl;
 				hp.pix = pixel;
 				hp.outDir = -1 * r.d;
 				hitPoints[pixel] = hp;
-				if ((i == 0 || deltaBoundEvent) && hitObj->IsLight()) {
-					directillum[hp.pix] = directillum[hp.pix] + importance * hitObj->GetEmission();
+				if ((i == 0 || deltaBoundEvent) && isect.primitive->IsLight()) {
+					std::shared_ptr<Light> emissionShape = isect.primitive->GetLight();
+					directillum[hp.pix] = directillum[hp.pix] + importance * emissionShape->Emission(isect, isect.wo);
 					//{
 					//	if (debugPixel == 1) {
 					//		std::cout << "direction illumination(delta): " << hp.importance << " " << 
@@ -154,8 +147,11 @@ public:
 			real t;
 			Intersection isect;
 			std::shared_ptr<Shape> hitObj;
-			if (!scene.Intersect(r, &t, &isect, hitObj)) return;
-			std::shared_ptr<BSDF> bsdf = hitObj->GetBSDF(isect, TransportMode::Importance);
+			if (!scene.Intersect(r, &isect, &t)) return;
+
+			isect.ComputeScatteringFunction(TransportMode::Importance);
+			std::shared_ptr<BSDF> bsdf = isect.bsdf;
+
 			Vec3 wi;
 			real pdf;
 			Vec3 f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec3(rand(), rand(), rand()));
@@ -174,7 +170,8 @@ public:
 						//Use spinlock, but racing condition is rare when using QMC
 						//std::lock_guard<Spinlock> lock(pixelLocks[hitpoint->pix]);
 						Vec3 v = hitpoint->pos - isect.hit;
-						if ((hitpoint->nrm.Dot(isect.n) > PhtotonEdgeEps) && (v.Dot(v) <= radius2[hitpoint->pix])) {
+						//if ((hitpoint->nrm.Dot(isect.n) > PhtotonEdgeEps) && (v.Dot(v) <= radius2[hitpoint->pix])) {
+						if ((hitpoint->nrm.Dot(isect.nl) > 0.015) && (v.Dot(v) <= radius2[hitpoint->pix])) {
 							if (!batchShrink) {
 								// unlike N in the paper, hitpoint->n stores "N / ALPHA" to make it an integer value
 								real g = (photonNums[hitpoint->pix] * alpha + alpha) / (photonNums[hitpoint->pix] * alpha + 1.f);

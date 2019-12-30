@@ -153,8 +153,11 @@ Vec3 UniformSampleSphere(const Vec2 &u);
 
 Vec3 CosineSampleHemisphere(const Vec2 &u);
 
+Vec2 UniformSampleTriangle(const Vec2 &u);
+
 real BalanceHeuristic(int nf, real fPdf, int ng, real gPdf);
 
 real CosineHemispherePdf(real cosTheta);
+
 
 NAMESPACE_END

@@ -28,3 +28,4 @@ stdafx.cpp
 targetver.h
 StdAfx.h
 StdAfx.cpp
+packages/

@@ -85,6 +85,30 @@
     <Filter Include="Header Files\simd">
       <UniqueIdentifier>{5968d54f-34f4-4aa6-ad01-e5db02e23e4d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\geometry">
+      <UniqueIdentifier>{6242d077-5c20-4dd9-aea1-ebf4e12634a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\primitive">
+      <UniqueIdentifier>{5a74a1be-2f8a-40ca-8a65-59145923ad31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\accelerator">
+      <UniqueIdentifier>{12581f52-ad65-4d90-9142-cbebdadcb448}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\texture">
+      <UniqueIdentifier>{13255c48-bdc5-429e-bde3-69df4b4a27ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\intersection">
+      <UniqueIdentifier>{c242105b-5d24-4fad-9628-80ef4819a1f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\shape">
+      <UniqueIdentifier>{613dda42-3b0b-4dd3-9353-09d43112486d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\accelerator">
+      <UniqueIdentifier>{d5246745-fd46-4e45-b610-ec256b469a1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\system">
+      <UniqueIdentifier>{99fa6f3a-3c3b-47a3-b472-9d8a73c85c66}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sampler.cpp">
@@ -107,6 +131,30 @@
     </ClCompile>
     <ClCompile Include="transform.cpp">
       <Filter>Source Files\math</Filter>
+    </ClCompile>
+    <ClCompile Include="ray.cpp">
+      <Filter>Source Files\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="primitive.cpp">
+      <Filter>Source Files\primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="intersection.cpp">
+      <Filter>Source Files\intersection</Filter>
+    </ClCompile>
+    <ClCompile Include="AABB.cpp">
+      <Filter>Source Files\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="triangle.cpp">
+      <Filter>Source Files\shape</Filter>
+    </ClCompile>
+    <ClCompile Include="shape.cpp">
+      <Filter>Source Files\shape</Filter>
+    </ClCompile>
+    <ClCompile Include="kdtree_accel.cpp">
+      <Filter>Source Files\accelerator</Filter>
+    </ClCompile>
+    <ClCompile Include="memory.cpp">
+      <Filter>Source Files\system</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -232,6 +280,33 @@
     </ClInclude>
     <ClInclude Include="transform.h">
       <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="diffuse.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="brute_force.h">
+      <Filter>Header Files\accelerator</Filter>
+    </ClInclude>
+    <ClInclude Include="accelerator.h">
+      <Filter>Header Files\accelerator</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>Header Files\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="constant_texture.h">
+      <Filter>Header Files\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="mirror.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="glass.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="triangle.h">
+      <Filter>Header Files\shape</Filter>
+    </ClInclude>
+    <ClInclude Include="kdtree_accel.h">
+      <Filter>Header Files\accelerator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

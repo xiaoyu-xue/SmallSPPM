@@ -4,33 +4,21 @@
 
 NAMESPACE_BEGIN
 
-class PinHoleCamera : public Camera {
+class PinHoleCamera : public ProjectiveCamera {
 public:
 	PinHoleCamera(const std::shared_ptr<Film> &pFilm, const Vec3 &position,
 		const Vec3 &pCz, const Vec3 &pCx, const Vec3 &pCy, real pFovy, real dis) :
-		Camera(pFilm), pos(position), cz(pCz), cx(pCx), cy(pCy), fovy(pFovy), filmDistance(dis) {
-		Initialize();
-	}
-
-	void Initialize() {
-		Vec3 filmCenter = pos + cz * filmDistance;
-		//std::cout << "film cetner: " << filmCenter << std::endl;
-		film->heigh = filmDistance * std::tan(fovy * 0.5f * PI / 180) * 2.f;
-		film->width = film->heigh * film->aspect;
-		film->area = film->width * film->heigh;
-		/*
-		film->LU = filmCenter + cy * film->heigh * 0.5 - cx * film->width * 0.5;
-		film->LL = filmCenter - cy * film->heigh * 0.5 - cx * film->width * 0.5;
-		film->RU = filmCenter + cy * film->heigh * 0.5 + cx * film->width * 0.5;
-		film->RL = filmCenter - cy * film->heigh * 0.5 + cx * film->width * 0.5;
-		*/
+		ProjectiveCamera(pFilm, position, pCz, pCx, pCy, pFovy, dis) {
+		//Initialize();
 	}
 
 	Ray GenerateRay(int pixelX, int pixelY, const Vec2 &u, real offset) const override {
-		Vec3 dir = cx * ((pixelX + u.x) / film->resX - 0.5f) * film->width +
-			cy * (-(pixelY + u.y) / film->resY + 0.5f) * film->heigh + cz * filmDistance;
-		dir = dir.Norm();
+		//Vec3 dir = cx * ((pixelX + u.x) / film->resX - 0.5f) * film->width +
+		//	cy * (-(pixelY + u.y) / film->resY + 0.5f) * film->heigh + cz * filmDistance;
 
+		Vec3 sampledPos = RasterToWorld(Vec3(pixelX + u.x, pixelY + u.y, 0));
+
+		Vec3 dir = (sampledPos - pos).Norm();
 		return Ray(pos + dir * offset, dir, Inf, 0);
 	}
 
@@ -64,9 +52,9 @@ public:
 		return filmDistance * filmDistance / (filmArea * cos2Theta * cosTheta);
 	}
 private:
-	Vec3 pos, cx, cy, cz;
-	real fovy;
-	real filmDistance;
+	//Vec3 pos, cx, cy, cz;
+	//real fovy;
+	//real filmDistance;
 
 };
 

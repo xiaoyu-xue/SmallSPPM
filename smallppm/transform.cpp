@@ -117,14 +117,21 @@ Transform Transform::Orthographic(real zNear, real zFar) {
 	return Scale(1, 1, 1 / (zFar - zNear)) * Translate(Vector3(0, 0, -zNear));
 }
 
-Transform Transform::Perspective(real fov, real n, real f) {
-	// Perform projective divide for perspective projection
-	Matrix4 persp(1, 0, 0, 0, 
-				  0, 1, 0, 0, 
-				  0, 0, f / (f - n), -f * n / (f - n),
-				  0, 0, 1, 0);
+Transform Transform::Perspective(real fovy, real aspect, real dis, real n, real f) {
 
-	// Scale canonical perspective view to specified field of view
-	real invTanAng = 1 / std::tan(Radians(fov) / 2);
-	return Scale(invTanAng, invTanAng, 1) * Transform(persp);
+	real t = dis * std::tan(Radians(fovy) * 0.5);
+	real r = t * aspect;
+	//NDC x in [-1, 1], y in [-1, 1], z in [-1, 1]
+	//Matrix4 persp(dis / r, 0, 0, 0,
+	//			  0, dis / t, 0, 0,
+	//			  0, 0, (f + n) / (f - n), -2 * f * n / (f - n),
+	//			  0, 0, 1, 0);
+
+	//NDC x in [-1, 1], y in [-1, 1], z in [0, 1]
+	//We use unstandard NDC since z in [0, 1] is more natural
+	Matrix4 persp(dis / r, 0, 0, 0,
+				0, dis / t, 0, 0,
+				0, 0, f / (f - n), - f * n / (f - n),
+				0, 0, 1, 0);
+	return Transform(persp, Inverse(persp));
 }

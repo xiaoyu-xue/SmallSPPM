@@ -11,6 +11,7 @@ NAMESPACE_BEGIN
 class AreaLight : public Light {
 public:
 	AreaLight(const std::shared_ptr<Shape>& pShape) : shape(pShape) {}
+	AreaLight(const std::shared_ptr<Shape>& pShape, const Vec3 & Lemit) : shape(pShape), Lemit(Lemit) {}
 	Vec3 DirectIllumination(const Intersection &isect, const std::shared_ptr<BSDF> &bsdf,
 		const Vec3 &importance, Vec3 *dir, Intersection *lightPoint, const Vec2 &u) const override {
 		real pdf;
@@ -19,7 +20,7 @@ public:
 		*lightPoint = shape->Sample(isect, &pdf, u);
 		*dir = (lightPoint->hit - isect.hit).Norm();
 		Vec3 f = bsdf->f(isect.wo, *dir);
-		return importance * f * std::abs((*dir).Dot(isect.n)) * Emission() / pdf;
+		return importance * f * std::abs((*dir).Dot(isect.n)) * Emission(*lightPoint, *dir) / pdf;
 	}
 
 	Vec3 Sample_Li(const Intersection &isect, Vec3 *wi, real *pdf, Intersection *lightPoint, const Vec2 &u) const override {
@@ -27,7 +28,7 @@ public:
 		//lightPoint->n = lightPoint->nl = shape->GetNorm(lightPoint->hit);
 		*lightPoint = shape->Sample(isect, pdf, u);
 		*wi = (lightPoint->hit - isect.hit).Norm();
-		return Emission();
+		return Emission(*lightPoint, -*wi);
 	}
 
 	real Pdf_Li(const Intersection &isect, const Vec3 &wi) const override {
@@ -35,7 +36,13 @@ public:
 	}
 
 	Vec3 Emission() const override {
-		return shape->GetEmission();
+		return Lemit;
+	}
+
+	Vec3 Emission(const Intersection &isect, const Vec3 &w) const override {
+		if (Dot(isect.n, w) > 0) return Lemit;
+		else return Vec3(0, 0, 0);
+		//return Lemit;
 	}
 
 	int GetId() const override {
@@ -74,6 +81,7 @@ protected:
 	}
 private:
 	std::shared_ptr<Shape> shape;
+	Vec3 Lemit;
 };
 
 NAMESPACE_END
