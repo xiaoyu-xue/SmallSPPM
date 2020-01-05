@@ -6,8 +6,49 @@
 #include "scalar.h"
 #include "transform.h"
 #include "sampling.h"
+#include "microfacet.h"
 
 NAMESPACE_BEGIN
+
+namespace BSDFCoordinate {
+	FORCE_INLINE real CosTheta(const Vec3& w) { return w.z; }
+
+	FORCE_INLINE real Cos2Theta(const Vec3& w) { return w.z * w.z; }
+
+	FORCE_INLINE real AbsCosTheta(const Vec3& w) { return std::abs(w.z); }
+
+	FORCE_INLINE real Sin2Theta(const Vec3& w) {
+		return std::max((real)0, (real)1 - Cos2Theta(w));
+	}
+	FORCE_INLINE real SinTheta(const Vec3& w) { return std::sqrt(Sin2Theta(w)); }
+
+	FORCE_INLINE real TanTheta(const Vec3& w) { return SinTheta(w) / CosTheta(w); }
+
+	FORCE_INLINE real Tan2Theta(const Vec3& w) {
+		return Sin2Theta(w) / Cos2Theta(w);
+	}
+
+	FORCE_INLINE real CosPhi(const Vec3& w) {
+		real sinTheta = SinTheta(w);
+		return (sinTheta == 0) ? 1 : Clamp(w.x / sinTheta, -1, 1);
+	}
+
+	FORCE_INLINE real SinPhi(const Vec3& w) {
+		real sinTheta = SinTheta(w);
+		return (sinTheta == 0) ? 0 : Clamp(w.y / sinTheta, -1, 1);
+	}
+
+	FORCE_INLINE real Cos2Phi(const Vec3& w) { return CosPhi(w) * CosPhi(w); }
+
+	FORCE_INLINE real Sin2Phi(const Vec3& w) { return SinPhi(w) * SinPhi(w); }
+
+	FORCE_INLINE real CosDPhi(const Vec3& wa, const Vec3& wb) {
+		return Clamp(
+			(wa.x * wb.x + wa.y * wb.y) / std::sqrt((wa.x * wa.x + wa.y * wa.y) *
+			(wb.x * wb.x + wb.y * wb.y)),
+			-1, 1);
+	}
+}
 
 class BSDF {
 public:
@@ -38,27 +79,47 @@ public:
 protected:
 	const Vec3 n, nl;
 	const Vec3 ss, ts;
-	//Transform LocalToWorld, WorldToLocal;
+	static constexpr int MaxBSDFs = 8;
+	std::shared_ptr<BxDF> bxdfs[MaxBSDFs];
+
 };
 
-class DiffuseBSDF : public BSDF {
-public:
-	DiffuseBSDF(const Intersection &isect, Vec3 r) : BSDF(isect), R(r) {}
+class BxDF {
+	virtual ~BxDF(){}
+	virtual real Pdf(const Vec3& wo, const Vec3& wi) const = 0;
+	virtual Vec3 Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec3& rand = Vec3(0, 0, 0)) const = 0;
+	virtual Vec3 f(const Vec3& wo, const Vec3& wi) const = 0;
+};
 
-	real Pdf(const Vec3 &wo, const Vec3 &wi) const override {
-		return std::abs(wi.Dot(nl)) * INV_PI;
+class DiffuseBSDF : public BxDF {
+public:
+	DiffuseBSDF(const Intersection &isect, Vec3 r) : BxDF(isect), R(r) {}
+
+	//real Pdf(const Vec3 &wo, const Vec3 &wi) const override {
+	//	return std::abs(wi.Dot(nl)) * INV_PI;
+	//}
+
+	real Pdf(const Vec3& wo, const Vec3& wi) const override {
+		return SameHemisphere(wo, wi) ? BSDFCoordinate::AbsCosTheta(wi) * INV_PI : 0.f;
 	}
 
-	Vec3 Sample_f(const Vec3 &wo, Vec3 *wi, real *pdf, const Vec3 &rand) const override {
-		//real r1 = 2.f * PI * rand[0], r2 = rand[1];
-		//real r2s = sqrt(r2);
-		//Vec3 w = nl, u = ((fabs(w.x) > .1f ? Vec3(0, 1, 0) : Vec3(1, 0, 0)).Cross(w)).Norm();
-		//Vec3 v = w.Cross(u);
-		//*wi = (u* cos(r1) * r2s + v * sin(r1) * r2s + w * sqrt(1 - r2)).Norm();
+	//Vec3 Sample_f(const Vec3 &wo, Vec3 *wi, real *pdf, const Vec3 &rand) const override {
+	//	//real r1 = 2.f * PI * rand[0], r2 = rand[1];
+	//	//real r2s = sqrt(r2);
+	//	//Vec3 w = nl, u = ((fabs(w.x) > .1f ? Vec3(0, 1, 0) : Vec3(1, 0, 0)).Cross(w)).Norm();
+	//	//Vec3 v = w.Cross(u);
+	//	//*wi = (u* cos(r1) * r2s + v * sin(r1) * r2s + w * sqrt(1 - r2)).Norm();
 
 
-		Vec3 wiLocal = CosineSampleHemisphere(Vec2(rand[0], rand[1]));
-		*wi = LocalToWorld(wiLocal);
+	//	Vec3 wiLocal = CosineSampleHemisphere(Vec2(rand[0], rand[1]));
+	//	*wi = LocalToWorld(wiLocal);
+	//	*pdf = Pdf(wo, *wi);
+	//	return f(wo, *wi);
+	//}
+
+	Vec3 Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec3& rand) const override {
+
+		*wi = CosineSampleHemisphere(Vec2(rand[0], rand[1]));
 		*pdf = Pdf(wo, *wi);
 		return f(wo, *wi);
 	}
@@ -70,18 +131,27 @@ private:
 	Vec3 R;
 };
 
-class SpecularBSDF : public BSDF {
+class SpecularBSDF : public BxDF {
 public:
-	SpecularBSDF(const Intersection &isect, Vec3 r = Vec3(1.0, 1.0, 1.0)) : BSDF(isect), R(r) {}
+	/*SpecularBSDF(const Intersection &isect, Vec3 r = Vec3(1.0, 1.0, 1.0)) : BxDF(isect), R(r) {}*/
+
+	SpecularBSDF(Vec3 r = Vec3(1.0, 1.0, 1.0)) : R(r) {}
 
 	real Pdf(const Vec3 &wo, const Vec3 &wi) const override {
 		return 0.0;
 	}
 
-	Vec3 Sample_f(const Vec3 &wo, Vec3 *wi, real *pdf, const Vec3 &rand) const override {
-		*wi = (nl * 2.0 * nl.Dot(wo) - wo).Norm();
+	//Vec3 Sample_f(const Vec3 &wo, Vec3 *wi, real *pdf, const Vec3 &rand) const override {
+	//	*wi = (nl * 2.0 * nl.Dot(wo) - wo).Norm();
+	//	*pdf = 1.0;
+	//	real cosTheta = std::abs((*wi).Dot(n));
+	//	return R / cosTheta;
+	//}
+
+	Vec3 Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec3& rand) const override {
+		*wi = Vec3(-wo.x, -wo.y, wo.z);
 		*pdf = 1.0;
-		real cosTheta = std::abs((*wi).Dot(n));
+		real cosTheta = BSDFCoordinate::AbsCosTheta(*wi);
 		return R / cosTheta;
 	}
 
@@ -89,10 +159,12 @@ public:
 		return Vec3();
 	}
 
-	bool IsDelta() const override { return true; }
+	//bool IsDelta() const override { return true; }
 private:
 	Vec3 R;
 };
+
+//TODO
 
 class TransmissionBSDF : public BSDF {
 public:
@@ -237,5 +309,56 @@ private:
 	TransportMode transportMode;
 };
 
+
+class MicrofacetReflectionBSDF : public BSDF {
+public:
+	MicrofacetReflectionBSDF(const Intersection &isect, MicrofacetDistribution* distribution, const Vec3& R) :
+		BSDF(isect), distribution(distribution), R(R) {
+
+	}
+
+	real Pdf(const Vec3& wo, const Vec3& wi) const override {
+		Vec3 woLocal = WorldToLocal(wo);
+		Vec3 wiLocal = WorldToLocal(wi);
+		if (!SameHemisphere(woLocal, wiLocal)) return 0;
+		Vector3f wh = (woLocal + wiLocal).Norm();
+		return distribution->Pdf(woLocal, wh) / (4 * Dot(woLocal, wh));
+	}
+
+	Vec3 Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec3& rand) const override {
+		Vec3 woLocal = WorldToLocal(wo);
+		if (woLocal.z == 0) return 0.;
+		Vector3f wh = distribution->Sample_wh(woLocal, Vec2(rand[0], rand[1]));
+		Vec3 wiLocal = Reflect(woLocal, wh);
+		if (!SameHemisphere(woLocal, wiLocal)) return Vec3(0, 0, 0);
+
+		// Compute PDF of _wi_ for microfacet reflection
+		*pdf = distribution->Pdf(woLocal, wh) / (4 * Dot(woLocal, wh));
+		*wi = LocalToWorld(wiLocal);
+		return f(woLocal, wiLocal);
+	}
+
+	Vec3 f(const Vec3& wo, const Vec3& wi) const override {
+		Vec3 woLocal = WorldToLocal(wo);
+		Vec3 wiLocal = WorldToLocal(wi);
+
+		real cosThetaO = std::abs(CosTheta(woLocal)), cosThetaI = std::abs(CosTheta(wiLocal));
+		Vec3 wh = wiLocal + woLocal;
+		// Handle degenerate cases for microfacet reflection
+		if (cosThetaI == 0 || cosThetaO == 0) return Vec3(0, 0, 0);
+		if (wh.x == 0 && wh.y == 0 && wh.z == 0) return Vec3(0, 0, 0);
+		Normalize(wh);
+		//Spectrum F = fresnel->Evaluate(Dot(wi, wh));
+		//return R * distribution->D(wh) * distribution->G(wo, wi) * F /
+		//	(4 * cosThetaI * cosThetaO);
+		return R * distribution->D(wh) * distribution->G(woLocal, wiLocal, wh) /
+			(4 * cosThetaI * cosThetaO);
+	}
+
+	bool IsDelta() const override { return false; }
+private:
+	std::unique_ptr<MicrofacetDistribution> distribution;
+	Vec3 R;
+};
 
 NAMESPACE_END

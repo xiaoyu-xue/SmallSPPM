@@ -6,6 +6,7 @@
 #include "mirror.h"
 #include "glass.h"
 #include "arealight.h"
+#include "roughness.h"
 #include "constant_texture.h"
 #include "triangle.h"
 
@@ -308,10 +309,22 @@ public:
 		scene->AddPrimitive(glassBall);
 
 		//Diffuse Ball
-		std::shared_ptr<Shape> diffuseBallShape = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 0.35f, Vec3(-0.5f, -0.6f, -0.3f)));
-		std::shared_ptr<Material> diffuseBallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
-		std::shared_ptr<Primitive> diffuseBall = std::shared_ptr<Primitive>(new GeometryPrimitive(diffuseBallShape, diffuseBallMaterial));
-		scene->AddPrimitive(diffuseBall);
+		//std::shared_ptr<Shape> diffuseBallShape = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 0.35f, Vec3(-0.5f, -0.6f, -0.3f)));
+		//std::shared_ptr<Material> diffuseBallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
+		//std::shared_ptr<Primitive> diffuseBall = std::shared_ptr<Primitive>(new GeometryPrimitive(diffuseBallShape, diffuseBallMaterial));
+		//scene->AddPrimitive(diffuseBall);
+
+		//Mirror Ball
+		//std::shared_ptr<Shape> mirrorBallShape = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 0.35f, Vec3(-0.5f, -0.6f, -0.3f)));
+		//std::shared_ptr<Material> mirrorBallMaterial = std::shared_ptr<Material>(new MirrorMaterial(fullWhiteConstant));
+		//std::shared_ptr<Primitive> mirrorBall = std::shared_ptr<Primitive>(new GeometryPrimitive(mirrorBallShape, mirrorBallMaterial));
+		//scene->AddPrimitive(mirrorBall);
+
+		//Roughness Ball
+		std::shared_ptr<Shape> roughBallShape = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 0.35f, Vec3(-0.5f, -0.6f, -0.3f)));
+		std::shared_ptr<Material> roughBallMaterial = std::shared_ptr<Material>(new RoughnessMaterial(fullWhiteConstant, 0.0008));
+		std::shared_ptr<Primitive> roughBall = std::shared_ptr<Primitive>(new GeometryPrimitive(roughBallShape, roughBallMaterial));
+		scene->AddPrimitive(roughBall);
 
 		//Light
 		Vec3 lightP0 = Vec3(0.25f, 0.965, 0.25f);

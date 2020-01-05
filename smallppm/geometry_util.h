@@ -21,6 +21,15 @@ FORCE_INLINE Vec3 Reflect(const Vec3 &inDir, const Vec3 &n) {
 	return 2.f * inDir.Dot(n) * n - inDir;
 }
 
+
+FORCE_INLINE Vec3 SphericalDirection(real sinTheta, real cosTheta, real phi) {
+	return Vec3(sinTheta * std::cos(phi), sinTheta * std::sin(phi), cosTheta);
+}
+
+FORCE_INLINE bool SameHemisphere(const Vec3& w, const Vec3& wp) {
+	return w.z * wp.z > 0;
+}
+
 FORCE_INLINE Vec3 OffsetRayOrigin(const Vec3 &p, const Vec3 &pError,
 	const Vec3 &n, const Vec3 &w) {
 	real d = Dot(Abs(n), pError);

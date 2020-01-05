@@ -47,7 +47,7 @@
 
 //const real ALPHA = 0.66666667;
 const real ALPHA = 0.75;
-const int64  render_stage_number = 500000;
+const int64  render_stage_number = 20000;
 
 void TestSppm(int argc, char* argv[]) {
 	//clock_t begin = clock();
@@ -439,7 +439,7 @@ void TestSPPM4(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("cornellboxBSDF6.bmp");
+	film->SetFileName("cornellboxBSDF_GGX5.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
 	clock_t end = clock();

@@ -173,6 +173,7 @@
     <ClCompile Include="linagl.cpp" />
     <ClCompile Include="lowdiscrepency.cpp" />
     <ClCompile Include="memory.cpp" />
+    <ClCompile Include="microfacet.cpp" />
     <ClCompile Include="primitive.cpp" />
     <ClCompile Include="ray.cpp" />
     <ClCompile Include="sampler.cpp" />
@@ -221,6 +222,7 @@
     <ClInclude Include="ray.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="rng.h" />
+    <ClInclude Include="roughness.h" />
     <ClInclude Include="sampler.h" />
     <ClInclude Include="sampler_enum.h" />
     <ClInclude Include="sampling.h" />

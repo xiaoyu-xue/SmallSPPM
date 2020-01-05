@@ -109,6 +109,9 @@
     <Filter Include="Source Files\system">
       <UniqueIdentifier>{99fa6f3a-3c3b-47a3-b472-9d8a73c85c66}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\bsdf">
+      <UniqueIdentifier>{5840c55f-7532-47a6-870d-031fd6ff2327}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sampler.cpp">
@@ -155,6 +158,9 @@
     </ClCompile>
     <ClCompile Include="memory.cpp">
       <Filter>Source Files\system</Filter>
+    </ClCompile>
+    <ClCompile Include="microfacet.cpp">
+      <Filter>Source Files\bsdf</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -310,6 +316,9 @@
     </ClInclude>
     <ClInclude Include="microfacet.h">
       <Filter>Header Files\bsdf</Filter>
+    </ClInclude>
+    <ClInclude Include="roughness.h">
+      <Filter>Header Files\material</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
