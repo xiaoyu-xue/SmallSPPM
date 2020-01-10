@@ -40,18 +40,31 @@ protected:
 
 class GGXDistribution : public MicrofacetDistribution {
 public:
-	GGXDistribution(real alpha, bool samplevis = false) : MicrofacetDistribution(samplevis), alpha(alpha) {
+	GGXDistribution(real alpha, bool samplevis = false) : MicrofacetDistribution(samplevis), alphax(alpha), alphay(alpha) {
 
 	}
+
+	GGXDistribution(real alphax, real alphay, bool samplevis = false) : MicrofacetDistribution(samplevis), alphax(alphax), alphay(alphay) {
+
+	}
+
 	real D(const Vec3& wh) const;
 	real G1(const Vec3& v, const Vec3 &wh) const;
 	real G(const Vec3& wo, const Vec3& wi, const Vec3 &wh) const;
 	Vec3 Sample_wh(const Vec3& wo, const Vec2& u) const;
-	real Lambda(const Vec3& w) const {
-		return 0;
+	real Lambda(const Vec3& w) const;
+
+	static inline real RoughnessToAlpha(real roughness) {
+		roughness = std::max(roughness, (real)1e-3);
+		real x = std::log(roughness);
+		return 1.62142f + 0.819955f * x + 0.1734f * x * x + 0.0171201f * x * x * x +
+			0.000640711f * x * x * x * x;
 	}
+
+	Vec3 SampleGGXVNDF(const Vec3& v, const Vec2& u) const;
+
 private:
-	real alpha;
+	real alphax, alphay;
 };
 
 NAMESPACE_END

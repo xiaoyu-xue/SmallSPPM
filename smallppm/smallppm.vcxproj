@@ -166,6 +166,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AABB.cpp" />
+    <ClCompile Include="bsdf.cpp" />
     <ClCompile Include="debug_utils.cpp" />
     <ClCompile Include="efloat.cpp" />
     <ClCompile Include="intersection.cpp" />

@@ -162,6 +162,9 @@
     <ClCompile Include="microfacet.cpp">
       <Filter>Source Files\bsdf</Filter>
     </ClCompile>
+    <ClCompile Include="bsdf.cpp">
+      <Filter>Source Files\bsdf</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lowdiscrepency.h">

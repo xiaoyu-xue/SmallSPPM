@@ -661,6 +661,15 @@ FORCE_INLINE Vector<dim, T, ISE> Abs(const Vector<dim, T, ISE> &a) {
 	return ret;
 }
 
+template<int dim, typename T, IntrinsicSet ISE>
+FORCE_INLINE Vector<dim, T, ISE> Sqrt(const Vector<dim, T, ISE>& a) {
+	Vector<dim, T, ISE> ret;
+	for (int i = 0; i < dim; ++i) {
+		ret.d[i] = std::sqrt(a.d[i]);
+	}
+	return ret;
+}
+
 using Vector2 = Vector<2, real, defaultInstructionSet>;
 using Vector2i = Vector<2, int, defaultInstructionSet>;
 using Vector2f = Vector<2, float, defaultInstructionSet>;
