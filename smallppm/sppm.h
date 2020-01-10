@@ -24,9 +24,9 @@ struct HPoint {
 class SPPM : public Integrator {
 public:
 	SPPM(int iterations, int nPhotonsPerStage, int maxDepth, real initialRadius, real alpha, bool batchShrink, const std::shared_ptr<Sampler> &pSampler,
-		const std::shared_ptr<SamplerEnum> &pSmplerEnum) :
+		const std::shared_ptr<SamplerEnum> &pSmplerEnum, bool traceGlossyRay = false) :
 		nIterations(iterations), nPhotonsPerRenderStage(nPhotonsPerStage), batchShrink(batchShrink),
-		maxDepth(maxDepth), initialRadius(initialRadius), alpha(alpha), sampler(pSampler), samplerEnum(pSmplerEnum)
+		maxDepth(maxDepth), initialRadius(initialRadius), alpha(alpha), sampler(pSampler), samplerEnum(pSmplerEnum), traceGlossyRay(traceGlossyRay)
 	{
 
 	}
@@ -107,6 +107,17 @@ public:
 				//r = Ray(isect.hit, wi, Inf, isect.rayEps);
 				r = isect.SpawnRay(wi);
 				deltaBoundEvent = true;
+			}
+			else if (traceGlossyRay && bsdf->MatchScatterType(ScatterEventType::BSDF_GLOSSY) && i < maxDepth - 1) {
+				//Trace the ray, when bsdf is glossy
+				//But this is not standard photon mapping
+				HPoint& hp = hitPoints[pixel];
+				Vec3 Ld = importance * DirectIllumination(scene, isect, bsdf, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()));
+				directillum[hp.pix] = directillum[hp.pix] + Ld;
+				Vec3 f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec3(rand(), rand(), rand()));
+				importance = f * std::abs(wi.Dot(isect.n)) * importance / pdf;
+				r = isect.SpawnRay(wi);
+				deltaBoundEvent = false;
 			}
 			else {
 				HPoint &hp = hitPoints[pixel];
@@ -361,6 +372,7 @@ private:
 	const int64 nPhotonsPerRenderStage;
 	const real alpha;
 	bool batchShrink;
+	bool traceGlossyRay;
 };
 
 NAMESPACE_END

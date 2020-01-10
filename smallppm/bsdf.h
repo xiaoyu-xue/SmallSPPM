@@ -84,8 +84,6 @@ public:
 	Vec3 Evaluate(real cosThetaI) const {
 		return FrConductor(std::abs(cosThetaI), etaI, etaT, k);
 	}
-
-
 private:
 	Vec3 etaI, etaT, k;
 };
@@ -122,6 +120,7 @@ public:
 	bool IsDelta() const { 
 		return isDelta;
 	}
+	bool MatchScatterType(ScatterEventType flag) const;
 protected:
 	const Vec3 n, nl;
 	const Vec3 ss, ts;

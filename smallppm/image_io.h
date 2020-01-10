@@ -1,4 +1,8 @@
 #pragma once
+
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+
 #include "utils.h"
 #include "linagl.h"
 #include <vector>
@@ -6,6 +10,7 @@
 #include "scalar.h"
 #include <fstream>
 #include <stb/stb_image.h>
+#include <stb/stb_image_write.h>
 
 NAMESPACE_BEGIN
 
@@ -91,7 +96,37 @@ public:
 	}
 
 	static void WriteImage(const std::string& filename, const std::vector<Vec3>& image, uint32 resX, uint32 resY, real gamma = 2.2) {
-
+		static const int channels = 3;
+		std::string suffix = filename.substr(filename.length() - 4);
+		if (suffix == ".hdr") {
+			std::vector<float> dataToWrite(resX * resY * channels);
+			for (int y = 0; y < resY; ++y) {
+				for (int x = 0; x < resX; ++x) {
+					for (int k = 0; k < channels; ++k) {
+						int idx = y * resX + x;
+						dataToWrite[idx * channels + k] = image[idx][k];
+					}
+				}
+			}
+			stbi_write_hdr(filename.c_str(), resX, resY, channels, &dataToWrite[0]);
+		}
+		else {
+			std::vector<unsigned char> dataToWrite(resX * resY * channels);
+			for (int y = 0; y < resY; ++y) {
+				for (int x = 0; x < resX; ++x) {
+					for (int k = 0; k < channels; ++k) {
+						int idx = y * resX + x;
+						dataToWrite[idx * channels + k] = unsigned char(toInt(image[idx][k]));
+					}
+				}
+			}
+			if (suffix == ".bmp") {
+				stbi_write_bmp(filename.c_str(), resX, resY, channels, &dataToWrite[0]);
+			}
+			else if (suffix == ".png") {
+				stbi_write_png(filename.c_str(), resX, resY, channels, &dataToWrite[0], channels * resX);
+			}
+		}
 	}
 
 };

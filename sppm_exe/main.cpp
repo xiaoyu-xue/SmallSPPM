@@ -439,7 +439,7 @@ void TestSPPM4(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("cornellboxBSDF_Test10.bmp");
+	film->SetFileName("cornellboxBSDF_Test12.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
 	clock_t end = clock();

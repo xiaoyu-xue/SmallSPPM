@@ -107,4 +107,12 @@ Vec3 BSDF::f(const Vec3& wo, const Vec3& wi, ScatterEventType flags) const{
 	return f;
 }
 
+
+bool BSDF::MatchScatterType(ScatterEventType flag) const {
+	int ret = 0;
+	for (int i = 0; i < nBSDFs; ++i) {
+		ret |= (bxdfs[i]->scatterEventType & flag);
+	}
+	return ret > 0;
+}
 NAMESPACE_END

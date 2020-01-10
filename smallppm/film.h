@@ -77,16 +77,17 @@ public:
 	}
 
 	void SaveImage() {
-		std::string suffix = filename.substr(filename.size() - 4);
-		if (suffix == ".png") {
-			ImageIO::WritePngFile(filename, imageBuffer, resX, resY);
-		}
-		else if (suffix == ".bmp") {
-			ImageIO::WriteBmpFile(filename, imageBuffer, resX, resY);
-		}
-		else {
+		//std::string suffix = filename.substr(filename.size() - 4);
+		//if (suffix == ".png") {
+		//	ImageIO::WritePngFile(filename, imageBuffer, resX, resY);
+		//}
+		//else if (suffix == ".bmp") {
+		//	ImageIO::WriteBmpFile(filename, imageBuffer, resX, resY);
+		//}
+		//else {
 
-		}
+		//}
+		ImageIO::WriteImage(filename, imageBuffer, resX, resY);
 	}
 
 	/*void ConvertBmpToPng(std::string path) {
