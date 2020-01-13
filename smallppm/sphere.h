@@ -84,13 +84,18 @@ public:
 		Vec3 dpdu(-phiMax * pHit.y, phiMax * pHit.x, 0);
 		Vec3 dpdv = (thetaMax - thetaMin) * Vec3(pHit.z * cosPhi, pHit.z * sinPhi, -rad * std::sin(theta));
 		//CoordinateSystem(GetNorm(hit), &dpdu, &dpdv);
+
+		Intersection it(hit, n, nl, dpdu, dpdv, wo, pError);
+		it.SetShading(n, dpdu, dpdv);
 		if (ObjectToWorld) {
-			*isect = (*ObjectToWorld)(Intersection(hit, n, nl, dpdu, dpdv, wo, pError));
+			*isect = (*ObjectToWorld)(it);
 		}
 		else {
-			*isect = Intersection(hit, n, nl, dpdu, dpdv, wo, pError);
+			*isect = it;
 		}
+		isect->uv = Vec2(u, v);
 		*t = tHit;
+
 		return true;
 
 	}
@@ -336,7 +341,7 @@ private:
 	AABB aabb;
 	const real thetaMin = 0;
 	const real thetaMax = PI;
-	const real phiMax = PI;
+	const real phiMax = 2 * PI;
 };
 
 NAMESPACE_END

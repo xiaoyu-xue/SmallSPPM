@@ -6,6 +6,7 @@
 #include "sampling.h"
 #include "accelerator.h"
 #include "debug_utils.h"
+#include "mesh.h"
 
 
 NAMESPACE_BEGIN
@@ -68,6 +69,15 @@ public:
 		accelerator->SetPrimitives(primitives);
 	}
 
+	void AddMesh(Mesh &mesh, const Transform &transform) {
+		for (int i = 0; i < mesh.untransformedTriangles.size(); ++i) {
+			Triangle* triangle = new Triangle();
+			*triangle = mesh.untransformedTriangles[i];
+			triangle->SetTransform(transform);
+			std::shared_ptr<Shape> shape = std::shared_ptr<Shape>(triangle);
+			AddPrimitive(shape, mesh.material);
+		}
+	}
 	//bool Intersect(const Ray &r, real *t, Intersection *isect, std::shared_ptr<Shape> &hitObj) const {
 	//	int n = (int)shapes.size();
 	//	*t = Inf;

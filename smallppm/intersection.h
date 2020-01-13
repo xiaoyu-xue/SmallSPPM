@@ -12,8 +12,9 @@ class Primitive;
 
 class Intersection {
 public:
-	Vec3 hit, n, nl, wo;
+	Vec3 hit, n, nl, ng, wo;
 	Vec3 dpdu, dpdv;
+	Vec3 dpdus, dpdvs;
 	Vec2 uv;
 	real rayEps;
 	Vec3 pError;
@@ -23,15 +24,21 @@ public:
 
 	Intersection() { rayEps = 1e-3f; }
 
-	Intersection(const Vec3 &hit, const Vec3 &n, const Vec3 &nl, const Vec3 &wo, const Vec3 &pError):
-		hit(hit), n(n), nl(nl), wo(wo), pError(pError), rayEps(1e-3), primitive(nullptr){
+	Intersection(const Vec3 &hit, const Vec3 &ng, const Vec3 &nl, const Vec3 &wo, const Vec3 &pError):
+		hit(hit), ng(ng), nl(nl), wo(wo), pError(pError), rayEps(1e-3), primitive(nullptr){
 		bsdf = nullptr;
 	}
 
-	Intersection(const Vec3& hit, const Vec3& n, const Vec3& nl, 
+	Intersection(const Vec3& hit, const Vec3& ng, const Vec3& nl, 
 		const Vec3& dpdu, const Vec3& dpdv, const Vec3& wo, const Vec3& pError) :
-		hit(hit), dpdu(dpdu), dpdv(dpdv), n(n), nl(nl), wo(wo), pError(pError), rayEps(1e-3), primitive(nullptr) {
+		hit(hit), dpdu(dpdu), dpdv(dpdv), ng(ng), nl(nl), wo(wo), pError(pError), rayEps(1e-3), primitive(nullptr) {
 		bsdf = nullptr;
+	}
+
+	void SetShading(const Vec3& ns, const Vec3& dpdus, Vec3& dpdvs) {
+		n = ns;
+		this->dpdus = dpdus;
+		this->dpdvs = dpdvs;
 	}
 
 	void ComputeScatteringFunction(TransportMode mode = TransportMode::Radiance);

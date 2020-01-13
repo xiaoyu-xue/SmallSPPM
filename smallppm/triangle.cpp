@@ -66,15 +66,22 @@ bool Triangle::Intersect(const Ray& ray, Intersection* isect, real* t) const {
 		dpdv = (-du2 * dp1 + du1 * dp2) * invdet;
 	}
 
+	Vec3 ns = b0 * n0 + b1 * n1 + b2 * n2;
+	ns.Normalize();
+	Vec3 dpdus, dpdvs;
+	CoordinateSystem(ns, &dpdus, &dpdvs);
+
 	*t = tHit;
 	isect->hit = b0 * p0 + b1 * p1 + b2 * p2;
 	isect->uv = Vec2(u, v);
-	isect->n = faceNormal;
-	isect->nl = isect->n.Dot(ray.d) < 0 ? isect->n : isect->n * -1;
+	isect->ng = faceNormal;
+	isect->nl = isect->ng.Dot(ray.d) < 0 ? isect->ng : isect->ng * -1;
 	isect->dpdu = dpdu;
 	isect->dpdv = dpdv;
 	isect->wo = -ray.d;
 	isect->pError = gamma(7) * Vec3(xAbsSum, yAbsSum, zAbsSum);
+
+	isect->SetShading(ns, dpdus, dpdvs);
 
 	return true;
 }
@@ -118,8 +125,9 @@ Intersection Triangle::Sample(real* pdf, const Vec2& rand) const {
 	Vec2 b = UniformSampleTriangle(rand);
 	Intersection isect;
 	isect.hit = b[0] * p0 + b[1] * p1 + (1 - b[0] - b[1]) * p2;
-	isect.n = faceNormal;
+	isect.ng = faceNormal;
 	isect.nl = faceNormal;
+	isect.n = b[0] * n0 + b[1] * n1 + (1 - b[0] - b[1]) * n2;
 
 	Vec3 pAbsSum =
 		Abs(b[0] * p0) + Abs(b[1] * p1) + Abs((1 - b[0] - b[1]) * p2);

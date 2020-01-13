@@ -8,6 +8,7 @@
 #include <vector>
 #include "svpng.inc"
 #include "scalar.h"
+#include "array.h"
 #include <fstream>
 #include <stb/stb_image.h>
 #include <stb/stb_image_write.h>
@@ -93,6 +94,52 @@ public:
 
 	static int toInt(real x, real gamma = 2.2f) {
 		return int(pow(Clamp(x, 0.f, 1.f), 1 / gamma) * 255 + .5f);
+	}
+
+	static std::vector<Vec3> LoadImage(const std::string& filename, int resX, int resY) {
+		int channels;
+		float* data = stbi_loadf(filename.c_str(), &resX, &resY, &channels, 0);
+		std::vector<Vec3> image(resX * resY);
+		for (int y = 0; y < resY; ++y) {
+			for (int x = 0; x < resX; ++x) {
+				int idx = y * resX + x;
+				for (int k = 0; k < channels; ++k) {
+					image[idx][k] = data[idx * channels + k];
+				}
+			}
+		}
+		return image;
+	}
+
+	static Array2D<Vec3> LoadImage(const std::string& filename) {
+		int resX, resY, channels;
+		float* data = stbi_loadf(filename.c_str(), &resX, &resY, &channels, 0);
+		std::vector<Vec3> texture(resX * resY);
+		for (int y = 0; y < resY; ++y) {
+			for (int x = 0; x < resX; ++x) {
+				int idx = y * resX + x;
+				for (int k = 0; k < channels; ++k) {
+					texture[idx][k] = data[idx * channels + k];
+				}
+			}
+		}
+		return Array2D<Vec3>(texture, resY, resX);
+	}
+
+	static Array2D<Vec3> LoadTexture(std::string filename) {
+		int resX, resY, channels;
+		float* data = stbi_loadf(filename.c_str(), &resX, &resY, &channels, 0);
+		std::vector<Vec3> texture(resX * resY);
+		for (int y = 0; y < resY; ++y) {
+			for (int x = 0; x < resX; ++x) {
+				int idx_texture = y * resX + x;
+				int idx = (resY - 1 - y) * resX + x;
+				for (int k = 0; k < channels; ++k) {
+					texture[idx_texture][k] = data[idx * channels + k];
+				}
+			}
+		}
+		return Array2D<Vec3>(texture, resY, resX);
 	}
 
 	static void WriteImage(const std::string& filename, const std::vector<Vec3>& image, uint32 resX, uint32 resY, real gamma = 2.2) {

@@ -12,6 +12,11 @@ T1 Clamp(const T1& tVal, const T2& tMin, const T3& max)
 	return tVal;
 }
 
+template<typename T, typename V>
+V Lerp(T a, V x0, V x1) {
+	return (T(1) - a) * x0 + a * x1;
+}
+
 FORCE_INLINE real Radians(real deg) { return (PI / 180) * deg; }
 
 FORCE_INLINE real Degrees(real rad) { return (180 / PI) * rad; }

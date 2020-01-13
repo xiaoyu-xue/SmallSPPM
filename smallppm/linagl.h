@@ -168,9 +168,9 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 		VectorBase<dim__, T_, ISE_>(_mm_set_ps(w, z, y, x)) { }
 
 
-	FORCE_INLINE Vector(T *a) {
-		memcpy(&(this->d[0]), a, sizeof(T) * dim);
-	}
+	//FORCE_INLINE Vector(T *a) {
+	//	memcpy(&(this->d[0]), a, sizeof(T) * dim);
+	//}
 
 	
 	template<typename T_>
@@ -687,6 +687,8 @@ using Vector4d = Vector<4, double, defaultInstructionSet>;
 
 using Vec3 = Vector3;
 using Vec2 = Vector2;
+using Vec2i = Vector2i;
+using Vec2f = Vector2f;
 
 
 // FMA: a * b + c

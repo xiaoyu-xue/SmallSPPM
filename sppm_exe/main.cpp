@@ -439,7 +439,51 @@ void TestSPPM4(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("cornellboxBSDF_Test12.bmp");
+	film->SetFileName("cornellboxTexture6.bmp");
+	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
+	renderer->Render();
+	clock_t end = clock();
+	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+
+}
+
+
+void TestSPPM5(int argc, char* argv[]) {
+	clock_t begin = clock();
+
+	int resX = 1024, resY = 1024;
+	int nIterations = (argc == 2) ? atol(argv[1]) : 256;
+
+	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY));
+	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
+	Vec3 camPos(0, 0, 3);
+	Vec3 cz(0, 0, -1);
+	Vec3 cx = Vec3(1, 0, 0);
+	Vec3 cy = Vec3(0, 1, 0);
+	real filmDis = 1;
+	real fovy = 53.13010235415597f;
+
+	std::shared_ptr<Camera> camera = std::shared_ptr<Camera>(new PinHoleCamera(film, camPos, cz, cx, cy, fovy, filmDis));
+	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
+	std::shared_ptr<Sampler> haltonSampler = std::shared_ptr<Sampler>(new HaltonSampler(resX, resY));
+	std::shared_ptr<Sampler> regularHaltonSampler = std::shared_ptr<Sampler>(new RegularHaltonSampler());;
+	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
+	std::shared_ptr<SamplerEnum> haltonSamplerEnum = std::shared_ptr<SamplerEnum>(new HaltonEnum((unsigned)resX, (unsigned)resY));
+	real alpha = 0.66666667;
+	std::shared_ptr<Integrator> integrator =
+		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 50, 0.05, alpha, false, haltonSampler, haltonSamplerEnum));
+	fprintf(stderr, "Load Scene ...\n");
+
+	CornellBoxMesh::SetScene(scene);
+
+
+	//std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BruteForce());
+	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new KdTreeAccel(scene->GetPrimitives()));
+	scene->SetCamera(camera);
+	scene->SetAccelerator(accelerator);
+
+	scene->Initialize();
+	film->SetFileName("cornellboxMeshObj3.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
 	clock_t end = clock();
@@ -452,17 +496,10 @@ int main(int argc, char *argv[]) {
 	aabb = Union(Union(aabb, Vec3(-1, -2, -2)), Vec3(1, 2, 3));
 	std::cout << aabb << std::endl;
 
-	//TestSPPM3(argc, argv);
-	TestSPPM4(argc, argv);
-	//Shape *triangle = new Triangle(Vec3(5, 0, 0), Vec3(5, 10, 0), Vec3(-5, 0, 0), Vec3(0, 0, 1));
-	//Ray ray(Vec3(0, 0, 2), Vec3(0, 0, -1));
-	//Intersection isect;
-	//real t;
-	//if (triangle->Intersect(ray, &isect, &t)) {
-	//	std::cout << t << std::endl;
-	//	std::cout << isect.hit << std::endl;
-	//}
-
+	std::shared_ptr<Texture<Vec3>> imageTexture1 =
+		std::shared_ptr<Texture<Vec3>>(new ImageTexture<Vec3>("..\\texture_images\\checkboard.bmp"));
+	imageTexture1->Sample(Vec2(0.1, 0.2));
+	TestSPPM5(argc, argv);
 
 	//_CrtDumpMemoryLeaks();
 }

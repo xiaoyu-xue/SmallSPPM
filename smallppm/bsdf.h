@@ -92,7 +92,7 @@ class BxDF;
 class BSDF {
 public:
 	BSDF(const Intersection &isect) : 
-		n(isect.n), nl(isect.nl), ss(isect.dpdu.Norm()), ts(Cross(nl, ss)) {
+		n(isect.n), nl(isect.nl), ng(isect.ng), ss(isect.dpdus.Norm()), ts(Cross(n, ss)) {
 		//Vec3 ss, ts;
 		//CoordinateSystem(isect.nl, &ss, &ts);
 		//LocalToWorld = Transform(
@@ -122,7 +122,7 @@ public:
 	}
 	bool MatchScatterType(ScatterEventType flag) const;
 protected:
-	const Vec3 n, nl;
+	const Vec3 n, nl, ng;
 	const Vec3 ss, ts;
 	static constexpr int MaxBSDFs = 8;
 	std::shared_ptr<BxDF> bxdfs[MaxBSDFs];

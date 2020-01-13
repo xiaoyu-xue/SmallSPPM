@@ -112,6 +112,12 @@
     <Filter Include="Source Files\bsdf">
       <UniqueIdentifier>{5840c55f-7532-47a6-870d-031fd6ff2327}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\mesh">
+      <UniqueIdentifier>{801575a9-b6a1-48db-8614-e3f22b8d8d1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mesh">
+      <UniqueIdentifier>{48bee6f0-d373-412e-af79-3a62d1e4e5cf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sampler.cpp">
@@ -164,6 +170,9 @@
     </ClCompile>
     <ClCompile Include="bsdf.cpp">
       <Filter>Source Files\bsdf</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh.cpp">
+      <Filter>Source Files\mesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -322,6 +331,15 @@
     </ClInclude>
     <ClInclude Include="roughness.h">
       <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="array.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="image_texture.h">
+      <Filter>Header Files\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh.h">
+      <Filter>Header Files\mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
