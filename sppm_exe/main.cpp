@@ -483,7 +483,7 @@ void TestSPPM5(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("cornellboxMeshObj3.bmp");
+	film->SetFileName("cornellboxMeshObj9.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
 	clock_t end = clock();
@@ -492,13 +492,13 @@ void TestSPPM5(int argc, char* argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-	AABB aabb;
-	aabb = Union(Union(aabb, Vec3(-1, -2, -2)), Vec3(1, 2, 3));
-	std::cout << aabb << std::endl;
+	//AABB aabb;
+	//aabb = Union(Union(aabb, Vec3(-1, -2, -2)), Vec3(1, 2, 3));
+	//std::cout << aabb << std::endl;
 
-	std::shared_ptr<Texture<Vec3>> imageTexture1 =
-		std::shared_ptr<Texture<Vec3>>(new ImageTexture<Vec3>("..\\texture_images\\checkboard.bmp"));
-	imageTexture1->Sample(Vec2(0.1, 0.2));
+	//std::shared_ptr<Texture<Vec3>> imageTexture1 =
+	//	std::shared_ptr<Texture<Vec3>>(new ImageTexture<Vec3>("..\\texture_images\\checkboard.bmp"));
+	//imageTexture1->Sample(Vec2(0.1, 0.2));
 	TestSPPM5(argc, argv);
 
 	//_CrtDumpMemoryLeaks();

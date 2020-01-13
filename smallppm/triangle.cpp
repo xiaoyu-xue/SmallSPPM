@@ -4,8 +4,8 @@
 NAMESPACE_BEGIN
 
 bool Triangle::Intersect(const Ray& ray, Intersection* isect, real* t) const {
-	Vec3 e1 = p1 - p0;
-	Vec3 e2 = p2 - p0;
+	//Vec3 e1 = p1 - p0;
+	//Vec3 e2 = p2 - p0;
 	Vec3 s1 = Cross(ray.d, e2);
 	real divisor = Dot(s1, e1);
 
@@ -34,7 +34,6 @@ bool Triangle::Intersect(const Ray& ray, Intersection* isect, real* t) const {
 
 	real uvs[3][2];
 	GetUVs(uvs);
-
 
 	// Interpolate $(u,v)$ triangle parametric coordinates
 	real b0 = 1 - b1 - b2;
@@ -87,8 +86,8 @@ bool Triangle::Intersect(const Ray& ray, Intersection* isect, real* t) const {
 }
 
 bool Triangle::Intersect(const Ray& ray) const {
-	Vec3 e1 = p1 - p0;
-	Vec3 e2 = p2 - p0;
+	//Vec3 e1 = p1 - p0;
+	//Vec3 e2 = p2 - p0;
 	Vec3 s1 = Cross(ray.d, e2);
 	real divisor = Dot(s1, e1);
 

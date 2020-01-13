@@ -19,6 +19,7 @@ public:
 			this->uvs[1] = uvs[1];
 			this->uvs[2] = uvs[2];
 		}
+		Initialize();
 
 	}
 	Triangle(Transform* ObjectToWorld, Transform* WorldToObject,
@@ -34,6 +35,7 @@ public:
 			this->uvs[1] = uvs[1];
 			this->uvs[2] = uvs[2];
 		}
+		Initialize();
 	}
 
 	Triangle(Transform* ObjectToWorld, Transform* WorldToObject,
@@ -47,6 +49,7 @@ public:
 		this->uvs[0] = uv0;
 		this->uvs[1] = uv1;
 		this->uvs[2] = uv2;
+		Initialize();
 	}
 
 	bool Intersect(const Ray& r, Intersection* isect, real* t) const override;
@@ -78,6 +81,8 @@ public:
 		n1 = transform.TransformNormal(n1);
 		n2 = transform.TransformNormal(n2);
 		faceNormal = transform.TransformNormal(faceNormal);
+
+		Initialize();
 	}
 
 private:
@@ -95,10 +100,16 @@ private:
 
 	}
 
+	void Initialize() {
+		e1 = p1 - p0;
+		e2 = p2 - p0;
+	}
+
 	Vec3 p0, p1, p2;
 	Vec3 n0, n1, n2;
 	Vec3 faceNormal;
 	Vec2 uvs[3];
+	Vec3 e1, e2;
 };
 
 NAMESPACE_END

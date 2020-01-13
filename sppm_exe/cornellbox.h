@@ -480,10 +480,15 @@ public:
 		std::shared_ptr<Material> glassMeshMaterial = std::shared_ptr<Material>(new GlassMaterial(fullWhiteConstant, fullWhiteConstant));
 		std::shared_ptr<Material> diffuseMeshMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
 		std::shared_ptr<Mesh> mesh = std::shared_ptr<Mesh>(new Mesh());
-		mesh->LoadFromFile("..\\meshs\\bunny2.obj");
+		//mesh->LoadFromFile("..\\meshs\\bunny.obj");
+		//mesh->SetMaterial(glassMeshMaterial);
+		//Transform transform = Transform::Translate(Vec3(0, -1, 0)) * Transform::Scale(6.0, 6.0, 6.0);
+		//mesh->LoadFromFile("..\\meshs\\bunny2.obj");
+		//mesh->SetMaterial(glassMeshMaterial);
+		//Transform transform = Transform::Translate(Vec3(0, -0.65, 0)) * Transform::Scale(0.65, 0.65, 0.65);
+		mesh->LoadFromFile("..\\meshs\\bunny3.obj");
 		mesh->SetMaterial(glassMeshMaterial);
-		//Transform transform = Transform::Translate(Vec3(0, -1, 0)) * Transform::Scale(5.5, 5.5, 5.5);
-		Transform transform = Transform::Translate(Vec3(0, -0.6, 0)) * Transform::Scale(0.5, 0.5, 0.5);
+		Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
 		scene->AddMesh(*mesh, transform);
 
 		//Light
