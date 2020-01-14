@@ -160,8 +160,8 @@ private:
 	std::shared_ptr<Camera> camera;
 	std::unique_ptr<Distribution1D> lightPowerDistribution;
 	std::shared_ptr<Accelerator> accelerator;
-	int shapeNum;
-	int primitiveNum;
+	int64 shapeNum;
+	int64 primitiveNum;
 };
 
 NAMESPACE_END

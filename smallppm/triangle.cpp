@@ -131,6 +131,7 @@ Intersection Triangle::Sample(real* pdf, const Vec2& rand) const {
 	Vec3 pAbsSum =
 		Abs(b[0] * p0) + Abs(b[1] * p1) + Abs((1 - b[0] - b[1]) * p2);
 	isect.pError = gamma(6) * Vec3(pAbsSum.x, pAbsSum.y, pAbsSum.z);
+	isect.shapeId = shapeId;
 
 	*pdf = 1 / Area();
 

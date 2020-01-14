@@ -256,6 +256,7 @@ public:
 			//Trace eye_path
 			ParallelFor(0, resY, [&](int y) {
 				for (int x = 0; x < resX; x++) {
+					DEBUG_PIXEL(265, 625);
 					int pixel = x + y * resX;
 					hitPoints[pixel].used = false;
 					uint64 instance = samplerEnum->GetIndex(iter, x, y);

@@ -7,6 +7,10 @@ bool GeometryPrimitive::Intersect(const Ray& r, Intersection* isect, real* t) co
 	if (shape->Intersect(r, isect, t)) {
 		r.tMax = *t;
 		isect->primitive = this;
+		isect->shapeId = this->GetShape()->shapeId;
+		//DEBUG_PIXEL_IF() {
+		//	std::cout << shape->shapeId << ": " << "t " << *t << " ray.t: " << r.tMax << std::endl;
+		//}
 		return true;
 	}
 	return false;

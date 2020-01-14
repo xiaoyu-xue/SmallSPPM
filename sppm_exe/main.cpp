@@ -244,12 +244,14 @@ void TestSPPM3(int argc, char* argv[]) {
 		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 1.0, ALPHA, false, haltonSampler, haltonSamplerEnum));
 	fprintf(stderr, "Load Scene ...\n");
 
+	CornellBoxSphere::SetScene(scene);
+	//CornellBoxTriangle::SetScene(scene);
+
 	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BruteForce());
 	scene->SetCamera(camera);
 	scene->SetAccelerator(accelerator);
 
-	////CornellBoxSphere::SetScene(scene);
-	CornellBoxTriangle::SetScene(scene);
+
 
 	////texture
 	//std::shared_ptr<Texture> redConstant = std::shared_ptr<Texture>(new ConstantTexture(Vec3(.75f, .25f, .25f)));
@@ -361,7 +363,7 @@ void TestSPPM3(int argc, char* argv[]) {
 
 
 	scene->Initialize();
-	film->SetFileName("cornellbox49.bmp");
+	film->SetFileName("cornellbox50.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	renderer->Render();
 	clock_t end = clock();
@@ -500,6 +502,6 @@ int main(int argc, char *argv[]) {
 	//	std::shared_ptr<Texture<Vec3>>(new ImageTexture<Vec3>("..\\texture_images\\checkboard.bmp"));
 	//imageTexture1->Sample(Vec2(0.1, 0.2));
 	TestSPPM5(argc, argv);
-
+	//TestSPPM3(argc, argv);
 	//_CrtDumpMemoryLeaks();
 }

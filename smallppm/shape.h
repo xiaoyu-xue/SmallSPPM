@@ -42,13 +42,13 @@ public:
 
 	virtual Vec3 GetNorm(const Vec3 &point) const = 0;
 
-	int GetId() const { return shapeId; }
+	int64 GetId() const { return shapeId; }
 
 	virtual real Area() const = 0;
 
 	friend class Scene;
 
-	int shapeId;
+	int64 shapeId;
 protected:
 
 	const Transform* ObjectToWorld, * WorldToObject;

@@ -46,12 +46,16 @@ public:
 		}
 
 		tHit = (-vd - det) / d2;
-		if (tHit < r.tMin) {
+		if (tHit < r.tMin || tHit > r.tMax) {
 			tHit = (-vd + det) / d2;
 			if (tHit < r.tMin || tHit > r.tMax) {
 				return false;
 			}
 		}
+
+		//DEBUG_PIXEL_IF() {
+		//	std::cout << "Intersection function: tmax: " << r.tMax << " tHit: " << tHit << std::endl;
+		//}
 
 		//isect->hit = r.o + r.d * (*t);
 		//Vec3 scaledDir = (isect->hit - p) * rad / Distance(isect->hit, p);
@@ -125,7 +129,7 @@ public:
 			det = sqrt(det);
 		}
 		tHit = (-vd - det) / d2;
-		if (tHit < r.tMin) {
+		if (tHit < r.tMin || tHit > r.tMax) {
 			tHit = (-vd + det) / d2;
 			if (tHit < r.tMin || tHit > r.tMax) {
 				return false;
@@ -168,6 +172,7 @@ public:
 			isect.n = n;
 		}
 		isect.nl = nl;
+		isect.shapeId = shapeId;
 		return isect;
 	}
 
@@ -276,6 +281,7 @@ public:
 		ret.nl = ret.n;
 		//ret.pError = gamma(6) * Abs(pWorld) + gamma(6) * Abs(scaledDir);
 		ret.pError = gamma(5) * Abs(pWorld);
+		ret.shapeId = shapeId;
 		return ret;
 
 
