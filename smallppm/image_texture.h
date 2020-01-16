@@ -21,12 +21,12 @@ public:
 		texture(image), wrapMode(wrapMode), filterMode(filterMode) {
 	}
 
-	ImageTexture(const std::string &filename, WrapMode wrapMode = WrapMode::CLAMP, FilterMode filterMode = FilterMode::BILINEAR) :
+	ImageTexture(const std::string& filename, WrapMode wrapMode = WrapMode::CLAMP, FilterMode filterMode = FilterMode::BILINEAR) :
 		wrapMode(wrapMode), filterMode(filterMode) {
 		texture = ImageIO::LoadTexture(filename);
 	}
-	
-	T Sample(const Vec2 &coord) const override {
+
+	T Sample(const Vec2& coord) const override {
 		int resX = texture.res[1];
 		int resY = texture.res[0];
 		if (filterMode == FilterMode::BILINEAR) {

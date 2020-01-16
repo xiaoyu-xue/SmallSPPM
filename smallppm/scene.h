@@ -104,8 +104,8 @@ public:
 	//	return false;
 	//}
 
-	bool Intersect(const Ray& r, Intersection* isect, real* t) const {
-		return accelerator->Intersect(r, isect, t);
+	bool Intersect(const Ray& r, Intersection* isect) const {
+		return accelerator->Intersect(r, isect);
 	}
 
 	bool Intersect(const Ray& r) const {
@@ -141,6 +141,8 @@ public:
 	const std::vector<std::shared_ptr<Primitive>> GetPrimitives() const {
 		return primitives;
 	}
+
+	void QueryIntersectionInfo(const Ray& ray, Intersection* isect) const;
 
 private:
 

@@ -45,7 +45,7 @@ public:
 		//return Lemit;
 	}
 
-	int GetId() const override {
+	int64 GetId() const override {
 		return shape->GetId();
 	}
 

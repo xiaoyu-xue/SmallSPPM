@@ -167,8 +167,10 @@
   <ItemGroup>
     <ClCompile Include="AABB.cpp" />
     <ClCompile Include="bsdf.cpp" />
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="debug_utils.cpp" />
     <ClCompile Include="efloat.cpp" />
+    <ClCompile Include="image_io.cpp" />
     <ClCompile Include="intersection.cpp" />
     <ClCompile Include="kdtree_accel.cpp" />
     <ClCompile Include="linagl.cpp" />
@@ -176,13 +178,17 @@
     <ClCompile Include="memory.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="microfacet.cpp" />
+    <ClCompile Include="phinhole.cpp" />
     <ClCompile Include="primitive.cpp" />
     <ClCompile Include="ray.cpp" />
     <ClCompile Include="sampler.cpp" />
     <ClCompile Include="sampling.cpp" />
+    <ClCompile Include="scene.cpp" />
     <ClCompile Include="shape.cpp" />
+    <ClCompile Include="sppm.cpp" />
     <ClCompile Include="transform.cpp" />
     <ClCompile Include="triangle.cpp" />
+    <ClCompile Include="film.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="svpng.inc" />

@@ -79,7 +79,7 @@ public:
 		shape(shape), material(material), light(light) {
 
 	}
-	bool Intersect(const Ray& r, Intersection* isect, real* t) const;
+	bool Intersect(const Ray& r, Intersection* isect) const;
 
 	bool Intersect(const Ray& r) const;
 
@@ -104,6 +104,9 @@ public:
 	AABB WorldBound() const {
 		return shape->WorldBould();
 	}
+
+	void QueryIntersectionInfo(const Ray& ray, Intersection* isect) const;
+
 public:
 	std::shared_ptr<Shape> shape;
 	std::shared_ptr<Material> material;

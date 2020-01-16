@@ -85,6 +85,8 @@ public:
 		Initialize();
 	}
 
+	void QueryIntersectionInfo(const Ray& ray, Intersection* isct) const override;
+
 private:
 	void GetUVs(real uv[3][2]) const {
 		if (uvs == nullptr) {
@@ -103,14 +105,14 @@ private:
 	void Initialize() {
 		e1 = p1 - p0;
 		e2 = p2 - p0;
-		//real uvs[3][2];
-		//GetUVs(uvs);
-		//du1 = uvs[0][0] - uvs[2][0];
-		//du2 = uvs[1][0] - uvs[2][0];
-		//dv1 = uvs[0][1] - uvs[2][1];
-		//dv2 = uvs[1][1] - uvs[2][1];
-		//dp1 = p0 - p2;
-		//dp2 = p1 - p2;
+		real uvs[3][2];
+		GetUVs(uvs);
+		du1 = uvs[0][0] - uvs[2][0];
+		du2 = uvs[1][0] - uvs[2][0];
+		dv1 = uvs[0][1] - uvs[2][1];
+		dv2 = uvs[1][1] - uvs[2][1];
+		dp1 = p0 - p2;
+		dp2 = p1 - p2;
 	}
 
 	Vec3 p0, p1, p2;
@@ -119,13 +121,13 @@ private:
 	Vec2 uvs[3];
 	Vec3 e1, e2;
 
-//private:
-//	real du1; 
-//	real du2;
-//	real dv1;
-//	real dv2;
-//	Vec3 dp1;
-//	Vec3 dp2;
+private:
+	real du1; 
+	real du2;
+	real dv1;
+	real dv2;
+	Vec3 dp1;
+	Vec3 dp2;
 };
 
 NAMESPACE_END

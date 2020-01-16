@@ -222,7 +222,7 @@ retrySplit:
 		prims0, prims1 + nPrimitives, badRefines);
 }
 
-bool KdTreeAccel::Intersect(const Ray& ray, Intersection* isect, real* t) const {
+bool KdTreeAccel::Intersect(const Ray& ray, Intersection* isect) const {
 	// Compute initial parametric range of ray inside kd-tree extent
 	real tMin, tMax;
 	if (!bounds.Intersect(ray, &tMin, &tMax)) {
@@ -284,7 +284,7 @@ bool KdTreeAccel::Intersect(const Ray& ray, Intersection* isect, real* t) const 
 				const std::shared_ptr<Primitive>& p =
 					primitives[node->onePrimitive];
 				// Check one primitive inside leaf node
-				if (p->Intersect(ray, isect, t)) hit = true;
+				if (p->Intersect(ray, isect)) hit = true;
 			}
 			else {
 				for (int i = 0; i < nPrimitives; ++i) {
@@ -292,7 +292,7 @@ bool KdTreeAccel::Intersect(const Ray& ray, Intersection* isect, real* t) const 
 						primitiveIndices[node->primitiveIndicesOffset + i];
 					const std::shared_ptr<Primitive>& p = primitives[index];
 					// Check one primitive inside leaf node
-					if (p->Intersect(ray, isect, t)) hit = true;
+					if (p->Intersect(ray, isect)) hit = true;
 				}
 			}
 

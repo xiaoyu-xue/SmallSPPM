@@ -18,6 +18,7 @@ public:
 	Vec2 uv;
 	real rayEps;
 	Vec3 pError;
+	real b1, b2;
 	uint64 shapeId;
 	const Primitive *primitive;
 	//std::shared_ptr<BSDF> bsdf;

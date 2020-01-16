@@ -46,6 +46,8 @@ public:
 
 	virtual real Area() const = 0;
 
+	virtual void QueryIntersectionInfo(const Ray& ray, Intersection* isect) const {}
+
 	friend class Scene;
 
 	int64 shapeId;

@@ -1,4 +1,3 @@
-#include "svpng.inc"
 #include <math.h>  
 #include <stdlib.h> 
 #include <stdio.h>  
@@ -19,6 +18,7 @@
 #include "sampler_enum.h"
 #include "linagl.h"
 #include "scene.h"
+#include "film.h"
 #include "sphere.h"
 #include "integrator.h"
 #include "renderer.h"
@@ -451,7 +451,7 @@ void TestSPPM4(int argc, char* argv[]) {
 
 
 void TestSPPM5(int argc, char* argv[]) {
-	clock_t begin = clock();
+
 
 	int resX = 1024, resY = 1024;
 	int nIterations = (argc == 2) ? atol(argv[1]) : 256;
@@ -487,6 +487,7 @@ void TestSPPM5(int argc, char* argv[]) {
 	scene->Initialize();
 	film->SetFileName("cornellboxMeshObj9.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
+	clock_t begin = clock();
 	renderer->Render();
 	clock_t end = clock();
 	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;

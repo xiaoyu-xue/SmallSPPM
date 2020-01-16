@@ -4,7 +4,7 @@
 #include "def.h"
 #include <list>
 #include <algorithm>
-#include "scalar.h"
+//#include "scalar.h"
 
 NAMESPACE_BEGIN
 
@@ -44,7 +44,7 @@ public:
         const int align = alignof(std::max_align_t);
 #endif
 
-        assert(IsPowerOf2(align));
+        //assert(IsPowerOf2(align));
 
         nBytes = (nBytes + align - 1) & ~(align - 1);
         if (currentBlockPos + nBytes > currentAllocSize) {
@@ -78,6 +78,26 @@ public:
         currentBlockPos += nBytes;
         return ret;
     }
+
+	template <typename T>
+	T* Alloc(size_t n = 1, bool runConstructor = true) {
+		T* ret = (T*)Alloc(n * sizeof(T));
+		if (runConstructor)
+			for (size_t i = 0; i < n; ++i) new (&ret[i]) T();
+		return ret;
+	}
+
+	void Reset() {
+		currentBlockPos = 0;
+		availableBlocks.splice(availableBlocks.begin(), usedBlocks);
+	}
+
+	size_t TotalAllocated() const {
+		size_t total = currentAllocSize;
+		for (const auto& alloc : usedBlocks) total += alloc.first;
+		for (const auto& alloc : availableBlocks) total += alloc.first;
+		return total;
+	}
 private:
     MemoryArena(const MemoryArena&) = delete;
     MemoryArena& operator=(const MemoryArena&) = delete;

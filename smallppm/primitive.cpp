@@ -28,12 +28,12 @@ NAMESPACE_BEGIN
 //}
 
 
-bool Primitive::Intersect(const Ray& r, Intersection* isect, real* t) const {
-
-	if (shape->Intersect(r, isect, t)) {
-		r.tMax = *t;
+bool Primitive::Intersect(const Ray& r, Intersection* isect) const {
+	real t;
+	if (shape->Intersect(r, isect, &t)) {
+		r.tMax = t;
 		isect->primitive = this;
-		isect->shapeId = this->GetShape()->shapeId;
+		//isect->shapeId = this->GetShape()->shapeId;
 		return true;
 	}
 	return false;
@@ -48,6 +48,10 @@ void Primitive::ComputeScatteringFunction(Intersection* isect, MemoryArena& aren
 	if (material) {
 		material->ComputeScatteringFunction(isect, arena, mode);
 	}
+}
+
+void Primitive::QueryIntersectionInfo(const Ray& ray, Intersection* isect) const {
+	shape->QueryIntersectionInfo(ray, isect);
 }
 
 NAMESPACE_END

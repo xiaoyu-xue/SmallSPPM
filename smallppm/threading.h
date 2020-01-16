@@ -51,7 +51,7 @@ FORCE_INLINE int NumSystemCores() {
 	return std::max(1u, std::thread::hardware_concurrency());
 }
 
-int ThreadsNumber() {
+FORCE_INLINE int ThreadsNumber() {
 	return NumSystemCores();;
 }
 

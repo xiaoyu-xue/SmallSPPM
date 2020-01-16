@@ -15,11 +15,11 @@ public:
 
 	}
 
-	bool Intersect(const Ray& r, Intersection* isect, real* t) const override {
+	bool Intersect(const Ray& r, Intersection* isect) const override {
 		int n = (int)primitives.size();
 		bool intersected = false;
 		for (int i = 0; i < n; ++i) {
-			if (primitives[i]->Intersect(r, isect, t)) {
+			if (primitives[i]->Intersect(r, isect)) {
 				intersected = true;
 			}
 		}

@@ -23,7 +23,7 @@ public:
 	}
 	virtual Vec3 Sample_Li(const Intersection &isect, Vec3 *wi, real *pdf, Intersection *lightPoint, const Vec2 &u) const = 0;
 	virtual real Pdf_Li(const Intersection &isect, const Vec3 &wi) const = 0;
-	virtual int GetId() const = 0;
+	virtual int64 GetId() const = 0;
 	virtual Vec3 Power() const = 0;
 	virtual bool IsAreaLight() const { return false; }
 	virtual bool IsDeltaLight() const { return false; }
