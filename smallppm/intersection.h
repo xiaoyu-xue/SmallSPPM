@@ -20,7 +20,8 @@ public:
 	Vec3 pError;
 	uint64 shapeId;
 	const Primitive *primitive;
-	std::shared_ptr<BSDF> bsdf;
+	//std::shared_ptr<BSDF> bsdf;
+	BSDF* bsdf;
 
 	Intersection() { rayEps = 1e-3f; shapeId = -1;}
 
@@ -43,7 +44,7 @@ public:
 		this->dpdvs = dpdvs;
 	}
 
-	void ComputeScatteringFunction(TransportMode mode = TransportMode::Radiance);
+	void ComputeScatteringFunction(MemoryArena &arena, TransportMode mode = TransportMode::Radiance);
 
 	Ray SpawnTo(const Intersection &it) const {
 		Vec3 origin = OffsetRayOrigin(hit, pError, nl, it.hit - hit);

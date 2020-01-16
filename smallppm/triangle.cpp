@@ -39,7 +39,6 @@ bool Triangle::Intersect(const Ray& ray, Intersection* isect, real* t) const {
 	real b0 = 1 - b1 - b2;
 	real u = b0 * uvs[0][0] + b1 * uvs[1][0] + b2 * uvs[2][0];
 	real v = b0 * uvs[0][1] + b1 * uvs[1][1] + b2 * uvs[2][1];
-
 	real xAbsSum =
 		(std::abs(b0 * p0.x) + std::abs(b1 * p1.x) + std::abs(b2 * p2.x));
 	real yAbsSum =

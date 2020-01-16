@@ -58,7 +58,7 @@ public:
 		*f = Le * cosTheta / (pdfPos * pdfDir * lightPdf);
 	}
 
-	void TraceEyePath(const Scene &scene, StateSequence &rand, const Ray &ray, int64 pixel) {
+	void TraceEyePath(const Scene &scene, StateSequence &rand, const Ray &ray, int64 pixel, MemoryArena &arena) {
 		//{
 		//	int x = 365, y = 550;
 		//	if(pixel == x + scene.GetCamera()->GetFilm()->resX * y) {
@@ -76,8 +76,8 @@ public:
 			Intersection isect;
 
 			if (!scene.Intersect(r,&isect, &t)) return;
-			isect.ComputeScatteringFunction();
-			std::shared_ptr<BSDF> bsdf = isect.bsdf;
+			isect.ComputeScatteringFunction(arena);
+			BSDF* bsdf = isect.bsdf;
 			Vec3 wi;
 			real pdf;
 
@@ -152,7 +152,7 @@ public:
 		}
 	}
 
-	void TracePhoton(const Scene &scene, StateSequence &rand, const Ray &ray, Vec3 photonFlux) {
+	void TracePhoton(const Scene &scene, StateSequence &rand, const Ray &ray, Vec3 photonFlux, MemoryArena& arena) {
 		Ray r = ray;
 		for (int i = 0; i < maxDepth; ++i) {
 			real t;
@@ -160,8 +160,8 @@ public:
 			std::shared_ptr<Shape> hitObj;
 			if (!scene.Intersect(r, &isect, &t)) return;
 
-			isect.ComputeScatteringFunction(TransportMode::Importance);
-			std::shared_ptr<BSDF> bsdf = isect.bsdf;
+			isect.ComputeScatteringFunction(arena, TransportMode::Importance);
+			BSDF* bsdf = isect.bsdf;
 
 			Vec3 wi;
 			real pdf;
@@ -254,9 +254,11 @@ public:
 		Initialize(resX, resY);
 		for (int iter = 0; iter < nIterations; ++iter) {
 			//Trace eye_path
+			std::vector<MemoryArena> memoryArenas(ThreadsNumber());
 			ParallelFor(0, resY, [&](int y) {
 				for (int x = 0; x < resX; x++) {
 					DEBUG_PIXEL(265, 625);
+					MemoryArena& arena = memoryArenas[ThreadIndex()];
 					int pixel = x + y * resX;
 					hitPoints[pixel].used = false;
 					uint64 instance = samplerEnum->GetIndex(iter, x, y);
@@ -265,7 +267,7 @@ public:
 					real v = samplerEnum->SampleY(y, rand());
 					Vec2 pixelSample(u, v);
 					Ray ray = scene.GetCamera()->GenerateRay(x, y, pixelSample);
-					TraceEyePath(scene, rand, ray, pixel);
+					TraceEyePath(scene, rand, ray, pixel, arena);
 				}
 			});
 

@@ -112,7 +112,7 @@ public:
 	}
 	~BSDF(){}
 
-	void Add(std::shared_ptr<BxDF> bsdf);
+	void Add(BxDF* bsdf);
 
 	real Pdf(const Vec3 &wo, const Vec3 &wi, ScatterEventType flags = BSDF_ALL) const;
 	Vec3 Sample_f(const Vec3 &wo, Vec3 *wi, real *pdf, const Vec3 &rand = Vec3(0, 0, 0), ScatterEventType flags = BSDF_ALL) const;
@@ -125,7 +125,7 @@ protected:
 	const Vec3 n, nl, ng;
 	const Vec3 ss, ts;
 	static constexpr int MaxBSDFs = 8;
-	std::shared_ptr<BxDF> bxdfs[MaxBSDFs];
+	BxDF* bxdfs[MaxBSDFs];
 	int nBSDFs = 0;
 	bool isDelta = false;
 };

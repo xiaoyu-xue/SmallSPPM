@@ -50,7 +50,7 @@ Vec3 FrConductor(real cosThetaI, const Vec3& etai, const Vec3& etat, const Vec3&
 	return 0.5 * (Rp + Rs);
 }
 
-void BSDF::Add(std::shared_ptr<BxDF> bsdf) {
+void BSDF::Add(BxDF* bsdf) {
 	bxdfs[nBSDFs++] = bsdf;
 	isDelta |= (bsdf->scatterEventType & BSDF_SPECULAR);
 }
@@ -74,7 +74,7 @@ Vec3 BSDF::Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec3& rand, Scatt
 	int sampleIndex = rand[0] * nBSDFs;
 	Vec3 woLocal = WorldToLocal(wo);
 	Vec3 wiLocal;
-	std::shared_ptr<BxDF> bxdf = bxdfs[sampleIndex];
+	BxDF* bxdf = bxdfs[sampleIndex];
 	Vec3 f = bxdf->Sample_f(woLocal, &wiLocal, pdf, Vec2(rand[1], rand[2]));
 
 	*wi = LocalToWorld(wiLocal);

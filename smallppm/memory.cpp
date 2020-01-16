@@ -1,15 +1,18 @@
 #include "memory.h"
-#include <malloc.h>
+#include <memory>
 
 NAMESPACE_BEGIN
 
 void* AllocAligned(size_t size) {
-	return _aligned_malloc(size, L1_CACHE_LINE_SIZE);
+
+    return _aligned_malloc(size, L1_CACHE_LINE_SIZE);
+
 }
 
+
 void FreeAligned(void* ptr) {
-	if (!ptr) return;
-	_aligned_free(ptr);
+    if (!ptr) return;
+    _aligned_free(ptr);
 }
 
 NAMESPACE_END

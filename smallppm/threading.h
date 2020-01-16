@@ -1,5 +1,6 @@
 #pragma once
 
+#include <thread>
 #include <atomic>
 #include "tbb/parallel_for.h"
 
@@ -41,6 +42,18 @@ public:
 		return *this;
 	}
 };
+
+FORCE_INLINE int ThreadIndex() {
+	return tbb::task_arena::current_thread_index();
+}
+
+FORCE_INLINE int NumSystemCores() {
+	return std::max(1u, std::thread::hardware_concurrency());
+}
+
+int ThreadsNumber() {
+	return NumSystemCores();;
+}
 
 template<typename Range, typename T>
 void ParallelFor(Range begin, Range end, const T &target) {

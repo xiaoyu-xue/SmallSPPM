@@ -20,15 +20,27 @@ public:
 	//	MicrofacetDistribution *distribution = new GGXDistribution(alpha);
 	//	isect->bsdf = std::shared_ptr<BSDF>(new MicrofacetReflectionBSDF(*isect, distribution, reflectence->Sample(*isect)));
 	//}
-	void ComputeScatteringFunction(Intersection* isect,
+	//void ComputeScatteringFunction(Intersection* isect,
+	//	TransportMode mode = TransportMode::Radiance) const {
+	//	real alphax = GGXDistribution::RoughnessToAlpha(roughnessx->Sample(*isect));
+	//	real alphay = GGXDistribution::RoughnessToAlpha(roughnessy->Sample(*isect));
+	//	MicrofacetDistribution* distribution = 
+	//		new GGXDistribution(alphax, alphay, true);
+	//	isect->bsdf = std::shared_ptr<BSDF>(new BSDF(*isect));
+	//	Fresnel* fresnel = new FresnelConductor(Vec3(1.0, 1.0, 1.0), eta->Sample(*isect), k->Sample(*isect));
+	//	std::shared_ptr<BxDF> microfacetReflectionBSDF(new MicrofacetReflectionBSDF(distribution, fresnel, reflectence->Sample(*isect)));
+	//	isect->bsdf->Add(microfacetReflectionBSDF);
+	//}
+
+	void ComputeScatteringFunction(Intersection* isect, MemoryArena &arena,
 		TransportMode mode = TransportMode::Radiance) const {
 		real alphax = GGXDistribution::RoughnessToAlpha(roughnessx->Sample(*isect));
 		real alphay = GGXDistribution::RoughnessToAlpha(roughnessy->Sample(*isect));
-		MicrofacetDistribution* distribution = 
-			new GGXDistribution(alphax, alphay, true);
-		isect->bsdf = std::shared_ptr<BSDF>(new BSDF(*isect));
-		Fresnel* fresnel = new FresnelConductor(Vec3(1.0, 1.0, 1.0), eta->Sample(*isect), k->Sample(*isect));
-		std::shared_ptr<BxDF> microfacetReflectionBSDF(new MicrofacetReflectionBSDF(distribution, fresnel, reflectence->Sample(*isect)));
+		MicrofacetDistribution* distribution =
+			ARENA_ALLOC(arena, GGXDistribution)(alphax, alphay, true);
+		isect->bsdf = ARENA_ALLOC(arena, BSDF)(*isect);
+		Fresnel* fresnel = ARENA_ALLOC(arena, FresnelConductor)(Vec3(1.0, 1.0, 1.0), eta->Sample(*isect), k->Sample(*isect));
+		BxDF* microfacetReflectionBSDF = ARENA_ALLOC(arena, MicrofacetReflectionBSDF)(distribution, fresnel, reflectence->Sample(*isect));
 		isect->bsdf->Add(microfacetReflectionBSDF);
 	}
 private:

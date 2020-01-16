@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <utility>
 #include <cmath>
+#include "utils.h"
+
 NAMESPACE_BEGIN
 
 template <class T1, class T2, class T3>

@@ -19,12 +19,18 @@ public:
 	//	isect->bsdf =
 	//		std::shared_ptr<BSDF>(new TransmissionBSDF(*isect, kt->Sample(*isect), mode, 1.0, 1.5));
 	//}
-	void ComputeScatteringFunction(Intersection* isect,
-		TransportMode mode = TransportMode::Radiance) const {
+	//void ComputeScatteringFunction(Intersection* isect,
+	//	TransportMode mode = TransportMode::Radiance) const {
 
-		isect->bsdf = std::shared_ptr<BSDF>(new BSDF(*isect));
-		std::shared_ptr<BxDF> transmissionBSDF(new TransmissionBSDF(kt->Sample(*isect), kt->Sample(*isect), mode, 1.0, 1.5));
-		isect->bsdf->Add(transmissionBSDF);
+	//	isect->bsdf = std::shared_ptr<BSDF>(new BSDF(*isect));
+	//	std::shared_ptr<BxDF> transmissionBSDF(new TransmissionBSDF(kt->Sample(*isect), kt->Sample(*isect), mode, 1.0, 1.5));
+	//	isect->bsdf->Add(transmissionBSDF);
+	//}
+
+	void ComputeScatteringFunction(Intersection* isect, MemoryArena &arena,
+		TransportMode mode = TransportMode::Radiance) const {
+		isect->bsdf = ARENA_ALLOC(arena, BSDF)(*isect);
+		isect->bsdf->Add(ARENA_ALLOC(arena, TransmissionBSDF)(kt->Sample(*isect), kt->Sample(*isect), mode, 1.0, 1.5));
 	}
 private:
 	std::shared_ptr<Texture<Vec3>> kr, kt;
