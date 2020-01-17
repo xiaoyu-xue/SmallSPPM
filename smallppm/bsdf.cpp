@@ -88,12 +88,17 @@ Vec3 BSDF::Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec3& rand, Scatt
 
 	if (!bxdf->IsDelta()) {
 		bool reflect = Dot(*wi, ng) * Dot(wo, ng) > 0;
+		f = Vec3(0, 0, 0);
 		for (int i = 0; i < nBSDFs; ++i) {
-			if (i != sampleIndex) {
-				if((reflect && (bxdfs[i]->scatterEventType & BSDF_REFLECTION)) ||
-					(!reflect && (bxdfs[i]->scatterEventType & BSDF_TRANSMISSION)))
+			if((reflect && (bxdfs[i]->scatterEventType & BSDF_REFLECTION)) ||
+				(!reflect && (bxdfs[i]->scatterEventType & BSDF_TRANSMISSION)))
 				f += bxdfs[i]->f(woLocal, wiLocal);
-			}
+			//if (i != sampleIndex) {
+			//	if((reflect && (bxdfs[i]->scatterEventType & BSDF_REFLECTION)) ||
+			//		(!reflect && (bxdfs[i]->scatterEventType & BSDF_TRANSMISSION)))
+			//	f += bxdfs[i]->f(woLocal, wiLocal);
+			//}
+
 		}
 	}
 	return f;

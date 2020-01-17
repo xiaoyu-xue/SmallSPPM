@@ -207,6 +207,9 @@
     <ClCompile Include="sppm.cpp">
       <Filter>Source Files\integrator</Filter>
     </ClCompile>
+    <ClCompile Include="bvh_accel.cpp">
+      <Filter>Source Files\accelerator</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lowdiscrepency.h">
@@ -373,6 +376,9 @@
     </ClInclude>
     <ClInclude Include="image_texture.h">
       <Filter>Header Files\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="bvh_accel.h">
+      <Filter>Header Files\accelerator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

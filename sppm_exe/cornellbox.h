@@ -485,6 +485,14 @@ public:
 		//Mesh
 		std::shared_ptr<Material> glassMeshMaterial = std::shared_ptr<Material>(new GlassMaterial(fullWhiteConstant, fullWhiteConstant));
 		std::shared_ptr<Material> diffuseMeshMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
+		
+		std::shared_ptr<Texture<Vec3>> eta = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1.5, 1.5, 1.5)));
+		std::shared_ptr<Texture<Vec3>> k = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1.5, 1.5, 1.5)));
+		std::shared_ptr<Texture<real>> roughnessx = std::shared_ptr<Texture<real>>(new ConstantTexture<real>(0.02));
+		std::shared_ptr<Texture<real>> roughnessy = std::shared_ptr<Texture<real>>(new ConstantTexture<real>(0.06));
+		std::shared_ptr<Material> roughMeshMaterial = 
+			std::shared_ptr<Material>(new RoughnessMaterial(fullWhiteConstant, roughnessx, roughnessy, eta, k));
+		
 		std::shared_ptr<Mesh> mesh = std::shared_ptr<Mesh>(new Mesh());
 		//mesh->LoadFromFile("..\\meshs\\bunny.obj");
 		//mesh->SetMaterial(glassMeshMaterial);
@@ -493,7 +501,7 @@ public:
 		//mesh->SetMaterial(glassMeshMaterial);
 		//Transform transform = Transform::Translate(Vec3(0, -0.65, 0)) * Transform::Scale(0.65, 0.65, 0.65);
 		mesh->LoadFromFile("..\\meshs\\bunny3.obj");
-		mesh->SetMaterial(glassMeshMaterial);
+		mesh->SetMaterial(roughMeshMaterial);
 		Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
 		scene->AddMesh(*mesh, transform);
 

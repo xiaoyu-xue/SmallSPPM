@@ -299,6 +299,7 @@ public:
 		real etaT = entering ? nt : nc;
 		Vec3 nForward = BSDFCoordinate::CosTheta(wo) > 0 ? Vec3(0, 0, 1) : Vec3(0, 0, -1);
 		real P = Re * 0.5f + 0.25f;
+		P = Re;
 		//P = 1.0;
 		if (rand[1] < P) {
 			//*wi = (2 * wo.Dot(nForward) * nForward - wo).Norm();

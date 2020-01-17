@@ -27,6 +27,7 @@
 #include "phinhole.h"
 #include "brute_force.h"
 #include "kdtree_accel.h"
+#include "bvh_accel.h"
 #include "sppm.h"
 #include "diffuse.h"
 #include "mirror.h"
@@ -47,7 +48,7 @@
 
 //const real ALPHA = 0.66666667;
 const real ALPHA = 0.75;
-const int64  render_stage_number = 200000;
+const int64  render_stage_number = 300000;
 
 void TestSppm(int argc, char* argv[]) {
 	//clock_t begin = clock();
@@ -247,7 +248,9 @@ void TestSPPM3(int argc, char* argv[]) {
 	CornellBoxSphere::SetScene(scene);
 	//CornellBoxTriangle::SetScene(scene);
 
-	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BruteForce());
+	//std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BruteForce());
+	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
+
 	scene->SetCamera(camera);
 	scene->SetAccelerator(accelerator);
 
@@ -473,19 +476,20 @@ void TestSPPM5(int argc, char* argv[]) {
 	std::shared_ptr<SamplerEnum> haltonSamplerEnum = std::shared_ptr<SamplerEnum>(new HaltonEnum((unsigned)resX, (unsigned)resY));
 	real alpha = 0.66666667;
 	std::shared_ptr<Integrator> integrator =
-		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 50, 0.05, alpha, false, haltonSampler, haltonSamplerEnum));
+		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 50, 0.05, alpha, false, haltonSampler, haltonSamplerEnum, true));
 	fprintf(stderr, "Load Scene ...\n");
 
 	CornellBoxMesh::SetScene(scene);
 
 
 	//std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BruteForce());
-	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new KdTreeAccel(scene->GetPrimitives()));
+	//std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new KdTreeAccel(scene->GetPrimitives()));
+	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
 	scene->SetCamera(camera);
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("cornellboxMeshObj9.bmp");
+	film->SetFileName("cornellboxMeshObj13.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();

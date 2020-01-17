@@ -98,6 +98,7 @@ public:
 			*isect = it;
 		}
 		isect->uv = Vec2(u, v);
+		isect->shapeId = shapeId;
 		*t = tHit;
 
 		return true;

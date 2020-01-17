@@ -11,7 +11,7 @@ class RoughnessMaterial : public Material {
 public:
 	RoughnessMaterial(const std::shared_ptr<Texture<Vec3>>& reflectence, 
 		const std::shared_ptr<Texture<real>> &roughnessx, const std::shared_ptr<Texture<real>>& roughnessy,
-		const std::shared_ptr<Texture<real>>& eta, const std::shared_ptr<Texture<real>>& k)
+		const std::shared_ptr<Texture<Vec3>>& eta, const std::shared_ptr<Texture<Vec3>>& k)
 		: reflectence(reflectence), roughnessx(roughnessx), roughnessy(roughnessy), eta(eta), k(k) {
 
 	}
@@ -46,8 +46,8 @@ public:
 private:
 	std::shared_ptr<Texture<Vec3>> reflectence;
 	std::shared_ptr<Texture<real>> roughnessx, roughnessy;
-	std::shared_ptr<Texture<real>> eta;
-	std::shared_ptr<Texture<real>> k;
+	std::shared_ptr<Texture<Vec3>> eta;
+	std::shared_ptr<Texture<Vec3>> k;
 };
 
 NAMESPACE_END

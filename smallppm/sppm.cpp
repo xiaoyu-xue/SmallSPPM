@@ -41,7 +41,7 @@ void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray,
 		real pdf;
 
 #ifdef _DEBUG
-		int primitiveId = isect.primitive->primitiveId;
+		//int primitiveId = isect.primitive->primitiveId;
 #endif
 
 		//{
@@ -75,6 +75,14 @@ void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray,
 			directillum[hp.pix] = directillum[hp.pix] + Ld;
 			Vec3 f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec3(rand(), rand(), rand()));
 			importance = f * std::abs(wi.Dot(isect.n)) * importance / pdf;
+
+			if (std::isnan(importance.x) || std::isnan(importance.y) || std::isnan(importance.z)) {
+				std::cout << "importance nan," << " pdf: " << pdf << std::endl;
+			}
+			if (pixel == 613 * scene.GetCamera()->GetFilm()->resX + 446) {
+				std::cout << directillum[pixel] << " " << hp.importance << std::endl;
+			}
+
 			r = isect.SpawnRay(wi);
 			deltaBoundEvent = false;
 		}
@@ -100,6 +108,9 @@ void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray,
 			else {
 				Vec3 Ld = hp.importance * DirectIllumination(scene, isect, bsdf, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()));
 				directillum[hp.pix] = directillum[hp.pix] + Ld;
+				if (pixel == 613 * scene.GetCamera()->GetFilm()->resX + 446) {
+					std::cout << directillum[pixel] << " " << hp.importance << std::endl;
+				}
 				//{
 				//	if (debugPixel == 1) {
 				//		std::cout << "direction illumination: " << hp.importance << " " << Ld << " " << directillum[hp.pix] << std::endl;
@@ -140,7 +151,7 @@ void SPPM::TracePhoton(const Scene& scene, StateSequence& rand, const Ray& ray, 
 					//std::lock_guard<Spinlock> lock(pixelLocks[hitpoint->pix]);
 					Vec3 v = hitpoint->pos - isect.hit;
 					//if ((hitpoint->nrm.Dot(isect.n) > PhtotonEdgeEps) && (v.Dot(v) <= radius2[hitpoint->pix])) {
-					if ((hitpoint->nrm.Dot(isect.nl) > 0.015) && (v.Dot(v) <= radius2[hitpoint->pix])) {
+					if ((hitpoint->nrm.Dot(isect.nl) > 0.0015) && (v.Dot(v) <= radius2[hitpoint->pix])) {
 						if (!batchShrink) {
 							// unlike N in the paper, hitpoint->n stores "N / ALPHA" to make it an integer value
 							real g = (photonNums[hitpoint->pix] * alpha + alpha) / (photonNums[hitpoint->pix] * alpha + 1.f);
@@ -215,7 +226,7 @@ void SPPM::Render(const Scene& scene) {
 		std::vector<MemoryArena> memoryArenas(ThreadsNumber());
 		ParallelFor(0, resY, [&](int y) {
 			for (int x = 0; x < resX; x++) {
-				DEBUG_PIXEL(265, 625);
+				DEBUG_PIXEL(446, 613);
 				MemoryArena& arena = memoryArenas[ThreadIndex()];
 				int pixel = x + y * resX;
 				hitPoints[pixel].used = false;
@@ -275,6 +286,14 @@ void SPPM::Render(const Scene& scene) {
 	ParallelFor(0, (int)flux.size(), [&](int i) {
 		c[i] = c[i] + flux[i] * (1.f / (PI * radius2[i] * nIterations * nPhotonsPerRenderStage))
 			+ directillum[i] / (real)nIterations;
+		if (i == 613 * resX + 446) { 
+			std::cout << c[i] << " " << flux[i] << " " << directillum[i] << " " << 
+				hitPoints[i].importance << std::endl;
+			if (std::isnan(directillum[i].x) || std::isnan(directillum[i].y) || std::isnan(directillum[i].z)) {
+				std::cout << "nan" << std::endl;
+			}
+		}
+
 		//if (std::isnan(c[i].x)  || std::isnan(c[i].y)  || std::isnan(c[i].z)) {
 		//	std::cout << i % resX << " " << i / resX << " "<< i << std::endl;
 		//}

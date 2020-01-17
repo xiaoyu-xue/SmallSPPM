@@ -167,6 +167,7 @@
   <ItemGroup>
     <ClCompile Include="AABB.cpp" />
     <ClCompile Include="bsdf.cpp" />
+    <ClCompile Include="bvh_accel.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="debug_utils.cpp" />
     <ClCompile Include="efloat.cpp" />
@@ -201,6 +202,7 @@
     <ClInclude Include="avx.h" />
     <ClInclude Include="brute_force.h" />
     <ClInclude Include="bsdf.h" />
+    <ClInclude Include="bvh_accel.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="constant_texture.h" />
     <ClInclude Include="debug_utils.h" />

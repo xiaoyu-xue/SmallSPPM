@@ -42,7 +42,7 @@ public:
 		if (shape) {
 			shape->shapeId = shapeNum;
 #ifdef _DEBUG
-			primitive->primitiveId = shapeNum;
+			//primitive->primitiveId = shapeNum;
 #endif
 			++shapeNum;
 		}

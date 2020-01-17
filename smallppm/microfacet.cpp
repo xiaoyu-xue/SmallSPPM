@@ -3,6 +3,73 @@
 
 NAMESPACE_BEGIN
 
+static void TrowbridgeReitzSample11(real cosTheta, real U1, real U2,
+	real* slope_x, real* slope_y) {
+	// special case (normal incidence)
+	if (cosTheta > .9999) {
+		real r = sqrt(U1 / (1 - U1));
+		real phi = 6.28318530718 * U2;
+		*slope_x = r * cos(phi);
+		*slope_y = r * sin(phi);
+		return;
+	}
+
+	real sinTheta =
+		std::sqrt(std::max((real)0, (real)1 - cosTheta * cosTheta));
+	real tanTheta = sinTheta / cosTheta;
+	real a = 1 / tanTheta;
+	real G1 = 2 / (1 + std::sqrt(1.f + 1.f / (a * a)));
+
+	// sample slope_x
+	real A = 2 * U1 / G1 - 1;
+	real tmp = 1.f / (A * A - 1.f);
+	if (tmp > 1e10) tmp = 1e10;
+	real B = tanTheta;
+	real D = std::sqrt(
+		std::max(real(B * B * tmp * tmp - (A * A - B * B) * tmp), real(0)));
+	real slope_x_1 = B * tmp - D;
+	real slope_x_2 = B * tmp + D;
+	*slope_x = (A < 0 || slope_x_2 > 1.f / tanTheta) ? slope_x_1 : slope_x_2;
+
+	// sample slope_y
+	real S;
+	if (U2 > 0.5f) {
+		S = 1.f;
+		U2 = 2.f * (U2 - .5f);
+	}
+	else {
+		S = -1.f;
+		U2 = 2.f * (.5f - U2);
+	}
+	real z =
+		(U2 * (U2 * (U2 * 0.27385f - 0.73369f) + 0.46341f)) /
+		(U2 * (U2 * (U2 * 0.093073f + 0.309420f) - 1.000000f) + 0.597999f);
+	*slope_y = S * z * std::sqrt(1.f + *slope_x * *slope_x);
+
+}
+
+static Vec3 TrowbridgeReitzSample(const Vec3& wi, real alpha_x,
+	real alpha_y, real U1, real U2) {
+	// 1. stretch wi
+	Vec3 wiStretched =
+		Vec3(alpha_x * wi.x, alpha_y * wi.y, wi.z).Norm();
+
+	// 2. simulate P22_{wi}(x_slope, y_slope, 1, 1)
+	real slope_x, slope_y;
+	TrowbridgeReitzSample11(BSDFCoordinate::CosTheta(wiStretched), U1, U2, &slope_x, &slope_y);
+
+	// 3. rotate
+	real tmp = BSDFCoordinate::CosPhi(wiStretched) * slope_x - BSDFCoordinate::SinPhi(wiStretched) * slope_y;
+	slope_y = BSDFCoordinate::SinPhi(wiStretched) * slope_x + BSDFCoordinate::CosPhi(wiStretched) * slope_y;
+	slope_x = tmp;
+
+	// 4. unstretch
+	slope_x = alpha_x * slope_x;
+	slope_y = alpha_y * slope_y;
+
+	// 5. compute normal
+	return Vec3(-slope_x, -slope_y, 1.).Norm();
+}
 
 
 real MicrofacetDistribution::Pdf(const Vec3& wo, const Vec3& wh) const {
@@ -42,7 +109,6 @@ real GGXDistribution::D(const Vec3& wh) const {
 		return alpha2 / (PI * cos4ThetaM * root * root);
 	}
 	else {
-
 		const real cos2PhiM = BSDFCoordinate::Cos2Phi(wh);
 		const real sin2PhiM = BSDFCoordinate::Sin2Phi(wh);
 		const real tan2ThetaM = BSDFCoordinate::Tan2Theta(wh);
@@ -79,8 +145,8 @@ real GGXDistribution::G1(const Vec3& v, const Vec3& wh) const {
 }
 
 real GGXDistribution::G(const Vec3& wo, const Vec3& wi, const Vec3& wh) const {
-    return G1(wo, wh) * G1(wi, wh);
-	//return 1 / (1 + Lambda(wo) + Lambda(wi));
+    //return G1(wo, wh) * G1(wi, wh);
+	return 1 / (1 + Lambda(wo) + Lambda(wi));
 }
 
 Vec3 GGXDistribution::Sample_wh(const Vec3& wo, const Vec2& u) const {
@@ -123,7 +189,11 @@ Vec3 GGXDistribution::Sample_wh(const Vec3& wo, const Vec2& u) const {
 		}
 	}
 	else {
-		return SampleGGXVNDF(wo, u);
+		//return SampleGGXVNDF(wo, u);
+		bool flip = wo.z < 0;
+		Vec3 wh = TrowbridgeReitzSample(flip ? -wo : wo, alphax, alphay, u[0], u[1]);
+		if (flip) wh = -wh;
+		return wh;
 	}
 	
 

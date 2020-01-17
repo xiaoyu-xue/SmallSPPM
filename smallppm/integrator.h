@@ -151,6 +151,9 @@ public:
 				if (!visibilityTester.Unoccluded(scene)) {
 					weight1 = PowerHeuristic(1, pdf, 1, scatteringPdf);
 					L1 = Li * f * std::abs(isect.n.Dot(wi)) / pdf;
+					if (std::isnan(L1.x) || std::isnan(L1.y) || std::isnan(L1.z)) {
+						std::cout << L1 << " " << f << " " << scatteringPdf << " " << pdf << std::endl;
+					}
 				}
 
 			}
@@ -170,10 +173,12 @@ public:
 					std::shared_ptr<Light> emissionShape = isect.primitive->GetLight();
 					L2 = emissionShape->Emission(intersection, -wi) * f * std::abs(isect.n.Dot(wi)) / pdf;
 				}
-
+				if (std::isnan(L2.x) || std::isnan(L2.y) || std::isnan(L2.z) || std::isnan(weight2)) {
+					std::cout << L1 << " " << f << " " << pdf << weight2 << std::endl;
+				}
 			}
 		}
-
+		//return L1 / lightSamplingPdf;
 		return (L1 * weight1 + L2 * weight2) / lightSamplingPdf;
 	}
 
