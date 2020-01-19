@@ -120,6 +120,13 @@ real GGXDistribution::D(const Vec3& wh) const {
 		const real alphay2 = alphay * alphay;
 		const real root = 1 + tan2ThetaM * (cos2PhiM / alphax2 + sin2PhiM / alphay2);
 		return 1 / (PI * alphax * alphay * cos2ThetaM * cos2ThetaM * root * root);
+		//real tan2Theta = BSDFCoordinate::Tan2Theta(wh);
+		//if (std::isinf(tan2Theta)) return 0.;
+		//const real cos4Theta = BSDFCoordinate::Cos2Theta(wh) * BSDFCoordinate::Cos2Theta(wh);
+		//real e =
+		//	(BSDFCoordinate::Cos2Phi(wh) / (alphax * alphax) + BSDFCoordinate::Sin2Phi(wh) / (alphay * alphay)) *
+		//	tan2Theta;
+		//return 1 / (PI * alphax * alphay * cos4Theta * (1 + e) * (1 + e));
 	}
 
 }

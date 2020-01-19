@@ -103,11 +103,7 @@ void Triangle::QueryIntersectionInfo(const Ray& ray, Intersection* isect) const 
 	
 	// Compute deltas for triangle partial derivatives
 	Vec3 dpdu, dpdv;
-	real du1 = uvs[0][0] - uvs[2][0];
-	real du2 = uvs[1][0] - uvs[2][0];
-	real dv1 = uvs[0][1] - uvs[2][1];
-	real dv2 = uvs[1][1] - uvs[2][1];
-	Vec3 dp1 = p0 - p2, dp2 = p1 - p2;
+
 	real determinant = du1 * dv2 - dv1 * du2;
 	if (std::abs(determinant) < 1e-8) {
 		// Handle zero determinant for triangle partial derivative matrix
@@ -121,19 +117,24 @@ void Triangle::QueryIntersectionInfo(const Ray& ray, Intersection* isect) const 
 	
 	Vec3 ns = b0 * n0 + b1 * n1 + b2 * n2;
 	ns.Normalize();
-	Vec3 dpdus, dpdvs;
-	CoordinateSystem(ns, &dpdus, &dpdvs);
+
+	//ns = faceNormal;
+
 	
 	isect->hit = b0 * p0 + b1 * p1 + b2 * p2;
 	isect->uv = Vec2(u, v);
-	isect->ng = faceNormal;
+	isect->ng = (Dot(faceNormal, ns) < 0) ? -faceNormal : faceNormal;
 	isect->nl = isect->ng.Dot(ray.d) < 0 ? isect->ng : isect->ng * -1;
 	isect->dpdu = dpdu;
 	isect->dpdv = dpdv;
 	isect->wo = -ray.d;
 	isect->pError = gamma(7) * Vec3(xAbsSum, yAbsSum, zAbsSum);
 	
+
+	Vec3 dpdus, dpdvs;
+	CoordinateSystem(ns, &dpdus, &dpdvs);
 	isect->SetShading(ns, dpdus, dpdvs);
+
 }
 
 bool Triangle::Intersect(const Ray& ray, Intersection* isect, real* t) const {

@@ -394,6 +394,20 @@ public:
 		std::shared_ptr<Texture<Vec3>> whiteConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(.75f, .75f, .75f)));
 		std::shared_ptr<Texture<Vec3>> fullWhiteConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1, 1, 1)));
 
+
+		std::shared_ptr<Texture<Vec3>> objWhiteConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(.5f, .5f, .5f)));
+
+		std::shared_ptr<Material> glassMeshMaterial = std::shared_ptr<Material>(new GlassMaterial(fullWhiteConstant, fullWhiteConstant));
+		std::shared_ptr<Material> diffuseMeshMaterial = std::shared_ptr<Material>(new DiffuseMaterial(objWhiteConstant));
+		std::shared_ptr<Material> mirrorMeshMaterial = std::shared_ptr<Material>(new MirrorMaterial(fullWhiteConstant));
+		std::shared_ptr<Texture<Vec3>> eta = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1.5, 1.5, 1.5)));
+		std::shared_ptr<Texture<Vec3>> k = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1.5, 1.5, 1.5)));
+		std::shared_ptr<Texture<real>> roughnessx = std::shared_ptr<Texture<real>>(new ConstantTexture<real>(0.06));
+		std::shared_ptr<Texture<real>> roughnessy = std::shared_ptr<Texture<real>>(new ConstantTexture<real>(0.02));
+		std::shared_ptr<Material> roughMeshMaterial =
+			std::shared_ptr<Material>(new RoughnessMaterial(fullWhiteConstant, roughnessx, roughnessy, eta, k));
+		std::shared_ptr<Material> waterMaterial = std::shared_ptr<Material>(new GlassMaterial(fullWhiteConstant, fullWhiteConstant, 1.f, 1.33));
+
 		//Points
 		Vec3 p0(-1, -1, 1);
 		Vec3 p1(-1, -1, -1);
@@ -476,22 +490,22 @@ public:
 		scene->AddPrimitive(topTriangle2);
 
 
-		//Diffuse Ball
+		////Diffuse Ball
 		//std::shared_ptr<Shape> diffuseBallShape = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 0.35f, Vec3(-0.5f, -0.6f, -0.3f)));
 		//std::shared_ptr<Material> diffuseBallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
 		//std::shared_ptr<Primitive> diffuseBall = std::shared_ptr<Primitive>(new GeometryPrimitive(diffuseBallShape, diffuseBallMaterial));
 		//scene->AddPrimitive(diffuseBall);
 
 		//Mesh
-		std::shared_ptr<Material> glassMeshMaterial = std::shared_ptr<Material>(new GlassMaterial(fullWhiteConstant, fullWhiteConstant));
-		std::shared_ptr<Material> diffuseMeshMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
-		
-		std::shared_ptr<Texture<Vec3>> eta = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1.5, 1.5, 1.5)));
-		std::shared_ptr<Texture<Vec3>> k = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1.5, 1.5, 1.5)));
-		std::shared_ptr<Texture<real>> roughnessx = std::shared_ptr<Texture<real>>(new ConstantTexture<real>(0.02));
-		std::shared_ptr<Texture<real>> roughnessy = std::shared_ptr<Texture<real>>(new ConstantTexture<real>(0.06));
-		std::shared_ptr<Material> roughMeshMaterial = 
-			std::shared_ptr<Material>(new RoughnessMaterial(fullWhiteConstant, roughnessx, roughnessy, eta, k));
+		//std::shared_ptr<Material> glassMeshMaterial = std::shared_ptr<Material>(new GlassMaterial(fullWhiteConstant, fullWhiteConstant));
+		//std::shared_ptr<Material> diffuseMeshMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
+		//std::shared_ptr<Material> mirrorMeshMaterial = std::shared_ptr<Material>(new MirrorMaterial(fullWhiteConstant));
+		//std::shared_ptr<Texture<Vec3>> eta = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1.5, 1.5, 1.5)));
+		//std::shared_ptr<Texture<Vec3>> k = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1.5, 1.5, 1.5)));
+		//std::shared_ptr<Texture<real>> roughnessx = std::shared_ptr<Texture<real>>(new ConstantTexture<real>(0.02));
+		//std::shared_ptr<Texture<real>> roughnessy = std::shared_ptr<Texture<real>>(new ConstantTexture<real>(0.06));
+		//std::shared_ptr<Material> roughMeshMaterial = 
+		//	std::shared_ptr<Material>(new RoughnessMaterial(fullWhiteConstant, roughnessx, roughnessy, eta, k));
 		
 		std::shared_ptr<Mesh> mesh = std::shared_ptr<Mesh>(new Mesh());
 		//mesh->LoadFromFile("..\\meshs\\bunny.obj");
@@ -500,24 +514,61 @@ public:
 		//mesh->LoadFromFile("..\\meshs\\bunny2.obj");
 		//mesh->SetMaterial(glassMeshMaterial);
 		//Transform transform = Transform::Translate(Vec3(0, -0.65, 0)) * Transform::Scale(0.65, 0.65, 0.65);
-		mesh->LoadFromFile("..\\meshs\\bunny3.obj");
-		mesh->SetMaterial(roughMeshMaterial);
-		Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
-		scene->AddMesh(*mesh, transform);
+
+		//mesh->LoadFromFile("..\\meshs\\bunny3.obj");
+		//mesh->SetMaterial(diffuseMeshMaterial);
+		//Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
+		//scene->AddMesh(*mesh, transform);
+
+		//std::shared_ptr<Shape> ball = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 0.35f, Vec3(0.f, 0.f, 0.f)));
+		//std::shared_ptr<Primitive> ballPrimitive = std::shared_ptr<Primitive>(new GeometryPrimitive(ball, roughMeshMaterial));
+		//scene->AddPrimitive(ballPrimitive);
+
+		//std::shared_ptr<Mesh> waterMesh = std::shared_ptr<Mesh>(new Mesh());
+		//waterMesh->LoadFromFile("..\\meshs\\water.obj");
+		//Transform transformWater =
+		//	Transform::Translate(Vec3(0, -0.5, 0)) *
+
+		//	Transform::Scale(0.02, 0.02, 1) *
+		//	Transform::RotateY(-180) *
+		//	Transform::RotateX(-90) *
+
+		//	Transform::Translate(Vec3(-50, -50, 0)) *
+		//	Transform::Scale(1, 2, 1);
+		//waterMesh->SetMaterial(waterMaterial);
+		//scene->AddMesh(*waterMesh, transformWater);
+
+
+		std::shared_ptr<Mesh> objMesh = std::shared_ptr<Mesh>(new Mesh());
+		objMesh->LoadFromFile("..\\meshs\\Alucy.obj");
+
+		Transform transformWater =
+			Transform::Translate(Vec3(0, -1, 0)) *
+			Transform::RotateY(60) * 
+			Transform::Scale(0.0019, 0.0019, 0.0019);
+		objMesh->SetMaterial(glassMeshMaterial);
+		scene->AddMesh(*objMesh, transformWater);
+
 
 		//Light
 		Vec3 lightP0 = Vec3(0.25f, 0.965, 0.25f);
 		Vec3 lightP1 = Vec3(0.25f, 0.965, -0.25f);
 		Vec3 lightP2 = Vec3(-0.25f, 0.965, -0.25f);
 		Vec3 lightP3 = Vec3(-0.25f, 0.965, 0.25f);
+		//Vec3 lightP0 = Vec3(0.0015f, 0.965, 0.0015f);
+		//Vec3 lightP1 = Vec3(0.0015f, 0.965, -0.0015f);
+		//Vec3 lightP2 = Vec3(-0.0015f, 0.965, -0.0015f);
+		//Vec3 lightP3 = Vec3(-0.0015f, 0.965, 0.0015f);
 		Vec3 lightNormal = Vec3(0, -1, 0);
 		std::shared_ptr<Texture<Vec3>> lightTexture = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(0, 0, 0)));
 		std::shared_ptr<Shape> lightTriangleShape0 =
 			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, lightP0, lightP1, lightP2, lightNormal));
 		std::shared_ptr<Shape> lightTriangleShape1 =
 			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, lightP0, lightP2, lightP3, lightNormal));
-		std::shared_ptr<Light> triangleLight0 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape0, Vec3(0.3f, 0.3f, 0.3f) * 100));
-		std::shared_ptr<Light> triangleLight1 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape1, Vec3(0.3f, 0.3f, 0.3f) * 100));
+		//std::shared_ptr<Light> triangleLight0 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape0, Vec3(0.3f, 0.3f, 0.3f) * 2000000));
+		//std::shared_ptr<Light> triangleLight1 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape1, Vec3(0.3f, 0.3f, 0.3f) * 2000000));
+		std::shared_ptr<Light> triangleLight0 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape0, Vec3(0.3f, 0.3f, 0.3f) * 85));
+		std::shared_ptr<Light> triangleLight1 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape1, Vec3(0.3f, 0.3f, 0.3f) * 85));
 		std::shared_ptr<Material> lightMaterial = std::shared_ptr<Material>(new DiffuseMaterial(lightTexture));
 		std::shared_ptr<Primitive> triangleLightPrimitive0 =
 			std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape0, lightMaterial, triangleLight0));

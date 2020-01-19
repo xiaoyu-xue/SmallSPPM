@@ -8,6 +8,8 @@
 #include "sampling.h"
 #include "microfacet.h"
 
+#include "threading.h"
+
 NAMESPACE_BEGIN
 
 namespace BSDFCoordinate {
@@ -93,6 +95,7 @@ class BSDF {
 public:
 	BSDF(const Intersection &isect) : 
 		n(isect.n), nl(isect.nl), ng(isect.ng), ss(isect.dpdus.Norm()), ts(Cross(n, ss)) {
+		
 		//Vec3 ss, ts;
 		//CoordinateSystem(isect.nl, &ss, &ts);
 		//LocalToWorld = Transform(
@@ -106,9 +109,7 @@ public:
 		return Vec3(Dot(v, ss), Dot(v, ts), Dot(v, n));
 	}
 	Vec3 LocalToWorld(const Vec3& v) const {
-		return Vec3(ss.x * v.x + ts.x * v.y + n.x * v.z,
-			ss.y * v.x + ts.y * v.y + n.y * v.z,
-			ss.z * v.x + ts.z * v.y + n.z * v.z);
+		return v.x * ss + v.y * ts + v.z * n;
 	}
 	~BSDF(){}
 
@@ -123,7 +124,7 @@ public:
 	bool MatchScatterType(ScatterEventType flag) const;
 protected:
 	const Vec3 n, nl, ng;
-	const Vec3 ss, ts;
+	Vec3 ss, ts;
 	static constexpr int MaxBSDFs = 8;
 	BxDF* bxdfs[MaxBSDFs];
 	int nBSDFs = 0;
@@ -173,6 +174,7 @@ public:
 	Vec3 Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec2& rand) const override {
 
 		*wi = CosineSampleHemisphere(Vec2(rand[0], rand[1]));
+		if (wo.z < 0) wi->z *= -1;
 		*pdf = Pdf(wo, *wi);
 		return f(wo, *wi);
 	}
@@ -367,7 +369,7 @@ public:
 	MicrofacetReflectionBSDF(MicrofacetDistribution* distribution, Fresnel *fresnel, const Vec3& R) :
 	BxDF(ScatterEventType(BSDF_REFLECTION | BSDF_GLOSSY)),
 	distribution(distribution), fresnel(fresnel), R(R) {
-
+		//std::cout << f(Vec3(6.1, 0.2, 6.3).Norm(), Vec3(-0.3, -6.2, -0.1).Norm()) <<std::endl;
 	}
 
 	real Pdf(const Vec3& wo, const Vec3& wi) const override {
@@ -384,6 +386,9 @@ public:
 
 		// Compute PDF of _wi_ for microfacet reflection
 		*pdf = distribution->Pdf(wo, wh) / (4 * Dot(wo, wh));
+		if (std::isnan(*pdf)) {
+			std::cout << distribution->Pdf(wo, wh) << " " << (4 * Dot(wo, wh)) << std::endl;
+		}
 		return f(wo, *wi);
 	}
 
@@ -398,8 +403,6 @@ public:
 		Vec3 F = fresnel->Evaluate(Dot(wi, wh));
 		return R * distribution->D(wh) * distribution->G(wo, wi, wh) * F /
 			(4 * cosThetaI * cosThetaO);
-		//return R * distribution->D(wh) * distribution->G(wo, wi, wh) /
-		//	(4 * cosThetaI * cosThetaO);
 	}
 
 private:

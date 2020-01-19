@@ -148,6 +148,7 @@ public:
 				real scatteringPdf = bsdf->Pdf(isect.wo, wi);
 				Vec3 f = bsdf->f(isect.wo, wi);
 				VisibilityTester visibilityTester(isect, lightPoint);
+
 				if (!visibilityTester.Unoccluded(scene)) {
 					weight1 = PowerHeuristic(1, pdf, 1, scatteringPdf);
 					L1 = Li * f * std::abs(isect.n.Dot(wi)) / pdf;
@@ -165,20 +166,25 @@ public:
 			real pdf;
 			Vec3 f = bsdf->Sample_f(isect.wo, &wi, &pdf, v);
 			Intersection intersection;
-			std::shared_ptr<Shape> hitObj;
 			if (pdf != 0) {
 				real lightPdf = light->Pdf_Li(isect, wi);
-				weight2 = PowerHeuristic(1, pdf, 1, lightPdf);
-				if (scene.Intersect(isect.SpawnRay(wi), &intersection) && isect.primitive->IsLight()) {
-					std::shared_ptr<Light> emissionShape = isect.primitive->GetLight();
-					L2 = emissionShape->Emission(intersection, -wi) * f * std::abs(isect.n.Dot(wi)) / pdf;
+				if (lightPdf == 0) {
+					weight2 = 0;
 				}
-				if (std::isnan(L2.x) || std::isnan(L2.y) || std::isnan(L2.z) || std::isnan(weight2)) {
-					std::cout << L1 << " " << f << " " << pdf << weight2 << std::endl;
+				else {
+					weight2 = PowerHeuristic(1, pdf, 1, lightPdf);
+					Ray ray = isect.SpawnRay(wi);
+					if (scene.Intersect(ray, &intersection) && intersection.primitive->IsLight()) {
+						//std::cout << lightPdf << std::endl;
+						scene.QueryIntersectionInfo(ray, &intersection);
+						std::shared_ptr<Light> emissionShape = intersection.primitive->GetLight();
+						L2 = emissionShape->Emission(intersection, -wi) * f * std::abs(isect.n.Dot(wi)) / pdf;
+					}
 				}
 			}
 		}
 		//return L1 / lightSamplingPdf;
+		//return L2 / lightSamplingPdf;
 		return (L1 * weight1 + L2 * weight2) / lightSamplingPdf;
 	}
 

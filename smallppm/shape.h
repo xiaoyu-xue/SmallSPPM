@@ -34,6 +34,7 @@ public:
 		if (!Intersect(ray, &lightPoint, &t)) {
 			return 0;
 		}
+		QueryIntersectionInfo(ray, &lightPoint);
 		Vec3 d = lightPoint.hit - isect.hit;
 		real pdf = d.Dot(d) / (std::abs(lightPoint.n.Dot(-1 * wi)) * Area());
 		if (std::isinf(pdf)) return 0;

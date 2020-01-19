@@ -43,6 +43,10 @@ public:
 		n = ns;
 		this->dpdus = dpdus;
 		this->dpdvs = dpdvs;
+		//n = Cross(dpdus, dpdvs);
+		//n = (Dot(n, ng) > 0) ? n : -n;
+		//this->dpdus = dpdus;
+		//this->dpdvs = dpdvs;
 	}
 
 	void ComputeScatteringFunction(MemoryArena &arena, TransportMode mode = TransportMode::Radiance);

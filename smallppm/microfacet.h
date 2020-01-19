@@ -45,7 +45,9 @@ public:
 	}
 
 	GGXDistribution(real alphax, real alphay, bool samplevis = false) : MicrofacetDistribution(samplevis), alphax(alphax), alphay(alphay) {
-
+		//std::cout << "D: " << D(Vec3(0.1, 0.2, 0.3).Norm()) << std::endl;
+		//std::cout << "G1: " << G1(Vec3(0.5, 0.6, 0.7).Norm(), Vec3(1, 0, 0).Norm()) << std::endl;
+		//std::cout << "G: " << G(Vec3(0.5, 0.6, 0.7).Norm(), Vec3(-0.5, 0.6, 0.7).Norm(), Vec3(0.1, 0.2, 0.3).Norm()) << std::endl;
 	}
 
 	real D(const Vec3& wh) const;

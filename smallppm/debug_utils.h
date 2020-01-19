@@ -4,18 +4,18 @@
 
 NAMESPACE_BEGIN
 
-extern int debugPixel;
+extern int debugPixel[100];
 
-#define DEBUG_PIXEL(pixelX, pixelY)\
+#define DEBUG_PIXEL(pixelX, pixelY, threadIndex)\
 if (x == (pixelX) && y == pixelY){ \
-	debugPixel = 1;				   \
+	debugPixel[(threadIndex)] = 1;				   \
 }								   \
 else{                              \
-	debugPixel = 0;				   \
+	debugPixel[(threadIndex)] = 0;				   \
 }								   \
 
 
-#define DEBUG_PIXEL_IF()\
-if(debugPixel == 1)		\
+#define DEBUG_PIXEL_IF(threadIndex)\
+if(debugPixel[(threadIndex)] == 1)		\
 
 NAMESPACE_END

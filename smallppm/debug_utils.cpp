@@ -1,3 +1,3 @@
 #include "debug_utils.h"
 
-int debugPixel = 0;
+int debugPixel[100] = { 0 };

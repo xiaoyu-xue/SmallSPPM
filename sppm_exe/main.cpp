@@ -48,7 +48,7 @@
 
 //const real ALPHA = 0.66666667;
 const real ALPHA = 0.75;
-const int64  render_stage_number = 300000;
+const int64  render_stage_number = 1000000;
 
 void TestSppm(int argc, char* argv[]) {
 	//clock_t begin = clock();
@@ -476,7 +476,7 @@ void TestSPPM5(int argc, char* argv[]) {
 	std::shared_ptr<SamplerEnum> haltonSamplerEnum = std::shared_ptr<SamplerEnum>(new HaltonEnum((unsigned)resX, (unsigned)resY));
 	real alpha = 0.66666667;
 	std::shared_ptr<Integrator> integrator =
-		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 50, 0.05, alpha, false, haltonSampler, haltonSamplerEnum, true));
+		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 50, 0.05, alpha, true, haltonSampler, haltonSamplerEnum, true));
 	fprintf(stderr, "Load Scene ...\n");
 
 	CornellBoxMesh::SetScene(scene);
@@ -489,7 +489,7 @@ void TestSPPM5(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("cornellboxMeshObj13.bmp");
+	film->SetFileName("cornellboxMeshObj15.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();

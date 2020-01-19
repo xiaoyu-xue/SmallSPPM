@@ -80,8 +80,8 @@ public:
 		n0 = transform.TransformNormal(n0);
 		n1 = transform.TransformNormal(n1);
 		n2 = transform.TransformNormal(n2);
-		faceNormal = transform.TransformNormal(faceNormal);
-
+		//faceNormal = transform.TransformNormal(faceNormal);
+		faceNormal = Cross(p1 - p0, p2 - p1).Norm();
 		Initialize();
 	}
 

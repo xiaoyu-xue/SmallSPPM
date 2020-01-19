@@ -19,15 +19,6 @@ void SPPM::GeneratePhoton(const Scene& scene, Ray* pr, Vec3* f, real u, const Ve
 }
 
 void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray, int64 pixel, MemoryArena& arena) {
-	//{
-	//	int x = 365, y = 550;
-	//	if(pixel == x + scene.GetCamera()->GetFilm()->resX * y) {
-	//		debugPixel = 1;
-	//		std::cout << "--------------------------------------------------------" << std::endl;
-	//	}else {
-	//		debugPixel = 0;
-	//	}
-	//}
 	Ray r = ray;
 	bool deltaBoundEvent = false;
 	Vec3 importance(1.0, 1.0, 1.0);
@@ -41,22 +32,7 @@ void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray,
 		real pdf;
 
 #ifdef _DEBUG
-		//int primitiveId = isect.primitive->primitiveId;
 #endif
-
-		//{
-		//	int x = 223, y = 387;
-		//	if (pixel == x + scene.GetCamera()->GetFilm()->resX * y) {
-		//		//debugPixel = 1;
-		//		//std::cout << "isect: " << isect.hit << " " << isect.rayEps << std::endl;
-		//		//std::cout << "first hit:" << hitObj->GetId() << std::endl;
-		//		//std::cout << isect.hit << "\n" << isect.nl <<"\n" << isect.nl << "\n" << t << std::endl;
-		//	}
-		//	else {
-		//		debugPixel = 0;
-		//	}
-		//}
-
 
 		if (bsdf->IsDelta()) {
 			Vec3 f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec3(rand(), rand(), rand()));
@@ -75,13 +51,6 @@ void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray,
 			directillum[hp.pix] = directillum[hp.pix] + Ld;
 			Vec3 f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec3(rand(), rand(), rand()));
 			importance = f * std::abs(wi.Dot(isect.n)) * importance / pdf;
-
-			if (std::isnan(importance.x) || std::isnan(importance.y) || std::isnan(importance.z)) {
-				std::cout << "importance nan," << " pdf: " << pdf << std::endl;
-			}
-			if (pixel == 613 * scene.GetCamera()->GetFilm()->resX + 446) {
-				std::cout << directillum[pixel] << " " << hp.importance << std::endl;
-			}
 
 			r = isect.SpawnRay(wi);
 			deltaBoundEvent = false;
@@ -108,9 +77,6 @@ void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray,
 			else {
 				Vec3 Ld = hp.importance * DirectIllumination(scene, isect, bsdf, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()));
 				directillum[hp.pix] = directillum[hp.pix] + Ld;
-				if (pixel == 613 * scene.GetCamera()->GetFilm()->resX + 446) {
-					std::cout << directillum[pixel] << " " << hp.importance << std::endl;
-				}
 				//{
 				//	if (debugPixel == 1) {
 				//		std::cout << "direction illumination: " << hp.importance << " " << Ld << " " << directillum[hp.pix] << std::endl;
@@ -226,7 +192,6 @@ void SPPM::Render(const Scene& scene) {
 		std::vector<MemoryArena> memoryArenas(ThreadsNumber());
 		ParallelFor(0, resY, [&](int y) {
 			for (int x = 0; x < resX; x++) {
-				DEBUG_PIXEL(446, 613);
 				MemoryArena& arena = memoryArenas[ThreadIndex()];
 				int pixel = x + y * resX;
 				hitPoints[pixel].used = false;
@@ -274,7 +239,7 @@ void SPPM::Render(const Scene& scene) {
 					photonNums[hp.pix] = photonNums[hp.pix] + alpha * hp.m;
 					hp.m = 0;
 				}
-				});
+			});
 		}
 
 		real percentage = 100.f * (iter + 1) / nIterations;
@@ -286,36 +251,9 @@ void SPPM::Render(const Scene& scene) {
 	ParallelFor(0, (int)flux.size(), [&](int i) {
 		c[i] = c[i] + flux[i] * (1.f / (PI * radius2[i] * nIterations * nPhotonsPerRenderStage))
 			+ directillum[i] / (real)nIterations;
-		if (i == 613 * resX + 446) { 
-			std::cout << c[i] << " " << flux[i] << " " << directillum[i] << " " << 
-				hitPoints[i].importance << std::endl;
-			if (std::isnan(directillum[i].x) || std::isnan(directillum[i].y) || std::isnan(directillum[i].z)) {
-				std::cout << "nan" << std::endl;
-			}
-		}
 
-		//if (std::isnan(c[i].x)  || std::isnan(c[i].y)  || std::isnan(c[i].z)) {
-		//	std::cout << i % resX << " " << i / resX << " "<< i << std::endl;
-		//}
-		//c[i] = c[i] + directillum[i] / nIterations;
 		});
-	//{
-	//	for (int x = 356; x <= 374; ++x) {
-	//		for (int y = 545; y <= 560; ++y) {
-	//			int index = x + y * resX;
-	//			if (c[index].x >= 1 || c[index].y >= 1 || c[index].z >= 1) {
-	//				std::cout << c[index] << std::endl;
-	//				std::cout << x << " " << y << std::endl;
-	//			}
 
-	//				
-	//		}
-	//	}
-	//	int x = 365, y = 550;
-	//	int index = x + y * resX;
-	//	std::cout << c[index] << std::endl;
-	//}
-	//std::cout << flux[591714] << " " << radius2[591714] << std::endl;
 	scene.GetCamera()->GetFilm()->SetImage(c);
 	//GenerateRadiusImage(scene);
 }

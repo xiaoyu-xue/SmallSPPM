@@ -63,7 +63,7 @@ void Mesh::LoadFromFile(std::string inputfile, bool reverseVertices) {
 				uvs.push_back(Vector2(tx, ty));
 			}
 			if (!has_normal) {
-				Vec3* a = &vertices[vertices.size()] - 3;
+				Vec3* a = &vertices[vertices.size() - 1] - 2;
 				Vec3 generated_normal = Cross(a[1] - a[0], a[2] - a[0]);
 				if (generated_normal.Length() > 1e-6f) {
 					generated_normal = generated_normal.Norm();
