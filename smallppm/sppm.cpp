@@ -24,7 +24,13 @@ void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray,
 	Vec3 importance(1.0, 1.0, 1.0);
 	for (int i = 0; i < maxDepth; ++i) {
 		Intersection isect;
-		if (!scene.Intersect(r, &isect)) return;
+		if (!scene.Intersect(r, &isect)) {
+			//Environment
+			if (i == 0 && scene.GetEnvironmentLight()) {
+				directillum[pixel] += importance * scene.GetEnvironmentLight()->Emission(r);
+			}
+			return;
+		}
 		scene.QueryIntersectionInfo(r, &isect);
 		isect.ComputeScatteringFunction(arena);
 		BSDF* bsdf = isect.bsdf;
@@ -205,42 +211,42 @@ void SPPM::Render(const Scene& scene) {
 			}
 		});
 
-		hashGrid.ClearHashGrid();
-		real maxRadius2 = 0.0;
-		for (int i = 0; i < (int)hitPoints.size(); ++i) {
-			HPoint& hp = hitPoints[i];
-			if (hp.used) {
-				maxRadius2 = std::max(maxRadius2, radius2[i]);
-				hashGrid.AddPoint(std::move(std::pair<Vec3, HPoint*>(hp.pos, &hp)), std::sqrt(radius2[i]));
-			}
-		}
-		hashGrid.BuildHashGrid(std::sqrt(maxRadius2) + eps);
+		//hashGrid.ClearHashGrid();
+		//real maxRadius2 = 0.0;
+		//for (int i = 0; i < (int)hitPoints.size(); ++i) {
+		//	HPoint& hp = hitPoints[i];
+		//	if (hp.used) {
+		//		maxRadius2 = std::max(maxRadius2, radius2[i]);
+		//		hashGrid.AddPoint(std::move(std::pair<Vec3, HPoint*>(hp.pos, &hp)), std::sqrt(radius2[i]));
+		//	}
+		//}
+		//hashGrid.BuildHashGrid(std::sqrt(maxRadius2) + eps);
 
-		//Trace photon
-		ParallelFor((int64)0, nPhotonsPerRenderStage, [&](int64 j) {
-			MemoryArena& arena = memoryArenas[ThreadIndex()];
-			Ray ray;
-			Vec3 photonFlux;
-			RandomStateSequence rand(sampler, iter * nPhotonsPerRenderStage + j);
-			GeneratePhoton(scene, &ray, &photonFlux, rand(), Vec2(rand(), rand()), Vec2(rand(), rand()));
-			TracePhoton(scene, rand, ray, photonFlux, arena);
-			arena.Reset();
-			});
+		////Trace photon
+		//ParallelFor((int64)0, nPhotonsPerRenderStage, [&](int64 j) {
+		//	MemoryArena& arena = memoryArenas[ThreadIndex()];
+		//	Ray ray;
+		//	Vec3 photonFlux;
+		//	RandomStateSequence rand(sampler, iter * nPhotonsPerRenderStage + j);
+		//	GeneratePhoton(scene, &ray, &photonFlux, rand(), Vec2(rand(), rand()), Vec2(rand(), rand()));
+		//	TracePhoton(scene, rand, ray, photonFlux, arena);
+		//	arena.Reset();
+		//	});
 
-		//Update flux, radius, photonNums if batchShrink
-		if (batchShrink) {
-			size_t nHitPoints = hitPoints.size();
-			ParallelFor(size_t(0), nHitPoints, [&](size_t i) {
-				HPoint& hp = hitPoints[i];
-				if (hp.m > 0) {
-					real g = (photonNums[hp.pix] + alpha * hp.m) / (photonNums[hp.pix] + hp.m);
-					radius2[hp.pix] = radius2[hp.pix] * g;
-					flux[hp.pix] = flux[hp.pix] * g;
-					photonNums[hp.pix] = photonNums[hp.pix] + alpha * hp.m;
-					hp.m = 0;
-				}
-			});
-		}
+		////Update flux, radius, photonNums if batchShrink
+		//if (batchShrink) {
+		//	size_t nHitPoints = hitPoints.size();
+		//	ParallelFor(size_t(0), nHitPoints, [&](size_t i) {
+		//		HPoint& hp = hitPoints[i];
+		//		if (hp.m > 0) {
+		//			real g = (photonNums[hp.pix] + alpha * hp.m) / (photonNums[hp.pix] + hp.m);
+		//			radius2[hp.pix] = radius2[hp.pix] * g;
+		//			flux[hp.pix] = flux[hp.pix] * g;
+		//			photonNums[hp.pix] = photonNums[hp.pix] + alpha * hp.m;
+		//			hp.m = 0;
+		//		}
+		//	});
+		//}
 
 		real percentage = 100.f * (iter + 1) / nIterations;
 		fprintf(stderr, "\rIterations: %5.2f%%", percentage);

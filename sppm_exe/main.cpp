@@ -480,7 +480,8 @@ void TestSPPM5(int argc, char* argv[]) {
 	fprintf(stderr, "Load Scene ...\n");
 
 	//CornellBoxMesh::SetScene(scene);
-	CornellBoxWater::SetScene(scene);
+	//CornellBoxWater::SetScene(scene);
+	EnvironmentMapScene::SetScene(scene);
 
 	//std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BruteForce());
 	//std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new KdTreeAccel(scene->GetPrimitives()));
@@ -489,7 +490,7 @@ void TestSPPM5(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("cornellboxMeshObj21.bmp");
+	film->SetFileName("cornellboxEnv.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();

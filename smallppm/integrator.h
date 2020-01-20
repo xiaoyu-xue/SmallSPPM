@@ -152,9 +152,9 @@ public:
 				if (!visibilityTester.Unoccluded(scene)) {
 					weight1 = PowerHeuristic(1, pdf, 1, scatteringPdf);
 					L1 = Li * f * std::abs(isect.n.Dot(wi)) / pdf;
-					if (std::isnan(L1.x) || std::isnan(L1.y) || std::isnan(L1.z)) {
-						std::cout << L1 << " " << f << " " << scatteringPdf << " " << pdf << std::endl;
-					}
+					//if (std::isnan(L1.x) || std::isnan(L1.y) || std::isnan(L1.z)) {
+					//	std::cout << L1 << " " << f << " " << scatteringPdf << " " << pdf << std::endl;
+					//}
 				}
 
 			}

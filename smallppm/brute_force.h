@@ -12,7 +12,9 @@ public:
 
 	BruteForce(const std::vector<std::shared_ptr<Primitive>> primitives) :
 		primitives(primitives) {
-
+		for (int i = 0; i < primitives.size(); ++i) {
+			bounds = Union(bounds, primitives[i]->WorldBound());
+		}
 	}
 
 	bool Intersect(const Ray& r, Intersection* isect) const override {
@@ -38,8 +40,11 @@ public:
 	void SetPrimitives(const std::vector<std::shared_ptr<Primitive>> &pPrimitives) override {
 		primitives = pPrimitives;
 	}
+
+	AABB WorldBound() const { return bounds; }
 private:
 	std::vector<std::shared_ptr<Primitive>> primitives;
+	AABB bounds;
 };
 
 NAMESPACE_END

@@ -171,6 +171,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="debug_utils.cpp" />
     <ClCompile Include="efloat.cpp" />
+    <ClCompile Include="environment_light.cpp" />
     <ClCompile Include="image_io.cpp" />
     <ClCompile Include="intersection.cpp" />
     <ClCompile Include="kdtree_accel.cpp" />
@@ -209,6 +210,8 @@
     <ClInclude Include="def.h" />
     <ClInclude Include="diffuse.h" />
     <ClInclude Include="efloat.h" />
+    <ClInclude Include="environment_light.h" />
+    <ClInclude Include="environment_map.h" />
     <ClInclude Include="film.h" />
     <ClInclude Include="filter.h" />
     <ClInclude Include="geometry_util.h" />

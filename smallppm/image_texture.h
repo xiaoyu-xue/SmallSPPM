@@ -69,7 +69,18 @@ public:
 		return texel;
 	}
 
-private:
+	int Height() const {
+		return texture.res[0];
+	}
+
+	int Width() const {
+		return texture.res[1];
+	}
+
+	Vec3 ElementAt(int i, int j) const {
+		return texture[texture.res[0] - j - 1][i];
+	}
+public:
 	Array2D<T> texture;
 	const WrapMode wrapMode;
 	const FilterMode filterMode;

@@ -133,6 +133,9 @@
     <Filter Include="Source Files\imageio">
       <UniqueIdentifier>{a8d36f7d-5012-4df9-a4b9-bcadd179f004}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\light">
+      <UniqueIdentifier>{7cf5bb47-917d-4cd8-ba8d-87bc4b87ed6d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sampler.cpp">
@@ -209,6 +212,9 @@
     </ClCompile>
     <ClCompile Include="bvh_accel.cpp">
       <Filter>Source Files\accelerator</Filter>
+    </ClCompile>
+    <ClCompile Include="environment_light.cpp">
+      <Filter>Source Files\light</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -379,6 +385,12 @@
     </ClInclude>
     <ClInclude Include="bvh_accel.h">
       <Filter>Header Files\accelerator</Filter>
+    </ClInclude>
+    <ClInclude Include="environment_map.h">
+      <Filter>Header Files\light</Filter>
+    </ClInclude>
+    <ClInclude Include="environment_light.h">
+      <Filter>Header Files\light</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
