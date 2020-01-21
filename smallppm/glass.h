@@ -30,7 +30,7 @@ public:
 	void ComputeScatteringFunction(Intersection* isect, MemoryArena &arena,
 		TransportMode mode = TransportMode::Radiance) const {
 		isect->bsdf = ARENA_ALLOC(arena, BSDF)(*isect);
-		isect->bsdf->Add(ARENA_ALLOC(arena, TransmissionBSDF)(kt->Sample(*isect), kt->Sample(*isect), mode, eta1, eta2));
+		isect->bsdf->Add(ARENA_ALLOC(arena, TransmissionBSDF)(kt->Sample(*isect), kr->Sample(*isect), mode, eta1, eta2));
 	}
 private:
 	std::shared_ptr<Texture<Vec3>> kr, kt;

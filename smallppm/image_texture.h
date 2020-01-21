@@ -79,6 +79,8 @@ public:
 
 	Vec3 ElementAt(int i, int j) const {
 		return texture[texture.res[0] - j - 1][i];
+		//return texture[j][i];
+
 	}
 public:
 	Array2D<T> texture;

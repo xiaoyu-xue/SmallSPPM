@@ -64,7 +64,7 @@ struct AABB {
 
 	FORCE_INLINE void GetBoundingSphere(Vec3* center, real* radius) const {
 		*center = (minPoint + maxPoint) * 0.5;
-		*radius = (maxPoint - minPoint).Length();
+		*radius = (maxPoint - minPoint).Length() * 0.5;
 	}
 };
 

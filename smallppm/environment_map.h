@@ -15,8 +15,11 @@ public:
 		real uv[2];
 		real pdf;
 		distribution->SampleContinuous(u[0], u[1], uv, &pdf);
-
-		*pdfW = pdf / (2 * PI * PI * sinTheta(uv[1], image->Height()));
+		real sinTheta = SinTheta(uv[1], image->Height());
+		if (sinTheta == 0)
+			*pdfW = 0;
+		else
+			*pdfW = pdf / (2 * PI * PI * sinTheta);
 		*dir = LatLongToDir(uv[0], uv[1]);
 
 		return LookupRadiance(uv[0], uv[1]);
@@ -29,7 +32,13 @@ public:
 
 		if (pdfW) {
 			Vec2 uv = DirToLatLong(normDir);
-			*pdfW = distribution->Pdf(uv[0], uv[1]) / (2 * PI * PI * sinTheta(uv[1], image->Height()));
+			real sinTheta = SinTheta(uv[1], image->Height());
+
+			if (sinTheta == 0) 
+				*pdfW = 0;
+			else
+				*pdfW = distribution->Pdf(uv[0], uv[1]) / (2 * PI * PI * sinTheta);
+
 		}
 		return radiance;
 	}
@@ -37,7 +46,11 @@ public:
 	real PdfDir(const Vec3& dir) const {
 		Vec3 normDir = dir.Norm();
 		Vec2 uv = DirToLatLong(normDir);
-		return distribution->Pdf(uv[0], uv[1]) / (2 * PI * PI * sinTheta(uv[1], image->Height()));
+		real sinTheta = SinTheta(uv[1], image->Height());
+		if (sinTheta == 0)
+			return 0;
+		else 
+			return distribution->Pdf(uv[0], uv[1]) / (2 * PI * PI * sinTheta);
 	}
 
 	Vec3 LookupRadiance(real u, real v) const {
@@ -87,13 +100,14 @@ private:
 		real theta = std::acos(dir.y);
 
 		real u = Clamp(0.5 - phi * 0.5f * INV_PI, 0, 1);
+		//real u = ((phi < 0.f) ? phi + 2 * PI : phi) / (2 * PI);
 		real v = Clamp(theta * INV_PI, 0, 1);
 		
 		return Vec2(u, v);
 	}
 
 
-	real sinTheta(const real v, const real height) const {
+	real SinTheta(const real v, const real height) const {
 		real result;
 		if (v < 1)
 			result = std::sin(PI * (int)((v * height) + 0.5f) / (real)(height));

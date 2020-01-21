@@ -540,15 +540,15 @@ public:
 		//scene->AddMesh(*waterMesh, transformWater);
 
 
-		std::shared_ptr<Mesh> objMesh = std::shared_ptr<Mesh>(new Mesh());
-		objMesh->LoadFromFile("..\\meshs\\Alucy.obj");
+		//std::shared_ptr<Mesh> objMesh = std::shared_ptr<Mesh>(new Mesh());
+		//objMesh->LoadFromFile("..\\meshs\\Alucy.obj");
 
-		Transform transformWater =
-			Transform::Translate(Vec3(0, -1, 0)) *
-			Transform::RotateY(60) * 
-			Transform::Scale(0.0019, 0.0019, 0.0019);
-		objMesh->SetMaterial(glassMeshMaterial);
-		scene->AddMesh(*objMesh, transformWater);
+		//Transform transformWater =
+		//	Transform::Translate(Vec3(0, -1, 0)) *
+		//	Transform::RotateY(60) * 
+		//	Transform::Scale(0.0019, 0.0019, 0.0019);
+		//objMesh->SetMaterial(glassMeshMaterial);
+		//scene->AddMesh(*objMesh, transformWater);
 
 
 		//Light
@@ -788,11 +788,11 @@ public:
 		std::shared_ptr<Texture<Vec3>> blueConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(.25f, .25f, .75f)));
 		std::shared_ptr<Texture<Vec3>> whiteConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(.75f, .75f, .75f)));
 		std::shared_ptr<Texture<Vec3>> fullWhiteConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1, 1, 1)));
-
+		std::shared_ptr<Texture<Vec3>> purpleConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(0.9999f, 0.75f, 0.9999f)));
 
 		std::shared_ptr<Texture<Vec3>> objWhiteConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(.5f, .5f, .5f)));
 
-		std::shared_ptr<Material> glassMeshMaterial = std::shared_ptr<Material>(new GlassMaterial(fullWhiteConstant, fullWhiteConstant));
+		std::shared_ptr<Material> glassMeshMaterial = std::shared_ptr<Material>(new GlassMaterial(purpleConstant, purpleConstant));
 		std::shared_ptr<Material> diffuseMeshMaterial = std::shared_ptr<Material>(new DiffuseMaterial(objWhiteConstant));
 		std::shared_ptr<Material> mirrorMeshMaterial = std::shared_ptr<Material>(new MirrorMaterial(fullWhiteConstant));
 		std::shared_ptr<Texture<Vec3>> eta = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1.5, 1.5, 1.5)));
@@ -829,7 +829,11 @@ public:
 		scene->AddPrimitive(botomTriangle2);
 
 
-
+		////Diffuse Ball
+		//std::shared_ptr<Shape> diffuseBallShape = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 0.35f, Vec3(0.f, -0.4f, 0.f)));
+		//std::shared_ptr<Material> diffuseBallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
+		//std::shared_ptr<Primitive> diffuseBall = std::shared_ptr<Primitive>(new GeometryPrimitive(diffuseBallShape, diffuseBallMaterial));
+		//scene->AddPrimitive(diffuseBall);
 
 		std::shared_ptr<Mesh> mesh = std::shared_ptr<Mesh>(new Mesh());
 
@@ -837,6 +841,15 @@ public:
 		mesh->SetMaterial(glassMeshMaterial);
 		Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
 		scene->AddMesh(*mesh, transform);
+
+		//std::shared_ptr<Mesh> objMesh = std::shared_ptr<Mesh>(new Mesh());
+		//objMesh->LoadFromFile("..\\meshs\\Alucy.obj");
+		//Transform transformObj =
+		//	Transform::Translate(Vec3(0, -1, 0)) *
+		//	Transform::RotateY(60) * 
+		//	Transform::Scale(0.0019, 0.0019, 0.0019);
+		//objMesh->SetMaterial(glassMeshMaterial);
+		//scene->AddMesh(*objMesh, transformObj);
 
 		//Light
 		std::shared_ptr<Light> light = std::shared_ptr<Light>(new EnvironmentLight("..\\media\\pictures\\uffizi-large.hdr", 0));

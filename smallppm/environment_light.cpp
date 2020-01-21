@@ -30,6 +30,7 @@ Vec3 EnvironmentLight::SampleLight(Intersection* isect, Vec3* dir, real* pdfPos,
 	isect->hit = pDisk;
 
 	*pdfPos = 1 / (PI * radius * radius);
+	//std::cout << radiance << " pdfDir: " << *pdfDir << " pdfPos: " << *pdfPos << std::endl;
 	return radiance;
 }
 

@@ -144,7 +144,7 @@ public:
 			Intersection lightPoint;
 			real pdf;
 			Vec3 Li = light->Sample_Li(isect, &wi, &pdf, &lightPoint, u);
-			if (pdf > 0) {
+			if (pdf > 0 && Li != Vec3(0, 0, 0)) {
 				real scatteringPdf = bsdf->Pdf(isect.wo, wi);
 				Vec3 f = bsdf->f(isect.wo, wi);
 				VisibilityTester visibilityTester(isect, lightPoint);
@@ -155,6 +155,17 @@ public:
 					//if (std::isnan(L1.x) || std::isnan(L1.y) || std::isnan(L1.z)) {
 					//	std::cout << L1 << " " << f << " " << scatteringPdf << " " << pdf << std::endl;
 					//}
+					Vec3 LL = L1 * weight1 / lightSamplingPdf;
+					if ((LL.x < 0.00001 && LL.y < 0.00001 && LL.z < 0.00001) && 
+						(isect.primitive->GetShape()->shapeId == 0 || isect.primitive->GetShape()->shapeId == 1)) {
+						if ((L1.x > 0.00001 && L1.y > 0.00001 && L1.z > 0.00001)) {
+							//std::cout << "Li: " << Li << " f: " << f
+							//	<< " LL: " << LL
+							//	<< " pdf: " << pdf
+							//	<< " scatteringPdf: " << scatteringPdf
+							//	<< " weight: " << weight1 << std::endl << std::endl;
+						}
+					}
 				}
 
 			}
@@ -188,9 +199,8 @@ public:
 				}
 			}
 		}
-
-		//return L1 / lightSamplingPdf;
-		//return L2 / lightSamplingPdf;
+		//return L1 * weight1 / lightSamplingPdf;
+		//return L2 * weight2 / lightSamplingPdf;
 		return (L1 * weight1 + L2 * weight2) / lightSamplingPdf;
 	}
 

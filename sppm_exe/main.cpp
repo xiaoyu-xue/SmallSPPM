@@ -413,7 +413,7 @@ void TestProjection() {
 void TestSPPM4(int argc, char* argv[]) {
 	clock_t begin = clock();
 
-	int resX = 1024, resY = 1024;
+	int resX = 1024 * 2, resY = 1024 * 2;
 	int nIterations = (argc == 2) ? atol(argv[1]) : 256;
 
 	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY));
@@ -490,7 +490,7 @@ void TestSPPM5(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("cornellboxEnv.bmp");
+	film->SetFileName("cornellboxEnv3.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
