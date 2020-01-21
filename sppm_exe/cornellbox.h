@@ -833,10 +833,10 @@ public:
 
 		std::shared_ptr<Mesh> mesh = std::shared_ptr<Mesh>(new Mesh());
 
-		//mesh->LoadFromFile("..\\meshs\\bunny3.obj");
-		//mesh->SetMaterial(diffuseMeshMaterial);
-		//Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
-		//scene->AddMesh(*mesh, transform);
+		mesh->LoadFromFile("..\\meshs\\bunny3.obj");
+		mesh->SetMaterial(glassMeshMaterial);
+		Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
+		scene->AddMesh(*mesh, transform);
 
 		//Light
 		std::shared_ptr<Light> light = std::shared_ptr<Light>(new EnvironmentLight("..\\media\\pictures\\uffizi-large.hdr", 0));

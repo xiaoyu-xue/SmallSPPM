@@ -12,6 +12,10 @@ Vec3 EnvironmentLight::Emission(const Ray& ray) const {
 	return envMap->Lookup(w);
 }
 
+Vec3 EnvironmentLight::Emission(const Vec3& dir, const Vec3 &normal) const {
+	return envMap->Lookup(dir.Norm());
+}
+
 Vec3 EnvironmentLight::SampleLight(Intersection* isect, Vec3* dir, real* pdfPos,
 	real* pdfDir, const Vec2& u, const Vec2& v) const {
 	Vec3 sampledDir;
@@ -34,7 +38,7 @@ Vec3 EnvironmentLight::Sample_Li(const Intersection& isect, Vec3* wi, real* pdf,
 	Intersection* lightPoint, const Vec2& u) const {
 	Vec3 sampledDir;
 	Vec3 radiance = envMap->Sample(&sampledDir, pdf, u);
-	*wi = -sampledDir;
+	*wi = sampledDir.Norm();
 	lightPoint->hit = *wi * (2 * radius);
 	return radiance;
 }

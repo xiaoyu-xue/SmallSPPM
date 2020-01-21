@@ -25,8 +25,8 @@ void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray,
 	for (int i = 0; i < maxDepth; ++i) {
 		Intersection isect;
 		if (!scene.Intersect(r, &isect)) {
-			//Environment
-			if (i == 0 && scene.GetEnvironmentLight()) {
+			//Environment 
+			if (scene.GetEnvironmentLight()) {
 				directillum[pixel] += importance * scene.GetEnvironmentLight()->Emission(r);
 			}
 			return;

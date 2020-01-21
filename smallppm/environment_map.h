@@ -29,7 +29,7 @@ public:
 
 		if (pdfW) {
 			Vec2 uv = DirToLatLong(normDir);
-			*pdfW = distribution->Pdf(uv[0], uv[1]) / sinTheta(uv[1], image->Height());
+			*pdfW = distribution->Pdf(uv[0], uv[1]) / (2 * PI * PI * sinTheta(uv[1], image->Height()));
 		}
 		return radiance;
 	}
@@ -37,15 +37,16 @@ public:
 	real PdfDir(const Vec3& dir) const {
 		Vec3 normDir = dir.Norm();
 		Vec2 uv = DirToLatLong(normDir);
-		return distribution->Pdf(uv[0], uv[1]);
+		return distribution->Pdf(uv[0], uv[1]) / (2 * PI * PI * sinTheta(uv[1], image->Height()));
 	}
 
 	Vec3 LookupRadiance(real u, real v) const {
-		return image->Sample(Vec2(u, v)) * scale;
+		return image->Sample(Vec2(u, 1 - v)) * scale;
 	}
 private:
 
 	void LoadImage(const std::string& filename, real rotate, real scale) {
+
 		ImageTexture<Vec3>* imageTexture = new ImageTexture<Vec3>(filename);
 		image.reset(imageTexture);
 		
@@ -75,12 +76,15 @@ private:
 		
 		real sinTheta = std::sin(theta);
 
-		return Vec3(-sinTheta * std::cos(phi), sinTheta * std::sin(phi), std::cos(theta));
+		//return Vec3(sinTheta * std::cos(phi), sinTheta * std::sin(phi), std::cos(theta));
+		return Vec3(sinTheta * std::cos(phi), std::cos(theta), sinTheta * std::sin(phi));
 	}
 
 	Vec2 DirToLatLong(const Vec3& dir) const {
-		real phi = (dir.x != 0 || dir.y != 0) ? std::atan2f(dir.y, dir.x) : 0;
-		real theta = std::acos(dir.z);
+		//real phi = (dir.x != 0 || dir.y != 0) ? std::atan2f(dir.y, dir.x) : 0;
+		//real theta = std::acos(dir.z);
+		real phi = (dir.x != 0 || dir.z != 0) ? std::atan2f(dir.z, dir.x) : 0;
+		real theta = std::acos(dir.y);
 
 		real u = Clamp(0.5 - phi * 0.5f * INV_PI, 0, 1);
 		real v = Clamp(theta * INV_PI, 0, 1);
@@ -94,7 +98,7 @@ private:
 		if (v < 1)
 			result = std::sin(PI * (int)((v * height) + 0.5f) / (real)(height));
 		else
-			result = std::sin(PI * (real)((height - 1) + 0.5f) / (real)height);
+			result = std::sin(PI * (real)((height - 1) + 0.5f) / (real)(height));
 
 		return result;
 	}

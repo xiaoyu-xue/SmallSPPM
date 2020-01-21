@@ -174,15 +174,21 @@ public:
 				else {
 					weight2 = PowerHeuristic(1, pdf, 1, lightPdf);
 					Ray ray = isect.SpawnRay(wi);
-					if (scene.Intersect(ray, &intersection) && intersection.primitive->IsLight()) {
-						//std::cout << lightPdf << std::endl;
-						scene.QueryIntersectionInfo(ray, &intersection);
-						std::shared_ptr<Light> emissionShape = intersection.primitive->GetLight();
-						L2 = emissionShape->Emission(intersection, -wi) * f * std::abs(isect.n.Dot(wi)) / pdf;
+					if (scene.Intersect(ray, &intersection)) {
+						if(intersection.primitive->IsLight() && intersection.primitive->GetLight() == light){
+							//std::cout << lightPdf << std::endl;
+							scene.QueryIntersectionInfo(ray, &intersection);
+							std::shared_ptr<Light> emissionShape = intersection.primitive->GetLight();
+							L2 = emissionShape->Emission(intersection, -wi) * f * std::abs(isect.n.Dot(wi)) / pdf;
+						}
+					}
+					else if(scene.GetEnvironmentLight() == light){
+						L2 = light->Emission(wi);
 					}
 				}
 			}
 		}
+
 		//return L1 / lightSamplingPdf;
 		//return L2 / lightSamplingPdf;
 		return (L1 * weight1 + L2 * weight2) / lightSamplingPdf;

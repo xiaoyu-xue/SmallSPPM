@@ -14,6 +14,7 @@ public:
 	virtual Vec3 Emission() const = 0;
 	virtual Vec3 Emission(const Intersection& isect, const Vec3& w) const { return Vec3(); }
 	virtual Vec3 Emission(const Ray& ray) const { return Vec3(); }
+	virtual Vec3 Emission(const Vec3& dir, const Vec3 &normal = Vec3()) const { return Vec3(); }
 	virtual void Initialize(const Scene& scene){}
 	virtual Vec3 SampleLight(Intersection *isect, Vec3 *dir, real *pdfPos, real *pdfDir, const Vec2 &u, const Vec2 &v) const {
 		SampleOnLight(isect, dir, pdfPos, pdfDir, u, v);
