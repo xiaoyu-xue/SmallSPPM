@@ -199,7 +199,7 @@ public:
 				}
 			}
 		}
-		//return L1 / lightSamplingPdf;
+		//return L1 * weight1 / lightSamplingPdf;
 		//return L2 / lightSamplingPdf;
 		return (L1 * weight1 + L2 * weight2) / lightSamplingPdf;
 	}

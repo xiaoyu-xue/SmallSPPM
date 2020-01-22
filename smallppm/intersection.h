@@ -62,6 +62,7 @@ public:
 
 	Ray SpawnRay(const Vec3 &d) const {
 		Vec3 o = OffsetRayOrigin(hit, pError, nl, d);
+		//Vec3 o = hit + d * 0.001;
 		return Ray(o, d, Infinity, 0.f);
 	}
 

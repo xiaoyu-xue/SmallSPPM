@@ -105,7 +105,7 @@ void SPPM::TracePhoton(const Scene& scene, StateSequence& rand, const Ray& ray, 
 			//r = isect.SpawnRay(wi);
 		}
 		else {
-			if (i == 0) {
+			if (i > 0) {
 				std::vector<HPoint*>& hp = hashGrid.GetGrid(isect.hit);
 				for (HPoint* hitpoint : hp) {
 					//Use spinlock, but racing condition is rare when using QMC
@@ -217,7 +217,7 @@ void SPPM::Render(const Scene& scene) {
 			GeneratePhoton(scene, &ray, &photonFlux, rand(), Vec2(rand(), rand()), Vec2(rand(), rand()));
 			TracePhoton(scene, rand, ray, photonFlux, arena);
 			arena.Reset();
-			});
+		});
 
 		//Update flux, radius, photonNums if batchShrink
 		if (batchShrink) {
@@ -241,10 +241,10 @@ void SPPM::Render(const Scene& scene) {
 	// density estimation
 	std::cout << "\nFlux size: " << flux.size() << std::endl;
 	ParallelFor(0, (int)flux.size(), [&](int i) {
-		//c[i] = c[i] + flux[i] * (1.f / (PI * radius2[i] * nIterations * nPhotonsPerRenderStage))
-		//	+ directillum[i] / (real)nIterations;
-		c[i] = c[i] + flux[i] * (1.f / (PI * radius2[i] * nIterations * nPhotonsPerRenderStage));
-		});
+		c[i] = c[i] + flux[i] * (1.f / (PI * radius2[i] * nIterations * nPhotonsPerRenderStage))
+			+ directillum[i] / (real)nIterations;
+		//c[i] = c[i] + flux[i] * (1.f / (PI * radius2[i] * nIterations * nPhotonsPerRenderStage));
+	});
 
 	scene.GetCamera()->GetFilm()->SetImage(c);
 	//GenerateRadiusImage(scene);

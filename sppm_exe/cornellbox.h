@@ -786,7 +786,7 @@ public:
 		//texture
 		std::shared_ptr<Texture<Vec3>> redConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(.75f, .25f, .25f)));
 		std::shared_ptr<Texture<Vec3>> blueConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(.25f, .25f, .75f)));
-		std::shared_ptr<Texture<Vec3>> whiteConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(.75f, .75f, .75f)));
+		std::shared_ptr<Texture<Vec3>> whiteConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(.55f, .55f, .55f)));
 		std::shared_ptr<Texture<Vec3>> fullWhiteConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1, 1, 1)));
 		std::shared_ptr<Texture<Vec3>> purpleConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(0.9999f, 0.75f, 0.9999f)));
 
@@ -839,7 +839,7 @@ public:
 
 		mesh->LoadFromFile("..\\meshs\\bunny3.obj");
 		mesh->SetMaterial(glassMeshMaterial);
-		Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
+		Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(-0.28, 0.28, 0.28);
 		scene->AddMesh(*mesh, transform);
 
 		//std::shared_ptr<Mesh> objMesh = std::shared_ptr<Mesh>(new Mesh());
@@ -852,15 +852,19 @@ public:
 		//scene->AddMesh(*objMesh, transformObj);
 
 		//Light
-		std::shared_ptr<Light> light = std::shared_ptr<Light>(new EnvironmentLight("..\\media\\pictures\\uffizi-large.hdr", 0));
+		std::shared_ptr<Light> light = std::shared_ptr<Light>(new EnvironmentLight("..\\media\\pictures\\grace-new.hdr", 0));
 		scene->AddLight(light);
 
-		////Light
+		//////Light
 		//Vec3 lightP0 = Vec3(0.25f, 0.965, 0.25f);
 		//Vec3 lightP1 = Vec3(0.25f, 0.965, -0.25f);
 		//Vec3 lightP2 = Vec3(-0.25f, 0.965, -0.25f);
 		//Vec3 lightP3 = Vec3(-0.25f, 0.965, 0.25f);
 
+		//////Vec3 lightP0 = Vec3(-0.965, 0.25f, 0.25f);
+		//////Vec3 lightP1 = Vec3(-0.965, 0.25f, -0.25f);
+		//////Vec3 lightP2 = Vec3(-0.965 , -0.25f, -0.25f);
+		//////Vec3 lightP3 = Vec3(-0.965 , -0.25f, 0.25f);
 		//Vec3 lightNormal = Vec3(0, -1, 0);
 		//std::shared_ptr<Texture<Vec3>> lightTexture = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(0, 0, 0)));
 		//std::shared_ptr<Shape> lightTriangleShape0 =

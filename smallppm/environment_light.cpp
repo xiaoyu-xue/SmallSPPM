@@ -27,7 +27,7 @@ Vec3 EnvironmentLight::SampleLight(Intersection* isect, Vec3* dir, real* pdfPos,
 	CoordinateSystem(-*dir, &v1, &v2);
 	Vec2 cd = ConcentricSampleDisk(v);
 	Vec3 pDisk = center + radius * (cd.x * v1 + cd.y * v2);
-	isect->hit = pDisk;
+	isect->hit = pDisk + radius * (-*dir);
 
 	*pdfPos = 1 / (PI * radius * radius);
 	//std::cout << radiance << " pdfDir: " << *pdfDir << " pdfPos: " << *pdfPos << std::endl;
@@ -41,6 +41,7 @@ Vec3 EnvironmentLight::Sample_Li(const Intersection& isect, Vec3* wi, real* pdf,
 	Vec3 radiance = envMap->Sample(&sampledDir, pdf, u);
 	*wi = sampledDir.Norm();
 	lightPoint->hit = isect.hit + *wi * (2 * radius);
+	lightPoint->n = lightPoint->nl = lightPoint->ng = *wi;
 	return radiance;
 }
 

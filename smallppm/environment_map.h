@@ -9,6 +9,7 @@ public:
 	EnvironmentMap(const std::string &filename, real rotate, float scale = 1.f) {
 		this->scale = scale;
 		LoadImage(filename, rotate, scale);
+		distribution.reset(ConvertImageToPdf(image.get()));
 	}
 
 	Vec3 Sample(Vec3* dir, real* pdfW, const Vec2& u) const {
@@ -63,7 +64,6 @@ private:
 		ImageTexture<Vec3>* imageTexture = new ImageTexture<Vec3>(filename);
 		image.reset(imageTexture);
 		
-		distribution.reset(ConvertImageToPdf(image.get()));
 	}
 
 	Distribution2D* ConvertImageToPdf(const ImageTexture<Vec3>* pImage) const {
@@ -99,8 +99,11 @@ private:
 		real phi = (dir.x != 0 || dir.z != 0) ? std::atan2f(dir.z, dir.x) : 0;
 		real theta = std::acos(dir.y);
 
-		real u = Clamp(0.5 - phi * 0.5f * INV_PI, 0, 1);
+		phi = (phi < 0) ? (phi + 2 * PI) : phi;
+
+		//real u = Clamp(0.5 - phi * 0.5f * INV_PI, 0, 1);
 		//real u = ((phi < 0.f) ? phi + 2 * PI : phi) / (2 * PI);
+		real u = phi * INV_PI * 0.5;
 		real v = Clamp(theta * INV_PI, 0, 1);
 		
 		return Vec2(u, v);

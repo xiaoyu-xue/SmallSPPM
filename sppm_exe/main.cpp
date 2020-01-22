@@ -48,7 +48,7 @@
 
 //const real ALPHA = 0.66666667;
 const real ALPHA = 0.75;
-const int64  render_stage_number = 300000;
+const int64  render_stage_number = 1000000;
 
 void TestSppm(int argc, char* argv[]) {
 	//clock_t begin = clock();
@@ -476,7 +476,7 @@ void TestSPPM5(int argc, char* argv[]) {
 	std::shared_ptr<SamplerEnum> haltonSamplerEnum = std::shared_ptr<SamplerEnum>(new HaltonEnum((unsigned)resX, (unsigned)resY));
 	real alpha = 0.66666667;
 	std::shared_ptr<Integrator> integrator =
-		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 50, 0.05, alpha, true, haltonSampler, haltonSamplerEnum, true));
+		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 50, 0.05, alpha, false, haltonSampler, haltonSamplerEnum, true));
 	fprintf(stderr, "Load Scene ...\n");
 
 	//CornellBoxMesh::SetScene(scene);
@@ -490,7 +490,7 @@ void TestSPPM5(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("cornellboxEnv4.bmp");
+	film->SetFileName("cornellboxEnv8.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
@@ -508,7 +508,7 @@ void TestHashGrid() {
 	real searchRadius = 0.15;
 	HashGrid<int> hashGrid;
 	for (int i = 0; i < points.size(); ++i) {
-		hashGrid.AddPoint(std::move(std::pair<Vec3, int>(points[i], i)), 0.16);
+		hashGrid.AddPoint(std::move(std::pair<Vec3, int>(points[i], i)), 0.15);
 	}
 	hashGrid.BuildHashGrid(searchRadius + eps);
 	Vec3 testPoint = Vec3(0.12, 0.34, 0.56);
@@ -549,10 +549,10 @@ int main(int argc, char *argv[]) {
 	//	std::shared_ptr<Texture<Vec3>>(new ImageTexture<Vec3>("..\\texture_images\\checkboard.bmp"));
 	//imageTexture1->Sample(Vec2(0.1, 0.2));
 	
-	//TestSPPM5(argc, argv);
+	TestSPPM5(argc, argv);
 
 
-	TestHashGrid();
+	//TestHashGrid();
 
 	//TestSPPM3(argc, argv);
 	//_CrtDumpMemoryLeaks();
