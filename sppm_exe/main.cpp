@@ -48,7 +48,7 @@
 
 //const real ALPHA = 0.66666667;
 const real ALPHA = 0.75;
-const int64  render_stage_number = 200000;
+const int64  render_stage_number = 300000;
 
 void TestSppm(int argc, char* argv[]) {
 	//clock_t begin = clock();
@@ -433,7 +433,7 @@ void TestSPPM4(int argc, char* argv[]) {
 	std::shared_ptr<SamplerEnum> haltonSamplerEnum = std::shared_ptr<SamplerEnum>(new HaltonEnum((unsigned)resX, (unsigned)resY));
 	real alpha = 0.66666667;
 	std::shared_ptr<Integrator> integrator =
-		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 0.05, alpha, false, haltonSampler, haltonSamplerEnum));
+		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 0.05, alpha, true, haltonSampler, haltonSamplerEnum));
 	fprintf(stderr, "Load Scene ...\n");
 
 	CornellBoxTriangle2::SetScene(scene);
@@ -490,12 +490,53 @@ void TestSPPM5(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("cornellboxEnv3.bmp");
+	film->SetFileName("cornellboxEnv4.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
 	clock_t end = clock();
 	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+
+}
+
+void TestHashGrid() {
+	Rng rng;
+	std::vector<Vec3> points;
+	for (int i = 0; i < 12345; ++i) {
+		points.push_back(Vec3(rng.GetDouble(), rng.GetDouble(), rng.GetDouble()));
+	}
+	real searchRadius = 0.15;
+	HashGrid<int> hashGrid;
+	for (int i = 0; i < points.size(); ++i) {
+		hashGrid.AddPoint(std::move(std::pair<Vec3, int>(points[i], i)), 0.16);
+	}
+	hashGrid.BuildHashGrid(searchRadius + eps);
+	Vec3 testPoint = Vec3(0.12, 0.34, 0.56);
+
+
+	{
+		int naiveNum = 0;
+		for (int i = 0; i < points.size(); ++i) {
+			//std::cout << points[i] << std::endl;
+			if (Distance(points[i], testPoint) < searchRadius) {
+				naiveNum++;
+				//std::cout << points[i] << std::endl;
+			}
+		}
+		std::cout << naiveNum << std::endl;
+	}
+	{
+		int hashNum = 0;
+		std::vector<int> grid = hashGrid.GetGrid(testPoint);
+		for (int i = 0; i < grid.size(); ++i) {
+			if (Distance(points[grid[i]], testPoint) < searchRadius) {
+				hashNum++;
+				//std::cout << points[grid[i]] << std::endl;
+			}
+		}
+		std::cout << hashNum << std::endl;
+	}
+
 
 }
 
@@ -507,7 +548,12 @@ int main(int argc, char *argv[]) {
 	//std::shared_ptr<Texture<Vec3>> imageTexture1 =
 	//	std::shared_ptr<Texture<Vec3>>(new ImageTexture<Vec3>("..\\texture_images\\checkboard.bmp"));
 	//imageTexture1->Sample(Vec2(0.1, 0.2));
-	TestSPPM5(argc, argv);
+	
+	//TestSPPM5(argc, argv);
+
+
+	TestHashGrid();
+
 	//TestSPPM3(argc, argv);
 	//_CrtDumpMemoryLeaks();
 }

@@ -194,13 +194,13 @@ public:
 						}
 					}
 					else if(scene.GetEnvironmentLight() == light){
-						L2 = light->Emission(wi);
+						L2 = light->Emission(wi) * f * std::abs(isect.n.Dot(wi)) / pdf;
 					}
 				}
 			}
 		}
-		//return L1 * weight1 / lightSamplingPdf;
-		//return L2 * weight2 / lightSamplingPdf;
+		//return L1 / lightSamplingPdf;
+		//return L2 / lightSamplingPdf;
 		return (L1 * weight1 + L2 * weight2) / lightSamplingPdf;
 	}
 

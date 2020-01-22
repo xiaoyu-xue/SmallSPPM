@@ -91,7 +91,6 @@ void SPPM::TracePhoton(const Scene& scene, StateSequence& rand, const Ray& ray, 
 	Ray r = ray;
 	for (int i = 0; i < maxDepth; ++i) {
 		Intersection isect;
-		std::shared_ptr<Shape> hitObj;
 		if (!scene.Intersect(r, &isect)) return;
 		scene.QueryIntersectionInfo(r, &isect);
 		isect.ComputeScatteringFunction(arena, TransportMode::Importance);
@@ -102,14 +101,11 @@ void SPPM::TracePhoton(const Scene& scene, StateSequence& rand, const Ray& ray, 
 		Vec3 f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec3(rand(), rand(), rand()));
 		Vec3 estimation = f * std::abs(wi.Dot(isect.n)) / pdf;
 		if (bsdf->IsDelta()) {
-			photonFlux = photonFlux * estimation;
-			//r.o = isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n;
-			//r.d = wi;
-			//r = Ray(isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n, wi, Inf, isect.rayEps);
-			r = isect.SpawnRay(wi);
+			//photonFlux = photonFlux * estimation;
+			//r = isect.SpawnRay(wi);
 		}
 		else {
-			if (i == 1) {
+			if (i == 0) {
 				std::vector<HPoint*>& hp = hashGrid.GetGrid(isect.hit);
 				for (HPoint* hitpoint : hp) {
 					//Use spinlock, but racing condition is rare when using QMC
@@ -133,22 +129,19 @@ void SPPM::TracePhoton(const Scene& scene, StateSequence& rand, const Ray& ray, 
 					}
 				}
 			}
-			//real p = estimation.maxValue();
-			real p = std::min((real)1.0, (estimation * photonFlux).Y() / photonFlux.Y());
-			if (p < 1) {
-				if (rand() < p) {
-					photonFlux = photonFlux / p;
-				}
-				else {
-					break;
-				}
-			}
-			photonFlux = photonFlux * estimation;
-			//r.o = isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n;
-			//r.d = wi;
-			//r = Ray(isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n, wi, Inf, isect.rayEps);
-			r = isect.SpawnRay(wi);
 		}
+		//real p = estimation.maxValue();
+		real p = std::min((real)1.0, (estimation * photonFlux).Y() / photonFlux.Y());
+		if (p < 1) {
+			if (rand() < p) {
+				photonFlux = photonFlux / p;
+			}
+			else {
+				break;
+			}
+		}
+		photonFlux = photonFlux * estimation;
+		r = isect.SpawnRay(wi);
 	}
 }
 

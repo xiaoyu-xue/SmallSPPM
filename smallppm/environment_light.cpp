@@ -40,7 +40,7 @@ Vec3 EnvironmentLight::Sample_Li(const Intersection& isect, Vec3* wi, real* pdf,
 	Vec3 sampledDir;
 	Vec3 radiance = envMap->Sample(&sampledDir, pdf, u);
 	*wi = sampledDir.Norm();
-	lightPoint->hit = *wi * (2 * radius);
+	lightPoint->hit = isect.hit + *wi * (2 * radius);
 	return radiance;
 }
 
