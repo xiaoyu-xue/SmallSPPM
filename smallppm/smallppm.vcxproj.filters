@@ -216,6 +216,18 @@
     <ClCompile Include="environment_light.cpp">
       <Filter>Source Files\light</Filter>
     </ClCompile>
+    <ClCompile Include="tiled_integrator.cpp">
+      <Filter>Source Files\integrator</Filter>
+    </ClCompile>
+    <ClCompile Include="path.cpp">
+      <Filter>Source Files\integrator</Filter>
+    </ClCompile>
+    <ClCompile Include="sobol.cpp">
+      <Filter>Source Files\sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="sobol_enum.cpp">
+      <Filter>Source Files\sampler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lowdiscrepency.h">
@@ -391,6 +403,27 @@
     </ClInclude>
     <ClInclude Include="environment_light.h">
       <Filter>Header Files\light</Filter>
+    </ClInclude>
+    <ClInclude Include="tiled_integrator.h">
+      <Filter>Header Files\integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="path.h">
+      <Filter>Header Files\integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="sobol.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="halton_enum.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="sobol_enum.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="plastic.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="rough_dielectric.h">
+      <Filter>Header Files\material</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

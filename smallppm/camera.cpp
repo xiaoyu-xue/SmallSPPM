@@ -39,14 +39,14 @@ ProjectiveCamera::ProjectiveCamera(const std::shared_ptr<Film>& pFilm, const Vec
 void ProjectiveCamera::Initialize() {
 	Vec3 filmCenter = pos + czz * filmDistance;
 	//std::cout << "film cetner: " << filmCenter << std::endl;
-	film->heigh = filmDistance * std::tan(fovy * 0.5f * PI / 180) * 2.f;
-	film->width = film->heigh * film->aspect;
-	film->area = film->width * film->heigh;
+	film->height = filmDistance * std::tan(fovy * 0.5f * PI / 180) * 2.f;
+	film->width = film->height * film->aspect;
+	film->area = film->width * film->height;
 
-	film->LU = filmCenter + cy * film->heigh * 0.5 - cx * film->width * 0.5;
-	film->LL = filmCenter - cy * film->heigh * 0.5 - cx * film->width * 0.5;
-	film->RU = filmCenter + cy * film->heigh * 0.5 + cx * film->width * 0.5;
-	film->RL = filmCenter - cy * film->heigh * 0.5 + cx * film->width * 0.5;
+	film->LU = filmCenter + cy * film->height * 0.5 - cx * film->width * 0.5;
+	film->LL = filmCenter - cy * film->height * 0.5 - cx * film->width * 0.5;
+	film->RU = filmCenter + cy * film->height * 0.5 + cx * film->width * 0.5;
+	film->RL = filmCenter - cy * film->height * 0.5 + cx * film->width * 0.5;
 	std::cout << "LL: " << film->LL << std::endl
 		<< "LU: " << film->LU << std::endl
 		<< "RL: " << film->RL << std::endl

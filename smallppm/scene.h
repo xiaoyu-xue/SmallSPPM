@@ -19,10 +19,6 @@ public:
 		}
 		lightPowerDistribution = ComputeLightPowerDistribution();
 		accelerator->SetPrimitives(primitives);
-	}
-
-	void SetCamera(const std::shared_ptr<Camera> &pCamera) {
-		camera = pCamera;
 		shapeNum = 0;
 	}
 
@@ -109,10 +105,6 @@ public:
 		return shapes;
 	}
 
-	std::shared_ptr<Camera> GetCamera() const {
-		return camera;
-	}
-
 	std::shared_ptr<Light> SampleOneLight(real *lightPdf, real u) const {
 		int nLights = (int)(lights.size());
 		int lightNum;
@@ -151,7 +143,6 @@ private:
 	std::vector<std::shared_ptr<Primitive>> primitives;
 	std::vector<std::shared_ptr<Light>> lights;
 	std::shared_ptr<Light> envLight = nullptr;
-	std::shared_ptr<Camera> camera;
 	std::unique_ptr<Distribution1D> lightPowerDistribution;
 	std::shared_ptr<Accelerator> accelerator;
 	int64 shapeNum;

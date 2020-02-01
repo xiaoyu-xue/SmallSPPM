@@ -73,8 +73,13 @@ static Vec3 TrowbridgeReitzSample(const Vec3& wi, real alpha_x,
 
 
 real MicrofacetDistribution::Pdf(const Vec3& wo, const Vec3& wh) const {
-    if (sampleVisibleArea)
-        return D(wh) * G1(wo, wh) * std::abs(Dot(wo, wh)) / BSDFCoordinate::AbsCosTheta(wo);
+	if (sampleVisibleArea) {
+		DEBUG_PIXEL_IF(ThreadIndex()) {
+			std::cout << "D: " << D(wh) << " G1: " << G1(wo, wh) << std::endl;
+		}
+		return D(wh) * G1(wo, wh) * std::abs(Dot(wo, wh)) / BSDFCoordinate::AbsCosTheta(wo);
+	}
+        
     else
         return D(wh) * BSDFCoordinate::AbsCosTheta(wh);
 }
@@ -109,17 +114,26 @@ real GGXDistribution::D(const Vec3& wh) const {
 		return alpha2 / (PI * cos4ThetaM * root * root);
 	}
 	else {
-		const real cos2PhiM = BSDFCoordinate::Cos2Phi(wh);
-		const real sin2PhiM = BSDFCoordinate::Sin2Phi(wh);
-		const real tan2ThetaM = BSDFCoordinate::Tan2Theta(wh);
-		const real cosThetaM = BSDFCoordinate::CosTheta(wh);
-		const real cos2ThetaM = BSDFCoordinate::Cos2Theta(wh);
+		//const real cos2PhiM = BSDFCoordinate::Cos2Phi(wh);
+		//const real sin2PhiM = BSDFCoordinate::Sin2Phi(wh);
+		//const real tan2ThetaM = BSDFCoordinate::Tan2Theta(wh);
+		//const real cosThetaM = BSDFCoordinate::CosTheta(wh);
+		//const real cos2ThetaM = BSDFCoordinate::Cos2Theta(wh);
 
-		if (std::isinf(tan2ThetaM)) return 0.;
-		const real alphax2 = alphax * alphax;
-		const real alphay2 = alphay * alphay;
-		const real root = 1 + tan2ThetaM * (cos2PhiM / alphax2 + sin2PhiM / alphay2);
-		return 1 / (PI * alphax * alphay * cos2ThetaM * cos2ThetaM * root * root);
+		//if (std::isinf(tan2ThetaM)) return 0.;
+		//const real alphax2 = alphax * alphax;
+		//const real alphay2 = alphay * alphay;
+		//const real root = 1 + tan2ThetaM * (cos2PhiM / alphax2 + sin2PhiM / alphay2);
+		//return 1 / (PI * alphax * alphay * cos2ThetaM * cos2ThetaM * root * root);
+
+		real tan2Theta = BSDFCoordinate::Tan2Theta(wh);
+		if (std::isinf(tan2Theta)) return 0.;
+		const real cos4Theta = BSDFCoordinate::Cos2Theta(wh) * BSDFCoordinate::Cos2Theta(wh);
+		real e =
+			(BSDFCoordinate::Cos2Phi(wh) / (alphax * alphax) + BSDFCoordinate::Sin2Phi(wh) / (alphay * alphay)) *
+			tan2Theta;
+		return 1 / (PI * alphax * alphay * cos4Theta * (1 + e) * (1 + e));
+
 		//real tan2Theta = BSDFCoordinate::Tan2Theta(wh);
 		//if (std::isinf(tan2Theta)) return 0.;
 		//const real cos4Theta = BSDFCoordinate::Cos2Theta(wh) * BSDFCoordinate::Cos2Theta(wh);
@@ -134,16 +148,17 @@ real GGXDistribution::D(const Vec3& wh) const {
 real GGXDistribution::G1(const Vec3& v, const Vec3& wh) const {
 
 	if (alphax == alphay) {
-		real alpha = alphax;
-		const real tanTheta = std::abs(BSDFCoordinate::TanTheta(v));
-		if (tanTheta == 0.0f)
-			return 1.0f;
+		//real alpha = alphax;
+		//const real tanTheta = std::abs(BSDFCoordinate::TanTheta(v));
+		//if (tanTheta == 0.0f)
+		//	return 1.0f;
 
-		if (Dot(v, wh) * BSDFCoordinate::CosTheta(v) <= 0)
-			return 0.0f;
+		//if (Dot(v, wh) * BSDFCoordinate::CosTheta(v) <= 0)
+		//	return 0.0f;
 
-		const real root = alpha * tanTheta;
-		return 2.0f / (1.0f + std::sqrt(1.0f + root * root));
+		//const real root = alpha * tanTheta;
+		//return 2.0f / (1.0f + std::sqrt(1.0f + root * root));
+		return 1 / (1 + Lambda(v));
 	}
 	else {
 		return 1 / (1 + Lambda(v));
@@ -158,6 +173,7 @@ real GGXDistribution::G(const Vec3& wo, const Vec3& wi, const Vec3& wh) const {
 
 Vec3 GGXDistribution::Sample_wh(const Vec3& wo, const Vec2& u) const {
 	if (!sampleVisibleArea) {
+		Vec3 wh;
 		if (alphax == alphay) {
 			real alpha = alphax;
 			real alpha2 = alpha * alpha;
@@ -166,8 +182,7 @@ Vec3 GGXDistribution::Sample_wh(const Vec3& wo, const Vec2& u) const {
 			real cos2Theta = cosTheta * cosTheta;
 			real sinTheta = std::sqrt(std::max(real(0), 1 - cos2Theta));
 			real phi = 2 * PI * u[1];
-			Vec3 dir = SphericalDirection(sinTheta, cosTheta, phi);
-			return dir;
+			wh = SphericalDirection(sinTheta, cosTheta, phi);
 		}
 		else {
 			real tanPhi = alphay / alphax * std::tan(2 * PI * u[1]);
@@ -191,16 +206,20 @@ Vec3 GGXDistribution::Sample_wh(const Vec3& wo, const Vec2& u) const {
 			real theta = std::atan(tanTheta);
 			real cosTheta = std::cos(theta);
 			real sinTheta = std::cos(theta);
-			Vec3 dir = SphericalDirection(sinTheta, cosTheta, phi);
-			return dir;
+			wh = SphericalDirection(sinTheta, cosTheta, phi);
 		}
+		if (!SameHemisphere(wo, wh)) wh = -wh;
+		return wh;
 	}
 	else {
-		//return SampleGGXVNDF(wo, u);
 		bool flip = wo.z < 0;
-		Vec3 wh = TrowbridgeReitzSample(flip ? -wo : wo, alphax, alphay, u[0], u[1]);
-		if (flip) wh = -wh;
+		Vec3 wh = SampleGGXVNDF(flip ? -wo : wo, u);
+		wh = flip ? -wh : wh;
 		return wh;
+		//bool flip = wo.z < 0;
+		//Vec3 wh = TrowbridgeReitzSample(flip ? -wo : wo, alphax, alphay, u[0], u[1]);
+		//if (flip) wh = -wh;
+		//return wh;
 	}
 	
 

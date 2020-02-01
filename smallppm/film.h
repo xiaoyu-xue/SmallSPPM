@@ -7,6 +7,7 @@
 #include "scalar.h"
 #include <vector>
 #include "threading.h"
+#include <mutex>
 
 
 NAMESPACE_BEGIN
@@ -20,12 +21,23 @@ protected:
 		real weight;
 	};
 public:
-	Film(int w, int h) : resX(w), resY(h) {
+	Film(int w, int h, Filter* pFilter = nullptr) : resX(w), resY(h) {
 		aspect = (real)(resX) / (real)(resY);
-		filter = std::unique_ptr<BoxFilter>(new BoxFilter());
+		//filter = std::unique_ptr<BoxFilter>(new BoxFilter());
+		pixelBuffer.resize(resX * resY);
+		imageBuffer.resize(resX * resY);
+		bufferLocks.resize(resX * resY);
+		if (pFilter == nullptr) {
+			filter.reset(new BoxFilter());
+		}
+		else {
+			filter.reset(pFilter);
+		}
+
 	}
 	real Area() const {
-		return area;
+		//return area;
+		return width * height;
 	}
 	void AddSample(real x, real y, const Vec3 &sample) {
 		x -= 0.5;
@@ -45,8 +57,8 @@ public:
 				//int rowAdd = resY - 1 - i;
 				//int colAdd = j;
 				int pixelIndex = i * resX + j;
+				std::lock_guard<Spinlock> lock(bufferLocks[pixelIndex]);
 				Pixel& pixel = pixelBuffer[pixelIndex];
-
 				real weight = filter->Evaluate(j - x, i - y);
 				pixel.weight += weight;
 				pixel.color = pixel.color + sample * weight;
@@ -69,7 +81,15 @@ public:
 	}
 
 	void SetImage(const std::vector<Vec3> &image) {
-		imageBuffer = image;
+		//imageBuffer = image;
+		for (int i = 0; i < resX; ++i) {
+			for (int j = 0; j < resY; ++j) {
+				int index = i * resX + j;
+				Pixel& pixel = pixelBuffer[index];
+				pixel.color = image[index];
+				pixel.weight = 1;
+			}
+		}
 	}
 
 	void SetFileName(const std::string &pFileName) {
@@ -82,7 +102,7 @@ public:
 
 public:
 	int resX, resY;
-	real width, heigh;
+	real width, height;
 	real aspect;
 	real area;
 	Vec3 LL, LU, RL, RU;

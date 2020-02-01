@@ -16,7 +16,7 @@ FORCE_INLINE real PowerHeuristic(int nf, real fPdf, int ng, real gPdf) {
 
 class Integrator {
 public:
-	virtual void Render(const Scene &scene) = 0;
+	virtual void Render(const Scene &scene, const Camera &camera) = 0;
 	virtual ~Integrator() {}
 	
 	//static Vec3 DirectIllumination(const Scene &scene, const Intersection &isect, const std::shared_ptr<BSDF> &bsdf,
@@ -152,9 +152,8 @@ public:
 				if (!visibilityTester.Unoccluded(scene)) {
 					weight1 = PowerHeuristic(1, pdf, 1, scatteringPdf);
 					L1 = Li * f * std::abs(isect.n.Dot(wi)) / pdf;
-					//if (std::isnan(L1.x) || std::isnan(L1.y) || std::isnan(L1.z)) {
-					//	std::cout << L1 << " " << f << " " << scatteringPdf << " " << pdf << std::endl;
-					//}
+
+
 					Vec3 LL = L1 * weight1 / lightSamplingPdf;
 					if ((LL.x < 0.00001 && LL.y < 0.00001 && LL.z < 0.00001) && 
 						(isect.primitive->GetShape()->shapeId == 0 || isect.primitive->GetShape()->shapeId == 1)) {
@@ -173,11 +172,14 @@ public:
 		}
 		//Sample BSDF
 		{
+			DEBUG_PIXEL_IF(ThreadIndex()) {
+				std::cout << "DirectIllumination, Sample BSDF" << std::endl;
+			}
 			Vec3 wi;
 			real pdf;
 			Vec3 f = bsdf->Sample_f(isect.wo, &wi, &pdf, v);
 			Intersection intersection;
-			if (pdf != 0) {
+			if (pdf != 0 && f != Vec3()) {
 				real lightPdf = light->Pdf_Li(isect, wi);
 				if (lightPdf == 0) {
 					weight2 = 0;
@@ -195,11 +197,19 @@ public:
 					}
 					else if(scene.GetEnvironmentLight() == light){
 						L2 = light->Emission(wi) * f * std::abs(isect.n.Dot(wi)) / pdf;
+
+						DEBUG_PIXEL_IF(ThreadIndex()) {
+							if (std::isnan(L2.x)) {
+								std::cout << "L2: " << L2 << std::endl;
+								std::cout << "Emission: " << light->Emission(wi) << " wi: " << wi << " f: " << f << " CosTheta: " << std::abs(isect.n.Dot(wi)) << " Pdf: " << pdf << std::endl;
+							}
+						}
+
 					}
 				}
 			}
 		}
-		//return L1 * weight1 / lightSamplingPdf;
+		//return L1 / lightSamplingPdf;
 		//return L2 / lightSamplingPdf;
 		return (L1 * weight1 + L2 * weight2) / lightSamplingPdf;
 	}

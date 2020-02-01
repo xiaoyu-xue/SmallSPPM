@@ -132,7 +132,19 @@ void Triangle::QueryIntersectionInfo(const Ray& ray, Intersection* isect) const 
 	
 
 	Vec3 dpdus, dpdvs;
-	CoordinateSystem(ns, &dpdus, &dpdvs);
+	//method1
+	//CoordinateSystem(ns, &dpdus, &dpdvs);
+	//method2
+	//dpdus = isect->dpdu.Norm();
+	//dpdvs = Cross(isect->dpdu, ns);
+	//ns = Cross(dpdus, dpdvs).Norm();
+	//ns = (Dot(ns, isect->ng) > 0) ? ns : -ns;
+	
+	//method3
+	real sgn = (Dot(ray.o - p0, ns) > 0) ? 1.0f : -1.0f;
+	dpdus = e1.Norm();
+	dpdvs = Cross(sgn * ns, dpdus).Norm();
+	dpdus = Cross(dpdvs, ns).Norm();
 	isect->SetShading(ns, dpdus, dpdvs);
 
 }

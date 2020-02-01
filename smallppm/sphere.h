@@ -74,23 +74,44 @@ public:
 		Vec3 pError = Abs(p) * gamma(1) + Abs(scaledDir) * gamma(6);
 
 		//Compute dpdu, dpdv
+		//Vec3 pHit = hit - p;
+		//real phi = std::atan2(pHit.y, pHit.x);
+		//if (phi < 0) phi += 2 * PI;
+		//real u = phi / phiMax;
+		//real theta = std::acos(Clamp(pHit.z / rad, -1, 1));
+		//real v = (theta - thetaMin) / (thetaMax - thetaMin);
+
+		//real zRadius = std::sqrt(pHit.x * pHit.x + pHit.y * pHit.y);
+		//real invZRadius = 1 / zRadius;
+		//real cosPhi = pHit.x * invZRadius;
+		//real sinPhi = pHit.y * invZRadius;
+		//Vec3 dpdu(-phiMax * pHit.y, phiMax * pHit.x, 0);
+		//Vec3 dpdv = (thetaMax - thetaMin) * Vec3(pHit.z * cosPhi, pHit.z * sinPhi, -rad * std::sin(theta));
+
+
 		Vec3 pHit = hit - p;
-		real phi = std::atan2(pHit.y, pHit.x);
+		real phi = std::atan2(pHit.z, pHit.x);
 		if (phi < 0) phi += 2 * PI;
 		real u = phi / phiMax;
-		real theta = std::acos(Clamp(pHit.z / rad, -1, 1));
+		real theta = std::acos(Clamp(pHit.y / rad, -1, 1));
 		real v = (theta - thetaMin) / (thetaMax - thetaMin);
+		v = 1.f - v;
 
-		real zRadius = std::sqrt(pHit.x * pHit.x + pHit.y * pHit.y);
-		real invZRadius = 1 / zRadius;
-		real cosPhi = pHit.x * invZRadius;
-		real sinPhi = pHit.y * invZRadius;
-		Vec3 dpdu(-phiMax * pHit.y, phiMax * pHit.x, 0);
-		Vec3 dpdv = (thetaMax - thetaMin) * Vec3(pHit.z * cosPhi, pHit.z * sinPhi, -rad * std::sin(theta));
+		real yRadius = std::sqrt(pHit.x * pHit.x + pHit.z * pHit.z);
+		real invYRadius = 1 / yRadius;
+		real cosPhi = pHit.x * invYRadius;
+		real sinPhi = pHit.z * invYRadius;
+		Vec3 dpdu(-phiMax * pHit.z, 0, phiMax * pHit.x);
+		Vec3 dpdv = (thetaMax - thetaMin) * Vec3(pHit.y * cosPhi, -rad * std::sin(theta), pHit.y * sinPhi);
+
 		//CoordinateSystem(GetNorm(hit), &dpdu, &dpdv);
 
 		Intersection it(hit, n, nl, dpdu, dpdv, wo, pError);
-		it.SetShading(n, dpdu, dpdv);
+
+		Vec3 dpdus = (dpdu - n * Dot(n, dpdu)).Norm();
+		Vec3 dpdvs = Cross(n, dpdus).Norm();
+		it.SetShading(n, dpdus, dpdvs);
+
 		if (ObjectToWorld) {
 			*isect = (*ObjectToWorld)(it);
 		}

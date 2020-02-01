@@ -44,6 +44,7 @@ void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray,
 
 		if (bsdf->IsDelta()) {
 			Vec3 f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec3(rand(), rand(), rand()));
+			if (f == Vec3() || pdf == 0) return;
 			importance = f * std::abs(wi.Dot(isect.n)) * importance / pdf;
 			//r.o = isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n;
 			//r.d = wi;
@@ -54,12 +55,12 @@ void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray,
 		else if (traceGlossyRay && bsdf->MatchScatterType(ScatterEventType::BSDF_GLOSSY) && i < maxDepth - 1) {
 			//Trace the ray, when bsdf is glossy
 			//But this is not standard photon mapping
-			HPoint& hp = hitPoints[pixel];
 			Vec3 Ld = importance * DirectIllumination(scene, isect, bsdf, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()));
-			directillum[hp.pix] = directillum[hp.pix] + Ld;
+			directillum[pixel] = directillum[pixel] + Ld;
+
 			Vec3 f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec3(rand(), rand(), rand()));
+			if (f == Vec3() || pdf == 0) return;
 			importance = f * std::abs(wi.Dot(isect.n)) * importance / pdf;
-			
 			r = isect.SpawnRay(wi);
 			deltaBoundEvent = false;
 		}
@@ -75,7 +76,7 @@ void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray,
 			if ((i == 0 || deltaBoundEvent) && isect.primitive->IsLight()) {
 				std::shared_ptr<Light> emissionShape = isect.primitive->GetLight();
 				directillum[hp.pix] = directillum[hp.pix] + importance * emissionShape->Emission(isect, isect.wo);
-
+				
 			}
 			else {
 				Vec3 Ld = hp.importance * DirectIllumination(scene, isect, bsdf, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()));
@@ -99,6 +100,7 @@ void SPPM::TracePhoton(const Scene& scene, StateSequence& rand, const Ray& ray, 
 		Vec3 wi;
 		real pdf;
 		Vec3 f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec3(rand(), rand(), rand()));
+		if (f == Vec3() || pdf == 0) break;
 		Vec3 estimation = f * std::abs(wi.Dot(isect.n)) / pdf;
 		if (bsdf->IsDelta()) {
 			//photonFlux = photonFlux * estimation;
@@ -145,9 +147,9 @@ void SPPM::TracePhoton(const Scene& scene, StateSequence& rand, const Ray& ray, 
 	}
 }
 
-void SPPM::GenerateRadiusImage(const Scene& scene) {
-	int resX = scene.GetCamera()->GetFilm()->resX;
-	int resY = scene.GetCamera()->GetFilm()->resY;
+void SPPM::GenerateRadiusImage(const Scene& scene, const Camera &camera) {
+	int resX = camera.GetFilm()->resX;
+	int resY = camera.GetFilm()->resY;
 	std::vector<Vec3> radImg(resX * resY);
 	real minRadius2 = Inf, maxRadius2 = 0.0, avgRadius = 0.0;
 	for (int y = 0; y < resY; ++y) {
@@ -174,14 +176,14 @@ void SPPM::GenerateRadiusImage(const Scene& scene) {
 	ImageIO::WriteBmpFile("rad_image.bmp", radImg, resX, resY, 2.2f);
 }
 
-void SPPM::Render(const Scene& scene) {
+void SPPM::Render(const Scene& scene, const Camera &camera) {
 	fprintf(stderr, "Rendering ...\n");
-	int resX = scene.GetCamera()->GetFilm()->resX;
-	int resY = scene.GetCamera()->GetFilm()->resY;
+	int resX = camera.GetFilm()->resX;
+	int resY = camera.GetFilm()->resY;
 	Initialize(resX, resY);
+	std::vector<MemoryArena> memoryArenas(ThreadsNumber());
 	for (int iter = 0; iter < nIterations; ++iter) {
 		//Trace eye_path
-		std::vector<MemoryArena> memoryArenas(ThreadsNumber());
 		ParallelFor(0, resY, [&](int y) {
 			for (int x = 0; x < resX; x++) {
 				MemoryArena& arena = memoryArenas[ThreadIndex()];
@@ -192,11 +194,11 @@ void SPPM::Render(const Scene& scene) {
 				real u = samplerEnum->SampleX(x, rand());
 				real v = samplerEnum->SampleY(y, rand());
 				Vec2 pixelSample(u, v);
-				Ray ray = scene.GetCamera()->GenerateRay(x, y, pixelSample);
+				Ray ray = camera.GenerateRay(x, y, pixelSample);
 				TraceEyePath(scene, rand, ray, pixel, arena);
 			}
 		});
-
+			
 		hashGrid.ClearHashGrid();
 		real maxRadius2 = 0.0;
 		for (int i = 0; i < (int)hitPoints.size(); ++i) {
@@ -234,6 +236,9 @@ void SPPM::Render(const Scene& scene) {
 			});
 		}
 
+		for (int i = 0; i < memoryArenas.size(); ++i)
+			memoryArenas[i].Reset();
+
 		real percentage = 100.f * (iter + 1) / nIterations;
 		fprintf(stderr, "\rIterations: %5.2f%%", percentage);
 	}
@@ -246,7 +251,7 @@ void SPPM::Render(const Scene& scene) {
 		//c[i] = c[i] + flux[i] * (1.f / (PI * radius2[i] * nIterations * nPhotonsPerRenderStage));
 	});
 
-	scene.GetCamera()->GetFilm()->SetImage(c);
+	camera.GetFilm()->SetImage(c);
 	//GenerateRadiusImage(scene);
 }
 

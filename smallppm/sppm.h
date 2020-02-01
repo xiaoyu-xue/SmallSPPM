@@ -30,16 +30,15 @@ public:
 
 	}
 
-
 	void GeneratePhoton(const Scene& scene, Ray* pr, Vec3* f, real u, const Vec2& v, const Vec2& w);
 
 	void TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray, int64 pixel, MemoryArena& arena);
 
 	void TracePhoton(const Scene& scene, StateSequence& rand, const Ray& ray, Vec3 photonFlux, MemoryArena& arena);
 
-	void GenerateRadiusImage(const Scene& scene);
+	void GenerateRadiusImage(const Scene& scene, const Camera &camera);
 
-	void Render(const Scene& scene) override;
+	void Render(const Scene& scene, const Camera &camera) override;
 
 private:
 	void Initialize(int w, int h) {

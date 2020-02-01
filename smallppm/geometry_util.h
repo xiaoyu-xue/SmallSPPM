@@ -56,4 +56,9 @@ FORCE_INLINE Vec3 OffsetRayOrigin(const Vec3 &p, const Vec3 &pError,
 
 	return po;
 }
+
+FORCE_INLINE Vec3 Faceforward(const Vec3& v, const Vec3& v2) {
+	return (Dot(v, v2) < 0.f) ? -v : v;
+}
+
 NAMESPACE_END

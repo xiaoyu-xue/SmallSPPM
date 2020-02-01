@@ -4,6 +4,7 @@
 NAMESPACE_BEGIN
 
 void Film::SaveImage() {
+	WriteToPixelBuffer();
 	ImageIO::WriteImage(filename, imageBuffer, resX, resY);
 }
 
