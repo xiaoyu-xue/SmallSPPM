@@ -859,7 +859,7 @@ public:
 
 		//std::shared_ptr<Mesh> meshVenus = std::shared_ptr<Mesh>(new Mesh());
 		//meshVenus->LoadFromFile("..\\meshs\\venusm.obj");
-		//meshVenus->SetMaterial(diffuseMeshMaterial);
+		//meshVenus->SetMaterial(roughDielectricMaterial);
 		//Transform transformVenus = Transform::Translate(Vec3(-0.4, -0.69, 0)) * Transform::Scale(0.00035, 0.00035, 0.00035);
 		//scene->AddMesh(*meshVenus, transformVenus);
 

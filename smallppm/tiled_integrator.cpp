@@ -31,7 +31,7 @@ void TiledIntegrator::Render(const Scene& scene, const Camera& camera) {
 		const Tile& tile = tiles[i];
 		for (int y = tile.minY; y < tile.maxY; ++y) {
 			for (int x = tile.minX; x < tile.maxX; ++x) {
-				//DEBUG_PIXEL(460, 654, ThreadIndex());
+				//DEBUG_PIXEL(337, 427, ThreadIndex());
 				for (int s = 0; s < spp; ++s) {
 					uint64 instance = samplerEnum->GetIndex(s, x, y);
 					RandomStateSequence rand(sampler, instance);

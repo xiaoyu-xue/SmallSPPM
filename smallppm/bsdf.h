@@ -77,6 +77,7 @@ public:
 	// Fresnel Interface
 	virtual ~Fresnel(){}
 	virtual Vec3 Evaluate(real cosI) const = 0;
+	virtual real EvaluateScalar(real cosI) const = 0;
 };
 
 class FresnelConductor : public Fresnel {
@@ -84,9 +85,14 @@ public:
 	FresnelConductor(const Vec3& etaI, const Vec3& etaT, const Vec3& k)
 		: etaI(etaI), etaT(etaT), k(k) {}
 
-	Vec3 Evaluate(real cosThetaI) const {
+	Vec3 Evaluate(real cosThetaI) const override{
 		return FrConductor(std::abs(cosThetaI), etaI, etaT, k);
 	}
+
+	real EvaluateScalar(real cosI) const override {
+		return 0;
+	}
+
 private:
 	Vec3 etaI, etaT, k;
 };
@@ -99,6 +105,9 @@ public:
 		return FrDielectric(cosThetaI, etaI, etaT);
 	}
 
+	real EvaluateScalar(real cosThetaI) const override {
+		return FrDielectric(cosThetaI, etaI, etaT);
+	}
 
 private:
 	real etaI, etaT;
@@ -144,7 +153,7 @@ public:
 	BxDF(ScatterEventType scatterType) : scatterEventType(scatterType){}
 	virtual ~BxDF(){}
 	virtual real Pdf(const Vec3& wo, const Vec3& wi) const = 0;
-	virtual Vec3 Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec2& rand = Vec2(0, 0)) const = 0;
+	virtual Vec3 Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec3& rand = Vec3(0, 0, 0)) const = 0;
 	virtual Vec3 f(const Vec3& wo, const Vec3& wi) const = 0;
 	virtual bool IsDelta() const { return scatterEventType & BSDF_SPECULAR; }
 	virtual bool MatchesTypes(ScatterEventType flags) const { return (scatterEventType & flags) == scatterEventType; }
@@ -179,7 +188,7 @@ public:
 	//	return f(wo, *wi);
 	//}
 
-	Vec3 Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec2& rand) const override {
+	Vec3 Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec3& rand) const override {
 
 		*wi = CosineSampleHemisphere(Vec2(rand[0], rand[1]));
 		if (wo.z < 0) wi->z *= -1;
@@ -211,7 +220,7 @@ public:
 	//	return R / cosTheta;
 	//}
 
-	Vec3 Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec2& rand) const override {
+	Vec3 Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec3& rand) const override {
 		*wi = Vec3(-wo.x, -wo.y, wo.z);
 		*pdf = 1.0;
 		real cosTheta = BSDFCoordinate::AbsCosTheta(*wi);
@@ -300,7 +309,7 @@ public:
 	//	}
 	//}
 
-	Vec3 Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec2& rand) const override {
+	Vec3 Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec3& rand) const override {
 
 		real Re = FrDielectric(BSDFCoordinate::CosTheta(wo), nc, nt);
 
@@ -380,36 +389,51 @@ public:
 	}
 
 	real Pdf(const Vec3& wo, const Vec3& wi) const override {
-		if (!SameHemisphere(wo, wi)) return 0;
-		Vec3 wh = (wo + wi).Norm();
-		return distribution->Pdf(wo, wh) / (4 * Dot(wo, wh));
+		real pdf = 0;
+		Vec3 wh;
+		real dwh_dwi;
+		wh = (wo + wi).Norm();
+		dwh_dwi = 1.f / (4 * Dot(wi, wh));
+		wh = wh * Sgn(BSDFCoordinate::CosTheta(wh));
+		pdf = std::abs(distribution->Pdf(wo, wh) * dwh_dwi);
+		return pdf;
 	}
 
-	Vec3 Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec2& rand) const override {
+	Vec3 Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec3& rand) const override {
 		if (wo.z == 0) return 0.;
-		Vec3 wh = distribution->Sample_wh(wo, Vec2(rand[0], rand[1]));
-		if (Dot(wo, wh) < 0) return 0.;   // Should be rare
+		//Vec3 wh = distribution->Sample_wh(wo, Vec2(rand[0], rand[1]));
+		Vec3 wh = distribution->Sample_wh(Sgn(BSDFCoordinate::CosTheta(wo)) * wo, Vec2(rand[0], rand[1]));
+		Vec3 microfacetPdf = distribution->Pdf(wo, wh);;
+		if (microfacetPdf == 0) return Vec3();
+
+		//if (Dot(wo, wh) < 0) return 0.;   // Should be rare
 		*wi = Reflect(wo, wh);
 		if (!SameHemisphere(wo, *wi)) return Vec3(0, 0, 0);
 
+		wh = Sgn(BSDFCoordinate::CosTheta(wh)) * wh;
+
 		// Compute PDF of _wi_ for microfacet reflection
-		*pdf = distribution->Pdf(wo, wh) / (4 * Dot(wo, wh));
+		*pdf = std::abs(distribution->Pdf(wo, wh) / (4 * Dot(*wi, wh)));
 		return f(wo, *wi);
 	}
 
 	Vec3 f(const Vec3& wo, const Vec3& wi) const override {
+		if (!SameHemisphere(wo, wi)) return Vec3();
 
 		real cosThetaO = BSDFCoordinate::AbsCosTheta(wo), cosThetaI = BSDFCoordinate::AbsCosTheta(wi);
 		Vec3 wh = wi + wo;
 		// Handle degenerate cases for microfacet reflection
 		if (cosThetaI == 0 || cosThetaO == 0) return Vec3(0, 0, 0);
 		if (wh.x == 0 && wh.y == 0 && wh.z == 0) return Vec3(0, 0, 0);
-		Normalize(wh);
+		wh = wh.Norm();
 		// For the Fresnel call, make sure that wh is in the same hemisphere
 		// as the surface normal, so that TIR is handled correctly.
-		Vec3 F = fresnel->Evaluate(Dot(wi, Faceforward(wh, Vector3f(0, 0, 1))));
-		return R * distribution->D(wh) * distribution->G(wo, wi, wh) * F /
-			(4 * cosThetaI * cosThetaO);
+		wh = Sgn(BSDFCoordinate::CosTheta(wh)) * wh;
+		Vec3 F = fresnel->Evaluate(Dot(wo, wh));
+		Vec3 D = distribution->D(wh);
+		Vec3 G = distribution->G(wo, wi, wh);
+		return R * F * D * G / (4 * cosThetaI * cosThetaO);
+
 	}
 
 private:
@@ -442,29 +466,28 @@ public:
 		Vec3 wh = (wo + wi * eta).Norm();
 		if (wh.z < 0) wh = -wh;
 
-		Vec3 Re = fresnel.Evaluate(Dot(wo, wh));
+		Vec3 F = fresnel.Evaluate(Dot(wo, wh));
 
 		real sqrtDenom = Dot(wo, wh) + eta * Dot(wi, wh);
 		real factor = (mode == TransportMode::Radiance) ? (1 / eta) : 1;
 
-		return (Vec3(1.f, 1.f, 1.f) - Re) * T *
+		return (Vec3(1.f) - F) * T *
 			std::abs(distribution->D(wh) * distribution->G(wo, wi, wh) * eta * eta *
 				std::abs(Dot(wi, wh)) * std::abs(Dot(wo, wh)) * factor * factor /
 				(cosThetaI * cosThetaO * sqrtDenom * sqrtDenom));
 	}
 
-	Vec3 Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec2& rand) const override {
+	Vec3 Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec3& rand) const override {
 		if (wo.z == 0) return 0.;
-		Vec3 wh = distribution->Sample_wh(wo, rand);
-
-		if (Dot(wo, wh) < 0) return 0.;  // Should be rare
-
+		//Vec3 wh = distribution->Sample_wh(wo, Vec2(rand[0], rand[1]));
+		Vec3 wh = distribution->Sample_wh(Sgn(BSDFCoordinate::CosTheta(wo)) * wo, Vec2(rand[0], rand[1]));
 		real eta = BSDFCoordinate::CosTheta(wo) > 0 ? (etaA / etaB) : (etaB / etaA);
-		if (!TransmissionBSDF::Refract(wo, wh, eta, wi)) {
+		if (!TransmissionBSDF::Refract(wo, Faceforward(wh, wo), eta, wi)) {
 			*pdf = 0;
 			return Vec3();
 		}
 		*pdf = Pdf(wo, *wi);
+
 		return f(wo, *wi);
 	}
 
@@ -472,20 +495,187 @@ public:
 		if (SameHemisphere(wo, wi)) return 0;
 
 		real eta = BSDFCoordinate::CosTheta(wo) > 0 ? (etaB / etaA) : (etaA / etaB);
-		Vec3 wh = (wo + wi * eta).Norm();
+		Vec3 wh = -((wo + wi * eta).Norm());
 
+		wh = Sgn(BSDFCoordinate::CosTheta(wh)) * wh;
 		// Compute change of variables _dwh\_dwi_ for microfacet transmission
 		real sqrtDenom = Dot(wo, wh) + eta * Dot(wi, wh);
-		real dwh_dwi =
-			std::abs((eta * eta * Dot(wi, wh)) / (sqrtDenom * sqrtDenom));
-		DEBUG_PIXEL_IF(ThreadIndex()) {
-			std::cout << "Distribution: " << distribution->Pdf(wo, wh) << " dwh_dwi: " << dwh_dwi << std::endl;
-		}
+		real dwh_dwi = std::abs((eta * eta * Dot(wi, wh)) / (sqrtDenom * sqrtDenom));
+
 		return distribution->Pdf(wo, wh) * dwh_dwi;
 	}
 
 private:
 	const Vec3 T;
+	const real etaA, etaB;
+	const FresnelDielectric fresnel;
+	const TransportMode mode;
+	std::unique_ptr<MicrofacetDistribution> distribution;
+};
+
+
+class RoughDielectricBSDF : public BxDF{
+public:
+	RoughDielectricBSDF(MicrofacetDistribution* distribution, const Vec3 &R, const Vec3& T, real etaA, real etaB, TransportMode mode)
+		: BxDF(ScatterEventType(BSDF_REFLECTION | BSDF_TRANSMISSION | BSDF_GLOSSY)),
+		R(R), T(T),
+		distribution(distribution),
+		etaA(etaA),
+		etaB(etaB),
+		fresnel(etaA, etaB),
+		mode(mode) {}
+
+	Vec3 f(const Vec3& wo, const Vec3& wi) const override {
+		bool reflect = BSDFCoordinate::CosTheta(wo) * BSDFCoordinate::CosTheta(wi) > 0;
+		Vec3 wh;
+		if (reflect) {
+			real cosThetaO = BSDFCoordinate::AbsCosTheta(wo), cosThetaI = BSDFCoordinate::AbsCosTheta(wi);
+			wh = wi + wo;
+			// Handle degenerate cases for microfacet reflection
+			if (cosThetaI == 0 || cosThetaO == 0) return Vec3(0, 0, 0);
+			if (wh.x == 0 && wh.y == 0 && wh.z == 0) return Vec3(0, 0, 0);
+			wh = wh.Norm();
+			// For the Fresnel call, make sure that wh is in the same hemisphere
+			// as the surface normal, so that TIR is handled correctly.
+			wh = Sgn(BSDFCoordinate::CosTheta(wh)) * wh;
+			real F = fresnel.EvaluateScalar(Dot(wo, wh));
+			Vec3 D = distribution->D(wh);
+			Vec3 G = distribution->G(wo, wi, wh);
+			return R * F * D * G / (4 * cosThetaI * cosThetaO);
+		}
+		else {
+
+			real cosThetaO = BSDFCoordinate::CosTheta(wo);
+			real cosThetaI = BSDFCoordinate::CosTheta(wi);
+			if (cosThetaI == 0 || cosThetaO == 0) return Vec3();
+
+			real eta = BSDFCoordinate::CosTheta(wo) > 0 ? (etaB / etaA) : (etaA / etaB);
+			Vec3 wh = (-(wo + wi * eta).Norm());
+			wh = Sgn(BSDFCoordinate::CosTheta(wh)) * wh;
+
+			real F = fresnel.EvaluateScalar(Dot(wo, wh));
+			real D = distribution->D(wh);
+			real G = distribution->G(wo, wi, wh);
+
+
+			real sqrtDenom = Dot(wo, wh) + eta * Dot(wi, wh);
+			real factor = (mode == TransportMode::Radiance) ? (1 / eta) : 1;
+			
+			real value = (1 - F) * D * G * eta * eta * std::abs(Dot(wi, wh)) * std::abs(Dot(wo, wh)) / std::abs(cosThetaI * cosThetaO * sqrtDenom * sqrtDenom);
+
+			return T * std::abs(value * factor * factor);
+
+		}
+	}
+
+	real Pdf(const Vec3& wo, const Vec3& wi) const override {
+
+		bool reflect = BSDFCoordinate::CosTheta(wo) * BSDFCoordinate::CosTheta(wi) > 0;
+		real pdf = 0;
+		Vec3 wh;
+		real dwh_dwi ;
+		if (reflect) {
+			wh = (wo + wi).Norm();
+			dwh_dwi = 1.f / (4 * Dot(wi, wh));
+		}
+		else {
+			real eta = BSDFCoordinate::CosTheta(wo) > 0 ? (etaB / etaA) : (etaA / etaB);
+			wh = -((wo + wi * eta).Norm());
+
+			// Compute change of variables _dwh\_dwi_ for microfacet transmission
+			real sqrtDenom = Dot(wo, wh) + eta * Dot(wi, wh);
+			dwh_dwi = std::abs((eta * eta * Dot(wi, wh)) / (sqrtDenom * sqrtDenom));
+		}
+
+		wh = wh * Sgn(BSDFCoordinate::CosTheta(wh));
+
+		pdf = std::abs(distribution->Pdf(wo, wh) * dwh_dwi);
+
+		real F = fresnel.EvaluateScalar(Dot(wo, wh));
+
+		pdf *= reflect ? F : (1 - F);
+
+		return pdf;
+	}
+
+	Vec3 Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec3& rand) const override {
+
+		Vec3 wh = distribution->Sample_wh(Sgn(BSDFCoordinate::CosTheta(wo)) * wo, Vec2(rand[0], rand[1]));
+		real microfacetPdf = distribution->Pdf(wo, wh);
+		if (microfacetPdf == 0) return Vec3();
+
+		real F = fresnel.EvaluateScalar(Dot(wo, wh));
+		real P = F;
+		*pdf = 0;
+		DEBUG_PIXEL_IF(ThreadIndex()) {
+			std::cout << "Sample_f fresnel : " << F << std::endl;
+		}
+		if (rand[2] < P) {
+			if (wo.z == 0) return Vec3();
+			//if (Dot(wo, wh) < 0) return 0.;   // Should be rare
+			*wi = Reflect(wo, wh);
+
+			if (!SameHemisphere(wo, *wi)) return Vec3(0, 0, 0);
+			
+			real dwh_dwi = 1.f / (4 * Dot(*wi, wh));
+
+			*pdf = P * std::abs(distribution->Pdf(wo, wh) * dwh_dwi);
+
+			real cosThetaO = BSDFCoordinate::AbsCosTheta(wo), cosThetaI = BSDFCoordinate::AbsCosTheta(*wi);
+
+			Vec3 D = distribution->D(wh);
+
+			Vec3 G = distribution->G(wo, *wi, wh);
+
+			return R * F * D * G / (4 * cosThetaI * cosThetaO);
+		}
+		else {
+
+			DEBUG_PIXEL_IF(ThreadIndex()) {
+				std::cout << "Sample_f wo : " << wo << " Dot(wo, wh): " << Dot(wo, wh) << std::endl;
+			}
+
+			if (wo.z == 0) return Vec3();
+			//if (Dot(wo, wh) < 0) return 0.;  // Should be rare
+
+			real etaRefract = BSDFCoordinate::CosTheta(wo) > 0 ? (etaA / etaB) : (etaB / etaA);
+			if (!TransmissionBSDF::Refract(wo, Faceforward(wh, wo), etaRefract, wi)) {
+				*pdf = 0;
+				return Vec3();
+			}
+
+			if (BSDFCoordinate::CosTheta(wo) * BSDFCoordinate::CosTheta(*wi) >= 0) return Vec3();
+
+			real eta = BSDFCoordinate::CosTheta(wo) > 0 ? (etaB / etaA) : (etaA / etaB);
+			real sqrtDenom = Dot(wo, wh) + eta * Dot(*wi, wh);
+			real dwh_dwi = std::abs((eta * eta * Dot(*wi, wh)) / (sqrtDenom * sqrtDenom));
+			*pdf = std::abs((1 - P) * distribution->Pdf(wo, wh) * dwh_dwi);
+
+
+			real cosThetaO = BSDFCoordinate::CosTheta(wo);
+			real cosThetaI = BSDFCoordinate::CosTheta(*wi);
+			if (cosThetaI == 0 || cosThetaO == 0) return Vec3();
+
+			real D = distribution->D(wh);
+
+			real G = distribution->G(wo, *wi, wh);
+
+			real factor = (mode == TransportMode::Radiance) ? (1 / eta) : 1;
+
+			//DEBUG_PIXEL_IF(ThreadIndex()) {
+			//	std::cout << "f(refract): " << (1 - F) * std::abs(D * G * eta * eta * std::abs(Dot(*wi, wh)) * std::abs(Dot(wo, wh)) * factor * factor /
+			//		(cosThetaI * cosThetaO * sqrtDenom * sqrtDenom)) << std::endl;
+			//}
+
+			real value = (1 - F) * D * G * eta * eta * std::abs(Dot(*wi, wh)) * std::abs(Dot(wo, wh)) / std::abs(cosThetaI * cosThetaO * sqrtDenom * sqrtDenom);
+
+			return T * std::abs(value * factor * factor);
+		}
+
+	}
+
+private:
+	const Vec3 R, T;
 	const real etaA, etaB;
 	const FresnelDielectric fresnel;
 	const TransportMode mode;

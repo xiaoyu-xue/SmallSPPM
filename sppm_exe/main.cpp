@@ -38,7 +38,7 @@
 #include "constant_texture.h"
 #include "transform.h"
 #include "path.h"
-
+#include "filter.h"
 #include "cornellbox.h"
 
 #ifndef _CRT_SECURE_NO_WARNINGS
@@ -456,7 +456,7 @@ void TestSPPM4(int argc, char* argv[]) {
 void TestSPPM5(int argc, char* argv[]) {
 
 
-	int resX = 1024, resY = 1024;
+	int resX = 1024 * 2, resY = 1024 * 2;
 	int nIterations = (argc == 2) ? atol(argv[1]) : 256;
 
 	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY));
@@ -490,7 +490,7 @@ void TestSPPM5(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("cornellboxSppmEnv9.bmp");
+	film->SetFileName("cornellboxSppmEnv14.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
@@ -544,7 +544,7 @@ void TestPathTracing(int argc, char* argv[]) {
 
 	int resX = 1024, resY = 1024;
 
-	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY));
+	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY, new BoxFilter()));
 	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
 	Vec3 camPos(0, 0, 3);
 	Vec3 cz(0, 0, -1);
@@ -560,8 +560,8 @@ void TestPathTracing(int argc, char* argv[]) {
 	std::shared_ptr<Sampler> sobolSampler = std::shared_ptr<Sampler>(new SobolSampler());
 	std::shared_ptr<SamplerEnum> sobolSamplerEnum = std::shared_ptr<SamplerEnum>(new SobolEnum(resX, resY));
 
-	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(10000, 20, sobolSampler, sobolSamplerEnum));
-	//std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(8, 20, randomSampler, samplerEnum));
+	//std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(1024, 20, sobolSampler, sobolSamplerEnum));
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(1024, 20, randomSampler, samplerEnum));
 
 	fprintf(stderr, "Load Scene ...\n");
 
@@ -574,7 +574,7 @@ void TestPathTracing(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("cornellboxPath50.bmp");
+	film->SetFileName("cornellboxPath88.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
@@ -590,7 +590,7 @@ int main(int argc, char *argv[]) {
 	std::cout << GGXDistribution::RoughnessToAlpha(0.118) << std::endl;
 
 	TestSPPM5(argc, argv);
-	TestPathTracing(argc, argv);
+	//TestPathTracing(argc, argv);
 
 	//TestHashGrid();
 	//_CrtDumpMemoryLeaks();

@@ -72,6 +72,89 @@ static Vec3 TrowbridgeReitzSample(const Vec3& wi, real alpha_x,
 }
 
 
+static Vec2 GGXSampleVisible11(real thetaI, Vec2 sample)  {
+	const real SQRT_PI_INV = 1 / std::sqrt(PI);
+	Vector2 slope;
+
+	/* Special case (normal incidence) */
+	if (thetaI < 1e-4f) {
+		real sinPhi = std::sin(2 * PI * sample.y), cosPhi = std::cos(2 * PI * sample.y);
+		real r = SafeSqrt(sample.x / (1 - sample.x));
+		return Vec2(r * cosPhi, r * sinPhi);
+	}
+
+	/* Precomputations */
+	real tanThetaI = std::tan(thetaI);
+	real a = 1 / tanThetaI;
+	real G1 = 2.0f / (1.0f + SafeSqrt(1.0f + 1.0f / (a * a)));
+
+	/* Simulate X component */
+	real A = 2.0f * sample.x / G1 - 1.0f;
+	if (std::abs(A) == 1)
+		A -= Sgn(A) * 1e-4;
+	real tmp = 1.0f / (A * A - 1.0f);
+	real B = tanThetaI;
+	real D = SafeSqrt(B * B * tmp * tmp - (A * A - B * B) * tmp);
+	real slope_x_1 = B * tmp - D;
+	real slope_x_2 = B * tmp + D;
+	slope.x = (A < 0.0f || slope_x_2 > 1.0f / tanThetaI) ? slope_x_1 : slope_x_2;
+
+	/* Simulate Y component */
+	real S;
+	if (sample.y > 0.5f) {
+		S = 1.0f;
+		sample.y = 2.0f * (sample.y - 0.5f);
+	}
+	else {
+		S = -1.0f;
+		sample.y = 2.0f * (0.5f - sample.y);
+	}
+
+	/* Improved fit */
+	real z =
+		(sample.y * (sample.y * (sample.y * (-(real)0.365728915865723) + (real)0.790235037209296) -
+		(real)0.424965825137544) + (real)0.000152998850436920) /
+			(sample.y * (sample.y * (sample.y * (sample.y * (real)0.169507819808272 - (real)0.397203533833404) -
+		(real)0.232500544458471) + (real)1) - (real)0.539825872510702);
+
+	slope.y = S * z * std::sqrt(1.0f + slope.x * slope.x);
+
+	return slope;
+}
+
+
+static Vec3 GGXSampleVisible(const Vec3& _wi, const Vec2& sample, real alphaU, real alphaV) {
+	/* Step 1: stretch wi */
+	Vec3 wi = Vec3(alphaU * _wi.x, alphaV * _wi.y, _wi.z).Norm();
+
+	/* Get polar coordinates */
+	real theta = 0, phi = 0;
+	if (wi.z < (real)0.99999) {
+		theta = std::acos(wi.z);
+		phi = std::atan2(wi.y, wi.x);
+	}
+	real sinPhi = std::sin(phi), cosPhi = std::cos(phi);
+
+	/* Step 2: simulate P22_{wi}(slope.x, slope.y, 1, 1) */
+	Vec2 slope = GGXSampleVisible11(theta, sample);
+
+	/* Step 3: rotate */
+	slope = Vec2(
+		cosPhi * slope.x - sinPhi * slope.y,
+		sinPhi * slope.x + cosPhi * slope.y);
+
+	/* Step 4: unstretch */
+	slope.x *= alphaU;
+	slope.y *= alphaV;
+
+	/* Step 5: compute normal */
+	real normalization = (real)1 / std::sqrt(slope.x * slope.x + slope.y * slope.y + (real)1.0);
+
+	return Vec3(-slope.x * normalization, -slope.y * normalization, normalization);
+}
+
+
+
 real MicrofacetDistribution::Pdf(const Vec3& wo, const Vec3& wh) const {
 	if (sampleVisibleArea) {
 		DEBUG_PIXEL_IF(ThreadIndex()) {
@@ -100,75 +183,83 @@ real GGXDistribution::Lambda(const Vec3& w) const {
 	return (-1 + std::sqrt(1 + inv_a2)) / 2;
 }
 
-real GGXDistribution::D(const Vec3& wh) const {
-	if (alphax == alphay) {
-		real alpha = alphax;
-		const real alpha2 = alpha * alpha;
-		const real cos2ThetaM = BSDFCoordinate::Cos2Theta(wh);
-		const real cos4ThetaM = cos2ThetaM * cos2ThetaM;
-		const real tan2ThetaM = BSDFCoordinate::Tan2Theta(wh);
 
-		if (std::isinf(tan2ThetaM)) return 0.;
-		const real root = alpha2 + tan2ThetaM;
+//real GGXDistribution::D(const Vec3& wh) const {
+//	if (alphax == alphay) {
+//		real alpha = alphax;
+//		const real alpha2 = alpha * alpha;
+//		const real cos2ThetaM = BSDFCoordinate::Cos2Theta(wh);
+//		const real cos4ThetaM = cos2ThetaM * cos2ThetaM;
+//		const real tan2ThetaM = BSDFCoordinate::Tan2Theta(wh);
+//
+//		if (std::isinf(tan2ThetaM)) return 0.;
+//		const real root = alpha2 + tan2ThetaM;
+//
+//		return alpha2 / (PI * cos4ThetaM * root * root);
+//	}
+//	else {
+//		//const real cos2PhiM = BSDFCoordinate::Cos2Phi(wh);
+//		//const real sin2PhiM = BSDFCoordinate::Sin2Phi(wh);
+//		//const real tan2ThetaM = BSDFCoordinate::Tan2Theta(wh);
+//		//const real cosThetaM = BSDFCoordinate::CosTheta(wh);
+//		//const real cos2ThetaM = BSDFCoordinate::Cos2Theta(wh);
+//
+//		//if (std::isinf(tan2ThetaM)) return 0.;
+//		//const real alphax2 = alphax * alphax;
+//		//const real alphay2 = alphay * alphay;
+//		//const real root = 1 + tan2ThetaM * (cos2PhiM / alphax2 + sin2PhiM / alphay2);
+//		//return 1 / (PI * alphax * alphay * cos2ThetaM * cos2ThetaM * root * root);
+//
+//		real tan2Theta = BSDFCoordinate::Tan2Theta(wh);
+//		if (std::isinf(tan2Theta)) return 0.;
+//		const real cos4Theta = BSDFCoordinate::Cos2Theta(wh) * BSDFCoordinate::Cos2Theta(wh);
+//		real e =
+//			(BSDFCoordinate::Cos2Phi(wh) / (alphax * alphax) + BSDFCoordinate::Sin2Phi(wh) / (alphay * alphay)) *
+//			tan2Theta;
+//		return 1 / (PI * alphax * alphay * cos4Theta * (1 + e) * (1 + e));
+//
+//		//real tan2Theta = BSDFCoordinate::Tan2Theta(wh);
+//		//if (std::isinf(tan2Theta)) return 0.;
+//		//const real cos4Theta = BSDFCoordinate::Cos2Theta(wh) * BSDFCoordinate::Cos2Theta(wh);
+//		//real e =
+//		//	(BSDFCoordinate::Cos2Phi(wh) / (alphax * alphax) + BSDFCoordinate::Sin2Phi(wh) / (alphay * alphay)) *
+//		//	tan2Theta;
+//		//return 1 / (PI * alphax * alphay * cos4Theta * (1 + e) * (1 + e));
+//	}
+//}
 
-		return alpha2 / (PI * cos4ThetaM * root * root);
-	}
-	else {
-		//const real cos2PhiM = BSDFCoordinate::Cos2Phi(wh);
-		//const real sin2PhiM = BSDFCoordinate::Sin2Phi(wh);
-		//const real tan2ThetaM = BSDFCoordinate::Tan2Theta(wh);
-		//const real cosThetaM = BSDFCoordinate::CosTheta(wh);
-		//const real cos2ThetaM = BSDFCoordinate::Cos2Theta(wh);
 
-		//if (std::isinf(tan2ThetaM)) return 0.;
-		//const real alphax2 = alphax * alphax;
-		//const real alphay2 = alphay * alphay;
-		//const real root = 1 + tan2ThetaM * (cos2PhiM / alphax2 + sin2PhiM / alphay2);
-		//return 1 / (PI * alphax * alphay * cos2ThetaM * cos2ThetaM * root * root);
+real GGXDistribution::D(const Vec3& m) const {
+	if (BSDFCoordinate::CosTheta(m) <= 0)
+		return 0.0f;
 
-		real tan2Theta = BSDFCoordinate::Tan2Theta(wh);
-		if (std::isinf(tan2Theta)) return 0.;
-		const real cos4Theta = BSDFCoordinate::Cos2Theta(wh) * BSDFCoordinate::Cos2Theta(wh);
-		real e =
-			(BSDFCoordinate::Cos2Phi(wh) / (alphax * alphax) + BSDFCoordinate::Sin2Phi(wh) / (alphay * alphay)) *
-			tan2Theta;
-		return 1 / (PI * alphax * alphay * cos4Theta * (1 + e) * (1 + e));
+	real cosTheta2 = BSDFCoordinate::Cos2Theta(m);
+	real beckmannExponent = ((m.x * m.x) / (alphax * alphax)
+		+ (m.y * m.y) / (alphay * alphay)) / cosTheta2;
 
-		//real tan2Theta = BSDFCoordinate::Tan2Theta(wh);
-		//if (std::isinf(tan2Theta)) return 0.;
-		//const real cos4Theta = BSDFCoordinate::Cos2Theta(wh) * BSDFCoordinate::Cos2Theta(wh);
-		//real e =
-		//	(BSDFCoordinate::Cos2Phi(wh) / (alphax * alphax) + BSDFCoordinate::Sin2Phi(wh) / (alphay * alphay)) *
-		//	tan2Theta;
-		//return 1 / (PI * alphax * alphay * cos4Theta * (1 + e) * (1 + e));
-	}
+	real result;
+	
+	/* GGX / Trowbridge-Reitz distribution function for rough surfaces */
+	real root = ((real)1 + beckmannExponent) * cosTheta2;
+	result = (real)1 / (PI * alphax * alphay * root * root);
+	
 
+	/* Prevent potential numerical issues in other stages of the model */
+	if (result * BSDFCoordinate::CosTheta(m) < 1e-20f)
+		result = 0;
+
+	return result;
 }
 
+
 real GGXDistribution::G1(const Vec3& v, const Vec3& wh) const {
-
-	if (alphax == alphay) {
-		//real alpha = alphax;
-		//const real tanTheta = std::abs(BSDFCoordinate::TanTheta(v));
-		//if (tanTheta == 0.0f)
-		//	return 1.0f;
-
-		//if (Dot(v, wh) * BSDFCoordinate::CosTheta(v) <= 0)
-		//	return 0.0f;
-
-		//const real root = alpha * tanTheta;
-		//return 2.0f / (1.0f + std::sqrt(1.0f + root * root));
-		return 1 / (1 + Lambda(v));
-	}
-	else {
-		return 1 / (1 + Lambda(v));
-	}
-
+	return 1 / (1 + Lambda(v));
 }
 
 real GGXDistribution::G(const Vec3& wo, const Vec3& wi, const Vec3& wh) const {
     //return G1(wo, wh) * G1(wi, wh);
-	return 1 / (1 + Lambda(wo) + Lambda(wi));
+	//return 1 / (1 + Lambda(wo) + Lambda(wi));
+	return SmithG1(wo, wh) * SmithG1(wi, wh);
 }
 
 Vec3 GGXDistribution::Sample_wh(const Vec3& wo, const Vec2& u) const {
@@ -212,13 +303,11 @@ Vec3 GGXDistribution::Sample_wh(const Vec3& wo, const Vec2& u) const {
 		return wh;
 	}
 	else {
-		bool flip = wo.z < 0;
-		Vec3 wh = SampleGGXVNDF(flip ? -wo : wo, u);
-		wh = flip ? -wh : wh;
+
+		Vec3 wh = SampleGGXVNDF(wo, u);
 		return wh;
-		//bool flip = wo.z < 0;
-		//Vec3 wh = TrowbridgeReitzSample(flip ? -wo : wo, alphax, alphay, u[0], u[1]);
-		//if (flip) wh = -wh;
+
+		//Vec3 wh = GGXSampleVisible(wo, u, alphax, alphay);
 		//return wh;
 	}
 	
@@ -247,6 +336,46 @@ Vec3 GGXDistribution::SampleGGXVNDF(const Vec3& v_, const Vec2& u) const {
 	//unstretch
 	dir = Vec3(alphax * dir.x, alphay * dir.y, std::max(real(0), dir.z)).Norm();
 	return dir;
+}
+
+
+
+
+
+real GGXDistribution::ProjectRoughness(const Vec3& v) const {
+	real invSinTheta2 = 1 / BSDFCoordinate::Sin2Theta(v);
+
+	if (alphax == alphay || invSinTheta2 <= 0)
+		return alphax;
+
+	real cosPhi2 = v.x * v.x * invSinTheta2;
+	real sinPhi2 = v.y * v.y * invSinTheta2;
+
+	return std::sqrt(cosPhi2 * alphax * alphax + sinPhi2 * alphay * alphay);
+}
+
+real GGXDistribution::SmithG1(const Vec3& v, const Vec3& m) const {
+	/* Ensure consistent orientation (can't see the back
+	   of the microfacet from the front and vice versa) */
+	if (Dot(v, m) * BSDFCoordinate::CosTheta(v) <= 0)
+		return 0.0f;
+
+	/* Perpendicular incidence -- no shadowing/masking */
+	real tanTheta = std::abs(BSDFCoordinate::TanTheta(v));
+	if (tanTheta == 0.0f)
+		return 1.0f;
+
+	real alpha = ProjectRoughness(v);
+
+	real root = alpha * tanTheta;
+	return 2.0f / (1.0f + std::sqrt(1 + root * root));
+
+}
+
+real GGXDistribution::Pdf(const Vec3& wo, const Vec3& wh) const {
+	if (BSDFCoordinate::CosTheta(wo) == 0)
+		return 0.0f;
+	return SmithG1(wo, wh) * std::abs(Dot(wo, wh)) * D(wh) / std::abs(BSDFCoordinate::CosTheta(wo));
 }
 
 NAMESPACE_END

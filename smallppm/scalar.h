@@ -85,4 +85,13 @@ inline int64_t RoundUpPow2(int64_t v) {
 	v |= v >> 32;
 	return v + 1;
 }
+
+inline real Sgn(real val) {
+	return (val > 0) ? 1.f : -1.f;
+}
+
+
+inline real SafeSqrt(real value) {
+	return std::sqrt(std::max((real)0.0f, value));
+}
 NAMESPACE_END

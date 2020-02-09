@@ -46,7 +46,7 @@ Vec3 PathTracing::Li(const Ray &r, const Scene& scene, StateSequence& rand, Memo
 		deltaBoundEvent = bsdf->IsDelta();
 
 		real p = std::min((real)1.0, (estimation * throughput).Y() / throughput.Y());
-		if (p < 1 && i > 3) {
+		if (p < 1 && i > 5) {
 			if (rand() < p) {
 				throughput = throughput / p;
 			}

@@ -34,8 +34,10 @@ public:
 
 		BxDF* microfacetReflectionBSDF = ARENA_ALLOC(arena, MicrofacetReflectionBSDF)(distribution, fresnel, kr);
 		BxDF* microfacetTransmissionBSDF = ARENA_ALLOC(arena, MicrofacetTransmissionBSDF)(distribution, kt, 1.0, eta, mode);
-		isect->bsdf->Add(microfacetReflectionBSDF);
-		isect->bsdf->Add(microfacetTransmissionBSDF);
+		//isect->bsdf->Add(microfacetReflectionBSDF);
+		//isect->bsdf->Add(microfacetTransmissionBSDF);
+		BxDF* roughDielectricBSDF = ARENA_ALLOC(arena, RoughDielectricBSDF)(distribution, kr, kt, 1.f, eta, mode);
+		isect->bsdf->Add(roughDielectricBSDF);
 	}
 
 private:

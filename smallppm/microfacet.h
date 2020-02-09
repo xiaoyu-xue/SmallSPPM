@@ -40,19 +40,18 @@ protected:
 
 class GGXDistribution : public MicrofacetDistribution {
 public:
-	GGXDistribution(real alpha, bool samplevis = false) : MicrofacetDistribution(samplevis), alphax(alpha), alphay(alpha) {
+	GGXDistribution(real alpha, bool samplevis = false)
+		: MicrofacetDistribution(samplevis), alphax(alpha), alphay(alpha) {
 
 	}
 
-	GGXDistribution(real alphax, real alphay, bool samplevis = false) : MicrofacetDistribution(samplevis), alphax(alphax), alphay(alphay) {
-		//std::cout << "D: " << D(Vec3(0.1, 0.2, 0.3).Norm()) << std::endl;
-		//std::cout << "G1: " << G1(Vec3(0.5, 0.6, 0.7).Norm(), Vec3(1, 0, 0).Norm()) << std::endl;
-		//std::cout << "G: " << G(Vec3(0.5, 0.6, 0.7).Norm(), Vec3(-0.5, 0.6, 0.7).Norm(), Vec3(0.1, 0.2, 0.3).Norm()) << std::endl;
+	GGXDistribution(real alphax, real alphay, bool samplevis = false) 
+		: MicrofacetDistribution(samplevis), alphax(alphax), alphay(alphay) {
 	}
 
 	real D(const Vec3& wh) const;
 	real G1(const Vec3& v, const Vec3 &wh) const;
-	real G(const Vec3& wo, const Vec3& wi, const Vec3 &wh) const;
+	real G(const Vec3& wo, const Vec3& wi, const Vec3 &wh) const override;
 	Vec3 Sample_wh(const Vec3& wo, const Vec2& u) const;
 	real Lambda(const Vec3& w) const;
 
@@ -64,6 +63,13 @@ public:
 	}
 
 	Vec3 SampleGGXVNDF(const Vec3& v, const Vec2& u) const;
+
+	real ProjectRoughness(const Vec3& v) const;
+
+	real SmithG1(const Vec3& v, const Vec3& m) const;
+
+	real Pdf(const Vec3& wo, const Vec3& wh) const override;
+
 
 private:
 	real alphax, alphay;
