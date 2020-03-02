@@ -228,6 +228,9 @@
     <ClCompile Include="sobol_enum.cpp">
       <Filter>Source Files\sampler</Filter>
     </ClCompile>
+    <ClCompile Include="heart_surface.cpp">
+      <Filter>Source Files\shape</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lowdiscrepency.h">
@@ -424,6 +427,9 @@
     </ClInclude>
     <ClInclude Include="rough_dielectric.h">
       <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="heart_surface.h">
+      <Filter>Header Files\shape</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

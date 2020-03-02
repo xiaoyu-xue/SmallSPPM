@@ -295,14 +295,14 @@ FORCE_INLINE AABB Transform::TransformAABB(const AABB &bound) const {
 FORCE_INLINE Intersection Transform::operator()(const Intersection& isect) const {
 	Intersection ret;
 	ret.hit = (*this)(isect.hit, isect.pError, &ret.pError);
-	ret.n = this->TransformNormal(isect.n);
-	ret.nl = this->TransformNormal(isect.nl);
-	ret.wo = this->TransformVector(isect.wo);
-	ret.dpdu = this->TransformVector(isect.dpdu);
-	ret.dpdv = this->TransformVector(isect.dpdv);
-	ret.ng = this->TransformNormal(isect.ng);
-	ret.dpdus = this->TransformVector(isect.dpdus);
-	ret.dpdvs = this->TransformVector(isect.dpdvs);
+	ret.n = this->TransformNormal(isect.n).Norm();
+	ret.nl = this->TransformNormal(isect.nl).Norm();
+	ret.wo = this->TransformVector(isect.wo).Norm();
+	ret.dpdu = this->TransformVector(isect.dpdu).Norm();
+	ret.dpdv = this->TransformVector(isect.dpdv).Norm();
+	ret.ng = this->TransformNormal(isect.ng).Norm();
+	ret.dpdus = this->TransformVector(isect.dpdus).Norm();
+	ret.dpdvs = this->TransformVector(isect.dpdvs).Norm();
 	return ret;
 }
 

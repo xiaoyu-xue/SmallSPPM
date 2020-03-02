@@ -126,6 +126,9 @@ Vec3 BSDF::f(const Vec3& wo, const Vec3& wi, ScatterEventType flags) const{
 	Vec3 woLocal = WorldToLocal(wo);
 	Vec3 wiLocal = WorldToLocal(wi);
 	bool reflect = Dot(wi, ng) * Dot(wo, ng) > 0;
+	DEBUG_PIXEL_IF(ThreadIndex()) {
+		std::cout << "Reflect?: " << reflect << " " << Dot(wi, ng)  << " " << Dot(wo, ng) << std::endl;
+	}
 	for (int i = 0; i < nBSDFs; ++i) {
 		if ((reflect && (bxdfs[i]->scatterEventType & BSDF_REFLECTION)) ||
 			(!reflect && (bxdfs[i]->scatterEventType & BSDF_TRANSMISSION)))

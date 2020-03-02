@@ -149,10 +149,19 @@ public:
 				Vec3 f = bsdf->f(isect.wo, wi);
 				VisibilityTester visibilityTester(isect, lightPoint);
 
+				DEBUG_PIXEL_IF(ThreadIndex()) {
+					std::cout << "Unocclud: " << visibilityTester.Unoccluded(scene) << std::endl;
+					std::cout << "Pdf: " << pdf << std::endl;
+				}
+
 				if (!visibilityTester.Unoccluded(scene)) {
 					weight1 = PowerHeuristic(1, pdf, 1, scatteringPdf);
 					L1 = Li * f * std::abs(isect.n.Dot(wi)) / pdf;
 
+					DEBUG_PIXEL_IF(ThreadIndex()) {
+						std::cout << "ok" << std::endl;
+						std::cout << "Li: " << Li << " f: " << f << " cos_theta: " << std::abs(isect.n.Dot(wi)) << " pdf: " << pdf << std::endl;
+					}
 
 					Vec3 LL = L1 * weight1 / lightSamplingPdf;
 					if ((LL.x < 0.00001 && LL.y < 0.00001 && LL.z < 0.00001) && 

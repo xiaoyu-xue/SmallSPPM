@@ -456,7 +456,7 @@ void TestSPPM4(int argc, char* argv[]) {
 void TestSPPM5(int argc, char* argv[]) {
 
 
-	int resX = 1024 * 2, resY = 1024 * 2;
+	int resX = 1024, resY = 1024;
 	int nIterations = (argc == 2) ? atol(argv[1]) : 256;
 
 	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY));
@@ -482,7 +482,9 @@ void TestSPPM5(int argc, char* argv[]) {
 	//CornellBoxMesh::SetScene(scene);
 	//CornellBoxWater::SetScene(scene);
 	//CornellBoxTriangle2::SetScene(scene);
-	EnvironmentMapScene::SetScene(scene);
+	//EnvironmentMapScene::SetScene(scene);
+	//CornellBoxHeartSurface::SetScene(scene);
+	HeartSurfaceEnvironmentMapScene::SetScene(scene);
 
 	//std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BruteForce());
 	//std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new KdTreeAccel(scene->GetPrimitives()));
@@ -490,7 +492,7 @@ void TestSPPM5(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("cornellboxSppmEnv14.bmp");
+	film->SetFileName("cornellboxSppmHeartSurface10.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
@@ -561,25 +563,39 @@ void TestPathTracing(int argc, char* argv[]) {
 	std::shared_ptr<SamplerEnum> sobolSamplerEnum = std::shared_ptr<SamplerEnum>(new SobolEnum(resX, resY));
 
 	//std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(1024, 20, sobolSampler, sobolSamplerEnum));
-	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(1024, 20, randomSampler, samplerEnum));
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(100, 20, randomSampler, samplerEnum));
 
 	fprintf(stderr, "Load Scene ...\n");
 
 	//CornellBoxMesh::SetScene(scene);
 	//CornellBoxTriangle2::SetScene(scene);
-	EnvironmentMapScene::SetScene(scene);
-
+	//EnvironmentMapScene::SetScene(scene);
+	//CornellBoxHeartSurface::SetScene(scene);
+	HeartSurfaceEnvironmentMapScene::SetScene(scene);
 
 	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("cornellboxPath88.bmp");
+	film->SetFileName("cornellboxPathHeart13.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
 	clock_t end = clock();
 	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+}
+
+void TestHeartSurface() {
+	Shape* shape = new HeartSurface(nullptr, nullptr);
+	Ray ray(Vec3(0, 0, 0), Vec3(0, 0, 1));
+	Intersection isect;
+	real t;
+	if (shape->Intersect(ray, &isect, &t)) {
+		std::cout << t << std::endl;
+		std::cout << ray(t) << std::endl;
+		std::cout << shape->GetNorm(ray(t)) << std::endl;
+		shape->QueryIntersectionInfo(ray, &isect);
+	}
 }
 
 int main(int argc, char *argv[]) {
@@ -589,8 +605,10 @@ int main(int argc, char *argv[]) {
 
 	std::cout << GGXDistribution::RoughnessToAlpha(0.118) << std::endl;
 
-	TestSPPM5(argc, argv);
-	//TestPathTracing(argc, argv);
+	//TestSPPM5(argc, argv);
+	TestPathTracing(argc, argv);
+
+	//TestHeartSurface();
 
 	//TestHashGrid();
 	//_CrtDumpMemoryLeaks();

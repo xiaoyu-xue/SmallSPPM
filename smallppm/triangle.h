@@ -77,9 +77,9 @@ public:
 		p0 = transform(p0);
 		p1 = transform(p1);
 		p2 = transform(p2);
-		n0 = transform.TransformNormal(n0);
-		n1 = transform.TransformNormal(n1);
-		n2 = transform.TransformNormal(n2);
+		n0 = transform.TransformNormal(n0).Norm();
+		n1 = transform.TransformNormal(n1).Norm();
+		n2 = transform.TransformNormal(n2).Norm();
 		//faceNormal = transform.TransformNormal(faceNormal);
 		faceNormal = Cross(p1 - p0, p2 - p1).Norm();
 		Initialize();

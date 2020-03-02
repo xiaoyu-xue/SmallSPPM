@@ -24,17 +24,17 @@ public:
 	//std::shared_ptr<BSDF> bsdf;
 	BSDF* bsdf;
 
-	Intersection() { rayEps = 1e-3f; shapeId = -1;}
+	Intersection() { rayEps = 0; shapeId = -1;}
 
 	Intersection(const Vec3 &hit, const Vec3 &ng, const Vec3 &nl, const Vec3 &wo, const Vec3 &pError):
-		hit(hit), ng(ng), nl(nl), wo(wo), pError(pError), rayEps(1e-3), primitive(nullptr){
+		hit(hit), ng(ng), nl(nl), wo(wo), pError(pError), rayEps(0), primitive(nullptr){
 		bsdf = nullptr;
 		shapeId = -1;
 	}
 
 	Intersection(const Vec3& hit, const Vec3& ng, const Vec3& nl, 
 		const Vec3& dpdu, const Vec3& dpdv, const Vec3& wo, const Vec3& pError) :
-		hit(hit), dpdu(dpdu), dpdv(dpdv), ng(ng), nl(nl), wo(wo), pError(pError), rayEps(1e-3), primitive(nullptr) {
+		hit(hit), dpdu(dpdu), dpdv(dpdv), ng(ng), nl(nl), wo(wo), pError(pError), rayEps(0), primitive(nullptr) {
 		bsdf = nullptr;
 		shapeId = -1;
 	}
@@ -56,14 +56,15 @@ public:
 		Vec3 target = OffsetRayOrigin(it.hit, it.pError, it.nl, origin - it.hit);
 		Vec3 d = target - origin;
 		real dis = d.Length();
-		return Ray(origin, d.Norm(), dis - shadowRayEps, 0.f);
+		Normalize(d);
+		return Ray(origin, d, dis - shadowRayEps, rayEps);
 		//return Ray(origin, d, 1 - shadowRayEps, 0.f);
 	}
 
 	Ray SpawnRay(const Vec3 &d) const {
 		Vec3 o = OffsetRayOrigin(hit, pError, nl, d);
-		//Vec3 o = hit + d * 0.001;
-		return Ray(o, d, Infinity, 0.f);
+		//Vec3 o = hit + d * 0.0001;
+		return Ray(o, d, Infinity, rayEps);
 	}
 
 	//Ray SpawnTo(const Intersection &isect) const {

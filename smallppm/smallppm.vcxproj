@@ -172,6 +172,7 @@
     <ClCompile Include="debug_utils.cpp" />
     <ClCompile Include="efloat.cpp" />
     <ClCompile Include="environment_light.cpp" />
+    <ClCompile Include="heart_surface.cpp" />
     <ClCompile Include="image_io.cpp" />
     <ClCompile Include="intersection.cpp" />
     <ClCompile Include="kdtree_accel.cpp" />
@@ -223,6 +224,7 @@
     <ClInclude Include="halton.h" />
     <ClInclude Include="halton_enum.h" />
     <ClInclude Include="hashgrid.h" />
+    <ClInclude Include="heart_surface.h" />
     <ClInclude Include="image_io.h" />
     <ClInclude Include="image_texture.h" />
     <ClInclude Include="integrator.h" />
