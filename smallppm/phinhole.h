@@ -22,14 +22,7 @@ public:
 		return Ray(pos + dir * offset, dir, Inf, 0);
 	}
 
-	Vec3 We(const Ray &ray) const override {
-		real pdfA = 1.0; // for the pinhole camera
-		real area = film->area;
-		real cosTheta = cz.Dot(ray.d);
-		real cos2Theta = cosTheta * cosTheta;
-		real value = filmDistance * filmDistance * pdfA / (area * cos2Theta * cos2Theta);
-		return Vec3(value, value, value);
-	}
+	Vec3 We(const Ray& ray) const override;
 
 	Vec3 Sample_Wi(const Intersection &isect, real *pdfW, Vec3 *wi, Vec3 u) const override {
 		*wi = (pos - isect.hit);
@@ -45,12 +38,7 @@ public:
 		return 1.0;
 	}
 
-	real PdfDir(const Ray &cameraRay) const override {
-		real filmArea = film->Area();
-		real cosTheta = std::abs(cz.Dot(cameraRay.d));
-		real cos2Theta = cosTheta * cosTheta;
-		return filmDistance * filmDistance / (filmArea * cos2Theta * cosTheta);
-	}
+	real PdfDir(const Ray& cameraRay) const override;
 private:
 	//Vec3 pos, cx, cy, cz;
 	//real fovy;

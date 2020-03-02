@@ -16,6 +16,7 @@ x64/
 Debug/
 ipch/
 external/lib/
+media/pictures/
 *.sln
 *.db
 *.filters

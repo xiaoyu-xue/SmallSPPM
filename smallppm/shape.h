@@ -34,6 +34,7 @@ public:
 		if (!Intersect(ray, &lightPoint, &t)) {
 			return 0;
 		}
+		QueryIntersectionInfo(ray, &lightPoint);
 		Vec3 d = lightPoint.hit - isect.hit;
 		real pdf = d.Dot(d) / (std::abs(lightPoint.n.Dot(-1 * wi)) * Area());
 		if (std::isinf(pdf)) return 0;
@@ -42,13 +43,15 @@ public:
 
 	virtual Vec3 GetNorm(const Vec3 &point) const = 0;
 
-	int GetId() const { return shapeId; }
+	int64 GetId() const { return shapeId; }
 
 	virtual real Area() const = 0;
 
+	virtual void QueryIntersectionInfo(const Ray& ray, Intersection* isect) const {}
+
 	friend class Scene;
 
-	int shapeId;
+	int64 shapeId;
 protected:
 
 	const Transform* ObjectToWorld, * WorldToObject;

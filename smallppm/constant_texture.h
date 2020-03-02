@@ -3,24 +3,25 @@
 
 NAMESPACE_BEGIN
 
-class ConstantTexture : public Texture {
+template<typename T>
+class ConstantTexture : public Texture<T> {
 public:
-	ConstantTexture(Vec3 value) : value(value) {}
+	ConstantTexture(T value) : value(value) {}
 
-	Vec3 Sample(const Vec3 &coord) const override {
+	T Sample(const Vec3 &coord) const override {
 		return value;
 	}
 
-	Vec3 Sample(const Vec2 &coord) const override {
+	T Sample(const Vec2 &coord) const override {
 		return value;
 	}
 
-	Vec3 Sample(const Intersection &coord) const override {
+	T Sample(const Intersection &coord) const override {
 		return value;
 	}
 
 private:
-	Vec3 value;
+	T value;
 };
 
 NAMESPACE_END

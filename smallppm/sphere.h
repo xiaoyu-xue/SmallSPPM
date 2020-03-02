@@ -32,9 +32,9 @@ public:
 			r = ray;
 		}
 
-		Vec3 v = r.o - p;
-		real vd = v.Dot(r.d), d2 = r.d.Dot(r.d), v2 = v.Dot(v);
-		real det = vd * vd - d2 * v2 + d2 * rad * rad;
+		Vec3 po = r.o - p;
+		real vd = po.Dot(r.d), d2 = r.d.Dot(r.d), po2 = po.Dot(po);
+		real det = vd * vd - d2 * po2 + d2 * rad * rad;
 
 
 		if (det < 0) {
@@ -46,12 +46,16 @@ public:
 		}
 
 		tHit = (-vd - det) / d2;
-		if (tHit < r.tMin) {
+		if (tHit < r.tMin || tHit > r.tMax) {
 			tHit = (-vd + det) / d2;
 			if (tHit < r.tMin || tHit > r.tMax) {
 				return false;
 			}
 		}
+
+		//DEBUG_PIXEL_IF() {
+		//	std::cout << "Intersection function: tmax: " << r.tMax << " tHit: " << tHit << std::endl;
+		//}
 
 		//isect->hit = r.o + r.d * (*t);
 		//Vec3 scaledDir = (isect->hit - p) * rad / Distance(isect->hit, p);
@@ -69,14 +73,55 @@ public:
 		Vec3 wo = -1 * r.d;
 		Vec3 pError = Abs(p) * gamma(1) + Abs(scaledDir) * gamma(6);
 
+		//Compute dpdu, dpdv
+		//Vec3 pHit = hit - p;
+		//real phi = std::atan2(pHit.y, pHit.x);
+		//if (phi < 0) phi += 2 * PI;
+		//real u = phi / phiMax;
+		//real theta = std::acos(Clamp(pHit.z / rad, -1, 1));
+		//real v = (theta - thetaMin) / (thetaMax - thetaMin);
+
+		//real zRadius = std::sqrt(pHit.x * pHit.x + pHit.y * pHit.y);
+		//real invZRadius = 1 / zRadius;
+		//real cosPhi = pHit.x * invZRadius;
+		//real sinPhi = pHit.y * invZRadius;
+		//Vec3 dpdu(-phiMax * pHit.y, phiMax * pHit.x, 0);
+		//Vec3 dpdv = (thetaMax - thetaMin) * Vec3(pHit.z * cosPhi, pHit.z * sinPhi, -rad * std::sin(theta));
+
+
+		Vec3 pHit = hit - p;
+		real phi = std::atan2(pHit.z, pHit.x);
+		if (phi < 0) phi += 2 * PI;
+		real u = phi / phiMax;
+		real theta = std::acos(Clamp(pHit.y / rad, -1, 1));
+		real v = (theta - thetaMin) / (thetaMax - thetaMin);
+		v = 1.f - v;
+
+		real yRadius = std::sqrt(pHit.x * pHit.x + pHit.z * pHit.z);
+		real invYRadius = 1 / yRadius;
+		real cosPhi = pHit.x * invYRadius;
+		real sinPhi = pHit.z * invYRadius;
+		Vec3 dpdu(-phiMax * pHit.z, 0, phiMax * pHit.x);
+		Vec3 dpdv = (thetaMax - thetaMin) * Vec3(pHit.y * cosPhi, -rad * std::sin(theta), pHit.y * sinPhi);
+
+		//CoordinateSystem(GetNorm(hit), &dpdu, &dpdv);
+
+		Intersection it(hit, n, nl, dpdu, dpdv, wo, pError);
+
+		Vec3 dpdus = (dpdu - n * Dot(n, dpdu)).Norm();
+		Vec3 dpdvs = Cross(n, dpdus).Norm();
+		it.SetShading(n, dpdus, dpdvs);
+
 		if (ObjectToWorld) {
-			*isect = (*ObjectToWorld)(Intersection(hit, n, nl, wo, pError));
-			const Transform o2w = *ObjectToWorld;
+			*isect = (*ObjectToWorld)(it);
 		}
 		else {
-			*isect = Intersection(hit, n, nl, wo, pError);
+			*isect = it;
 		}
+		isect->uv = Vec2(u, v);
+		isect->shapeId = shapeId;
 		*t = tHit;
+
 		return true;
 
 	}
@@ -106,7 +151,7 @@ public:
 			det = sqrt(det);
 		}
 		tHit = (-vd - det) / d2;
-		if (tHit < r.tMin) {
+		if (tHit < r.tMin || tHit > r.tMax) {
 			tHit = (-vd + det) / d2;
 			if (tHit < r.tMin || tHit > r.tMax) {
 				return false;
@@ -139,6 +184,7 @@ public:
 		Vec3 n = GetNorm(hit);
 		Vec3 nl = isect.n;
 		Vec3 pError = Abs(p) * gamma(1) + Abs(scaledDir) * gamma(6);
+
 		if (ObjectToWorld) {
 			isect.hit = (*ObjectToWorld)(hit, pError, &isect.pError);
 			isect.n = (*ObjectToWorld).TransformNormal(n).Norm();
@@ -148,6 +194,7 @@ public:
 			isect.n = n;
 		}
 		isect.nl = nl;
+		isect.shapeId = shapeId;
 		return isect;
 	}
 
@@ -256,6 +303,7 @@ public:
 		ret.nl = ret.n;
 		//ret.pError = gamma(6) * Abs(pWorld) + gamma(6) * Abs(scaledDir);
 		ret.pError = gamma(5) * Abs(pWorld);
+		ret.shapeId = shapeId;
 		return ret;
 
 
@@ -315,10 +363,13 @@ public:
 	}
 
 private:
-	real rad; Vec3 p;
+	real rad; 
+	Vec3 p;
 	bool inside;
-
 	AABB aabb;
+	const real thetaMin = 0;
+	const real thetaMax = PI;
+	const real phiMax = 2 * PI;
 };
 
 NAMESPACE_END

@@ -109,6 +109,33 @@
     <Filter Include="Source Files\system">
       <UniqueIdentifier>{99fa6f3a-3c3b-47a3-b472-9d8a73c85c66}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\bsdf">
+      <UniqueIdentifier>{5840c55f-7532-47a6-870d-031fd6ff2327}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\mesh">
+      <UniqueIdentifier>{801575a9-b6a1-48db-8614-e3f22b8d8d1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mesh">
+      <UniqueIdentifier>{48bee6f0-d373-412e-af79-3a62d1e4e5cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\scene">
+      <UniqueIdentifier>{7a5dc246-8f68-4932-b8c5-b154b7d60660}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\camera">
+      <UniqueIdentifier>{fcf38495-6f02-4f8f-8ce2-3e700dee57b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\film">
+      <UniqueIdentifier>{01840f26-a326-4683-b94b-d719db5c8099}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\texture">
+      <UniqueIdentifier>{052c66f3-3be2-4ed0-867f-ace99fbf22f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\imageio">
+      <UniqueIdentifier>{a8d36f7d-5012-4df9-a4b9-bcadd179f004}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\light">
+      <UniqueIdentifier>{7cf5bb47-917d-4cd8-ba8d-87bc4b87ed6d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sampler.cpp">
@@ -155,6 +182,54 @@
     </ClCompile>
     <ClCompile Include="memory.cpp">
       <Filter>Source Files\system</Filter>
+    </ClCompile>
+    <ClCompile Include="microfacet.cpp">
+      <Filter>Source Files\bsdf</Filter>
+    </ClCompile>
+    <ClCompile Include="bsdf.cpp">
+      <Filter>Source Files\bsdf</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh.cpp">
+      <Filter>Source Files\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="scene.cpp">
+      <Filter>Source Files\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>Source Files\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="phinhole.cpp">
+      <Filter>Source Files\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="film.cpp">
+      <Filter>Source Files\film</Filter>
+    </ClCompile>
+    <ClCompile Include="image_io.cpp">
+      <Filter>Source Files\imageio</Filter>
+    </ClCompile>
+    <ClCompile Include="sppm.cpp">
+      <Filter>Source Files\integrator</Filter>
+    </ClCompile>
+    <ClCompile Include="bvh_accel.cpp">
+      <Filter>Source Files\accelerator</Filter>
+    </ClCompile>
+    <ClCompile Include="environment_light.cpp">
+      <Filter>Source Files\light</Filter>
+    </ClCompile>
+    <ClCompile Include="tiled_integrator.cpp">
+      <Filter>Source Files\integrator</Filter>
+    </ClCompile>
+    <ClCompile Include="path.cpp">
+      <Filter>Source Files\integrator</Filter>
+    </ClCompile>
+    <ClCompile Include="sobol.cpp">
+      <Filter>Source Files\sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="sobol_enum.cpp">
+      <Filter>Source Files\sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="heart_surface.cpp">
+      <Filter>Source Files\shape</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -307,6 +382,54 @@
     </ClInclude>
     <ClInclude Include="kdtree_accel.h">
       <Filter>Header Files\accelerator</Filter>
+    </ClInclude>
+    <ClInclude Include="microfacet.h">
+      <Filter>Header Files\bsdf</Filter>
+    </ClInclude>
+    <ClInclude Include="roughness.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="array.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh.h">
+      <Filter>Header Files\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="image_texture.h">
+      <Filter>Header Files\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="bvh_accel.h">
+      <Filter>Header Files\accelerator</Filter>
+    </ClInclude>
+    <ClInclude Include="environment_map.h">
+      <Filter>Header Files\light</Filter>
+    </ClInclude>
+    <ClInclude Include="environment_light.h">
+      <Filter>Header Files\light</Filter>
+    </ClInclude>
+    <ClInclude Include="tiled_integrator.h">
+      <Filter>Header Files\integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="path.h">
+      <Filter>Header Files\integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="sobol.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="halton_enum.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="sobol_enum.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="plastic.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="rough_dielectric.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="heart_surface.h">
+      <Filter>Header Files\shape</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

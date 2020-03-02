@@ -1,4 +1,3 @@
-#include "svpng.inc"
 #include <math.h>  
 #include <stdlib.h> 
 #include <stdio.h>  
@@ -16,9 +15,13 @@
 #include "def.h"
 #include "sampler.h"
 #include "halton.h"
+#include "sobol.h"
 #include "sampler_enum.h"
+#include "halton_enum.h"
+#include "sobol_enum.h"
 #include "linagl.h"
 #include "scene.h"
+#include "film.h"
 #include "sphere.h"
 #include "integrator.h"
 #include "renderer.h"
@@ -27,14 +30,15 @@
 #include "phinhole.h"
 #include "brute_force.h"
 #include "kdtree_accel.h"
+#include "bvh_accel.h"
 #include "sppm.h"
 #include "diffuse.h"
 #include "mirror.h"
 #include "glass.h"
 #include "constant_texture.h"
-
 #include "transform.h"
-
+#include "path.h"
+#include "filter.h"
 #include "cornellbox.h"
 
 #ifndef _CRT_SECURE_NO_WARNINGS
@@ -47,7 +51,7 @@
 
 //const real ALPHA = 0.66666667;
 const real ALPHA = 0.75;
-const int64  render_stage_number = 500000;
+const int64  render_stage_number = 300000;
 
 void TestSppm(int argc, char* argv[]) {
 	//clock_t begin = clock();
@@ -134,13 +138,12 @@ void TestSPPM2(int argc, char* argv[]) {
 	fprintf(stderr, "Load Scene ...\n");
 
 	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BruteForce());
-	scene->SetCamera(camera);
 	scene->SetAccelerator(accelerator);
 	//texture
-	std::shared_ptr<Texture> redConstant = std::shared_ptr<Texture>(new ConstantTexture(Vec3(.75f, .25f, .25f)));
-	std::shared_ptr<Texture> blueConstant = std::shared_ptr<Texture>(new ConstantTexture(Vec3(.25f, .25f, .75f)));
-	std::shared_ptr<Texture> whiteConstant = std::shared_ptr<Texture>(new ConstantTexture(Vec3(.75f, .75f, .75f)));
-	std::shared_ptr<Texture> fullWhiteConstant = std::shared_ptr<Texture>(new ConstantTexture(Vec3(1, 1, 1)));
+	std::shared_ptr<Texture<Vec3>> redConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(.75f, .25f, .25f)));
+	std::shared_ptr<Texture<Vec3>> blueConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(.25f, .25f, .75f)));
+	std::shared_ptr<Texture<Vec3>> whiteConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(.75f, .75f, .75f)));
+	std::shared_ptr<Texture<Vec3>> fullWhiteConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1, 1, 1)));
 
 
 	//Left
@@ -203,7 +206,7 @@ void TestSPPM2(int argc, char* argv[]) {
 	scene->AddPrimitive(glassBall3);
 
 	//Light
-	std::shared_ptr<Texture> lightTexture = std::shared_ptr<Texture>(new ConstantTexture(Vec3(0, 0, 0)));
+	std::shared_ptr<Texture<Vec3>> lightTexture = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(0, 0, 0)));
 	std::shared_ptr<Shape> lightShape = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 8.f, Vec3(50, 81.6f - 16.5f, 81.6f)));//Lite
 	std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape, Vec3(0.3f, 0.3f, 0.3f) * 100));
 	std::shared_ptr<Material> lightMaterial = std::shared_ptr<Material>(new DiffuseMaterial(lightTexture));
@@ -212,7 +215,7 @@ void TestSPPM2(int argc, char* argv[]) {
 
 	scene->Initialize();
 	film->SetFileName("cornellbox31.bmp");
-	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
+	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	renderer->Render();
 	clock_t end = clock();
 	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
@@ -244,12 +247,15 @@ void TestSPPM3(int argc, char* argv[]) {
 		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 1.0, ALPHA, false, haltonSampler, haltonSamplerEnum));
 	fprintf(stderr, "Load Scene ...\n");
 
-	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BruteForce());
-	scene->SetCamera(camera);
+	CornellBoxSphere::SetScene(scene);
+	//CornellBoxTriangle::SetScene(scene);
+
+	//std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BruteForce());
+	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
+
 	scene->SetAccelerator(accelerator);
 
-	////CornellBoxSphere::SetScene(scene);
-	CornellBoxTriangle::SetScene(scene);
+
 
 	////texture
 	//std::shared_ptr<Texture> redConstant = std::shared_ptr<Texture>(new ConstantTexture(Vec3(.75f, .25f, .25f)));
@@ -361,8 +367,8 @@ void TestSPPM3(int argc, char* argv[]) {
 
 
 	scene->Initialize();
-	film->SetFileName("cornellbox49.bmp");
-	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
+	film->SetFileName("cornellbox50.bmp");
+	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	renderer->Render();
 	clock_t end = clock();
 	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
@@ -408,6 +414,48 @@ void TestProjection() {
 void TestSPPM4(int argc, char* argv[]) {
 	clock_t begin = clock();
 
+	int resX = 1024 * 2, resY = 1024 * 2;
+	int nIterations = (argc == 2) ? atol(argv[1]) : 256;
+
+	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY));
+	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
+	Vec3 camPos(0, 0, 3);
+	Vec3 cz(0, 0, -1);
+	Vec3 cx = Vec3(1, 0, 0);
+	Vec3 cy = Vec3(0, 1, 0);
+	real filmDis = 1;
+	real fovy = 53.13010235415597f;
+
+	std::shared_ptr<Camera> camera = std::shared_ptr<Camera>(new PinHoleCamera(film, camPos, cz, cx, cy, fovy, filmDis));
+	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
+	std::shared_ptr<Sampler> haltonSampler = std::shared_ptr<Sampler>(new HaltonSampler(resX, resY));
+	std::shared_ptr<Sampler> regularHaltonSampler = std::shared_ptr<Sampler>(new RegularHaltonSampler());;
+	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
+	std::shared_ptr<SamplerEnum> haltonSamplerEnum = std::shared_ptr<SamplerEnum>(new HaltonEnum((unsigned)resX, (unsigned)resY));
+	real alpha = 0.66666667;
+	std::shared_ptr<Integrator> integrator =
+		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 0.05, alpha, true, haltonSampler, haltonSamplerEnum));
+	fprintf(stderr, "Load Scene ...\n");
+
+	CornellBoxTriangle2::SetScene(scene);
+
+	//std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BruteForce());
+	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new KdTreeAccel(scene->GetPrimitives()));
+	scene->SetAccelerator(accelerator);
+
+	scene->Initialize();
+	film->SetFileName("cornellboxTexture6.bmp");
+	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
+	renderer->Render();
+	clock_t end = clock();
+	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+
+}
+
+
+void TestSPPM5(int argc, char* argv[]) {
+
+
 	int resX = 1024, resY = 1024;
 	int nIterations = (argc == 2) ? atol(argv[1]) : 256;
 
@@ -428,41 +476,140 @@ void TestSPPM4(int argc, char* argv[]) {
 	std::shared_ptr<SamplerEnum> haltonSamplerEnum = std::shared_ptr<SamplerEnum>(new HaltonEnum((unsigned)resX, (unsigned)resY));
 	real alpha = 0.66666667;
 	std::shared_ptr<Integrator> integrator =
-		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 0.05, alpha, false, haltonSampler, haltonSamplerEnum));
+		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 0.05, alpha, true, haltonSampler, haltonSamplerEnum, true));
 	fprintf(stderr, "Load Scene ...\n");
 
-	CornellBoxTriangle2::SetScene(scene);
+	//CornellBoxMesh::SetScene(scene);
+	//CornellBoxWater::SetScene(scene);
+	//CornellBoxTriangle2::SetScene(scene);
+	//EnvironmentMapScene::SetScene(scene);
+	//CornellBoxHeartSurface::SetScene(scene);
+	HeartSurfaceEnvironmentMapScene::SetScene(scene);
 
 	//std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BruteForce());
-	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new KdTreeAccel(scene->GetPrimitives()));
-	scene->SetCamera(camera);
+	//std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new KdTreeAccel(scene->GetPrimitives()));
+	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("cornellboxTriangle_test.bmp");
-	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
+	film->SetFileName("cornellboxSppmHeartSurface10.bmp");
+	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
+	clock_t begin = clock();
 	renderer->Render();
 	clock_t end = clock();
 	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
 
 }
 
+void TestHashGrid() {
+	Rng rng;
+	std::vector<Vec3> points;
+	for (int i = 0; i < 12345; ++i) {
+		points.push_back(Vec3(rng.GetDouble(), rng.GetDouble(), rng.GetDouble()));
+	}
+	real searchRadius = 0.15;
+	HashGrid<int> hashGrid;
+	for (int i = 0; i < points.size(); ++i) {
+		hashGrid.AddPoint(std::move(std::pair<Vec3, int>(points[i], i)), 0.15f);
+	}
+	hashGrid.BuildHashGrid(searchRadius + eps);
+	Vec3 testPoint = Vec3(0.12f, 0.34f, 0.56f);
+
+
+	{
+		int naiveNum = 0;
+		for (int i = 0; i < points.size(); ++i) {
+			//std::cout << points[i] << std::endl;
+			if (Distance(points[i], testPoint) < searchRadius) {
+				naiveNum++;
+				//std::cout << points[i] << std::endl;
+			}
+		}
+		std::cout << naiveNum << std::endl;
+	}
+	{
+		int hashNum = 0;
+		std::vector<int> grid = hashGrid.GetGrid(testPoint);
+		for (int i = 0; i < grid.size(); ++i) {
+			if (Distance(points[grid[i]], testPoint) < searchRadius) {
+				hashNum++;
+				//std::cout << points[grid[i]] << std::endl;
+			}
+		}
+		std::cout << hashNum << std::endl;
+	}
+
+
+}
+
+void TestPathTracing(int argc, char* argv[]) {
+
+	int resX = 1024, resY = 1024;
+
+	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY, new BoxFilter()));
+	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
+	Vec3 camPos(0, 0, 3);
+	Vec3 cz(0, 0, -1);
+	Vec3 cx = Vec3(1, 0, 0);
+	Vec3 cy = Vec3(0, 1, 0);
+	real filmDis = 1;
+	real fovy = 53.13010235415597f;
+
+	std::shared_ptr<Camera> camera = std::shared_ptr<Camera>(new PinHoleCamera(film, camPos, cz, cx, cy, fovy, filmDis));
+	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
+	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
+	
+	std::shared_ptr<Sampler> sobolSampler = std::shared_ptr<Sampler>(new SobolSampler());
+	std::shared_ptr<SamplerEnum> sobolSamplerEnum = std::shared_ptr<SamplerEnum>(new SobolEnum(resX, resY));
+
+	//std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(1024, 20, sobolSampler, sobolSamplerEnum));
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(100, 20, randomSampler, samplerEnum));
+
+	fprintf(stderr, "Load Scene ...\n");
+
+	//CornellBoxMesh::SetScene(scene);
+	//CornellBoxTriangle2::SetScene(scene);
+	//EnvironmentMapScene::SetScene(scene);
+	//CornellBoxHeartSurface::SetScene(scene);
+	HeartSurfaceEnvironmentMapScene::SetScene(scene);
+
+	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
+	scene->SetAccelerator(accelerator);
+
+	scene->Initialize();
+	film->SetFileName("cornellboxPathHeart13.bmp");
+	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
+	clock_t begin = clock();
+	renderer->Render();
+	clock_t end = clock();
+	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+}
+
+void TestHeartSurface() {
+	Shape* shape = new HeartSurface(nullptr, nullptr);
+	Ray ray(Vec3(0, 0, 0), Vec3(0, 0, 1));
+	Intersection isect;
+	real t;
+	if (shape->Intersect(ray, &isect, &t)) {
+		std::cout << t << std::endl;
+		std::cout << ray(t) << std::endl;
+		std::cout << shape->GetNorm(ray(t)) << std::endl;
+		shape->QueryIntersectionInfo(ray, &isect);
+	}
+}
+
 int main(int argc, char *argv[]) {
-	AABB aabb;
-	aabb = Union(Union(aabb, Vec3(-1, -2, -2)), Vec3(1, 2, 3));
-	std::cout << aabb << std::endl;
+	//AABB aabb;
+	//aabb = Union(Union(aabb, Vec3(-1, -2, -2)), Vec3(1, 2, 3));
+	//std::cout << aabb << std::endl;
 
-	//TestSPPM3(argc, argv);
-	TestSPPM4(argc, argv);
-	//Shape *triangle = new Triangle(Vec3(5, 0, 0), Vec3(5, 10, 0), Vec3(-5, 0, 0), Vec3(0, 0, 1));
-	//Ray ray(Vec3(0, 0, 2), Vec3(0, 0, -1));
-	//Intersection isect;
-	//real t;
-	//if (triangle->Intersect(ray, &isect, &t)) {
-	//	std::cout << t << std::endl;
-	//	std::cout << isect.hit << std::endl;
-	//}
+	std::cout << GGXDistribution::RoughnessToAlpha(0.118) << std::endl;
 
+	//TestSPPM5(argc, argv);
+	TestPathTracing(argc, argv);
 
+	//TestHeartSurface();
+
+	//TestHashGrid();
 	//_CrtDumpMemoryLeaks();
 }

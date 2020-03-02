@@ -1,4 +1,5 @@
 #pragma once
+#include "memory.h"
 
 NAMESPACE_BEGIN
 
@@ -10,7 +11,9 @@ class Intersection;
 class Material {
 public:
 	virtual ~Material() { }
-	virtual void ComputeScatteringFunction(Intersection *isect, 
+	//virtual void ComputeScatteringFunction(Intersection* isect,
+	//	TransportMode mode = TransportMode::Radiance) const = 0;
+	virtual void ComputeScatteringFunction(Intersection *isect, MemoryArena& arena,
 		TransportMode mode = TransportMode::Radiance) const = 0;
 };
 

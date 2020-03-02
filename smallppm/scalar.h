@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <utility>
 #include <cmath>
+#include "utils.h"
+
 NAMESPACE_BEGIN
 
 template <class T1, class T2, class T3>
@@ -10,6 +12,11 @@ T1 Clamp(const T1& tVal, const T2& tMin, const T3& max)
 	if (tVal < tMin) return tMin;
 	if (tVal > max) return max;
 	return tVal;
+}
+
+template<typename T, typename V>
+V Lerp(T a, V x0, V x1) {
+	return (T(1) - a) * x0 + a * x1;
 }
 
 FORCE_INLINE real Radians(real deg) { return (PI / 180) * deg; }
@@ -77,5 +84,14 @@ inline int64_t RoundUpPow2(int64_t v) {
 	v |= v >> 16;
 	v |= v >> 32;
 	return v + 1;
+}
+
+inline real Sgn(real val) {
+	return (val > 0) ? 1.f : -1.f;
+}
+
+
+inline real SafeSqrt(real value) {
+	return std::sqrt(std::max((real)0.0f, value));
 }
 NAMESPACE_END

@@ -32,8 +32,37 @@ public:
 	}
 
 public:
-	real Evaluate(const real dx, const real dy) const {
+	real Evaluate(const real dx, const real dy) const override {
 		return 1.0;
+	}
+};
+
+
+class GaussianFilter : public Filter
+{
+private:
+	real stdDev;
+	real alpha;
+	real expR;
+
+public:
+	GaussianFilter(const real stdDiv = 0.5f)
+		: Filter(4 * stdDiv)
+		, stdDev(stdDiv)
+	{
+		alpha = -1.0f / (2.0f * stdDev * stdDev);
+		expR = std::exp(alpha * radius * radius);
+	}
+
+public:
+	real Evaluate(const real dx, const real dy) const override
+	{
+		auto Gaussian = [this](const real d)
+		{
+			return std::max(0.0f, std::exp(alpha * d * d) - expR);
+		};
+
+		return Gaussian(dx) * Gaussian(dy);
 	}
 };
 

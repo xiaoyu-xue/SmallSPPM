@@ -19,6 +19,22 @@ inline uint64 reverse_bit64(uint64 n) {
 	return (n0 << 32) | n1;
 }
 
+inline uint64 van_der_corput(uint64 bits, const uint64 scramble)
+{
+    bits = (bits << 32) | (bits >> 32);
+    bits = ((bits & 0x0000ffff0000ffffULL) << 16) |
+        ((bits & 0xffff0000ffff0000ULL) >> 16);
+    bits = ((bits & 0x00ff00ff00ff00ffULL) << 8) |
+        ((bits & 0xff00ff00ff00ff00ULL) >> 8);
+    bits = ((bits & 0x0f0f0f0f0f0f0f0fULL) << 4) |
+        ((bits & 0xf0f0f0f0f0f0f0f0ULL) >> 4);
+    bits = ((bits & 0x3333333333333333ULL) << 2) |
+        ((bits & 0xccccccccccccccccULL) >> 2);
+    bits = ((bits & 0x5555555555555555ULL) << 1) |
+        ((bits & 0xaaaaaaaaaaaaaaaaULL) >> 1);
+    return (scramble ^ bits) >> (64 - 52); // Account for 52 bits precision.
+}
+
 int IsPrime(int a) noexcept;
 
 NAMESPACE_END

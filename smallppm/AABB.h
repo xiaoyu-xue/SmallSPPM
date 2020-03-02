@@ -16,6 +16,14 @@ struct AABB {
 		minPoint = Vec3(std::min(p0.x, p1.x), std::min(p0.y, p1.y), std::min(p0.z, p1.z));
 		maxPoint = Vec3(std::max(p0.x, p1.x), std::max(p0.y, p1.y), std::max(p0.z, p1.z));
 	}
+
+	Vec3& operator[](int i) {
+		return (i == 0) ? minPoint : maxPoint;
+	}
+
+	const Vec3& operator[](int i) const {
+		return (i == 0) ? minPoint : maxPoint;
+	}
 	bool Intersect(const Ray& ray, real* hitt0, real* hitt1) const;
 
 	FORCE_INLINE void Fit(const Vec3 &p)
@@ -52,6 +60,11 @@ struct AABB {
 			return 1;
 		else
 			return 2;
+	}
+
+	FORCE_INLINE void GetBoundingSphere(Vec3* center, real* radius) const {
+		*center = (minPoint + maxPoint) * 0.5;
+		*radius = (maxPoint - minPoint).Length() * 0.5;
 	}
 };
 

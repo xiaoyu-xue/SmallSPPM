@@ -13,6 +13,12 @@ public:
 	const Intersection &P1() const { return p1; }
 	bool Unoccluded(const Scene &scene) const {
 		Ray ray = p0.SpawnTo(p1);
+		Intersection isect;
+		//DEBUG_PIXEL_IF() {
+		//	std::cout << "p0: " << p0.shapeId << " " << "p1: " << p1.shapeId << std::endl;
+		//	std::cout << scene.Intersect(ray, &isect, &t) << " " << isect.shapeId << std::endl;
+		//}
+		//return scene.Intersect(ray, &isect, &t) && isect.shapeId != p1.shapeId;
 		return scene.Intersect(ray);
 	};
 

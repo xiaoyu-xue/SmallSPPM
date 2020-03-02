@@ -6,15 +6,19 @@
 #include "sampling.h"
 #include "accelerator.h"
 #include "debug_utils.h"
+#include "mesh.h"
 
 
 NAMESPACE_BEGIN
 
 class Scene {
 public:
-
-	void SetCamera(const std::shared_ptr<Camera> &pCamera) {
-		camera = pCamera;
+	void Initialize() {
+		for (auto light : lights) {
+			light->Initialize(*this);
+		}
+		lightPowerDistribution = ComputeLightPowerDistribution();
+		accelerator->SetPrimitives(primitives);
 		shapeNum = 0;
 	}
 
@@ -41,7 +45,7 @@ public:
 		if (shape) {
 			shape->shapeId = shapeNum;
 #ifdef _DEBUG
-			primitive->primitiveId = shapeNum;
+			//primitive->primitiveId = shapeNum;
 #endif
 			++shapeNum;
 		}
@@ -51,7 +55,11 @@ public:
 	void AddLight(std::shared_ptr<Light> light) {
 		lights.push_back(light);
 		if (light->IsAreaLight()) {
-			AddShape(light->GetShapePtr());
+			std::shared_ptr<Primitive> lightPrimitive = std::make_shared<Primitive>(light->GetShapePtr());
+			AddPrimitive(lightPrimitive);
+		}
+		if (light->IsEnvironmentLight()) {
+			envLight = light;
 		}
 	}
 
@@ -61,41 +69,28 @@ public:
 		if (light->IsAreaLight()) {
 			AddPrimitive(lightPrimitive);
 		}
+		if (light->IsEnvironmentLight()) {
+			envLight = light;
+		}
 	}
 
-	void Initialize() {
-		lightPowerDistribution = ComputeLightPowerDistribution();
-		accelerator->SetPrimitives(primitives);
+
+	void AddMesh(Mesh &mesh, const Transform &transform) {
+		for (int i = 0; i < mesh.untransformedTriangles.size(); ++i) {
+			Triangle* triangle = new Triangle();
+			*triangle = mesh.untransformedTriangles[i];
+			triangle->SetTransform(transform);
+			std::shared_ptr<Shape> shape = std::shared_ptr<Shape>(triangle);
+			AddPrimitive(shape, mesh.material);
+		}
 	}
 
-	//bool Intersect(const Ray &r, real *t, Intersection *isect, std::shared_ptr<Shape> &hitObj) const {
-	//	int n = (int)shapes.size();
-	//	*t = Inf;
-	//	for (int i = 0; i < n; ++i) {
-	//		Intersection intersection;
-	//		real ti;
-	//		if (shapes[i]->Intersect(r, &intersection, &ti)) {
-	//			if (ti < *t) {
-	//				*t = ti;
-	//				*isect = intersection;
-	//				hitObj = shapes[i];
-	//			}
-	//		}
-	//	}
-	//	return  (*t > r.tMin && *t < r.tMax);
-	//}
+	std::shared_ptr<Light> GetEnvironmentLight() const {
+		return envLight;
+	}
 
-	//bool Intersect(const Ray &r) const {
-	//	for (auto shape : shapes) {
-	//		if (shape->Intersect(r)) {
-	//			return true;
-	//		}
-	//	}
-	//	return false;
-	//}
-
-	bool Intersect(const Ray& r, Intersection* isect, real* t) const {
-		return accelerator->Intersect(r, isect, t);
+	bool Intersect(const Ray& r, Intersection* isect) const {
+		return accelerator->Intersect(r, isect);
 	}
 
 	bool Intersect(const Ray& r) const {
@@ -108,10 +103,6 @@ public:
 
 	const std::vector<std::shared_ptr<Shape>>& GetShapes() const {
 		return shapes;
-	}
-
-	std::shared_ptr<Camera> GetCamera() const {
-		return camera;
 	}
 
 	std::shared_ptr<Light> SampleOneLight(real *lightPdf, real u) const {
@@ -132,6 +123,10 @@ public:
 		return primitives;
 	}
 
+	void QueryIntersectionInfo(const Ray& ray, Intersection* isect) const;
+
+	void GetBoundingSphere(Vec3* center, real* radius) const;
+
 private:
 
 	std::unique_ptr<Distribution1D> ComputeLightPowerDistribution() {
@@ -147,11 +142,11 @@ private:
 	std::vector<std::shared_ptr<Shape>> shapes;
 	std::vector<std::shared_ptr<Primitive>> primitives;
 	std::vector<std::shared_ptr<Light>> lights;
-	std::shared_ptr<Camera> camera;
+	std::shared_ptr<Light> envLight = nullptr;
 	std::unique_ptr<Distribution1D> lightPowerDistribution;
 	std::shared_ptr<Accelerator> accelerator;
-	int shapeNum;
-	int primitiveNum;
+	int64 shapeNum;
+	int64 primitiveNum;
 };
 
 NAMESPACE_END
