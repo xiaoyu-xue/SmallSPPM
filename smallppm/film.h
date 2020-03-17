@@ -82,8 +82,8 @@ public:
 
 	void SetImage(const std::vector<Vec3> &image) {
 		//imageBuffer = image;
-		for (int i = 0; i < resX; ++i) {
-			for (int j = 0; j < resY; ++j) {
+		for (int i = 0; i < resY; ++i) {
+			for (int j = 0; j < resX; ++j) {
 				int index = i * resX + j;
 				Pixel& pixel = pixelBuffer[index];
 				pixel.color = image[index];
@@ -109,8 +109,8 @@ public:
 private:
 
 	void WriteToPixelBuffer() {
-		for (int i = 0; i < resX; ++i) {
-			for (int j = 0; j < resY; ++j) {
+		for (int i = 0; i < resY; ++i) {
+			for (int j = 0; j < resX; ++j) {
 				int index = i * resX + j;
 				Pixel &pixel = pixelBuffer[index];
 				imageBuffer[index] = pixel.color / pixel.weight + pixel.splat;
