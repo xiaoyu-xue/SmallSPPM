@@ -17,12 +17,14 @@ Vec3 Integrator::DirectIllumination(const Scene& scene, const Intersection& isec
 		Vec3 Li = light->Sample_Li(isect, &wi, &pdf, &lightPoint, u);
 		real scatteringPdf;
 		Vec3 f;
+		real cosTheta = 1;
 		if (pdf > 0 && Li != Vec3(0)) {
 			VisibilityTester visibilityTester(isect, lightPoint);
 			if (isect.IsSurfaceScatter()) {
 				BSDF* bsdf = isect.bsdf;
 				scatteringPdf = bsdf->Pdf(isect.wo, wi);
 				f = bsdf->f(isect.wo, wi);
+				cosTheta = std::abs(isect.n.Dot(wi));
 			}
 			else {
 				const MediumIntersection& mi = (const MediumIntersection&)isect;
@@ -37,14 +39,14 @@ Vec3 Integrator::DirectIllumination(const Scene& scene, const Intersection& isec
 					Tr = visibilityTester.Tr(scene, rand);
 				}
 				else {
-					if (visibilityTester.Unoccluded(scene))
+					if (!visibilityTester.Unoccluded(scene))
 						Li = Vec3();
 				}
 				if (light->IsDeltaLight())
 					weight1 = 1;
 				else
 					weight1 = PowerHeuristic(1, pdf, 1, scatteringPdf);
-				L1 = Li * f * Tr * std::abs(isect.n.Dot(wi)) / pdf;
+				L1 = Li * Tr * f * cosTheta / pdf;
 			}
 		}
 
@@ -54,9 +56,11 @@ Vec3 Integrator::DirectIllumination(const Scene& scene, const Intersection& isec
 		Vec3 wi;
 		real pdf;
 		Vec3 f;
+		real cosTheta = 1;
 		if (isect.IsSurfaceScatter()) {
 			BSDF* bsdf = isect.bsdf;
 			f = bsdf->Sample_f(isect.wo, &wi, &pdf, v);
+			cosTheta = std::abs(isect.n.Dot(wi));
 		}
 		else {
 			const MediumIntersection& mi = (const MediumIntersection&)isect;
@@ -82,11 +86,11 @@ Vec3 Integrator::DirectIllumination(const Scene& scene, const Intersection& isec
 						//std::cout << lightPdf << std::endl;
 						scene.QueryIntersectionInfo(ray, &intersection);
 						std::shared_ptr<Light> emissionShape = intersection.primitive->GetLight();
-						L2 = emissionShape->Emission(intersection, -wi) * f * Tr * std::abs(isect.n.Dot(wi)) / pdf;
+						L2 = emissionShape->Emission(intersection, -wi) * f * Tr * cosTheta / pdf;
 					}
 				}
 				else if (scene.GetEnvironmentLight() == light) {
-					L2 = light->Emission(wi) * f * Tr * std::abs(isect.n.Dot(wi)) / pdf;
+					L2 = light->Emission(wi) * f * Tr * cosTheta / pdf;
 				}
 			}
 		}

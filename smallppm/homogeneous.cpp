@@ -4,7 +4,7 @@
 
 NAMESPACE_BEGIN
 
-Vec3 HomogeneousMedium::Tr(const Ray& ray, StateSequence& sampler) const {
+Vec3 HomogeneousMedium::Tr(const Ray& ray, StateSequence& rand) const {
     return Exp(-sigma_t * std::min(ray.tMax * ray.d.Length(), MaxReal));
 }
 

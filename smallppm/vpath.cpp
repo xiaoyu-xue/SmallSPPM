@@ -18,7 +18,8 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 		if (throughput == Vec3()) break;
 
 		if (mi.IsValid()) {
-			L += throughput * DirectIllumination(scene, isect, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()), rand, true);
+			if(intersect) scene.QueryIntersectionInfo(ray, &isect);
+			L += throughput * DirectIllumination(scene, mi, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()), rand, true);
 			Vec3 wi;
 			mi.phase->Sample_p(-ray.d, &wi, Vec2(rand(), rand()));
 			ray = mi.SpawnRay(wi);
@@ -34,6 +35,11 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 			scene.QueryIntersectionInfo(ray, &isect);
 			isect.ComputeScatteringFunction(arena);
 			BSDF* bsdf = isect.bsdf;
+			if (!bsdf) {
+				ray = isect.SpawnRay(ray.d);
+				i--;
+				continue;
+			}
 
 			if ((i == 0 || deltaBoundEvent) && isect.primitive->IsLight()) {
 				std::shared_ptr<Light> emissionShape = isect.primitive->GetLight();

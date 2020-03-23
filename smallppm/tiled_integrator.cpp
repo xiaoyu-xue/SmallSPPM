@@ -31,9 +31,12 @@ void TiledIntegrator::Render(const Scene& scene, const Camera& camera) {
 		std::shared_ptr<Sampler> tileSampler = sampler->Clone(i);
 		for (int y = tile.minY; y < tile.maxY; ++y) {
 			for (int x = tile.minX; x < tile.maxX; ++x) {
-				std::cout << y << " " << x << std::endl;
-				//DEBUG_PIXEL(475, 501, ThreadIndex());
+				//std::cout << y << " " << x << std::endl;
+				DEBUG_PIXEL(500, 850, ThreadIndex());
 				for (int s = 0; s < spp; ++s) {
+					DEBUG_PIXEL_IF(ThreadIndex()) {
+						std::cout << s << std::endl;
+					}
 					uint64 instance = samplerEnum->GetIndex(s, x, y);
 					RandomStateSequence rand(tileSampler, instance);
 					real u = samplerEnum->SampleX(x, rand());
@@ -42,9 +45,9 @@ void TiledIntegrator::Render(const Scene& scene, const Camera& camera) {
 					Ray ray = camera.GenerateRay(x, y, pixelSample);
 
 					Vec3 L = Li(ray, scene, rand, arena);
-					DEBUG_PIXEL_IF(ThreadIndex()) {
-						std::cout << "L: " <<  L << std::endl;
-					}
+					//DEBUG_PIXEL_IF(ThreadIndex()) {
+					//	std::cout << "L: " <<  L << std::endl;
+					//}
 					film->AddSample(x + u, y + v, L);
 					arena.Reset();
 				}

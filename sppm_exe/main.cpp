@@ -588,7 +588,7 @@ void TestPathTracing(int argc, char* argv[]) {
 
 void TestVolPathTracing(int argc, char* argv[]) {
 
-	int resX = 10, resY = 10;
+	int resX = 1024, resY = 1024;
 
 	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY, new BoxFilter()));
 	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
@@ -607,7 +607,7 @@ void TestVolPathTracing(int argc, char* argv[]) {
 	std::shared_ptr<SamplerEnum> sobolSamplerEnum = std::shared_ptr<SamplerEnum>(new SobolEnum(resX, resY));
 
 	//std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(100, 20, sobolSampler, sobolSamplerEnum));
-	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new VolPathTracing(1, 10, randomSampler, samplerEnum));
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new VolPathTracing(100, 1, randomSampler, samplerEnum));
 
 	fprintf(stderr, "Load Scene ...\n");
 
@@ -622,12 +622,32 @@ void TestVolPathTracing(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("MediaTest4.bmp");
+	film->SetFileName("MediaTest6.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
 	clock_t end = clock();
 	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+}
+
+void TestTransmittance() {
+	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
+	CornellBoxMedium::SetScene(scene);
+	Intersection p0(Vec3(0, -0.99999, 0), Vec3(), MediumInterface());
+	p0.n = p0.nl = p0.ng = Vec3(0, 1, 0);
+	Intersection p1(Vec3(0, 0.965, 0), Vec3(), MediumInterface());
+	p1.n = p1.nl = p1.ng = Vec3(0, -1, 0);
+	VisibilityTester visibilityTester(p0, p1);
+	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
+	scene->SetAccelerator(accelerator);
+	scene->Initialize();
+
+	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
+	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
+	RandomStateSequence rand(randomSampler, 123);
+	Vec3 Tr = visibilityTester.Tr(*scene, rand);
+	std::cout << Tr << std::endl;
+	std::cout << std::exp(-0.6) << std::endl;
 }
 int main(int argc, char *argv[]) {
 	//AABB aabb;
@@ -639,6 +659,7 @@ int main(int argc, char *argv[]) {
 	//TestSPPM5(argc, argv);
 	//TestPathTracing(argc, argv);
 	TestVolPathTracing(argc, argv);
+	//TestTransmittance();
 
 
 	//TestHashGrid();
