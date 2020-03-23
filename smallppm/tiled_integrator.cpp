@@ -23,18 +23,19 @@ void TiledIntegrator::Render(const Scene& scene, const Camera& camera) {
 			tiles.push_back(tile);
 		}
 	}
-	
 	std::atomic<int64> workDone = 0;
 	const int tileNum = tiles.size();
 	ParallelFor(0, tileNum, [&](int i) {
 		MemoryArena arena;
 		const Tile& tile = tiles[i];
+		std::shared_ptr<Sampler> tileSampler = sampler->Clone(i);
 		for (int y = tile.minY; y < tile.maxY; ++y) {
 			for (int x = tile.minX; x < tile.maxX; ++x) {
+				std::cout << y << " " << x << std::endl;
 				//DEBUG_PIXEL(475, 501, ThreadIndex());
 				for (int s = 0; s < spp; ++s) {
 					uint64 instance = samplerEnum->GetIndex(s, x, y);
-					RandomStateSequence rand(sampler, instance);
+					RandomStateSequence rand(tileSampler, instance);
 					real u = samplerEnum->SampleX(x, rand());
 					real v = samplerEnum->SampleY(y, rand());
 					Vec2 pixelSample(u, v);

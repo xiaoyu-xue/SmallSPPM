@@ -3,6 +3,7 @@
 #include "shape.h"
 #include "material.h"
 #include "light.h"
+#include "medium.h"
 
 NAMESPACE_BEGIN
 
@@ -75,8 +76,9 @@ class  Primitive {
 public:
 	Primitive(const std::shared_ptr<Shape>& shape,
 		const std::shared_ptr<Material>& material = nullptr,
-		const std::shared_ptr<Light>& light = nullptr) :
-		shape(shape), material(material), light(light) {
+		const std::shared_ptr<Light>& light = nullptr,
+		MediumInterface mediumInterface = MediumInterface()) :
+		shape(shape), material(material), light(light), mediumInterface(mediumInterface) {
 
 	}
 	bool Intersect(const Ray& r, Intersection* isect) const;
@@ -111,6 +113,8 @@ public:
 	std::shared_ptr<Shape> shape;
 	std::shared_ptr<Material> material;
 	std::shared_ptr<Light> light;
+	MediumInterface mediumInterface;
+
 };
 
 using GeometryPrimitive = Primitive;

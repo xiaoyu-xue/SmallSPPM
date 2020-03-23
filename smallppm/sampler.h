@@ -9,6 +9,7 @@ NAMESPACE_BEGIN
 class Sampler {
 public:
 	virtual real Sample(unsigned int d, unsigned long long i) = 0;
+	virtual std::shared_ptr<Sampler> Clone(uint32 seed) = 0;
 };
 
 class StateSequence {
@@ -59,6 +60,7 @@ public:
 		}
 		return ret;
 	}
+
 };
 
 class RandomSampler : public Sampler {
@@ -69,7 +71,11 @@ public:
 
 	real Sample(unsigned int d, unsigned long long i) {
 		return uniform(rng);
-		//return Rand();
+	}
+
+	std::shared_ptr<Sampler> Clone(uint32 seed) override {
+		std::shared_ptr<Sampler> newSampler = std::shared_ptr<Sampler>(new RandomSampler(seed));
+		return newSampler;
 	}
 private:
 	std::mt19937_64 rng;
@@ -106,6 +112,10 @@ public:
 		ASSERT(d < (unsigned)primeList.GetPrimesNum());
 		real val = hal(d, i + 1);  // The first one is evil...
 		return val;
+	}
+
+	std::shared_ptr<Sampler> Clone(uint32 seed) override {
+		return std::shared_ptr<Sampler>(new RegularHaltonSampler(*this));
 	}
 
 private:

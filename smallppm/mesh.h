@@ -18,10 +18,13 @@ struct Face {
 
 class Mesh {
 public:
-	Mesh(){}
+	Mesh(){
+		material = nullptr;
+	}
 	void LoadFromFile(std::string finename, bool reverseVertices = false);
 	void SetMaterial(const std::shared_ptr<Material> material);
 	void SetEmission(const Vec3 emission);
+	void SetMedium(const MediumInterface& mi);
 	std::vector<Vec3> vertices;
 	std::vector<Vec3> normals;
 	std::vector<Vec2> uvs;
@@ -31,6 +34,7 @@ public:
 	bool isEmission = false;
 	std::shared_ptr<Material> material;
 	std::vector<Triangle> untransformedTriangles;
+	MediumInterface mediumInterface;
 };
 
 NAMESPACE_END

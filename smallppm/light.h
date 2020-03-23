@@ -11,7 +11,7 @@ public:
 	Light() {}
 	//virtual Vec3 Illumination(const Intersection &isect, const std::shared_ptr<BSDF> &bsdf,
 	//	const Vec3 &importance, Vec3 *dir, Intersection *lightPoint, const Vec2 &u) const = 0;
-	virtual Vec3 Emission() const = 0;
+	virtual Vec3 Emission() const { return Vec3(); }
 	virtual Vec3 Emission(const Intersection& isect, const Vec3& w) const { return Vec3(); }
 	virtual Vec3 Emission(const Ray& ray) const { return Vec3(); }
 	virtual Vec3 Emission(const Vec3& dir, const Vec3 &normal = Vec3()) const { return Vec3(); }

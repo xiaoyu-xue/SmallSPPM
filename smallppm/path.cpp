@@ -31,7 +31,7 @@ Vec3 PathTracing::Li(const Ray &r, const Scene& scene, StateSequence& rand, Memo
 			L += throughput * emissionShape->Emission(isect, isect.wo);
 		}
 		else {
-			L += throughput * DirectIllumination(scene, isect, bsdf, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()));
+			L += throughput * DirectIllumination(scene, isect, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()), rand);
 
 		}
 

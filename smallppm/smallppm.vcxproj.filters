@@ -136,6 +136,12 @@
     <Filter Include="Source Files\light">
       <UniqueIdentifier>{7cf5bb47-917d-4cd8-ba8d-87bc4b87ed6d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\media">
+      <UniqueIdentifier>{f06669c1-7bdf-405e-bb16-1ced92dfc43b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\media">
+      <UniqueIdentifier>{54671fe7-cf85-49f2-8ce1-78d9d7202839}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sampler.cpp">
@@ -231,6 +237,24 @@
     <ClCompile Include="heart_surface.cpp">
       <Filter>Source Files\shape</Filter>
     </ClCompile>
+    <ClCompile Include="point_light.cpp">
+      <Filter>Source Files\light</Filter>
+    </ClCompile>
+    <ClCompile Include="medium.cpp">
+      <Filter>Source Files\media</Filter>
+    </ClCompile>
+    <ClCompile Include="visibility.cpp">
+      <Filter>Source Files\intersection</Filter>
+    </ClCompile>
+    <ClCompile Include="homogeneous.cpp">
+      <Filter>Source Files\media</Filter>
+    </ClCompile>
+    <ClCompile Include="integrator.cpp">
+      <Filter>Source Files\integrator</Filter>
+    </ClCompile>
+    <ClCompile Include="vpath.cpp">
+      <Filter>Source Files\integrator</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lowdiscrepency.h">
@@ -285,9 +309,6 @@
       <Filter>Header Files\shape</Filter>
     </ClInclude>
     <ClInclude Include="light.h">
-      <Filter>Header Files\light</Filter>
-    </ClInclude>
-    <ClInclude Include="arealight.h">
       <Filter>Header Files\light</Filter>
     </ClInclude>
     <ClInclude Include="filter.h">
@@ -430,6 +451,21 @@
     </ClInclude>
     <ClInclude Include="heart_surface.h">
       <Filter>Header Files\shape</Filter>
+    </ClInclude>
+    <ClInclude Include="point_light.h">
+      <Filter>Header Files\light</Filter>
+    </ClInclude>
+    <ClInclude Include="area_light.h">
+      <Filter>Header Files\light</Filter>
+    </ClInclude>
+    <ClInclude Include="medium.h">
+      <Filter>Header Files\media</Filter>
+    </ClInclude>
+    <ClInclude Include="homogeneous.h">
+      <Filter>Header Files\media</Filter>
+    </ClInclude>
+    <ClInclude Include="vpath.h">
+      <Filter>Header Files\integrator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

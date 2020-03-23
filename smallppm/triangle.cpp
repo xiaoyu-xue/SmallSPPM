@@ -121,7 +121,7 @@ void Triangle::QueryIntersectionInfo(const Ray& ray, Intersection* isect) const 
 	//ns = faceNormal;
 
 	
-	isect->hit = b0 * p0 + b1 * p1 + b2 * p2;
+	//isect->hit = b0 * p0 + b1 * p1 + b2 * p2;
 	isect->uv = Vec2(u, v);
 	isect->ng = (Dot(faceNormal, ns) < 0) ? -faceNormal : faceNormal;
 	isect->nl = isect->ng.Dot(ray.d) < 0 ? isect->ng : isect->ng * -1;
@@ -175,6 +175,7 @@ bool Triangle::Intersect(const Ray& ray, Intersection* isect, real* t) const {
 		return false;
 
 	*t = tHit;
+	isect->hit = (1 - b1 - b2) * p0 + b1 * p1 + b2 * p2;
 	isect->b1 = b1;
 	isect->b2 = b2;
 	isect->shapeId = shapeId;

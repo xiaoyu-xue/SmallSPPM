@@ -32,10 +32,10 @@ public:
 		++shapeNum;
 	}
 
-	void AddPrimitive(std::shared_ptr<Shape> shape, std::shared_ptr<Material> material) {
+	void AddPrimitive(std::shared_ptr<Shape> shape, std::shared_ptr<Material> material, MediumInterface mi = MediumInterface()) {
 		shape->shapeId = shapeNum;
 		std::shared_ptr<Primitive> primitive =
-			std::make_shared<GeometryPrimitive>(shape, material);
+			std::make_shared<GeometryPrimitive>(shape, material, nullptr, mi);
 		primitives.push_back(primitive);
 		++shapeNum;
 	}
@@ -81,7 +81,7 @@ public:
 			*triangle = mesh.untransformedTriangles[i];
 			triangle->SetTransform(transform);
 			std::shared_ptr<Shape> shape = std::shared_ptr<Shape>(triangle);
-			AddPrimitive(shape, mesh.material);
+			AddPrimitive(shape, mesh.material, mesh.mediumInterface);
 		}
 	}
 
@@ -96,6 +96,8 @@ public:
 	bool Intersect(const Ray& r) const {
 		return accelerator->Intersect(r);
 	}
+
+	bool IntersectTr(Ray& ray, StateSequence& rand, Intersection* isect, Vec3* Tr) const;
 
 	const std::vector<std::shared_ptr<Light>>& GetLights() const {
 		return lights;

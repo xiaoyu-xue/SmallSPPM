@@ -5,7 +5,7 @@
 #include "diffuse.h"
 #include "mirror.h"
 #include "glass.h"
-#include "arealight.h"
+#include "area_light.h"
 #include "roughness.h"
 #include "constant_texture.h"
 #include "image_texture.h"
@@ -14,6 +14,8 @@
 #include "plastic.h"
 #include "rough_dielectric.h"
 #include "heart_surface.h"
+#include "point_light.h"
+#include "homogeneous.h"
 
 NAMESPACE_BEGIN
 
@@ -386,6 +388,8 @@ public:
 			std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape1, lightMaterial, triangleLight1));
 		scene->AddLight(triangleLightPrimitive0);
 		scene->AddLight(triangleLightPrimitive1);
+		
+
 	}
 };
 
@@ -521,10 +525,10 @@ public:
 		//mesh->SetMaterial(glassMeshMaterial);
 		//Transform transform = Transform::Translate(Vec3(0, -0.65, 0)) * Transform::Scale(0.65, 0.65, 0.65);
 
-		//mesh->LoadFromFile("..\\meshs\\bunny3.obj");
-		//mesh->SetMaterial(diffuseMeshMaterial);
-		//Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
-		//scene->AddMesh(*mesh, transform);
+		mesh->LoadFromFile("..\\meshs\\bunny3.obj");
+		mesh->SetMaterial(glassMeshMaterial);
+		Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
+		scene->AddMesh(*mesh, transform);
 
 		//std::shared_ptr<Shape> ball = std::shared_ptr<Shape>(new Sphere(nullptr, nullptr, 0.35f, Vec3(0.f, 0.f, 0.f)));
 		//std::shared_ptr<Primitive> ballPrimitive = std::shared_ptr<Primitive>(new GeometryPrimitive(ball, roughMeshMaterial));
@@ -556,11 +560,11 @@ public:
 		//scene->AddMesh(*objMesh, transformWater);
 
 
-		std::shared_ptr<Mesh> meshVenus = std::shared_ptr<Mesh>(new Mesh());
-		meshVenus->LoadFromFile("..\\meshs\\venusm.obj");
-		meshVenus->SetMaterial(diffuseMeshMaterial);
-		Transform transformVenus = Transform::Translate(Vec3(-0.4, -0.73, 0)) * Transform::Scale(0.0003, 0.0003, 0.0003);
-		scene->AddMesh(*meshVenus, transformVenus);
+		//std::shared_ptr<Mesh> meshVenus = std::shared_ptr<Mesh>(new Mesh());
+		//meshVenus->LoadFromFile("..\\meshs\\venusm.obj");
+		//meshVenus->SetMaterial(diffuseMeshMaterial);
+		//Transform transformVenus = Transform::Translate(Vec3(-0.4, -0.73, 0)) * Transform::Scale(0.0003, 0.0003, 0.0003);
+		//scene->AddMesh(*meshVenus, transformVenus);
 
 		//Light
 		Vec3 lightP0 = Vec3(0.25f, 0.965, 0.25f);
@@ -596,6 +600,13 @@ public:
 		//std::shared_ptr<Material> lightMaterial = std::shared_ptr<Material>(new DiffuseMaterial(lightTexture));
 		//std::shared_ptr<Primitive> lightPrimitive = std::shared_ptr<Primitive>(new GeometryPrimitive(lightShape, lightMaterial, light0));
 		//scene->AddLight(lightPrimitive);
+
+
+		//PointLight
+		//Vec3 intensity(2.5, 2.5, 2.5);
+		//Vec3 pLight(0, 0.965, 0);
+		//std::shared_ptr<Light> light = std::shared_ptr<Light>(new PointLight(pLight, intensity));
+		//scene->AddLight(light);
 	}
 };
 
@@ -1157,4 +1168,169 @@ public:
 	}
 };
 
+
+
+class CornellBoxMedium {
+public:
+	static void SetScene(std::shared_ptr<Scene>& scene) {
+		//texture
+		std::shared_ptr<Texture<Vec3>> redConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(.75f, .25f, .25f)));
+		std::shared_ptr<Texture<Vec3>> blueConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(.25f, .25f, .75f)));
+		std::shared_ptr<Texture<Vec3>> whiteConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(.75f, .75f, .75f)));
+		std::shared_ptr<Texture<Vec3>> fullWhiteConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1, 1, 1)));
+
+
+		std::shared_ptr<Texture<Vec3>> objWhiteConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(.5f, .5f, .5f)));
+
+		std::shared_ptr<Material> glassMeshMaterial = std::shared_ptr<Material>(new GlassMaterial(fullWhiteConstant, fullWhiteConstant));
+		std::shared_ptr<Material> diffuseMeshMaterial = std::shared_ptr<Material>(new DiffuseMaterial(objWhiteConstant));
+		std::shared_ptr<Material> mirrorMeshMaterial = std::shared_ptr<Material>(new MirrorMaterial(fullWhiteConstant));
+		std::shared_ptr<Texture<Vec3>> eta = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1.5, 1.5, 1.5)));
+		std::shared_ptr<Texture<Vec3>> k = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1.5, 1.5, 1.5)));
+		std::shared_ptr<Texture<real>> roughnessx = std::shared_ptr<Texture<real>>(new ConstantTexture<real>(0.06));
+		std::shared_ptr<Texture<real>> roughnessy = std::shared_ptr<Texture<real>>(new ConstantTexture<real>(0.02));
+		std::shared_ptr<Material> roughMeshMaterial =
+			std::shared_ptr<Material>(new RoughnessMaterial(fullWhiteConstant, roughnessx, roughnessy, eta, k));
+		std::shared_ptr<Material> waterMaterial = std::shared_ptr<Material>(new GlassMaterial(fullWhiteConstant, fullWhiteConstant, 1.f, 1.33));
+
+		//Points
+		Vec3 p0(-1, -1, 1);
+		Vec3 p1(-1, -1, -1);
+		Vec3 p2(-1, 1, -1);
+		Vec3 p3(-1, 1, 1);
+		Vec3 p4(1, -1, 1);
+		Vec3 p5(1, -1, -1);
+		Vec3 p6(1, 1, -1);
+		Vec3 p7(1, 1, 1);
+
+		//Left
+		Vec3 normalLeft = Vec3(1, 0, 0);
+		std::shared_ptr<Shape> leftShape1 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p0, p1, p2, normalLeft));
+		std::shared_ptr<Shape> leftShape2 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p2, p3, p0, normalLeft));
+		std::shared_ptr<Material> leftWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(redConstant));
+		std::shared_ptr<Primitive> leftTriangle1 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(leftShape1, leftWallMaterial));
+		std::shared_ptr<Primitive> leftTriangle2 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(leftShape2, leftWallMaterial));
+		scene->AddPrimitive(leftTriangle1);
+		scene->AddPrimitive(leftTriangle2);
+
+
+		//Right
+		Vec3 normalRight = Vec3(-1, 0, 0);
+		std::shared_ptr<Shape> rightShape1 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p4, p5, p6, normalRight));
+		std::shared_ptr<Shape> rightShape2 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p4, p6, p7, normalRight));
+		std::shared_ptr<Material> rightWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(blueConstant));
+		std::shared_ptr<Primitive> rightTriangle1 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(rightShape1, rightWallMaterial));
+		std::shared_ptr<Primitive> rightTriangle2 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(rightShape2, rightWallMaterial));
+		scene->AddPrimitive(rightTriangle1);
+		scene->AddPrimitive(rightTriangle2);
+
+		//Back
+		Vec3 normalBack = Vec3(0, 0, 1);
+		std::shared_ptr<Shape> backShape1 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p1, p5, p6, normalBack));
+		std::shared_ptr<Shape> backShape2 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p1, p6, p2, normalBack));
+		std::shared_ptr<Material> backWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
+		std::shared_ptr<Primitive> backTriangle1 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(backShape1, backWallMaterial));
+		std::shared_ptr<Primitive> backTriangle2 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(backShape2, backWallMaterial));
+		scene->AddPrimitive(backTriangle1);
+		scene->AddPrimitive(backTriangle2);
+
+		//Botom
+		Vec3 normalBotom = Vec3(0, 1, 0);
+		std::shared_ptr<Shape> botomShape1 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p0, p4, p5, normalBotom));
+		std::shared_ptr<Shape> botomShape2 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p0, p5, p1, normalBotom));
+		std::shared_ptr<Material> botomWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
+		std::shared_ptr<Primitive> botomTriangle1 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(botomShape1, botomWallMaterial));
+		std::shared_ptr<Primitive> botomTriangle2 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(botomShape2, botomWallMaterial));
+		scene->AddPrimitive(botomTriangle1);
+		scene->AddPrimitive(botomTriangle2);
+
+		//Top
+		Vec3 normalTop = Vec3(0, -1, 0);
+		std::shared_ptr<Shape> topShape1 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p3, p7, p6, normalTop));
+		std::shared_ptr<Shape> topShape2 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p3, p6, p2, normalTop));
+		std::shared_ptr<Material> topWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
+		std::shared_ptr<Primitive> topTriangle1 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(topShape1, topWallMaterial));
+		std::shared_ptr<Primitive> topTriangle2 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(topShape2, topWallMaterial));
+		scene->AddPrimitive(topTriangle1);
+		scene->AddPrimitive(topTriangle2);
+
+
+
+		//std::shared_ptr<Mesh> mesh = std::shared_ptr<Mesh>(new Mesh());
+		//mesh->LoadFromFile("..\\meshs\\bunny3.obj");
+		//mesh->SetMaterial(glassMeshMaterial);
+		//Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
+		//scene->AddMesh(*mesh, transform);
+
+
+		//Cube
+		Vec3 sigma_a(0, 0, 0), sigma_s(1, 1, 1);
+		Medium* homogenoursMedium = new HomogeneousMedium(sigma_a, sigma_s, 0);
+		MediumInterface mediaInterface(homogenoursMedium, nullptr);
+		std::shared_ptr<Mesh> cubeMesh = std::shared_ptr<Mesh>(new Mesh());
+		cubeMesh->LoadFromFile("..\\meshs\\cube.obj");
+		Transform cubeTransform =
+			Transform::Scale(0.6, 0.6, 0.6) *
+			Transform::Translate(Vec3(-0.5, -0.5, -0.5));
+		//cubeMesh->SetMaterial(diffuseMeshMaterial);
+		cubeMesh->SetMedium(mediaInterface);
+		scene->AddMesh(*cubeMesh, cubeTransform);
+
+
+
+		//Light
+		Vec3 lightP0 = Vec3(0.25f, 0.965, 0.25f);
+		Vec3 lightP1 = Vec3(0.25f, 0.965, -0.25f);
+		Vec3 lightP2 = Vec3(-0.25f, 0.965, -0.25f);
+		Vec3 lightP3 = Vec3(-0.25f, 0.965, 0.25f);
+		//Vec3 lightP0 = Vec3(0.0015f, 0.965, 0.0015f);
+		//Vec3 lightP1 = Vec3(0.0015f, 0.965, -0.0015f);
+		//Vec3 lightP2 = Vec3(-0.0015f, 0.965, -0.0015f);
+		//Vec3 lightP3 = Vec3(-0.0015f, 0.965, 0.0015f);
+		Vec3 lightNormal = Vec3(0, -1, 0);
+		std::shared_ptr<Texture<Vec3>> lightTexture = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(0, 0, 0)));
+		std::shared_ptr<Shape> lightTriangleShape0 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, lightP0, lightP1, lightP2, lightNormal));
+		std::shared_ptr<Shape> lightTriangleShape1 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, lightP0, lightP2, lightP3, lightNormal));
+		//std::shared_ptr<Light> triangleLight0 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape0, Vec3(0.3f, 0.3f, 0.3f) * 2000000));
+		//std::shared_ptr<Light> triangleLight1 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape1, Vec3(0.3f, 0.3f, 0.3f) * 2000000));
+		std::shared_ptr<Light> triangleLight0 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape0, Vec3(0.3f, 0.3f, 0.3f) * 85));
+		std::shared_ptr<Light> triangleLight1 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape1, Vec3(0.3f, 0.3f, 0.3f) * 85));
+		std::shared_ptr<Material> lightMaterial = std::shared_ptr<Material>(new DiffuseMaterial(lightTexture));
+		std::shared_ptr<Primitive> triangleLightPrimitive0 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape0, lightMaterial, triangleLight0));
+		std::shared_ptr<Primitive> triangleLightPrimitive1 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape1, lightMaterial, triangleLight1));
+		scene->AddLight(triangleLightPrimitive0);
+		scene->AddLight(triangleLightPrimitive1);
+
+
+		//PointLight
+		//Vec3 intensity(2.5, 2.5, 2.5);
+		//Vec3 pLight(0, 0.965, 0);
+		//std::shared_ptr<Light> light = std::shared_ptr<Light>(new PointLight(pLight, intensity));
+		//scene->AddLight(light);
+	}
+};
 NAMESPACE_END

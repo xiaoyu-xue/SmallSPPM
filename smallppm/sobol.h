@@ -68,6 +68,10 @@ public:
     real Sample(uint32 d, uint64 i) override {
         return sobol::sample(i, d);
     }
+
+	std::shared_ptr<Sampler> Clone(uint32 seed) override {
+		return std::shared_ptr<Sampler>(new SobolSampler(*this));
+	}
 };
 
 

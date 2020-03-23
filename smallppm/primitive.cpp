@@ -34,6 +34,10 @@ bool Primitive::Intersect(const Ray& r, Intersection* isect) const {
 		r.tMax = t;
 		isect->primitive = this;
 		//isect->shapeId = this->GetShape()->shapeId;
+		if (mediumInterface.IsMediumTransition())
+			isect->mediumInterface = mediumInterface;
+		else
+			isect->mediumInterface = MediumInterface(r.medium);
 		return true;
 	}
 	return false;
