@@ -57,17 +57,17 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 			Vec3 estimation = f * std::abs(Dot(isect.n, wi)) / pdf;
 			deltaBoundEvent = bsdf->IsDelta();
 
-			real p = std::min((real)1.0, (estimation * throughput).Y() / throughput.Y());
-			if (p < 1 && i > 5) {
-				if (rand() < p) {
-					throughput = throughput / p;
-				}
-				else {
-					break;
-				}
-			}
 			throughput = throughput * estimation;
 			ray = isect.SpawnRay(wi);
+		}
+		real p = std::min((real)1.0, (throughput).Y() / throughput.Y());
+		if (p < 1 && i > 5) {
+			if (rand() < p) {
+				throughput = throughput / p;
+			}
+			else {
+				break;
+			}
 		}
 	}
 	return L;

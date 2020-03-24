@@ -34,9 +34,9 @@ void TiledIntegrator::Render(const Scene& scene, const Camera& camera) {
 				//std::cout << y << " " << x << std::endl;
 				DEBUG_PIXEL(500, 850, ThreadIndex());
 				for (int s = 0; s < spp; ++s) {
-					DEBUG_PIXEL_IF(ThreadIndex()) {
-						std::cout << s << std::endl;
-					}
+					//DEBUG_PIXEL_IF(ThreadIndex()) {
+					//	std::cout << s << std::endl;
+					//}
 					uint64 instance = samplerEnum->GetIndex(s, x, y);
 					RandomStateSequence rand(tileSampler, instance);
 					real u = samplerEnum->SampleX(x, rand());

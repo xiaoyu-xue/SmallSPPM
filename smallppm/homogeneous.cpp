@@ -12,6 +12,7 @@ Vec3 HomogeneousMedium::Tr(const Ray& ray, StateSequence& rand) const {
 Vec3 HomogeneousMedium::Sample(const Ray& ray, StateSequence& rand, MemoryArena& arena, MediumIntersection* mi) const {
     // Sample a channel and distance along the ray
     int channel = (int)(rand() * 3);
+    //int channel = 0;
     real dist = -std::log(1 - rand()) / sigma_t[channel];
     real t = std::min(dist / ray.d.Length(), ray.tMax);
     bool sampledMedium = t < ray.tMax;
@@ -26,6 +27,7 @@ Vec3 HomogeneousMedium::Sample(const Ray& ray, StateSequence& rand, MemoryArena&
     real pdf = 0;
     for (int i = 0; i < 3; ++i) pdf += density[i];
     pdf *= 1 / (real)(3);
+    //pdf = density[0];
     if (pdf == 0) {
         pdf = 1;
     }

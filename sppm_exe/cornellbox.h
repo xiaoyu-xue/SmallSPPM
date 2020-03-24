@@ -1193,6 +1193,11 @@ public:
 			std::shared_ptr<Material>(new RoughnessMaterial(fullWhiteConstant, roughnessx, roughnessy, eta, k));
 		std::shared_ptr<Material> waterMaterial = std::shared_ptr<Material>(new GlassMaterial(fullWhiteConstant, fullWhiteConstant, 1.f, 1.33));
 
+		//Homogenoug media
+		Vec3 sigma_a(0, 0, 0), sigma_s(0.7, 0.7, 0.7);
+		Medium* homogenoursMedium = new HomogeneousMedium(sigma_a, sigma_s, 0);
+		MediumInterface mediaInterface(homogenoursMedium, nullptr);
+
 		//Points
 		Vec3 p0(-1, -1, 1);
 		Vec3 p1(-1, -1, -1);
@@ -1275,26 +1280,36 @@ public:
 		scene->AddPrimitive(topTriangle2);
 
 
+		//Front
+		Vec3 normalFront = Vec3(0, 0, 1);
+		std::shared_ptr<Shape> frontShape1 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p0, p4, p7, normalFront));
+		std::shared_ptr<Shape> frontShape2 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p0, p7, p3, normalFront));
+		std::shared_ptr<Primitive> frontTriangle1 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(frontShape1, nullptr, nullptr, mediaInterface));
+		std::shared_ptr<Primitive> frontTriangle2 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(frontShape2, nullptr, nullptr, mediaInterface));
+		scene->AddPrimitive(frontTriangle1);
+		scene->AddPrimitive(frontTriangle2);
 
-		//std::shared_ptr<Mesh> mesh = std::shared_ptr<Mesh>(new Mesh());
-		//mesh->LoadFromFile("..\\meshs\\bunny3.obj");
-		//mesh->SetMaterial(glassMeshMaterial);
-		//Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
-		//scene->AddMesh(*mesh, transform);
+
+		std::shared_ptr<Mesh> mesh = std::shared_ptr<Mesh>(new Mesh());
+		mesh->LoadFromFile("..\\meshs\\bunny3.obj");
+		mesh->SetMaterial(diffuseMeshMaterial);
+		Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
+		scene->AddMesh(*mesh, transform);
 
 
 		//Cube
-		Vec3 sigma_a(0, 0, 0), sigma_s(1, 1, 1);
-		Medium* homogenoursMedium = new HomogeneousMedium(sigma_a, sigma_s, 0);
-		MediumInterface mediaInterface(homogenoursMedium, nullptr);
-		std::shared_ptr<Mesh> cubeMesh = std::shared_ptr<Mesh>(new Mesh());
-		cubeMesh->LoadFromFile("..\\meshs\\cube.obj");
-		Transform cubeTransform =
-			Transform::Scale(0.6, 0.6, 0.6) *
-			Transform::Translate(Vec3(-0.5, -0.5, -0.5));
-		//cubeMesh->SetMaterial(diffuseMeshMaterial);
-		cubeMesh->SetMedium(mediaInterface);
-		scene->AddMesh(*cubeMesh, cubeTransform);
+		//std::shared_ptr<Mesh> cubeMesh = std::shared_ptr<Mesh>(new Mesh());
+		//cubeMesh->LoadFromFile("..\\meshs\\cube.obj");
+		//Transform cubeTransform =
+		//	Transform::Scale(0.6, 0.6, 0.6) *
+		//	Transform::Translate(Vec3(-0.5, -0.5, -0.5));
+		////cubeMesh->SetMaterial(diffuseMeshMaterial);
+		//cubeMesh->SetMedium(mediaInterface);
+		//scene->AddMesh(*cubeMesh, cubeTransform);
 
 
 

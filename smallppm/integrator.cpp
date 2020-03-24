@@ -64,7 +64,7 @@ Vec3 Integrator::DirectIllumination(const Scene& scene, const Intersection& isec
 		}
 		else {
 			const MediumIntersection& mi = (const MediumIntersection&)isect;
-			real p = mi.phase->Sample_p(mi.wo, &wi, u);
+			real p = mi.phase->Sample_p(mi.wo, &wi, Vec2(v[0], v[1]));
 			f = Vec3(p);
 			pdf = p;
 		}
@@ -96,9 +96,9 @@ Vec3 Integrator::DirectIllumination(const Scene& scene, const Intersection& isec
 		}
 		
 	}
-	return L1 / lightSamplingPdf;
+	//return L1 / lightSamplingPdf;
 	//return L2 / lightSamplingPdf;
-	//return (L1 * weight1 + L2 * weight2) / lightSamplingPdf;
+	return (L1 * weight1 + L2 * weight2) / lightSamplingPdf;
 }
 
 NAMESPACE_END

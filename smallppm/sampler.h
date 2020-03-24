@@ -3,6 +3,7 @@
 #include <memory>
 #include <random>
 #include "lowdiscrepency.h"
+#include "rng.h"
 
 NAMESPACE_BEGIN
 
@@ -65,21 +66,24 @@ public:
 
 class RandomSampler : public Sampler {
 public:
-	RandomSampler(int seed) : rng(seed) {
+	RandomSampler(int seed) : rng(seed), pbrtRng(seed) {
 
 	}
 
 	real Sample(unsigned int d, unsigned long long i) {
 		return uniform(rng);
+		//return pbrtRng.UniformFloat();
 	}
 
 	std::shared_ptr<Sampler> Clone(uint32 seed) override {
-		std::shared_ptr<Sampler> newSampler = std::shared_ptr<Sampler>(new RandomSampler(seed));
-		return newSampler;
+		RandomSampler* newSampler = new RandomSampler(seed);
+		newSampler->pbrtRng.SetSequence(seed);
+		return std::shared_ptr<Sampler>(newSampler);
 	}
 private:
 	std::mt19937_64 rng;
 	std::uniform_real_distribution<real> uniform;
+	RNG pbrtRng;
 };
 
 class PrimeList {
