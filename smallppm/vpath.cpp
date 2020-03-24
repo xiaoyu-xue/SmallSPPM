@@ -13,7 +13,13 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 		Intersection isect;
 		bool intersect = scene.Intersect(ray, &isect);
 		MediumIntersection mi;
-		if (ray.medium) throughput *= ray.medium->Sample(ray, rand, arena, &mi);
+		Intersection eqLightPoint;
+		if (useEquiAngularSample) {
+
+		}
+		else {
+			if (ray.medium) throughput *= ray.medium->Sample(ray, rand, arena, &mi);
+		}
 
 		if (throughput == Vec3()) break;
 

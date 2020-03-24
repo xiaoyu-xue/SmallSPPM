@@ -1194,7 +1194,7 @@ public:
 		std::shared_ptr<Material> waterMaterial = std::shared_ptr<Material>(new GlassMaterial(fullWhiteConstant, fullWhiteConstant, 1.f, 1.33));
 
 		//Homogenoug media
-		Vec3 sigma_a(0, 0, 0), sigma_s(0.7, 0.7, 0.7);
+		Vec3 sigma_a(0, 0, 0), sigma_s(1, 1, 1);
 		Medium* homogenoursMedium = new HomogeneousMedium(sigma_a, sigma_s, 0);
 		MediumInterface mediaInterface(homogenoursMedium, nullptr);
 
@@ -1294,11 +1294,11 @@ public:
 		scene->AddPrimitive(frontTriangle2);
 
 
-		std::shared_ptr<Mesh> mesh = std::shared_ptr<Mesh>(new Mesh());
-		mesh->LoadFromFile("..\\meshs\\bunny3.obj");
-		mesh->SetMaterial(diffuseMeshMaterial);
-		Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
-		scene->AddMesh(*mesh, transform);
+		//std::shared_ptr<Mesh> mesh = std::shared_ptr<Mesh>(new Mesh());
+		//mesh->LoadFromFile("..\\meshs\\bunny3.obj");
+		//mesh->SetMaterial(diffuseMeshMaterial);
+		//Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
+		//scene->AddMesh(*mesh, transform);
 
 
 		//Cube
@@ -1314,38 +1314,38 @@ public:
 
 
 		//Light
-		Vec3 lightP0 = Vec3(0.25f, 0.965, 0.25f);
-		Vec3 lightP1 = Vec3(0.25f, 0.965, -0.25f);
-		Vec3 lightP2 = Vec3(-0.25f, 0.965, -0.25f);
-		Vec3 lightP3 = Vec3(-0.25f, 0.965, 0.25f);
-		//Vec3 lightP0 = Vec3(0.0015f, 0.965, 0.0015f);
-		//Vec3 lightP1 = Vec3(0.0015f, 0.965, -0.0015f);
-		//Vec3 lightP2 = Vec3(-0.0015f, 0.965, -0.0015f);
-		//Vec3 lightP3 = Vec3(-0.0015f, 0.965, 0.0015f);
-		Vec3 lightNormal = Vec3(0, -1, 0);
-		std::shared_ptr<Texture<Vec3>> lightTexture = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(0, 0, 0)));
-		std::shared_ptr<Shape> lightTriangleShape0 =
-			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, lightP0, lightP1, lightP2, lightNormal));
-		std::shared_ptr<Shape> lightTriangleShape1 =
-			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, lightP0, lightP2, lightP3, lightNormal));
-		//std::shared_ptr<Light> triangleLight0 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape0, Vec3(0.3f, 0.3f, 0.3f) * 2000000));
-		//std::shared_ptr<Light> triangleLight1 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape1, Vec3(0.3f, 0.3f, 0.3f) * 2000000));
-		std::shared_ptr<Light> triangleLight0 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape0, Vec3(0.3f, 0.3f, 0.3f) * 85));
-		std::shared_ptr<Light> triangleLight1 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape1, Vec3(0.3f, 0.3f, 0.3f) * 85));
-		std::shared_ptr<Material> lightMaterial = std::shared_ptr<Material>(new DiffuseMaterial(lightTexture));
-		std::shared_ptr<Primitive> triangleLightPrimitive0 =
-			std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape0, lightMaterial, triangleLight0));
-		std::shared_ptr<Primitive> triangleLightPrimitive1 =
-			std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape1, lightMaterial, triangleLight1));
-		scene->AddLight(triangleLightPrimitive0);
-		scene->AddLight(triangleLightPrimitive1);
+		//Vec3 lightP0 = Vec3(0.25f, 0.965, 0.25f);
+		//Vec3 lightP1 = Vec3(0.25f, 0.965, -0.25f);
+		//Vec3 lightP2 = Vec3(-0.25f, 0.965, -0.25f);
+		//Vec3 lightP3 = Vec3(-0.25f, 0.965, 0.25f);
+		////Vec3 lightP0 = Vec3(0.0015f, 0.965, 0.0015f);
+		////Vec3 lightP1 = Vec3(0.0015f, 0.965, -0.0015f);
+		////Vec3 lightP2 = Vec3(-0.0015f, 0.965, -0.0015f);
+		////Vec3 lightP3 = Vec3(-0.0015f, 0.965, 0.0015f);
+		//Vec3 lightNormal = Vec3(0, -1, 0);
+		//std::shared_ptr<Texture<Vec3>> lightTexture = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(0, 0, 0)));
+		//std::shared_ptr<Shape> lightTriangleShape0 =
+		//	std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, lightP0, lightP1, lightP2, lightNormal));
+		//std::shared_ptr<Shape> lightTriangleShape1 =
+		//	std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, lightP0, lightP2, lightP3, lightNormal));
+		////std::shared_ptr<Light> triangleLight0 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape0, Vec3(0.3f, 0.3f, 0.3f) * 2000000));
+		////std::shared_ptr<Light> triangleLight1 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape1, Vec3(0.3f, 0.3f, 0.3f) * 2000000));
+		//std::shared_ptr<Light> triangleLight0 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape0, Vec3(0.3f, 0.3f, 0.3f) * 85));
+		//std::shared_ptr<Light> triangleLight1 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape1, Vec3(0.3f, 0.3f, 0.3f) * 85));
+		//std::shared_ptr<Material> lightMaterial = std::shared_ptr<Material>(new DiffuseMaterial(lightTexture));
+		//std::shared_ptr<Primitive> triangleLightPrimitive0 =
+		//	std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape0, lightMaterial, triangleLight0));
+		//std::shared_ptr<Primitive> triangleLightPrimitive1 =
+		//	std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape1, lightMaterial, triangleLight1));
+		//scene->AddLight(triangleLightPrimitive0);
+		//scene->AddLight(triangleLightPrimitive1);
 
 
 		//PointLight
-		//Vec3 intensity(2.5, 2.5, 2.5);
-		//Vec3 pLight(0, 0.965, 0);
-		//std::shared_ptr<Light> light = std::shared_ptr<Light>(new PointLight(pLight, intensity));
-		//scene->AddLight(light);
+		Vec3 intensity(2.5, 2.5, 2.5);
+		Vec3 pLight(0, 0.965, 0);
+		std::shared_ptr<Light> light = std::shared_ptr<Light>(new PointLight(pLight, intensity));
+		scene->AddLight(light);
 	}
 };
 NAMESPACE_END

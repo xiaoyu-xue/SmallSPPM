@@ -606,8 +606,8 @@ void TestVolPathTracing(int argc, char* argv[]) {
 	std::shared_ptr<Sampler> sobolSampler = std::shared_ptr<Sampler>(new SobolSampler());
 	std::shared_ptr<SamplerEnum> sobolSamplerEnum = std::shared_ptr<SamplerEnum>(new SobolEnum(resX, resY));
 
-	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new VolPathTracing(100, 10, sobolSampler, sobolSamplerEnum));
-	//std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new VolPathTracing(100, 10, randomSampler, samplerEnum));
+	//std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new VolPathTracing(100, 10, sobolSampler, sobolSamplerEnum));
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new VolPathTracing(10, 10, randomSampler, samplerEnum));
 
 	fprintf(stderr, "Load Scene ...\n");
 
@@ -622,7 +622,7 @@ void TestVolPathTracing(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("MediaTest23.bmp");
+	film->SetFileName("MediaTestFog11.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();

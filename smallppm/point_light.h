@@ -7,6 +7,8 @@ class PointLight : public Light {
 public:
 	PointLight(const Vec3& p, const Vec3& intensity) : pLight(p), I(intensity) {}
 
+	Vec3 Emission() const override { return I; }
+
 	bool IsDeltaLight() const override { return true; }
 
 	Vec3 Sample_Li(const Intersection& isect, Vec3* wi, real* pdf, Intersection* lightPoint, const Vec2& u) const override;

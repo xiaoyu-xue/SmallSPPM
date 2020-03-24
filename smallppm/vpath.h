@@ -2,8 +2,10 @@
 #include "tiled_integrator.h"
 class VolPathTracing : public TiledIntegrator {
 public:
-	VolPathTracing(int samplePerPixel, int maxDepth, const std::shared_ptr<Sampler>& pSampler, const std::shared_ptr<SamplerEnum>& pSamplerEnum) :
-		TiledIntegrator(samplePerPixel, pSampler, pSamplerEnum), maxDepth(maxDepth)
+	VolPathTracing(int samplePerPixel, int maxDepth, const std::shared_ptr<Sampler>& pSampler, 
+		const std::shared_ptr<SamplerEnum>& pSamplerEnum, bool equalAngular = true) :
+		TiledIntegrator(samplePerPixel, pSampler, pSamplerEnum), 
+		maxDepth(maxDepth), useEquiAngularSample(equalAngular)
 	{
 
 	}
@@ -12,4 +14,5 @@ public:
 
 private:
 	int maxDepth;
+	bool useEquiAngularSample;
 };

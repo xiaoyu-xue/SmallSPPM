@@ -25,13 +25,17 @@ FORCE_INLINE real PhaseHG(real cosTheta, real g) {
 }
 
 class MediumIntersection;
-
 class Medium {
 public:
     // Medium Interface
     virtual ~Medium() {}
     virtual Vec3 Tr(const Ray& ray, StateSequence& rand) const = 0;
     virtual Vec3 Sample(const Ray& ray, StateSequence& rand, MemoryArena& arena, MediumIntersection* mi) const = 0;
+    virtual Vec3 EquiAngularSampling(
+        const Ray& ray, StateSequence& rand, MemoryArena& arena,
+        const Intersection &lightPoint, MediumIntersection* mi) const {
+        return Vec3();
+    }
 };
 
 
