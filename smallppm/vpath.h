@@ -13,6 +13,10 @@ public:
 	Vec3 Li(const Ray& ray, const Scene& scene, StateSequence& rand, MemoryArena& arena) const override;
 
 private:
+	Vec3 ConnectToLight(const Scene& scene, StateSequence& rand,
+		const Intersection& isect, const Intersection& lightPoint,
+		const Vec3 &Le, real lightPdf) const;
+
 	int maxDepth;
 	bool useEquiAngularSample;
 };

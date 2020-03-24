@@ -23,6 +23,11 @@ public:
 
 	Vec3 SampleLight(Intersection* isect, Vec3* dir, real* pdfPos, real* pdfDir, const Vec2& u, const Vec2& v) const override;
 
+	Vec3 SampleOnePoint(Intersection* isect, real* pdf, const Vec2& u) const override {
+		isect->hit = pLight;
+		*pdf = 1.f;
+		return I;
+	}
 private:
 	Vec3 pLight;
 	Vec3 I;

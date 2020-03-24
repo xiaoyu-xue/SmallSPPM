@@ -28,6 +28,7 @@ public:
 	virtual bool IsDeltaLight() const { return false; }
 	virtual bool IsEnvironmentLight() const { return false; }
 	virtual std::shared_ptr<Shape> GetShapePtr() const { return nullptr; }
+	virtual Vec3 SampleOnePoint(Intersection* isect, real *pdf, const Vec2& u) const { return Vec3(); };
 protected:
 	//virtual void SampleOnLight(Vec3 *pos, Vec3 *dir, Vec3 *lightNorm, real *pdfPos, real *pdfDir, const Vec2 &u, const Vec2 &v) const = 0;
 	virtual void SampleOnLight(Intersection *isect, Vec3 *dir, real *pdfPos, real *pdfDir, const Vec2 &u, const Vec2 &v) const {}

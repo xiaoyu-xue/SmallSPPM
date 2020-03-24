@@ -38,9 +38,8 @@ Vec3 HomogeneousMedium::Sample(const Ray& ray, StateSequence& rand, MemoryArena&
 
 Vec3 HomogeneousMedium::EquiAngularSampling(
     const Ray& ray, StateSequence& rand, MemoryArena& arena,
-    const Intersection &lightPoint, MediumIntersection* mi) const {
-
-    real rrProb = 0.7;
+    const Intersection& lightPoint, MediumIntersection* mi) const {
+    real rrProb = Tr(ray, rand).x;
     if (rand() > rrProb) return Tr(ray, rand);
 
     Vec3 c = lightPoint.hit, a = ray.o, b = ray(ray.tMax);
@@ -57,7 +56,9 @@ Vec3 HomogeneousMedium::EquiAngularSampling(
     real tau = D * std::tan((1 - u) * theta_a + u * theta_b);
     real t = std::sqrt(std::max(real(0), ca.Length2() - D * D)) + tau;
     real pdf = D / ((theta_b - theta_a) * (D * D + t * t));
-    Vec3 Tr = Exp(-sigma_t * t);
+    Vec3 Tr = Exp(-(sigma_t * t));
+    *mi = MediumIntersection(ray(t), -ray.d, this, ARENA_ALLOC(arena, HenyeyGreenstein)(g));
     return Tr * sigma_s / pdf / rrProb;
+
 }
 NAMESPACE_END
