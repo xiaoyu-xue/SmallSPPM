@@ -19,7 +19,7 @@ public:
 	Vec3 dpdu, dpdv;
 	Vec3 dpdus, dpdvs;
 	Vec2 uv;
-	real rayEps;
+	real rayEps = 0;
 	Vec3 pError;
 	real b1, b2;
 	uint64 shapeId;
@@ -35,6 +35,7 @@ public:
 
 	Intersection(const Vec3& hit, const Vec3& wo, const MediumInterface& medium) :
 		hit(hit), wo(wo), mediumInterface(medium) {
+		rayEps = 0;
 		n = nl = ng = Vec3();
 	}
 

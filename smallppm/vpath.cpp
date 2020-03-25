@@ -22,6 +22,7 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 			std::shared_ptr<Light> light = scene.SampleOneLight(&eqLightProb, rand());
 			eqLightLe = light->SampleOnePoint(&eqLightPoint, &eqLightPdf, Vec2(rand(), rand()));
 			if (ray.medium) throughput *= ray.medium->EquiAngularSampling(ray, rand, arena, eqLightPoint, &mi);
+
 		}
 		else {
 			if (ray.medium) throughput *= ray.medium->Sample(ray, rand, arena, &mi);
@@ -31,19 +32,18 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 
 		if (mi.IsValid()) {
 			if (useEquiAngularSample) {
-				//if (intersect) scene.QueryIntersectionInfo(ray, &isect);
-				//L += throughput * ConnectToLight(scene, rand, mi, eqLightPoint, eqLightLe, eqLightPdf) / eqLightProb;
-				//Vec3 wi;
-				//mi.phase->Sample_p(-ray.d, &wi, Vec2(rand(), rand()));
-				//ray = mi.SpawnRay(wi);
-				//deltaBoundEvent = false;
-				Vec3 direct = throughput * DirectIllumination(scene, mi, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()), rand, true);
-				if (direct.x < 0 || direct.y < 0 || direct.z < 0) std::cout << i << " " << direct << " " << throughput << std::endl;
-				L += direct;
+				L += throughput * ConnectToLight(scene, rand, mi, eqLightPoint, eqLightLe, eqLightPdf) / eqLightProb;
 				Vec3 wi;
 				mi.phase->Sample_p(-ray.d, &wi, Vec2(rand(), rand()));
 				ray = mi.SpawnRay(wi);
 				deltaBoundEvent = false;
+				
+				//L += throughput * DirectIllumination(scene, mi, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()), rand, true);
+				//Vec3 wi;
+				//mi.phase->Sample_p(-ray.d, &wi, Vec2(rand(), rand()));
+				//ray = mi.SpawnRay(wi);
+				//deltaBoundEvent = false;
+
 			}
 			else {
 				//if (intersect) scene.QueryIntersectionInfo(ray, &isect);
@@ -106,18 +106,65 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 
 Vec3 VolPathTracing::ConnectToLight(const Scene &scene, StateSequence &rand,
 	const Intersection& isect, const Intersection& lightPoint, const Vec3 &Le, real lightPdf) const {
-	Vec3 f;
-	real cosTheta = 1;
-	Vec3 dir = isect.hit - lightPoint.hit;
-	Vec3 wi = -dir.Norm();
-	if (lightPoint.n != Vec3()) {
-		cosTheta = Dot(dir.Norm(), lightPoint.n);
-		if (cosTheta < 0) return Vec3();
+
+	Vec3 L1, L2;
+	real weight1, weight2 = 0;
+	//Vec3 f;
+	//real cosTheta = 1;
+	//Vec3 dir = isect.hit - lightPoint.hit;
+	//Vec3 wi = -dir.Norm();
+	//if (lightPoint.n != Vec3()) {
+	//	cosTheta = Dot(dir.Norm(), lightPoint.n);
+	//	if (cosTheta < 0) return Vec3();
+	//}
+	//VisibilityTester visibilityTester(isect, lightPoint);
+	//const MediumIntersection& mi = (const MediumIntersection&)isect;
+	//real p = mi.phase->p(mi.wo, wi);
+	//f = Vec3(p);
+	//return Le * f * visibilityTester.Tr(scene, rand) * cosTheta / dir.Length2() / lightPdf;
+
+
+
+	{
+		Vec3 f;
+		real cosTheta = 1;
+		Vec3 dir = isect.hit - lightPoint.hit;
+		Vec3 wi = -dir.Norm();
+		if (lightPoint.n != Vec3()) {
+			cosTheta = Dot(dir.Norm(), lightPoint.n);
+			if (cosTheta < 0) return Vec3();
+		}
+		VisibilityTester visibilityTester(isect, lightPoint);
+		const MediumIntersection& mi = (const MediumIntersection&)isect;
+		real p = mi.phase->p(mi.wo, wi);
+		f = Vec3(p);
+		real geomTerm = std::abs(cosTheta) / dir.Length2();
+		real pdfPhase = p * geomTerm;
+		weight1 = (lightPoint.n != Vec3()) ? PowerHeuristic(1, lightPdf, 1, pdfPhase) : 1;
+		L1 = Le * f * visibilityTester.Tr(scene, rand) * cosTheta / dir.Length2() / lightPdf;
 	}
-	VisibilityTester visibilityTester(isect, lightPoint);
-	const MediumIntersection& mi = (const MediumIntersection&)isect;
-	real p = mi.phase->p(mi.wo, wi);
-	f = Vec3(p);
-	return Le * f * visibilityTester.Tr(scene, rand) * cosTheta / dir.Length2() / lightPdf;
+	{
+		const MediumIntersection& mi = (const MediumIntersection&)isect;
+		Vec3 wi;
+		real p = mi.phase->Sample_p(mi.wo, &wi, Vec2(rand(), rand()));
+		real pdf = p;
+		Vec3 f = Vec3(p);
+		Ray shadowRay = isect.SpawnRay(wi);
+		Intersection lightIt;
+		Vec3 Tr;
+		if (scene.IntersectTr(shadowRay, rand, &lightIt, &Tr)) {
+			if (lightIt.primitive->IsLight()) {
+				scene.QueryIntersectionInfo(shadowRay, &lightIt);
+				lightPdf = lightIt.primitive->light->Pdf_Li(isect, wi);
+				Vec3 dir = isect.hit - lightPoint.hit;
+				real geomTerm = std::abs(Dot(dir.Norm(), lightIt.n)) / dir.Length2();
+				real scatteringPdfA = pdf * geomTerm;
+				weight2 = PowerHeuristic(1, scatteringPdfA, 1, lightPdf * geomTerm);
+				L2 = lightIt.primitive->light->Emission(lightIt, -wi) * f * Tr / pdf;
+			}
+		}
+	}
+	return weight1 * L1 + weight2 * L2;
+	//return L2;
 }
 NAMESPACE_END

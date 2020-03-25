@@ -607,7 +607,7 @@ void TestVolPathTracing(int argc, char* argv[]) {
 	std::shared_ptr<SamplerEnum> sobolSamplerEnum = std::shared_ptr<SamplerEnum>(new SobolEnum(resX, resY));
 
 	//std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new VolPathTracing(10, 10, sobolSampler, sobolSamplerEnum));
-	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new VolPathTracing(50, 2, randomSampler, samplerEnum, true));
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new VolPathTracing(1000, 10, randomSampler, samplerEnum, false));
 
 	fprintf(stderr, "Load Scene ...\n");
 
@@ -622,7 +622,7 @@ void TestVolPathTracing(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("MediaTestFog12.bmp");
+	film->SetFileName("MediaTestFogEquiAngular22.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();

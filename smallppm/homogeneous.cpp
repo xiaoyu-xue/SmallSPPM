@@ -40,24 +40,12 @@ Vec3 HomogeneousMedium::EquiAngularSampling(
     const Ray& ray, StateSequence& rand, MemoryArena& arena,
     const Intersection& lightPoint, MediumIntersection* mi) const {
     //real rrProb = Exp(-sigma_t * std::min(ray.tMax * ray.d.Length(), MaxReal)).x;
-    ////real rrProb = 0.8;
+    //real rrProb = Tr(ray, rand).x;
     //if (rand() > rrProb) return 1.f / (1 - rrProb);
-    real tMax = std::min((real)10, ray.tMax);
+    real tMax = 10;
+    //real tMax = std::min((real)10, ray.tMax);
 
-    //Vec3 c = lightPoint.hit, a = ray.o, b = ray(tMax);
-    //Vec3 ac = c - a, ca = a - c, cb = b - c, ab = b - a;
-    //Vec3 proj = Dot(ac, ab) * ab / ab.Length2();
-    //Vec3 h = proj - ac;
-    //real D = h.Length();
-    //real cosTheta_b = Dot(h.Norm(), cb.Norm());
-    //real theta_b = std::acos(cosTheta_b);
-    //real theta_a = Dot(h.Norm(), ca.Norm());
-    //theta_b *= -Sgn(Dot(cb, ray.d));
-    //theta_a *= -Sgn(Dot(ca, ray.d));
-    //real u = rand();
-    //real tau = D * std::tan((1 - u) * theta_a + u * theta_b);
-    //real t = std::sqrt(std::max(real(0), ca.Length2() - D * D)) + tau;
-    //real pdf = D / ((theta_b - theta_a) * (D * D + t * t));
+
     Vec3 lightPos = lightPoint.hit;
     real delta = Dot(lightPos - ray.o, ray.d);
     real D = (ray.o + delta * ray.d - lightPos).Length();
@@ -65,13 +53,14 @@ Vec3 HomogeneousMedium::EquiAngularSampling(
     real theta_b = std::atan2(tMax - delta, D);
     real u = rand();
     real tau = D * std::tan((1 - u) * theta_a + u * theta_b);
-    real pdf = D / ((theta_b - theta_a) * (D * D + tau * tau));
     real t = delta + tau;
-    Vec3 Tr = Exp(-sigma_t * t);
-    *mi = MediumIntersection(ray(t), -ray.d, this, ARENA_ALLOC(arena, HenyeyGreenstein)(g));
+    bool sampleMedia = t < ray.tMax;
+    Vec3 Tr = sampleMedia ? Exp(-sigma_t * t) : this->Tr(ray, rand);
+    real pdf = sampleMedia ?
+        D / ((theta_b - theta_a) * (D * D + tau * tau))
+        : 1 - (std::atan2(std::min(tMax, ray.tMax) - delta, D) - theta_a) / (theta_b - theta_a);
+    if(sampleMedia) *mi = MediumIntersection(ray(t), -ray.d, this, ARENA_ALLOC(arena, HenyeyGreenstein)(g));
 
-    //std::cout << t << " " << tMax << std::endl;
-    if (pdf < 0) std::cout << "pdf " << pdf << std::endl;
-    return Tr * sigma_s / pdf;
+    return sampleMedia ? Tr * sigma_s / pdf : this->Tr(ray, rand) / pdf;
 }
 NAMESPACE_END

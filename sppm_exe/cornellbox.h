@@ -1208,76 +1208,76 @@ public:
 		Vec3 p6(1, 1, -1);
 		Vec3 p7(1, 1, 1);
 
-		////Left
-		//Vec3 normalLeft = Vec3(1, 0, 0);
-		//std::shared_ptr<Shape> leftShape1 =
-		//	std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p0, p1, p2, normalLeft));
-		//std::shared_ptr<Shape> leftShape2 =
-		//	std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p2, p3, p0, normalLeft));
-		//std::shared_ptr<Material> leftWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(redConstant));
-		//std::shared_ptr<Primitive> leftTriangle1 =
-		//	std::shared_ptr<Primitive>(new GeometryPrimitive(leftShape1, leftWallMaterial));
-		//std::shared_ptr<Primitive> leftTriangle2 =
-		//	std::shared_ptr<Primitive>(new GeometryPrimitive(leftShape2, leftWallMaterial));
-		//scene->AddPrimitive(leftTriangle1);
-		//scene->AddPrimitive(leftTriangle2);
+		//Left
+		Vec3 normalLeft = Vec3(1, 0, 0);
+		std::shared_ptr<Shape> leftShape1 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p0, p1, p2, normalLeft));
+		std::shared_ptr<Shape> leftShape2 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p2, p3, p0, normalLeft));
+		std::shared_ptr<Material> leftWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(redConstant));
+		std::shared_ptr<Primitive> leftTriangle1 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(leftShape1, leftWallMaterial));
+		std::shared_ptr<Primitive> leftTriangle2 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(leftShape2, leftWallMaterial));
+		scene->AddPrimitive(leftTriangle1);
+		scene->AddPrimitive(leftTriangle2);
 
 
-		////Right
-		//Vec3 normalRight = Vec3(-1, 0, 0);
-		//std::shared_ptr<Shape> rightShape1 =
-		//	std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p4, p5, p6, normalRight));
-		//std::shared_ptr<Shape> rightShape2 =
-		//	std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p4, p6, p7, normalRight));
-		//std::shared_ptr<Material> rightWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(blueConstant));
-		//std::shared_ptr<Primitive> rightTriangle1 =
-		//	std::shared_ptr<Primitive>(new GeometryPrimitive(rightShape1, rightWallMaterial));
-		//std::shared_ptr<Primitive> rightTriangle2 =
-		//	std::shared_ptr<Primitive>(new GeometryPrimitive(rightShape2, rightWallMaterial));
-		//scene->AddPrimitive(rightTriangle1);
-		//scene->AddPrimitive(rightTriangle2);
+		//Right
+		Vec3 normalRight = Vec3(-1, 0, 0);
+		std::shared_ptr<Shape> rightShape1 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p4, p5, p6, normalRight));
+		std::shared_ptr<Shape> rightShape2 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p4, p6, p7, normalRight));
+		std::shared_ptr<Material> rightWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(blueConstant));
+		std::shared_ptr<Primitive> rightTriangle1 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(rightShape1, rightWallMaterial));
+		std::shared_ptr<Primitive> rightTriangle2 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(rightShape2, rightWallMaterial));
+		scene->AddPrimitive(rightTriangle1);
+		scene->AddPrimitive(rightTriangle2);
 
-		////Back
-		//Vec3 normalBack = Vec3(0, 0, 1);
-		//std::shared_ptr<Shape> backShape1 =
-		//	std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p1, p5, p6, normalBack));
-		//std::shared_ptr<Shape> backShape2 =
-		//	std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p1, p6, p2, normalBack));
-		//std::shared_ptr<Material> backWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
-		//std::shared_ptr<Primitive> backTriangle1 =
-		//	std::shared_ptr<Primitive>(new GeometryPrimitive(backShape1, backWallMaterial));
-		//std::shared_ptr<Primitive> backTriangle2 =
-		//	std::shared_ptr<Primitive>(new GeometryPrimitive(backShape2, backWallMaterial));
-		//scene->AddPrimitive(backTriangle1);
-		//scene->AddPrimitive(backTriangle2);
+		//Back
+		Vec3 normalBack = Vec3(0, 0, 1);
+		std::shared_ptr<Shape> backShape1 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p1, p5, p6, normalBack));
+		std::shared_ptr<Shape> backShape2 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p1, p6, p2, normalBack));
+		std::shared_ptr<Material> backWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
+		std::shared_ptr<Primitive> backTriangle1 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(backShape1, backWallMaterial));
+		std::shared_ptr<Primitive> backTriangle2 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(backShape2, backWallMaterial));
+		scene->AddPrimitive(backTriangle1);
+		scene->AddPrimitive(backTriangle2);
 
-		////Botom
-		//Vec3 normalBotom = Vec3(0, 1, 0);
-		//std::shared_ptr<Shape> botomShape1 =
-		//	std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p0, p4, p5, normalBotom));
-		//std::shared_ptr<Shape> botomShape2 =
-		//	std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p0, p5, p1, normalBotom));
-		//std::shared_ptr<Material> botomWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
-		//std::shared_ptr<Primitive> botomTriangle1 =
-		//	std::shared_ptr<Primitive>(new GeometryPrimitive(botomShape1, botomWallMaterial));
-		//std::shared_ptr<Primitive> botomTriangle2 =
-		//	std::shared_ptr<Primitive>(new GeometryPrimitive(botomShape2, botomWallMaterial));
-		//scene->AddPrimitive(botomTriangle1);
-		//scene->AddPrimitive(botomTriangle2);
+		//Botom
+		Vec3 normalBotom = Vec3(0, 1, 0);
+		std::shared_ptr<Shape> botomShape1 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p0, p4, p5, normalBotom));
+		std::shared_ptr<Shape> botomShape2 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p0, p5, p1, normalBotom));
+		std::shared_ptr<Material> botomWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
+		std::shared_ptr<Primitive> botomTriangle1 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(botomShape1, botomWallMaterial));
+		std::shared_ptr<Primitive> botomTriangle2 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(botomShape2, botomWallMaterial));
+		scene->AddPrimitive(botomTriangle1);
+		scene->AddPrimitive(botomTriangle2);
 
-		////Top
-		//Vec3 normalTop = Vec3(0, -1, 0);
-		//std::shared_ptr<Shape> topShape1 =
-		//	std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p3, p7, p6, normalTop));
-		//std::shared_ptr<Shape> topShape2 =
-		//	std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p3, p6, p2, normalTop));
-		//std::shared_ptr<Material> topWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
-		//std::shared_ptr<Primitive> topTriangle1 =
-		//	std::shared_ptr<Primitive>(new GeometryPrimitive(topShape1, topWallMaterial));
-		//std::shared_ptr<Primitive> topTriangle2 =
-		//	std::shared_ptr<Primitive>(new GeometryPrimitive(topShape2, topWallMaterial));
-		//scene->AddPrimitive(topTriangle1);
-		//scene->AddPrimitive(topTriangle2);
+		//Top
+		Vec3 normalTop = Vec3(0, -1, 0);
+		std::shared_ptr<Shape> topShape1 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p3, p7, p6, normalTop));
+		std::shared_ptr<Shape> topShape2 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, p3, p6, p2, normalTop));
+		std::shared_ptr<Material> topWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
+		std::shared_ptr<Primitive> topTriangle1 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(topShape1, topWallMaterial));
+		std::shared_ptr<Primitive> topTriangle2 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(topShape2, topWallMaterial));
+		scene->AddPrimitive(topTriangle1);
+		scene->AddPrimitive(topTriangle2);
 
 
 		//Front
@@ -1314,38 +1314,38 @@ public:
 
 
 		//Light
-		//Vec3 lightP0 = Vec3(0.25f, 0.965, 0.25f);
-		//Vec3 lightP1 = Vec3(0.25f, 0.965, -0.25f);
-		//Vec3 lightP2 = Vec3(-0.25f, 0.965, -0.25f);
-		//Vec3 lightP3 = Vec3(-0.25f, 0.965, 0.25f);
-		////Vec3 lightP0 = Vec3(0.0015f, 0.965, 0.0015f);
-		////Vec3 lightP1 = Vec3(0.0015f, 0.965, -0.0015f);
-		////Vec3 lightP2 = Vec3(-0.0015f, 0.965, -0.0015f);
-		////Vec3 lightP3 = Vec3(-0.0015f, 0.965, 0.0015f);
-		//Vec3 lightNormal = Vec3(0, -1, 0);
-		//std::shared_ptr<Texture<Vec3>> lightTexture = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(0, 0, 0)));
-		//std::shared_ptr<Shape> lightTriangleShape0 =
-		//	std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, lightP0, lightP1, lightP2, lightNormal));
-		//std::shared_ptr<Shape> lightTriangleShape1 =
-		//	std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, lightP0, lightP2, lightP3, lightNormal));
-		////std::shared_ptr<Light> triangleLight0 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape0, Vec3(0.3f, 0.3f, 0.3f) * 2000000));
-		////std::shared_ptr<Light> triangleLight1 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape1, Vec3(0.3f, 0.3f, 0.3f) * 2000000));
-		//std::shared_ptr<Light> triangleLight0 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape0, Vec3(0.3f, 0.3f, 0.3f) * 85));
-		//std::shared_ptr<Light> triangleLight1 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape1, Vec3(0.3f, 0.3f, 0.3f) * 85));
-		//std::shared_ptr<Material> lightMaterial = std::shared_ptr<Material>(new DiffuseMaterial(lightTexture));
-		//std::shared_ptr<Primitive> triangleLightPrimitive0 =
-		//	std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape0, lightMaterial, triangleLight0));
-		//std::shared_ptr<Primitive> triangleLightPrimitive1 =
-		//	std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape1, lightMaterial, triangleLight1));
-		//scene->AddLight(triangleLightPrimitive0);
-		//scene->AddLight(triangleLightPrimitive1);
+		Vec3 lightP0 = Vec3(0.25f, 0.965, 0.25f);
+		Vec3 lightP1 = Vec3(0.25f, 0.965, -0.25f);
+		Vec3 lightP2 = Vec3(-0.25f, 0.965, -0.25f);
+		Vec3 lightP3 = Vec3(-0.25f, 0.965, 0.25f);
+		//Vec3 lightP0 = Vec3(0.0015f, 0.965, 0.0015f);
+		//Vec3 lightP1 = Vec3(0.0015f, 0.965, -0.0015f);
+		//Vec3 lightP2 = Vec3(-0.0015f, 0.965, -0.0015f);
+		//Vec3 lightP3 = Vec3(-0.0015f, 0.965, 0.0015f);
+		Vec3 lightNormal = Vec3(0, -1, 0);
+		std::shared_ptr<Texture<Vec3>> lightTexture = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(0, 0, 0)));
+		std::shared_ptr<Shape> lightTriangleShape0 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, lightP0, lightP1, lightP2, lightNormal));
+		std::shared_ptr<Shape> lightTriangleShape1 =
+			std::shared_ptr<Shape>(new Triangle(nullptr, nullptr, lightP0, lightP2, lightP3, lightNormal));
+		//std::shared_ptr<Light> triangleLight0 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape0, Vec3(0.3f, 0.3f, 0.3f) * 2000000));
+		//std::shared_ptr<Light> triangleLight1 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape1, Vec3(0.3f, 0.3f, 0.3f) * 2000000));
+		std::shared_ptr<Light> triangleLight0 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape0, Vec3(0.3f, 0.3f, 0.3f) * 85));
+		std::shared_ptr<Light> triangleLight1 = std::shared_ptr<Light>(new AreaLight(lightTriangleShape1, Vec3(0.3f, 0.3f, 0.3f) * 85));
+		std::shared_ptr<Material> lightMaterial = std::shared_ptr<Material>(new DiffuseMaterial(lightTexture));
+		std::shared_ptr<Primitive> triangleLightPrimitive0 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape0, lightMaterial, triangleLight0));
+		std::shared_ptr<Primitive> triangleLightPrimitive1 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape1, lightMaterial, triangleLight1));
+		scene->AddLight(triangleLightPrimitive0);
+		scene->AddLight(triangleLightPrimitive1);
 
 
 		//PointLight
-		Vec3 intensity(2.5, 2.5, 2.5);
-		Vec3 pLight(0, 0.965, 0);
-		std::shared_ptr<Light> light = std::shared_ptr<Light>(new PointLight(pLight, intensity));
-		scene->AddLight(light);
+		//Vec3 intensity(2.5, 2.5, 2.5);
+		//Vec3 pLight(0, 0.965, 0);
+		//std::shared_ptr<Light> light = std::shared_ptr<Light>(new PointLight(pLight, intensity));
+		//scene->AddLight(light);
 	}
 };
 NAMESPACE_END
