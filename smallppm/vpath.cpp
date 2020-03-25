@@ -31,15 +31,22 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 
 		if (mi.IsValid()) {
 			if (useEquiAngularSample) {
-				if (intersect) scene.QueryIntersectionInfo(ray, &isect);
-				L += throughput * ConnectToLight(scene, rand, mi, eqLightPoint, eqLightLe, eqLightPdf) / eqLightProb;
+				//if (intersect) scene.QueryIntersectionInfo(ray, &isect);
+				//L += throughput * ConnectToLight(scene, rand, mi, eqLightPoint, eqLightLe, eqLightPdf) / eqLightProb;
+				//Vec3 wi;
+				//mi.phase->Sample_p(-ray.d, &wi, Vec2(rand(), rand()));
+				//ray = mi.SpawnRay(wi);
+				//deltaBoundEvent = false;
+				Vec3 direct = throughput * DirectIllumination(scene, mi, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()), rand, true);
+				if (direct.x < 0 || direct.y < 0 || direct.z < 0) std::cout << i << " " << direct << " " << throughput << std::endl;
+				L += direct;
 				Vec3 wi;
 				mi.phase->Sample_p(-ray.d, &wi, Vec2(rand(), rand()));
 				ray = mi.SpawnRay(wi);
 				deltaBoundEvent = false;
 			}
 			else {
-				if (intersect) scene.QueryIntersectionInfo(ray, &isect);
+				//if (intersect) scene.QueryIntersectionInfo(ray, &isect);
 				L += throughput * DirectIllumination(scene, mi, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()), rand, true);
 				Vec3 wi;
 				mi.phase->Sample_p(-ray.d, &wi, Vec2(rand(), rand()));
