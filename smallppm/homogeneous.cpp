@@ -42,7 +42,7 @@ Vec3 HomogeneousMedium::EquiAngularSampling(
     //real rrProb = Exp(-sigma_t * std::min(ray.tMax * ray.d.Length(), MaxReal)).x;
     //real rrProb = Tr(ray, rand).x;
     //if (rand() > rrProb) return 1.f / (1 - rrProb);
-    real tMax = 10;
+    real tMax = 3;
     //real tMax = std::min((real)10, ray.tMax);
 
 

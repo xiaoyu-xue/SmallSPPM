@@ -143,28 +143,29 @@ Vec3 VolPathTracing::ConnectToLight(const Scene &scene, StateSequence &rand,
 		weight1 = (lightPoint.n != Vec3()) ? PowerHeuristic(1, lightPdf, 1, pdfPhase) : 1;
 		L1 = Le * f * visibilityTester.Tr(scene, rand) * cosTheta / dir.Length2() / lightPdf;
 	}
-	{
-		const MediumIntersection& mi = (const MediumIntersection&)isect;
-		Vec3 wi;
-		real p = mi.phase->Sample_p(mi.wo, &wi, Vec2(rand(), rand()));
-		real pdf = p;
-		Vec3 f = Vec3(p);
-		Ray shadowRay = isect.SpawnRay(wi);
-		Intersection lightIt;
-		Vec3 Tr;
-		if (scene.IntersectTr(shadowRay, rand, &lightIt, &Tr)) {
-			if (lightIt.primitive->IsLight()) {
-				scene.QueryIntersectionInfo(shadowRay, &lightIt);
-				lightPdf = lightIt.primitive->light->Pdf_Li(isect, wi);
-				Vec3 dir = isect.hit - lightPoint.hit;
-				real geomTerm = std::abs(Dot(dir.Norm(), lightIt.n)) / dir.Length2();
-				real scatteringPdfA = pdf * geomTerm;
-				weight2 = PowerHeuristic(1, scatteringPdfA, 1, lightPdf * geomTerm);
-				L2 = lightIt.primitive->light->Emission(lightIt, -wi) * f * Tr / pdf;
-			}
-		}
-	}
-	return weight1 * L1 + weight2 * L2;
+	//{
+	//	const MediumIntersection& mi = (const MediumIntersection&)isect;
+	//	Vec3 wi;
+	//	real p = mi.phase->Sample_p(mi.wo, &wi, Vec2(rand(), rand()));
+	//	real pdf = p;
+	//	Vec3 f = Vec3(p);
+	//	Ray shadowRay = isect.SpawnRay(wi);
+	//	Intersection lightIt;
+	//	Vec3 Tr;
+	//	if (scene.IntersectTr(shadowRay, rand, &lightIt, &Tr)) {
+	//		if (lightIt.primitive->IsLight()) {
+	//			scene.QueryIntersectionInfo(shadowRay, &lightIt);
+	//			lightPdf = lightIt.primitive->light->Pdf_Li(isect, wi);
+	//			Vec3 dir = isect.hit - lightPoint.hit;
+	//			real geomTerm = std::abs(Dot(dir.Norm(), lightIt.n)) / dir.Length2();
+	//			real scatteringPdfA = pdf * geomTerm;
+	//			weight2 = PowerHeuristic(1, scatteringPdfA, 1, lightPdf * geomTerm);
+	//			L2 = lightIt.primitive->light->Emission(lightIt, -wi) * f * Tr / pdf;
+	//		}
+	//	}
+	//}
+	//return weight1 * L1 + weight2 * L2;
+	return L1;
 	//return L2;
 }
 NAMESPACE_END
