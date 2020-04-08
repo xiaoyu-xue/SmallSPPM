@@ -94,7 +94,8 @@ public:
 		std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape, Vec3(0.3f, 0.3f, 0.3f) * 100));
 		std::shared_ptr<Material> lightMaterial = std::shared_ptr<Material>(new DiffuseMaterial(lightTexture));
 		std::shared_ptr<Primitive> lightPrimitive = std::shared_ptr<Primitive>(new GeometryPrimitive(lightShape, lightMaterial, light0));
-		scene->AddLight(lightPrimitive);
+		scene->AddLight(light0);
+		scene->AddPrimitive(lightPrimitive);
 
 	}
 };
@@ -188,7 +189,8 @@ public:
 		std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape, Vec3(0.3f, 0.3f, 0.3f) * 100));
 		std::shared_ptr<Material> lightMaterial = std::shared_ptr<Material>(new DiffuseMaterial(lightTexture));
 		std::shared_ptr<Primitive> lightPrimitive = std::shared_ptr<Primitive>(new GeometryPrimitive(lightShape, lightMaterial, light0));
-		scene->AddLight(lightPrimitive);
+		scene->AddLight(light0);
+		scene->AddPrimitive(lightPrimitive);
 
 		//Light
 		//Transform lightTransform = Transform::Translate(Vec3(50, 81.6f - 2.0f, 81.6f));
@@ -386,8 +388,10 @@ public:
 			std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape0, lightMaterial, triangleLight0));
 		std::shared_ptr<Primitive> triangleLightPrimitive1 = 
 			std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape1, lightMaterial, triangleLight1));
-		scene->AddLight(triangleLightPrimitive0);
-		scene->AddLight(triangleLightPrimitive1);
+		scene->AddLight(triangleLight0);
+		scene->AddLight(triangleLight1);
+		scene->AddPrimitive(triangleLightPrimitive0);
+		scene->AddPrimitive(triangleLightPrimitive1);
 		
 
 	}
@@ -590,8 +594,10 @@ public:
 			std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape0, lightMaterial, triangleLight0));
 		std::shared_ptr<Primitive> triangleLightPrimitive1 =
 			std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape1, lightMaterial, triangleLight1));
-		scene->AddLight(triangleLightPrimitive0);
-		scene->AddLight(triangleLightPrimitive1);
+		scene->AddLight(triangleLight0);
+		scene->AddLight(triangleLight1);
+		scene->AddPrimitive(triangleLightPrimitive0);
+		scene->AddPrimitive(triangleLightPrimitive1);
 
 		////Light
 		//std::shared_ptr<Texture<Vec3>> lightTexture = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(0, 0, 0)));
@@ -793,8 +799,10 @@ public:
 			std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape0, lightMaterial, triangleLight0));
 		std::shared_ptr<Primitive> triangleLightPrimitive1 =
 			std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape1, lightMaterial, triangleLight1));
-		scene->AddLight(triangleLightPrimitive0);
-		scene->AddLight(triangleLightPrimitive1);
+		scene->AddLight(triangleLight0);
+		scene->AddLight(triangleLight1);
+		scene->AddPrimitive(triangleLightPrimitive0);
+		scene->AddPrimitive(triangleLightPrimitive1);
 
 	}
 };
@@ -945,8 +953,10 @@ public:
 			std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape0, lightMaterial, triangleLight0));
 		std::shared_ptr<Primitive> triangleLightPrimitive1 =
 			std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape1, lightMaterial, triangleLight1));
-		scene->AddLight(triangleLightPrimitive0);
-		scene->AddLight(triangleLightPrimitive1);
+		scene->AddLight(triangleLight0);
+		scene->AddLight(triangleLight1);
+		scene->AddPrimitive(triangleLightPrimitive0);
+		scene->AddPrimitive(triangleLightPrimitive1);
 	}
 };
 
@@ -1294,11 +1304,11 @@ public:
 		scene->AddPrimitive(frontTriangle2);
 
 
-		//std::shared_ptr<Mesh> mesh = std::shared_ptr<Mesh>(new Mesh());
-		//mesh->LoadFromFile("..\\meshs\\bunny3.obj");
-		//mesh->SetMaterial(diffuseMeshMaterial);
-		//Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
-		//scene->AddMesh(*mesh, transform);
+		std::shared_ptr<Mesh> mesh = std::shared_ptr<Mesh>(new Mesh());
+		mesh->LoadFromFile("..\\meshs\\bunny3.obj");
+		mesh->SetMaterial(diffuseMeshMaterial);
+		Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
+		scene->AddMesh(*mesh, transform);
 
 
 		//Cube
@@ -1337,8 +1347,12 @@ public:
 			std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape0, lightMaterial, triangleLight0));
 		std::shared_ptr<Primitive> triangleLightPrimitive1 =
 			std::shared_ptr<Primitive>(new GeometryPrimitive(lightTriangleShape1, lightMaterial, triangleLight1));
-		scene->AddLight(triangleLightPrimitive0);
-		scene->AddLight(triangleLightPrimitive1);
+
+		scene->AddLight(triangleLight0);
+		scene->AddLight(triangleLight1);
+		scene->AddPrimitive(triangleLightPrimitive0);
+		scene->AddPrimitive(triangleLightPrimitive1);
+
 
 
 		//PointLight

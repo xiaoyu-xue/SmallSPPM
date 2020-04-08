@@ -22,7 +22,7 @@ public:
 	real rayEps = 0;
 	Vec3 pError;
 	real b1, b2;
-	uint64 shapeId;
+	int64 shapeId, primId;
 	const Primitive *primitive;
 	BSDF* bsdf;
 	MediumInterface mediumInterface;

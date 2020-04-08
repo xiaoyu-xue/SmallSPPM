@@ -27,7 +27,7 @@ Vec3 PathTracing::Li(const Ray &r, const Scene& scene, StateSequence& rand, Memo
 		}
 
 		if ((i == 0 || deltaBoundEvent) && isect.primitive->IsLight()) {
-			std::shared_ptr<Light> emissionShape = isect.primitive->GetLight();
+			const Light* emissionShape = isect.primitive->GetLight();
 			L += throughput * emissionShape->Emission(isect, isect.wo);
 		}
 		else {

@@ -87,16 +87,16 @@ public:
 
 	void ComputeScatteringFunction(Intersection* isect, MemoryArena& arena, TransportMode mode = TransportMode::Radiance) const;
 
-	std::shared_ptr<Shape> GetShape() const {
-		return shape;
+	Shape* GetShape() const {
+		return shape.get();
 	}
 
-	std::shared_ptr<Material> GetMaterial() const {
-		return material;
+	const Material* GetMaterial() const {
+		return material.get();
 	}
 
-	std::shared_ptr<Light> GetLight() const {
-		return light;
+	const Light* GetLight() const {
+		return light.get();
 	}
 
 	bool IsLight() const {
@@ -110,6 +110,7 @@ public:
 	void QueryIntersectionInfo(const Ray& ray, Intersection* isect) const;
 
 public:
+	int64 primId;
 	std::shared_ptr<Shape> shape;
 	std::shared_ptr<Material> material;
 	std::shared_ptr<Light> light;

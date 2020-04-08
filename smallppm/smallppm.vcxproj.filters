@@ -326,9 +326,6 @@
     <ClInclude Include="visibility.h">
       <Filter>Header Files\intersection</Filter>
     </ClInclude>
-    <ClInclude Include="scene.h">
-      <Filter>Header Files\scene</Filter>
-    </ClInclude>
     <ClInclude Include="integrator.h">
       <Filter>Header Files\integrator</Filter>
     </ClInclude>
@@ -466,6 +463,9 @@
     </ClInclude>
     <ClInclude Include="vpath.h">
       <Filter>Header Files\integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
+      <Filter>Header Files\scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

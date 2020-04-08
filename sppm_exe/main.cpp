@@ -52,7 +52,7 @@
 
 //const real ALPHA = 0.66666667;
 const real ALPHA = 0.75;
-const int64  render_stage_number = 500000;
+const int64  render_stage_number = 300000;
 
 void TestSppm(int argc, char* argv[]) {
 	//clock_t begin = clock();
@@ -212,7 +212,8 @@ void TestSPPM2(int argc, char* argv[]) {
 	std::shared_ptr<Light> light0 = std::shared_ptr<Light>(new AreaLight(lightShape, Vec3(0.3f, 0.3f, 0.3f) * 100));
 	std::shared_ptr<Material> lightMaterial = std::shared_ptr<Material>(new DiffuseMaterial(lightTexture));
 	std::shared_ptr<Primitive> lightPrimitive = std::shared_ptr<Primitive>(new GeometryPrimitive(lightShape, lightMaterial, light0));
-	scene->AddLight(lightPrimitive);
+	scene->AddLight(light0);
+	scene->AddPrimitive(lightPrimitive);
 
 	scene->Initialize();
 	film->SetFileName("cornellbox31.bmp");
@@ -493,7 +494,7 @@ void TestSPPM5(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("PointLightSppm4.bmp");
+	film->SetFileName("CornellBoxSppm.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
@@ -578,7 +579,7 @@ void TestPathTracing(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("MediaTest3.bmp");
+	film->SetFileName("CornellBox1.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
@@ -607,7 +608,7 @@ void TestVolPathTracing(int argc, char* argv[]) {
 	std::shared_ptr<SamplerEnum> sobolSamplerEnum = std::shared_ptr<SamplerEnum>(new SobolEnum(resX, resY));
 
 	//std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new VolPathTracing(10, 10, sobolSampler, sobolSamplerEnum));
-	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new VolPathTracing(10, 10, randomSampler, samplerEnum, false));
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new VolPathTracing(2000, 8, randomSampler, samplerEnum, false));
 
 	fprintf(stderr, "Load Scene ...\n");
 
@@ -622,7 +623,7 @@ void TestVolPathTracing(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("MediaTestFogEquiAngular8.bmp");
+	film->SetFileName("MediaTestFogEquiAngular12.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
@@ -656,9 +657,9 @@ int main(int argc, char *argv[]) {
 
 	std::cout << GGXDistribution::RoughnessToAlpha(0.118) << std::endl;
 
-	//TestSPPM5(argc, argv);
+	TestSPPM5(argc, argv);
 	//TestPathTracing(argc, argv);
-	TestVolPathTracing(argc, argv);
+	//TestVolPathTracing(argc, argv);
 	//TestTransmittance();
 
 

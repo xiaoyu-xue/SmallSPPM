@@ -19,7 +19,7 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 		real eqLightPdf;
 		Vec3 eqLightLe;
 		if (useEquiAngularSample) {
-			std::shared_ptr<Light> light = scene.SampleOneLight(&eqLightProb, rand());
+			const Light* light = scene.SampleOneLight(&eqLightProb, rand());
 			eqLightLe = light->SampleOnePoint(&eqLightPoint, &eqLightPdf, Vec2(rand(), rand()));
 			if (ray.medium) throughput *= ray.medium->EquiAngularSampling(ray, rand, arena, eqLightPoint, &mi);
 
@@ -72,7 +72,7 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 			}
 
 			if ((i == 0 || deltaBoundEvent) && isect.primitive->IsLight()) {
-				std::shared_ptr<Light> emissionShape = isect.primitive->GetLight();
+				const Light* emissionShape = isect.primitive->GetLight();
 				L += throughput * emissionShape->Emission(isect, isect.wo);
 			}
 			else {

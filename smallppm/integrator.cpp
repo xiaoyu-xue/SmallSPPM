@@ -9,7 +9,7 @@ Vec3 Integrator::DirectIllumination(const Scene& scene, const Intersection& isec
 	real lightSamplingPdf;
 	real weight1 = 1, weight2 = 1;
 	Vec3 L1, L2;
-	std::shared_ptr<Light> light = scene.SampleOneLight(&lightSamplingPdf, uLight);
+	Light* light = scene.SampleOneLight(&lightSamplingPdf, uLight);
 	{
 		Vec3 wi;
 		Intersection lightPoint;
@@ -85,7 +85,7 @@ Vec3 Integrator::DirectIllumination(const Scene& scene, const Intersection& isec
 					if (intersection.primitive->IsLight() && intersection.primitive->GetLight() == light) {
 						//std::cout << lightPdf << std::endl;
 						scene.QueryIntersectionInfo(ray, &intersection);
-						std::shared_ptr<Light> emissionShape = intersection.primitive->GetLight();
+						const Light* emissionShape = intersection.primitive->GetLight();
 						L2 = emissionShape->Emission(intersection, -wi) * f * Tr * cosTheta / pdf;
 					}
 				}
