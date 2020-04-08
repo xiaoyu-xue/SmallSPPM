@@ -91,4 +91,8 @@ void Mesh::SetEmission(const Vec3 emission) {
 	this->emission = emission;
 }
 
+void Mesh::SetMedium(const MediumInterface& mi) {
+	this->mediumInterface = mi;
+}
+
 NAMESPACE_END

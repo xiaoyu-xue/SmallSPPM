@@ -49,4 +49,8 @@ real CosineHemispherePdf(real cosTheta) {
 	return cosTheta * INV_PI; 
 }
 
+real UniformSpherePdf() {
+	return INV_4PI;
+}
+
 NAMESPACE_END

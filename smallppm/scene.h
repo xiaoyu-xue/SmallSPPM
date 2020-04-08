@@ -26,49 +26,29 @@ public:
 		accelerator = pAccelerator;
 	}
 
-	void AddShape(std::shared_ptr<Shape> shape) {
-		shapes.push_back(shape);
-		shapes[shapeNum]->shapeId = shapeNum;
-		++shapeNum;
-	}
-
-	void AddPrimitive(std::shared_ptr<Shape> shape, std::shared_ptr<Material> material) {
+	void AddPrimitive(std::shared_ptr<Shape> shape, std::shared_ptr<Material> material, MediumInterface mi = MediumInterface()) {
 		shape->shapeId = shapeNum;
 		std::shared_ptr<Primitive> primitive =
-			std::make_shared<GeometryPrimitive>(shape, material);
+			std::make_shared<GeometryPrimitive>(shape, material, nullptr, mi);
+		primitive->primId = primitiveNum;
 		primitives.push_back(primitive);
 		++shapeNum;
+		++primitiveNum;
 	}
 
 	void AddPrimitive(std::shared_ptr<Primitive> primitive) {
-		std::shared_ptr<Shape> shape = primitive->GetShape();
+		Shape* shape = primitive->GetShape();
 		if (shape) {
 			shape->shapeId = shapeNum;
-#ifdef _DEBUG
-			//primitive->primitiveId = shapeNum;
-#endif
 			++shapeNum;
 		}
+		primitive->primId = primitiveNum;
 		primitives.push_back(primitive);
+		++primitiveNum;
 	}
 
 	void AddLight(std::shared_ptr<Light> light) {
 		lights.push_back(light);
-		if (light->IsAreaLight()) {
-			std::shared_ptr<Primitive> lightPrimitive = std::make_shared<Primitive>(light->GetShapePtr());
-			AddPrimitive(lightPrimitive);
-		}
-		if (light->IsEnvironmentLight()) {
-			envLight = light;
-		}
-	}
-
-	void AddLight(std::shared_ptr<Primitive> lightPrimitive) {
-		std::shared_ptr<Light> light = lightPrimitive->GetLight();
-		lights.push_back(light);
-		if (light->IsAreaLight()) {
-			AddPrimitive(lightPrimitive);
-		}
 		if (light->IsEnvironmentLight()) {
 			envLight = light;
 		}
@@ -81,12 +61,12 @@ public:
 			*triangle = mesh.untransformedTriangles[i];
 			triangle->SetTransform(transform);
 			std::shared_ptr<Shape> shape = std::shared_ptr<Shape>(triangle);
-			AddPrimitive(shape, mesh.material);
+			AddPrimitive(shape, mesh.material, mesh.mediumInterface);
 		}
 	}
 
-	std::shared_ptr<Light> GetEnvironmentLight() const {
-		return envLight;
+	const Light* GetEnvironmentLight() const {
+		return envLight.get();
 	}
 
 	bool Intersect(const Ray& r, Intersection* isect) const {
@@ -97,15 +77,13 @@ public:
 		return accelerator->Intersect(r);
 	}
 
+	bool IntersectTr(Ray& ray, StateSequence& rand, Intersection* isect, Vec3* Tr) const;
+
 	const std::vector<std::shared_ptr<Light>>& GetLights() const {
 		return lights;
 	}
 
-	const std::vector<std::shared_ptr<Shape>>& GetShapes() const {
-		return shapes;
-	}
-
-	std::shared_ptr<Light> SampleOneLight(real *lightPdf, real u) const {
+	Light* SampleOneLight(real *lightPdf, real u) const {
 		int nLights = (int)(lights.size());
 		int lightNum;
 		if (lightPowerDistribution != nullptr) {
@@ -116,10 +94,10 @@ public:
 			lightNum = std::min((int)(u * nLights), nLights - 1);
 			*lightPdf = 1.f / nLights;
 		}
-		return lights[lightNum];
+		return lights[lightNum].get();
 	}
 
-	const std::vector<std::shared_ptr<Primitive>> GetPrimitives() const {
+	const std::vector<std::shared_ptr<Primitive>>& GetPrimitives() const {
 		return primitives;
 	}
 
@@ -139,7 +117,6 @@ private:
 	}
 
 private:
-	std::vector<std::shared_ptr<Shape>> shapes;
 	std::vector<std::shared_ptr<Primitive>> primitives;
 	std::vector<std::shared_ptr<Light>> lights;
 	std::shared_ptr<Light> envLight = nullptr;

@@ -13,8 +13,6 @@ public:
 	}
 
 	Ray GenerateRay(int pixelX, int pixelY, const Vec2 &u, real offset) const override {
-		//Vec3 dir = cx * ((pixelX + u.x) / film->resX - 0.5f) * film->width +
-		//	cy * (-(pixelY + u.y) / film->resY + 0.5f) * film->heigh + cz * filmDistance;
 
 		Vec3 sampledPos = RasterToWorld(Vec3(pixelX + u.x, pixelY + u.y, 0));
 
@@ -39,10 +37,6 @@ public:
 	}
 
 	real PdfDir(const Ray& cameraRay) const override;
-private:
-	//Vec3 pos, cx, cy, cz;
-	//real fovy;
-	//real filmDistance;
 
 };
 

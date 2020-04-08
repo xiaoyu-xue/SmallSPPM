@@ -3,6 +3,7 @@
 #include "shape.h"
 #include "material.h"
 #include "light.h"
+#include "medium.h"
 
 NAMESPACE_BEGIN
 
@@ -75,8 +76,9 @@ class  Primitive {
 public:
 	Primitive(const std::shared_ptr<Shape>& shape,
 		const std::shared_ptr<Material>& material = nullptr,
-		const std::shared_ptr<Light>& light = nullptr) :
-		shape(shape), material(material), light(light) {
+		const std::shared_ptr<Light>& light = nullptr,
+		MediumInterface mediumInterface = MediumInterface()) :
+		shape(shape), material(material), light(light), mediumInterface(mediumInterface) {
 
 	}
 	bool Intersect(const Ray& r, Intersection* isect) const;
@@ -85,16 +87,16 @@ public:
 
 	void ComputeScatteringFunction(Intersection* isect, MemoryArena& arena, TransportMode mode = TransportMode::Radiance) const;
 
-	std::shared_ptr<Shape> GetShape() const {
-		return shape;
+	Shape* GetShape() const {
+		return shape.get();
 	}
 
-	std::shared_ptr<Material> GetMaterial() const {
-		return material;
+	const Material* GetMaterial() const {
+		return material.get();
 	}
 
-	std::shared_ptr<Light> GetLight() const {
-		return light;
+	const Light* GetLight() const {
+		return light.get();
 	}
 
 	bool IsLight() const {
@@ -108,9 +110,12 @@ public:
 	void QueryIntersectionInfo(const Ray& ray, Intersection* isect) const;
 
 public:
+	int64 primId;
 	std::shared_ptr<Shape> shape;
 	std::shared_ptr<Material> material;
 	std::shared_ptr<Light> light;
+	MediumInterface mediumInterface;
+
 };
 
 using GeometryPrimitive = Primitive;

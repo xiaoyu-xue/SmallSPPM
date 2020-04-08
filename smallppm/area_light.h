@@ -54,6 +54,12 @@ public:
 	bool IsAreaLight() const override { return true; }
 
 	std::shared_ptr<Shape> GetShapePtr() const override { return shape; }
+
+	Vec3 SampleOnePoint(Intersection* isect, real* pdf, const Vec2& u) const override {
+		*isect = shape->Sample(pdf, u);
+		return Lemit;
+	}
+
 protected:
 	//void SampleOnLight(Vec3 *pos, Vec3 *dir, Vec3 *lightNorm, real *pdfPos, real *pdfDir, const Vec2 &u, const Vec2 &v) const override{
 	//	//sample a position

@@ -44,6 +44,11 @@ public:
 			init_random(rng);
 		}
 	}
+
+	std::shared_ptr<Sampler> Clone(uint32 seed) override {
+		return std::shared_ptr<Sampler>(new HaltonSampler(*this));
+	}
+
 	// Init the permutation arrays using Faure-permutations. Alternatively, init_random can be
 	// called before the sampling functionality can be used.
 	void init_faure();

@@ -67,9 +67,9 @@ real BSDF::Pdf(const Vec3& wo, const Vec3& wi, ScatterEventType flag) const {
 			pdf += bxdfs[i]->Pdf(woLocal, wiLocal);
 		}
 	}
-	DEBUG_PIXEL_IF(ThreadIndex()) {
-		std::cout << "Pdf: " << pdf << std::endl;
-	}
+	//DEBUG_PIXEL_IF(ThreadIndex()) {
+	//	std::cout << "Pdf: " << pdf << std::endl;
+	//}
 	return matchingComps > 0 ? pdf / matchingComps : 0.f;
 }
 
@@ -81,16 +81,16 @@ Vec3 BSDF::Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec3& rand, Scatt
 
 	*pdf = 0;
 
-	DEBUG_PIXEL_IF(ThreadIndex()) {
-		std::cout << "woLocal: " << woLocal << std::endl;
-	}
+	//DEBUG_PIXEL_IF(ThreadIndex()) {
+	//	std::cout << "woLocal: " << woLocal << std::endl;
+	//}
 
 	Vec3 f = bxdf->Sample_f(woLocal, &wiLocal, pdf, Vec3(rand[0], rand[1], rand[2]));
 	*wi = LocalToWorld(wiLocal);
 
-	DEBUG_PIXEL_IF(ThreadIndex()) {
-		std::cout << "BSDF(0): " << f << " Pdf: " << *pdf << std::endl;
-	}
+	//DEBUG_PIXEL_IF(ThreadIndex()) {
+	//	std::cout << "BSDF(0): " << f << " Pdf: " << *pdf << std::endl;
+	//}
 
 	for (int i = 0; i < nBSDFs; ++i) {
 		if (i != sampleIndex) {
@@ -102,9 +102,9 @@ Vec3 BSDF::Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec3& rand, Scatt
 	if (!bxdf->IsDelta()) {
 		bool reflect = Dot(*wi, ng) * Dot(wo, ng) > 0;
 		//f = Vec3(0, 0, 0);
-		DEBUG_PIXEL_IF(ThreadIndex()) {
-			std::cout << "BSDF(1): " << f << " Pdf: " << *pdf << std::endl;
-		}
+		//DEBUG_PIXEL_IF(ThreadIndex()) {
+		//	std::cout << "BSDF(1): " << f << " Pdf: " << *pdf << std::endl;
+		//}
 		for (int i = 0; i < nBSDFs; ++i) {
 			if((reflect && (bxdfs[i]->scatterEventType & BSDF_REFLECTION)) ||
 				(!reflect && (bxdfs[i]->scatterEventType & BSDF_TRANSMISSION)))
@@ -112,12 +112,12 @@ Vec3 BSDF::Sample_f(const Vec3& wo, Vec3* wi, real* pdf, const Vec3& rand, Scatt
 				//f += bxdfs[i]->f(woLocal, wiLocal);
 		}
 	}
-	DEBUG_PIXEL_IF(ThreadIndex()) {
-		std::cout << "BSDF(2): " << f << " Pdf: " << *pdf << std::endl;
-		if (std::isnan((*wi).x)) {
-			std::cout << "wi: " << *wi << " wo: " << wo << std::endl;
-		}
-	}
+	//DEBUG_PIXEL_IF(ThreadIndex()) {
+	//	std::cout << "BSDF(2): " << f << " Pdf: " << *pdf << std::endl;
+	//	if (std::isnan((*wi).x)) {
+	//		std::cout << "wi: " << *wi << " wo: " << wo << std::endl;
+	//	}
+	//}
 	return f;
 }
 
@@ -126,17 +126,17 @@ Vec3 BSDF::f(const Vec3& wo, const Vec3& wi, ScatterEventType flags) const{
 	Vec3 woLocal = WorldToLocal(wo);
 	Vec3 wiLocal = WorldToLocal(wi);
 	bool reflect = Dot(wi, ng) * Dot(wo, ng) > 0;
-	DEBUG_PIXEL_IF(ThreadIndex()) {
-		std::cout << "Reflect?: " << reflect << " " << Dot(wi, ng)  << " " << Dot(wo, ng) << std::endl;
-	}
+	//DEBUG_PIXEL_IF(ThreadIndex()) {
+	//	std::cout << "Reflect?: " << reflect << " " << Dot(wi, ng)  << " " << Dot(wo, ng) << std::endl;
+	//}
 	for (int i = 0; i < nBSDFs; ++i) {
 		if ((reflect && (bxdfs[i]->scatterEventType & BSDF_REFLECTION)) ||
 			(!reflect && (bxdfs[i]->scatterEventType & BSDF_TRANSMISSION)))
 			f += bxdfs[i]->f(woLocal, wiLocal);
 	}
-	DEBUG_PIXEL_IF(ThreadIndex()) {
-		std::cout << "BSDFs: " << f << std::endl;
-	}
+	//DEBUG_PIXEL_IF(ThreadIndex()) {
+	//	std::cout << "BSDFs: " << f << std::endl;
+	//}
 	return f;
 }
 

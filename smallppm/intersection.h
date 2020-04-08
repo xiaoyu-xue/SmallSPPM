@@ -4,11 +4,14 @@
 #include "ray.h"
 #include "geometry_util.h"
 #include "material.h"
+#include "medium.h"
 
 NAMESPACE_BEGIN
 
 class BSDF;
 class Primitive;
+class Medium;
+class PhaseFunction;
 
 class Intersection {
 public:
@@ -16,15 +19,25 @@ public:
 	Vec3 dpdu, dpdv;
 	Vec3 dpdus, dpdvs;
 	Vec2 uv;
-	real rayEps;
+	real rayEps = 0;
 	Vec3 pError;
 	real b1, b2;
-	uint64 shapeId;
+	int64 shapeId, primId;
 	const Primitive *primitive;
-	//std::shared_ptr<BSDF> bsdf;
 	BSDF* bsdf;
+	MediumInterface mediumInterface;
 
-	Intersection() { rayEps = 0; shapeId = -1;}
+	Intersection() { 
+		rayEps = 0; 
+		shapeId = -1;
+		n = nl = ng = Vec3();
+	}
+
+	Intersection(const Vec3& hit, const Vec3& wo, const MediumInterface& medium) :
+		hit(hit), wo(wo), mediumInterface(medium) {
+		rayEps = 0;
+		n = nl = ng = Vec3();
+	}
 
 	Intersection(const Vec3 &hit, const Vec3 &ng, const Vec3 &nl, const Vec3 &wo, const Vec3 &pError):
 		hit(hit), ng(ng), nl(nl), wo(wo), pError(pError), rayEps(0), primitive(nullptr){
@@ -57,14 +70,14 @@ public:
 		Vec3 d = target - origin;
 		real dis = d.Length();
 		Normalize(d);
-		return Ray(origin, d, dis - shadowRayEps, rayEps);
+		return Ray(origin, d, dis - shadowRayEps, rayEps, GetMedium(d));
 		//return Ray(origin, d, 1 - shadowRayEps, 0.f);
 	}
 
 	Ray SpawnRay(const Vec3 &d) const {
 		Vec3 o = OffsetRayOrigin(hit, pError, nl, d);
 		//Vec3 o = hit + d * 0.0001;
-		return Ray(o, d, Infinity, rayEps);
+		return Ray(o, d, Infinity, rayEps, GetMedium(d));
 	}
 
 	//Ray SpawnTo(const Intersection &isect) const {
@@ -74,6 +87,35 @@ public:
 	//	//return Ray(hit + dir * rayeps + nl * rayeps, dir, d - shadowRayEps);
 	//	return Ray(hit, dir, d * (1.f - isect.rayEps), rayEps);
 	//}
+
+	const Medium* GetMedium(const Vec3& w) const {
+		return Dot(w, n) > 0 ? mediumInterface.outside : mediumInterface.inside;
+	}
+
+	const Medium* GetMedium() const {
+		return mediumInterface.inside;
+	}
+
+	virtual bool IsSurfaceScatter() const {
+		return (n != Vec3());
+	}
+
+};
+
+
+class MediumIntersection : public Intersection {
+public:
+	// MediumInteraction Public Methods
+	MediumIntersection() : phase(nullptr) {}
+
+	MediumIntersection(const Vec3& p, const Vec3& wo, 
+		const Medium* medium, const PhaseFunction* phase)
+		: Intersection(p, wo, medium), phase(phase) {}
+
+	bool IsValid() const { return phase != nullptr; }
+
+	// MediumInteraction Public Data
+	const PhaseFunction* phase;
 };
 
 NAMESPACE_END

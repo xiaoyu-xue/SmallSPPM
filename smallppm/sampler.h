@@ -3,12 +3,14 @@
 #include <memory>
 #include <random>
 #include "lowdiscrepency.h"
+#include "rng.h"
 
 NAMESPACE_BEGIN
 
 class Sampler {
 public:
 	virtual real Sample(unsigned int d, unsigned long long i) = 0;
+	virtual std::shared_ptr<Sampler> Clone(uint32 seed) = 0;
 };
 
 class StateSequence {
@@ -59,21 +61,29 @@ public:
 		}
 		return ret;
 	}
+
 };
 
 class RandomSampler : public Sampler {
 public:
-	RandomSampler(int seed) : rng(seed) {
+	RandomSampler(int seed) : rng(seed), pbrtRng(seed) {
 
 	}
 
 	real Sample(unsigned int d, unsigned long long i) {
 		return uniform(rng);
-		//return Rand();
+		//return pbrtRng.UniformFloat();
+	}
+
+	std::shared_ptr<Sampler> Clone(uint32 seed) override {
+		RandomSampler* newSampler = new RandomSampler(seed);
+		newSampler->pbrtRng.SetSequence(seed);
+		return std::shared_ptr<Sampler>(newSampler);
 	}
 private:
 	std::mt19937_64 rng;
 	std::uniform_real_distribution<real> uniform;
+	RNG pbrtRng;
 };
 
 class PrimeList {
@@ -106,6 +116,10 @@ public:
 		ASSERT(d < (unsigned)primeList.GetPrimesNum());
 		real val = hal(d, i + 1);  // The first one is evil...
 		return val;
+	}
+
+	std::shared_ptr<Sampler> Clone(uint32 seed) override {
+		return std::shared_ptr<Sampler>(new RegularHaltonSampler(*this));
 	}
 
 private:

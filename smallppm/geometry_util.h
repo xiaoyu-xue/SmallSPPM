@@ -26,6 +26,12 @@ FORCE_INLINE Vec3 SphericalDirection(real sinTheta, real cosTheta, real phi) {
 	return Vec3(sinTheta * std::cos(phi), sinTheta * std::sin(phi), cosTheta);
 }
 
+FORCE_INLINE Vec3 SphericalDirection(real sinTheta, real cosTheta, real phi, 
+	const Vec3& x, const Vec3& y, const Vec3& z) {
+	return sinTheta * std::cos(phi) * x + sinTheta * std::sin(phi) * y +
+		cosTheta * z;
+}
+
 FORCE_INLINE bool SameHemisphere(const Vec3& w, const Vec3& wp) {
 	return w.z * wp.z > 0;
 }

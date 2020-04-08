@@ -6,9 +6,7 @@ NAMESPACE_BEGIN
 
 void SPPM::GeneratePhoton(const Scene& scene, Ray* pr, Vec3* f, real u, const Vec2& v, const Vec2& w) {
 	real lightPdf;
-	std::shared_ptr<Light> light = scene.SampleOneLight(&lightPdf, u);
-	//Vec3 Le = light->Emission();
-	//Vec3 pos, lightDir, lightNorm;
+	const Light* light = scene.SampleOneLight(&lightPdf, u);
 	Vec3 lightDir;
 	Intersection lightPoint;
 	real pdfPos, pdfDir;
@@ -55,7 +53,7 @@ void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray,
 		else if (traceGlossyRay && bsdf->MatchScatterType(ScatterEventType::BSDF_GLOSSY) && i < maxDepth - 1) {
 			//Trace the ray, when bsdf is glossy
 			//But this is not standard photon mapping
-			Vec3 Ld = importance * DirectIllumination(scene, isect, bsdf, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()));
+			Vec3 Ld = importance * DirectIllumination(scene, isect, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()), rand);
 			directillum[pixel] = directillum[pixel] + Ld;
 
 			Vec3 f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec3(rand(), rand(), rand()));
@@ -74,12 +72,12 @@ void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray,
 			hp.outDir = -1 * r.d;
 			hitPoints[pixel] = hp;
 			if ((i == 0 || deltaBoundEvent) && isect.primitive->IsLight()) {
-				std::shared_ptr<Light> emissionShape = isect.primitive->GetLight();
+				const Light* emissionShape = isect.primitive->GetLight();
 				directillum[hp.pix] = directillum[hp.pix] + importance * emissionShape->Emission(isect, isect.wo);
 				
 			}
 			else {
-				Vec3 Ld = hp.importance * DirectIllumination(scene, isect, bsdf, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()));
+				Vec3 Ld = hp.importance * DirectIllumination(scene, isect, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()), rand);
 				directillum[hp.pix] = directillum[hp.pix] + Ld;
 
 			}

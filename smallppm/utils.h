@@ -57,6 +57,8 @@ using real_bit = uint32;
 
 constexpr real PI = (real)3.14159265358979;
 constexpr real INV_PI = (real)0.31830988618379067154;
+constexpr real INV_2PI = (real)0.15915494309189533577;
+constexpr real INV_4PI = (real)0.07957747154594766788;
 constexpr real PiOver2 = (real)1.57079632679489661923;
 constexpr real PiOver4 = (real)0.78539816339744830961;
 constexpr real eps = (real)1e-6;
