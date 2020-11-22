@@ -89,6 +89,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)external\include;src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -103,7 +104,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)external\include;src</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -130,6 +131,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <OpenMPSupport>true</OpenMPSupport>
+      <AdditionalIncludeDirectories>$(SolutionDir)external\include;src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -149,7 +151,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <OpenMPSupport>false</OpenMPSupport>
-      <AdditionalIncludeDirectories>..\external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)external\include;src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -165,118 +167,118 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AABB.cpp" />
-    <ClCompile Include="bsdf.cpp" />
-    <ClCompile Include="bvh_accel.cpp" />
-    <ClCompile Include="camera.cpp" />
-    <ClCompile Include="debug_utils.cpp" />
-    <ClCompile Include="efloat.cpp" />
-    <ClCompile Include="environment_light.cpp" />
-    <ClCompile Include="heart_surface.cpp" />
-    <ClCompile Include="homogeneous.cpp" />
-    <ClCompile Include="image_io.cpp" />
-    <ClCompile Include="integrator.cpp" />
-    <ClCompile Include="intersection.cpp" />
-    <ClCompile Include="kdtree_accel.cpp" />
-    <ClCompile Include="linagl.cpp" />
-    <ClCompile Include="lowdiscrepency.cpp" />
-    <ClCompile Include="medium.cpp" />
-    <ClCompile Include="memory.cpp" />
-    <ClCompile Include="mesh.cpp" />
-    <ClCompile Include="microfacet.cpp" />
-    <ClCompile Include="path.cpp" />
-    <ClCompile Include="phinhole.cpp" />
-    <ClCompile Include="point_light.cpp" />
-    <ClCompile Include="primitive.cpp" />
-    <ClCompile Include="ray.cpp" />
-    <ClCompile Include="sampler.cpp" />
-    <ClCompile Include="sampling.cpp" />
-    <ClCompile Include="scene.cpp" />
-    <ClCompile Include="shape.cpp" />
-    <ClCompile Include="sobol.cpp" />
-    <ClCompile Include="sobol_enum.cpp" />
-    <ClCompile Include="sppm.cpp" />
-    <ClCompile Include="tiled_integrator.cpp" />
-    <ClCompile Include="transform.cpp" />
-    <ClCompile Include="triangle.cpp" />
-    <ClCompile Include="film.cpp" />
-    <ClCompile Include="visibility.cpp" />
-    <ClCompile Include="vpath.cpp" />
+    <ClCompile Include="src\math\AABB.cpp" />
+    <ClCompile Include="src\bsdf\bsdf.cpp" />
+    <ClCompile Include="src\accelerator\bvh_accel.cpp" />
+    <ClCompile Include="src\camera\camera.cpp" />
+    <ClCompile Include="src\common\debug_utils.cpp" />
+    <ClCompile Include="src\numeric\efloat.cpp" />
+    <ClCompile Include="src\light\environment_light.cpp" />
+    <ClCompile Include="src\shape\heart_surface.cpp" />
+    <ClCompile Include="src\volume\homogeneous.cpp" />
+    <ClCompile Include="src\image\image_io.cpp" />
+    <ClCompile Include="src\integrator\integrator.cpp" />
+    <ClCompile Include="src\visual\intersection.cpp" />
+    <ClCompile Include="src\accelerator\kdtree_accel.cpp" />
+    <ClCompile Include="src\math\linagl.cpp" />
+    <ClCompile Include="src\math\lowdiscrepency.cpp" />
+    <ClCompile Include="src\visual\medium.cpp" />
+    <ClCompile Include="src\system\memory.cpp" />
+    <ClCompile Include="src\mesh\mesh.cpp" />
+    <ClCompile Include="src\visual\microfacet.cpp" />
+    <ClCompile Include="src\integrator\path.cpp" />
+    <ClCompile Include="src\camera\phinhole.cpp" />
+    <ClCompile Include="src\light\point_light.cpp" />
+    <ClCompile Include="src\visual\primitive.cpp" />
+    <ClCompile Include="src\math\ray.cpp" />
+    <ClCompile Include="src\sampler\sampler.cpp" />
+    <ClCompile Include="src\visual\sampling.cpp" />
+    <ClCompile Include="src\visual\scene.cpp" />
+    <ClCompile Include="src\shape\shape.cpp" />
+    <ClCompile Include="src\sampler\sobol.cpp" />
+    <ClCompile Include="src\sampler\sobol_enum.cpp" />
+    <ClCompile Include="src\integrator\sppm.cpp" />
+    <ClCompile Include="src\integrator\tiled_integrator.cpp" />
+    <ClCompile Include="src\math\transform.cpp" />
+    <ClCompile Include="src\shape\triangle.cpp" />
+    <ClCompile Include="src\visual\film.cpp" />
+    <ClCompile Include="src\visual\visibility.cpp" />
+    <ClCompile Include="src\integrator\vpath.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="svpng.inc" />
+    <None Include="src\image\svpng.inc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AABB.h" />
-    <ClInclude Include="accelerator.h" />
-    <ClInclude Include="area_light.h" />
-    <ClInclude Include="array.h" />
-    <ClInclude Include="avx.h" />
-    <ClInclude Include="brute_force.h" />
-    <ClInclude Include="bsdf.h" />
-    <ClInclude Include="bvh_accel.h" />
-    <ClInclude Include="camera.h" />
-    <ClInclude Include="constant_texture.h" />
-    <ClInclude Include="debug_utils.h" />
-    <ClInclude Include="def.h" />
-    <ClInclude Include="diffuse.h" />
-    <ClInclude Include="efloat.h" />
-    <ClInclude Include="environment_light.h" />
-    <ClInclude Include="environment_map.h" />
-    <ClInclude Include="film.h" />
-    <ClInclude Include="filter.h" />
-    <ClInclude Include="geometry_util.h" />
-    <ClInclude Include="glass.h" />
-    <ClInclude Include="halton.h" />
-    <ClInclude Include="halton_enum.h" />
-    <ClInclude Include="hashgrid.h" />
-    <ClInclude Include="heart_surface.h" />
-    <ClInclude Include="homogeneous.h" />
-    <ClInclude Include="image_io.h" />
-    <ClInclude Include="image_texture.h" />
-    <ClInclude Include="integrator.h" />
-    <ClInclude Include="intersection.h" />
-    <ClInclude Include="kdtree_accel.h" />
-    <ClInclude Include="light.h" />
-    <ClInclude Include="linagl.h" />
-    <ClInclude Include="lowdiscrepency.h" />
-    <ClInclude Include="material.h" />
-    <ClInclude Include="math_utils.h" />
-    <ClInclude Include="medium.h" />
-    <ClInclude Include="memory.h" />
-    <ClInclude Include="mesh.h" />
-    <ClInclude Include="microfacet.h" />
-    <ClInclude Include="mirror.h" />
-    <ClInclude Include="numeric_utils.h" />
-    <ClInclude Include="path.h" />
-    <ClInclude Include="phinhole.h" />
-    <ClInclude Include="point_light.h" />
-    <ClInclude Include="primitive.h" />
-    <ClInclude Include="ray.h" />
-    <ClInclude Include="renderer.h" />
-    <ClInclude Include="rng.h" />
-    <ClInclude Include="roughness.h" />
-    <ClInclude Include="plastic.h" />
-    <ClInclude Include="rough_dielectric.h" />
-    <ClInclude Include="sampler.h" />
-    <ClInclude Include="sampler_enum.h" />
-    <ClInclude Include="sampling.h" />
-    <ClInclude Include="scalar.h" />
-    <ClInclude Include="scene.h" />
-    <ClInclude Include="shape.h" />
-    <ClInclude Include="sobol.h" />
-    <ClInclude Include="sobol_enum.h" />
-    <ClInclude Include="sphere.h" />
-    <ClInclude Include="sppm.h" />
-    <ClInclude Include="sse.h" />
-    <ClInclude Include="texture.h" />
-    <ClInclude Include="threading.h" />
-    <ClInclude Include="tiled_integrator.h" />
-    <ClInclude Include="transform.h" />
-    <ClInclude Include="triangle.h" />
-    <ClInclude Include="utils.h" />
-    <ClInclude Include="visibility.h" />
-    <ClInclude Include="vpath.h" />
+    <ClInclude Include="src\ForwardDecl.h" />
+    <ClInclude Include="src\math\AABB.h" />
+    <ClInclude Include="src\accelerator\accelerator.h" />
+    <ClInclude Include="src\light\area_light.h" />
+    <ClInclude Include="src\container\array.h" />
+    <ClInclude Include="src\simd\avx.h" />
+    <ClInclude Include="src\accelerator\brute_force.h" />
+    <ClInclude Include="src\bsdf\bsdf.h" />
+    <ClInclude Include="src\accelerator\bvh_accel.h" />
+    <ClInclude Include="src\camera\camera.h" />
+    <ClInclude Include="src\texture\constant_texture.h" />
+    <ClInclude Include="src\common\debug_utils.h" />
+    <ClInclude Include="src\def.h" />
+    <ClInclude Include="src\material\diffuse.h" />
+    <ClInclude Include="src\numeric\efloat.h" />
+    <ClInclude Include="src\light\environment_light.h" />
+    <ClInclude Include="src\light\environment_map.h" />
+    <ClInclude Include="src\visual\film.h" />
+    <ClInclude Include="src\math\filter.h" />
+    <ClInclude Include="src\math\geometry_util.h" />
+    <ClInclude Include="src\material\glass.h" />
+    <ClInclude Include="src\sampler\halton.h" />
+    <ClInclude Include="src\sampler\halton_enum.h" />
+    <ClInclude Include="src\integrator\hashgrid.h" />
+    <ClInclude Include="src\shape\heart_surface.h" />
+    <ClInclude Include="src\volume\homogeneous.h" />
+    <ClInclude Include="src\image\image_io.h" />
+    <ClInclude Include="src\texture\image_texture.h" />
+    <ClInclude Include="src\integrator\integrator.h" />
+    <ClInclude Include="src\visual\intersection.h" />
+    <ClInclude Include="src\accelerator\kdtree_accel.h" />
+    <ClInclude Include="src\light\light.h" />
+    <ClInclude Include="src\math\linagl.h" />
+    <ClInclude Include="src\math\lowdiscrepency.h" />
+    <ClInclude Include="src\material\material.h" />
+    <ClInclude Include="src\math\math_utils.h" />
+    <ClInclude Include="src\visual\medium.h" />
+    <ClInclude Include="src\system\memory.h" />
+    <ClInclude Include="src\mesh\mesh.h" />
+    <ClInclude Include="src\visual\microfacet.h" />
+    <ClInclude Include="src\material\mirror.h" />
+    <ClInclude Include="src\numeric\numeric_utils.h" />
+    <ClInclude Include="src\integrator\path.h" />
+    <ClInclude Include="src\camera\phinhole.h" />
+    <ClInclude Include="src\light\point_light.h" />
+    <ClInclude Include="src\visual\primitive.h" />
+    <ClInclude Include="src\math\ray.h" />
+    <ClInclude Include="src\visual\renderer.h" />
+    <ClInclude Include="src\visual\rng.h" />
+    <ClInclude Include="src\material\roughness.h" />
+    <ClInclude Include="src\material\plastic.h" />
+    <ClInclude Include="src\material\rough_dielectric.h" />
+    <ClInclude Include="src\sampler\sampler.h" />
+    <ClInclude Include="src\sampler\sampler_enum.h" />
+    <ClInclude Include="src\visual\sampling.h" />
+    <ClInclude Include="src\visual\scene.h" />
+    <ClInclude Include="src\shape\shape.h" />
+    <ClInclude Include="src\sampler\sobol.h" />
+    <ClInclude Include="src\sampler\sobol_enum.h" />
+    <ClInclude Include="src\shape\sphere.h" />
+    <ClInclude Include="src\integrator\sppm.h" />
+    <ClInclude Include="src\simd\sse.h" />
+    <ClInclude Include="src\texture\texture.h" />
+    <ClInclude Include="src\system\threading.h" />
+    <ClInclude Include="src\integrator\tiled_integrator.h" />
+    <ClInclude Include="src\math\transform.h" />
+    <ClInclude Include="src\shape\triangle.h" />
+    <ClInclude Include="src\utils.h" />
+    <ClInclude Include="src\visual\visibility.h" />
+    <ClInclude Include="src\integrator\vpath.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

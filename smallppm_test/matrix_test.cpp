@@ -1,6 +1,6 @@
-#include "linagl.h"
 #include "gtest/gtest.h"
-#include "math_utils.h"
+#include "math/linagl.h"
+#include "math/math_utils.h"
 
 NAMESPACE_BEGIN
 TEST(TestMatrixIsEqual, IsEqual) {

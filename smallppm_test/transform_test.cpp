@@ -1,6 +1,6 @@
-#include "linagl.h"
-#include "math_utils.h"
-#include "transform.h"
+#include "math/linagl.h"
+#include "math/math_utils.h"
+#include "math/transform.h"
 #include "gtest/gtest.h"
 
 

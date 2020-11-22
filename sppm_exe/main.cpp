@@ -13,33 +13,33 @@
 #include <fstream>
 #include <string.h>
 #include "def.h"
-#include "sampler.h"
-#include "halton.h"
-#include "sobol.h"
-#include "sampler_enum.h"
-#include "halton_enum.h"
-#include "sobol_enum.h"
-#include "linagl.h"
-#include "scene.h"
-#include "film.h"
-#include "sphere.h"
-#include "integrator.h"
-#include "renderer.h"
-#include "light.h"
-#include "area_light.h"
-#include "phinhole.h"
-#include "brute_force.h"
-#include "kdtree_accel.h"
-#include "bvh_accel.h"
-#include "sppm.h"
-#include "diffuse.h"
-#include "mirror.h"
-#include "glass.h"
-#include "constant_texture.h"
-#include "transform.h"
-#include "path.h"
-#include "filter.h"
-#include "vpath.h"
+#include "sampler\sampler.h"
+#include "sampler\halton.h"
+#include "sampler\sobol.h"
+#include "sampler\sampler_enum.h"
+#include "sampler\halton_enum.h"
+#include "sampler\sobol_enum.h"
+#include "math\linagl.h"
+#include "visual\scene.h"
+#include "visual\film.h"
+#include "shape\sphere.h"
+#include "integrator\integrator.h"
+#include "visual\renderer.h"
+#include "light\light.h"
+#include "light\area_light.h"
+#include "camera\phinhole.h"
+#include "accelerator\brute_force.h"
+#include "accelerator\kdtree_accel.h"
+#include "accelerator\bvh_accel.h"
+#include "integrator\sppm.h"
+#include "material\diffuse.h"
+#include "material\mirror.h"
+#include "material\glass.h"
+#include "texture\constant_texture.h"
+#include "math\transform.h"
+#include "integrator\path.h"
+#include "math\filter.h"
+#include "integrator\vpath.h"
 #include "cornellbox.h"
 
 #ifndef _CRT_SECURE_NO_WARNINGS
@@ -494,7 +494,7 @@ void TestSPPM5(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("CornellBoxSppm.bmp");
+	film->SetFileName("CornellBoxSppmTest.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
@@ -565,7 +565,7 @@ void TestPathTracing(int argc, char* argv[]) {
 	std::shared_ptr<SamplerEnum> sobolSamplerEnum = std::shared_ptr<SamplerEnum>(new SobolEnum(resX, resY));
 
 	//std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(100, 20, sobolSampler, sobolSamplerEnum));
-	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(100, 10, randomSampler, samplerEnum));
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(1000, 10, randomSampler, samplerEnum));
 
 	fprintf(stderr, "Load Scene ...\n");
 
@@ -579,7 +579,7 @@ void TestPathTracing(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("CornellBox1.bmp");
+	film->SetFileName("CornellBoxPtTest.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
@@ -657,8 +657,8 @@ int main(int argc, char *argv[]) {
 
 	std::cout << GGXDistribution::RoughnessToAlpha(0.118) << std::endl;
 
-	TestSPPM5(argc, argv);
-	//TestPathTracing(argc, argv);
+	//TestSPPM5(argc, argv);
+	TestPathTracing(argc, argv);
 	//TestVolPathTracing(argc, argv);
 	//TestTransmittance();
 

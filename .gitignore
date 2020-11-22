@@ -1,29 +1,22 @@
 *.[oa]
-*.exe
 *.cbp
 *.depend
-*.lib
-*.dll
 bin/
 obj/
-.exe
 *.layout
 .layout
 .vs/
  
  
 x64/
+x86/
 Debug/
 ipch/
-external/lib/
-media/pictures/
-*.sln
 *.db
 *.filters
 *.user
 *.bmp
 *.png
-ReadMe.txt
 stdafx.h
 stdafx.cpp
 targetver.h
