@@ -1,7 +1,4 @@
 #pragma once
-#ifndef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
-#endif
 
 //#define USING_DOUBLE
 
@@ -11,6 +8,7 @@
 #include <stdint.h>
 #include <algorithm>
 #include "def.h"
+#include "platform.h"
 
 NAMESPACE_BEGIN
 
@@ -59,11 +57,10 @@ constexpr real INV_2PI = (real)0.15915494309189533577;
 constexpr real INV_4PI = (real)0.07957747154594766788;
 constexpr real PiOver2 = (real)1.57079632679489661923;
 constexpr real PiOver4 = (real)0.78539816339744830961;
-constexpr real eps = (real)1e-6;
+constexpr real Eps = (real)1e-6;
 constexpr real Inf = std::numeric_limits<real>::infinity();
-constexpr real rayeps = (real)1e-4;
-constexpr real shadowRayEps = (real)1e-4;
-constexpr real nEps = (real)1e-6;
+constexpr real RayEps = (real)1e-4;
+constexpr real ShadowRayEps = (real)1e-4;
 constexpr real PhtotonEdgeEps = (real)0.0009;
 constexpr real NumericalEps = 1e-6;
 constexpr real MachineEps = std::numeric_limits<real>::epsilon() * (real)0.5;

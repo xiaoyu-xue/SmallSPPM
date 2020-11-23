@@ -1,6 +1,9 @@
 #pragma once
 
 #ifdef _MSC_VER
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 #   pragma warning(disable : 4275)
 #   pragma warning(disable : 4267)
 #   pragma warning(disable : 4251) // 'field' : class 'A' needs to have dll-interface to be used by clients of class 'B'

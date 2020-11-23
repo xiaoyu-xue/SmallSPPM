@@ -70,7 +70,7 @@ public:
 		Vec3 d = target - origin;
 		real dis = d.Length();
 		Normalize(d);
-		return Ray(origin, d, dis - shadowRayEps, rayEps, GetMedium(d));
+		return Ray(origin, d, dis - ShadowRayEps, rayEps, GetMedium(d));
 		//return Ray(origin, d, 1 - shadowRayEps, 0.f);
 	}
 

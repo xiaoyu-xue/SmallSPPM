@@ -515,7 +515,7 @@ void TestHashGrid() {
 	for (int i = 0; i < points.size(); ++i) {
 		hashGrid.AddPoint(std::move(std::pair<Vec3, int>(points[i], i)), 0.15f);
 	}
-	hashGrid.BuildHashGrid(searchRadius + eps);
+	hashGrid.BuildHashGrid(searchRadius + Eps);
 	Vec3 testPoint = Vec3(0.12f, 0.34f, 0.56f);
 
 

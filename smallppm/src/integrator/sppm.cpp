@@ -210,7 +210,7 @@ void SPPM::Render(const Scene& scene, const Camera &camera) {
 				hashGrid.AddPoint(std::move(std::pair<Vec3, HPoint*>(hp.pos, &hp)), std::sqrt(radius2[i]));
 			}
 		}
-		hashGrid.BuildHashGrid(std::sqrt(maxRadius2) + eps);
+		hashGrid.BuildHashGrid(std::sqrt(maxRadius2) + Eps);
 
 		//Trace photon
 		ParallelFor((int64)0, nPhotonsPerRenderStage, [&](int64 j) {
