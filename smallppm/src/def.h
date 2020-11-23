@@ -1,7 +1,6 @@
 #pragma once
 #include <cassert>
-
-//#define ISE_NONE
+#include "platform.h"
 
 #define ASSERT assert
 #define NAMESPACE_BEGIN

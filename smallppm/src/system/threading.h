@@ -2,7 +2,10 @@
 
 #include <thread>
 #include <atomic>
+#include "def.h"
 #include "tbb/parallel_for.h"
+
+NAMESPACE_BEGIN
 
 class Spinlock {
 protected:
@@ -43,17 +46,10 @@ public:
 	}
 };
 
-FORCE_INLINE int ThreadIndex() {
-	return tbb::task_arena::current_thread_index();
-}
 
-FORCE_INLINE int NumSystemCores() {
-	return std::max(1u, std::thread::hardware_concurrency());
-}
-
-FORCE_INLINE int ThreadsNumber() {
-	return NumSystemCores();;
-}
+int ThreadIndex();
+int NumSystemCores();
+int ThreadsNumber();
 
 template<typename Range, typename T>
 void ParallelFor(Range begin, Range end, const T &target) {
@@ -68,3 +64,5 @@ void ParallelFor(Range begin, Range end, const T &target) {
 	//limited_arena.execute([&]() {tbb::parallel_for(begin, end, target); });
 #endif
 }
+
+NAMESPACE_END

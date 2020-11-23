@@ -12,6 +12,7 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
+#include "platform.h"
 #include "def.h"
 #include "sampler\sampler.h"
 #include "sampler\halton.h"

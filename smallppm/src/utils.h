@@ -51,8 +51,6 @@ using real_bit = uint32;
 #endif
 
 
-
-
 /****************** Constant *********************/
 
 constexpr real PI = (real)3.14159265358979;
@@ -67,7 +65,7 @@ constexpr real rayeps = (real)1e-4;
 constexpr real shadowRayEps = (real)1e-4;
 constexpr real nEps = (real)1e-6;
 constexpr real PhtotonEdgeEps = (real)0.0009;
-constexpr float64 NumericalEps = 1e-6;
+constexpr real NumericalEps = 1e-6;
 constexpr real MachineEps = std::numeric_limits<real>::epsilon() * (real)0.5;
 constexpr real MaxReal = std::numeric_limits<real>::max();
 constexpr real Infinity = std::numeric_limits<real>::infinity();

@@ -5,7 +5,7 @@
 
 NAMESPACE_BEGIN
 
-class Ray;
+struct Ray;
 class Intersection;
 
 class EnvironmentLight : public Light {
