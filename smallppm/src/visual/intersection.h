@@ -62,7 +62,7 @@ public:
 		//this->dpdvs = dpdvs;
 	}
 
-	void ComputeScatteringFunction(MemoryArena &arena, TransportMode mode = TransportMode::Radiance);
+	void ComputeScatteringFunction(MemoryPool &arena, TransportMode mode = TransportMode::Radiance);
 
 	Ray SpawnTo(const Intersection &it) const {
 		Vec3 origin = OffsetRayOrigin(hit, pError, nl, it.hit - hit);

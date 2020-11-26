@@ -86,7 +86,7 @@ public:
 
 	bool Intersect(const Ray& r) const;
 
-	void ComputeScatteringFunction(Intersection* isect, MemoryArena& arena, TransportMode mode = TransportMode::Radiance) const;
+	void ComputeScatteringFunction(Intersection* isect, MemoryPool& arena, TransportMode mode = TransportMode::Radiance) const;
 
 	Shape* GetShape() const {
 		return shape.get();

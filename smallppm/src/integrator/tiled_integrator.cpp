@@ -26,7 +26,7 @@ void TiledIntegrator::Render(const Scene& scene, const Camera& camera) {
 	std::atomic<int64> workDone = 0;
 	const int tileNum = tiles.size();
 	ParallelFor(0, tileNum, [&](int i) {
-		MemoryArena arena;
+		MemoryPool arena;
 		const Tile& tile = tiles[i];
 		std::shared_ptr<Sampler> tileSampler = sampler->Clone(i);
 		for (int y = tile.minY; y < tile.maxY; ++y) {

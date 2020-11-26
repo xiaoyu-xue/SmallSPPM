@@ -13,9 +13,9 @@ public:
 
 	Vec3 Tr(const Ray& ray, StateSequence& rand) const;
 
-	Vec3 Sample(const Ray& ray, StateSequence& rand, MemoryArena& arena, MediumIntersection* mi) const;
+	Vec3 Sample(const Ray& ray, StateSequence& rand, MemoryPool& arena, MediumIntersection* mi) const;
 
-	Vec3 EquiAngularSampling(const Ray& ray, StateSequence& rand, MemoryArena& arena,
+	Vec3 EquiAngularSampling(const Ray& ray, StateSequence& rand, MemoryPool& arena,
 		const Intersection& lightPoint, MediumIntersection* mi) const override;
 
 private:

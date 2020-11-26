@@ -13,7 +13,7 @@ public:
 
 	}
 
-	Vec3 Li(const Ray &ray, const Scene& scene, StateSequence& rand, MemoryArena& arena) const override;
+	Vec3 Li(const Ray &ray, const Scene& scene, StateSequence& rand, MemoryPool& arena) const override;
 
 private:
 	int maxDepth;

@@ -18,25 +18,25 @@ public:
 
     }
 
-	void ComputeScatteringFunction(Intersection* isect, MemoryArena& arena, TransportMode mode = TransportMode::Radiance) const {
+	void ComputeScatteringFunction(Intersection* isect, MemoryPool& arena, TransportMode mode = TransportMode::Radiance) const {
 		real alphax = GGXDistribution::RoughnessToAlpha(xRoughness->Sample(*isect));
 		real alphay = GGXDistribution::RoughnessToAlpha(yRoughness->Sample(*isect));
 		//real alphax = xRoughness->Sample(*isect);
 		//real alphay = yRoughness->Sample(*isect);
-		isect->bsdf = ARENA_ALLOC(arena, BSDF)(*isect);
+		isect->bsdf = MEMORY_POOL_ALLOC(arena, BSDF)(*isect);
 
 		Vec3 kr = Kr->Sample(*isect);
 		Vec3 kt = Kt->Sample(*isect);
 		real eta = index->Sample(*isect);
-		Fresnel* fresnel = ARENA_ALLOC(arena, FresnelDielectric)(1.f, eta);
+		Fresnel* fresnel = MEMORY_POOL_ALLOC(arena, FresnelDielectric)(1.f, eta);
 		MicrofacetDistribution* distribution =
-			ARENA_ALLOC(arena, GGXDistribution)(alphax, alphay, true);
+			MEMORY_POOL_ALLOC(arena, GGXDistribution)(alphax, alphay, true);
 
-		BxDF* microfacetReflectionBSDF = ARENA_ALLOC(arena, MicrofacetReflectionBSDF)(distribution, fresnel, kr);
-		BxDF* microfacetTransmissionBSDF = ARENA_ALLOC(arena, MicrofacetTransmissionBSDF)(distribution, kt, 1.0, eta, mode);
+		BxDF* microfacetReflectionBSDF = MEMORY_POOL_ALLOC(arena, MicrofacetReflectionBSDF)(distribution, fresnel, kr);
+		BxDF* microfacetTransmissionBSDF = MEMORY_POOL_ALLOC(arena, MicrofacetTransmissionBSDF)(distribution, kt, 1.0, eta, mode);
 		//isect->bsdf->Add(microfacetReflectionBSDF);
 		//isect->bsdf->Add(microfacetTransmissionBSDF);
-		BxDF* roughDielectricBSDF = ARENA_ALLOC(arena, RoughDielectricBSDF)(distribution, kr, kt, 1.f, eta, mode);
+		BxDF* roughDielectricBSDF = MEMORY_POOL_ALLOC(arena, RoughDielectricBSDF)(distribution, kr, kt, 1.f, eta, mode);
 		isect->bsdf->Add(roughDielectricBSDF);
 	}
 

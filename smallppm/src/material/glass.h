@@ -27,10 +27,10 @@ public:
 	//	isect->bsdf->Add(transmissionBSDF);
 	//}
 
-	void ComputeScatteringFunction(Intersection* isect, MemoryArena &arena,
+	void ComputeScatteringFunction(Intersection* isect, MemoryPool &arena,
 		TransportMode mode = TransportMode::Radiance) const {
-		isect->bsdf = ARENA_ALLOC(arena, BSDF)(*isect);
-		isect->bsdf->Add(ARENA_ALLOC(arena, TransmissionBSDF)(kt->Sample(*isect), kr->Sample(*isect), mode, eta1, eta2));
+		isect->bsdf = MEMORY_POOL_ALLOC(arena, BSDF)(*isect);
+		isect->bsdf->Add(MEMORY_POOL_ALLOC(arena, TransmissionBSDF)(kt->Sample(*isect), kr->Sample(*isect), mode, eta1, eta2));
 	}
 private:
 	std::shared_ptr<Texture<Vec3>> kr, kt;

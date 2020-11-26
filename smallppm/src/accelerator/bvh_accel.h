@@ -56,7 +56,7 @@ public:
     bool Intersect(const Ray& ray) const override;
 private:
     // BVHAccel Private Methods
-    BVHBuildNode* RecursiveBuild(MemoryArena& buildArena,
+    BVHBuildNode* RecursiveBuild(MemoryPool& buildArena,
         std::vector<BVHPrimitiveInfo>& buildData, uint32_t start, uint32_t end,
         uint32_t* totalNodes, std::vector<std::shared_ptr<Primitive> >& orderedPrims);
     uint32_t FlattenBVHTree(BVHBuildNode* node, uint32_t* offset);

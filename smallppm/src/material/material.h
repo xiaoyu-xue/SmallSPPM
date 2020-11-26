@@ -13,7 +13,7 @@ public:
 	virtual ~Material() { }
 	//virtual void ComputeScatteringFunction(Intersection* isect,
 	//	TransportMode mode = TransportMode::Radiance) const = 0;
-	virtual void ComputeScatteringFunction(Intersection *isect, MemoryArena& arena,
+	virtual void ComputeScatteringFunction(Intersection *isect, MemoryPool& arena,
 		TransportMode mode = TransportMode::Radiance) const = 0;
 };
 

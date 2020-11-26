@@ -31,8 +31,8 @@ public:
     // Medium Interface
     virtual ~Medium() {}
     virtual Vec3 Tr(const Ray& ray, StateSequence& rand) const = 0;
-    virtual Vec3 Sample(const Ray& ray, StateSequence& rand, MemoryArena& arena, MediumIntersection* mi) const = 0;
-    virtual Vec3 EquiAngularSampling(const Ray& ray, StateSequence& rand, MemoryArena& arena,
+    virtual Vec3 Sample(const Ray& ray, StateSequence& rand, MemoryPool& arena, MediumIntersection* mi) const = 0;
+    virtual Vec3 EquiAngularSampling(const Ray& ray, StateSequence& rand, MemoryPool& arena,
         const Intersection& lightPoint, MediumIntersection* mi) const = 0;
 };
 

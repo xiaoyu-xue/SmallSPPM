@@ -22,7 +22,7 @@ public:
 	}
 	virtual ~TiledIntegrator(){}
 	virtual void Render(const Scene& scene, const Camera& camera) override;
-	virtual Vec3 Li(const Ray &ray, const Scene& scene, StateSequence &rand, MemoryArena &arena) const = 0;
+	virtual Vec3 Li(const Ray &ray, const Scene& scene, StateSequence &rand, MemoryPool &arena) const = 0;
 
 protected:
 	int spp;
