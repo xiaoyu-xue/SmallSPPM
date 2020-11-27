@@ -1,5 +1,0 @@
-#include "efloat.h"
-
-NAMESPACE_BEGIN
-
-NAMESPACE_END

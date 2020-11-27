@@ -144,333 +144,739 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="sampler.cpp">
-      <Filter>Source Files\sampler</Filter>
-    </ClCompile>
-    <ClCompile Include="linagl.cpp">
-      <Filter>Source Files\math</Filter>
-    </ClCompile>
-    <ClCompile Include="lowdiscrepency.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="sampling.cpp">
-      <Filter>Source Files\sampling</Filter>
-    </ClCompile>
-    <ClCompile Include="efloat.cpp">
-      <Filter>Source Files\numeric</Filter>
-    </ClCompile>
-    <ClCompile Include="debug_utils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="transform.cpp">
-      <Filter>Source Files\math</Filter>
-    </ClCompile>
-    <ClCompile Include="ray.cpp">
+    <ClCompile Include="src\math\AABB.cpp">
       <Filter>Source Files\geometry</Filter>
     </ClCompile>
-    <ClCompile Include="primitive.cpp">
-      <Filter>Source Files\primitive</Filter>
+    <ClCompile Include="external\stb\stb_vorbis.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="intersection.cpp">
-      <Filter>Source Files\intersection</Filter>
+    <ClCompile Include="src\math\Linagl.cpp">
+      <Filter>Source Files\math</Filter>
     </ClCompile>
-    <ClCompile Include="AABB.cpp">
-      <Filter>Source Files\geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="triangle.cpp">
-      <Filter>Source Files\shape</Filter>
-    </ClCompile>
-    <ClCompile Include="shape.cpp">
-      <Filter>Source Files\shape</Filter>
-    </ClCompile>
-    <ClCompile Include="kdtree_accel.cpp">
-      <Filter>Source Files\accelerator</Filter>
-    </ClCompile>
-    <ClCompile Include="memory.cpp">
-      <Filter>Source Files\system</Filter>
-    </ClCompile>
-    <ClCompile Include="microfacet.cpp">
-      <Filter>Source Files\bsdf</Filter>
-    </ClCompile>
-    <ClCompile Include="bsdf.cpp">
-      <Filter>Source Files\bsdf</Filter>
-    </ClCompile>
-    <ClCompile Include="mesh.cpp">
-      <Filter>Source Files\mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="scene.cpp">
-      <Filter>Source Files\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="camera.cpp">
-      <Filter>Source Files\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="phinhole.cpp">
-      <Filter>Source Files\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="film.cpp">
-      <Filter>Source Files\film</Filter>
-    </ClCompile>
-    <ClCompile Include="image_io.cpp">
+    <ClCompile Include="src\image\ImageIO.cpp">
       <Filter>Source Files\imageio</Filter>
     </ClCompile>
-    <ClCompile Include="sppm.cpp">
-      <Filter>Source Files\integrator</Filter>
+    <ClCompile Include="src\common\DebugUtils.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="bvh_accel.cpp">
+    <ClCompile Include="src\accelerator\BVHAccel.cpp">
       <Filter>Source Files\accelerator</Filter>
     </ClCompile>
-    <ClCompile Include="environment_light.cpp">
+    <ClCompile Include="src\accelerator\KdTreeAccel.cpp">
+      <Filter>Source Files\accelerator</Filter>
+    </ClCompile>
+    <ClCompile Include="src\bsdf\BSDF.cpp">
+      <Filter>Source Files\bsdf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\camera\Camera.cpp">
+      <Filter>Source Files\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\camera\Phinhole.cpp">
+      <Filter>Source Files\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\integrator\Integrator.cpp">
+      <Filter>Source Files\integrator</Filter>
+    </ClCompile>
+    <ClCompile Include="src\integrator\PT.cpp">
+      <Filter>Source Files\integrator</Filter>
+    </ClCompile>
+    <ClCompile Include="src\integrator\SPPM.cpp">
+      <Filter>Source Files\integrator</Filter>
+    </ClCompile>
+    <ClCompile Include="src\integrator\TiledIntegrator.cpp">
+      <Filter>Source Files\integrator</Filter>
+    </ClCompile>
+    <ClCompile Include="src\integrator\VPT.cpp">
+      <Filter>Source Files\integrator</Filter>
+    </ClCompile>
+    <ClCompile Include="src\light\EnvLight.cpp">
       <Filter>Source Files\light</Filter>
     </ClCompile>
-    <ClCompile Include="tiled_integrator.cpp">
-      <Filter>Source Files\integrator</Filter>
+    <ClCompile Include="src\light\PointLight.cpp">
+      <Filter>Source Files\light</Filter>
     </ClCompile>
-    <ClCompile Include="path.cpp">
-      <Filter>Source Files\integrator</Filter>
+    <ClCompile Include="src\math\LowDiscrepency.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sobol.cpp">
-      <Filter>Source Files\sampler</Filter>
+    <ClCompile Include="src\math\Ray.cpp">
+      <Filter>Source Files\geometry</Filter>
     </ClCompile>
-    <ClCompile Include="sobol_enum.cpp">
-      <Filter>Source Files\sampler</Filter>
+    <ClCompile Include="src\math\Transform.cpp">
+      <Filter>Source Files\math</Filter>
     </ClCompile>
-    <ClCompile Include="heart_surface.cpp">
+    <ClCompile Include="src\mesh\Mesh.cpp">
+      <Filter>Source Files\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\numeric\EFloat.cpp">
+      <Filter>Source Files\numeric</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shape\HeartSurface.cpp">
       <Filter>Source Files\shape</Filter>
     </ClCompile>
-    <ClCompile Include="point_light.cpp">
-      <Filter>Source Files\light</Filter>
+    <ClCompile Include="src\shape\Shape.cpp">
+      <Filter>Source Files\shape</Filter>
     </ClCompile>
-    <ClCompile Include="medium.cpp">
-      <Filter>Source Files\media</Filter>
+    <ClCompile Include="src\shape\Triangle.cpp">
+      <Filter>Source Files\shape</Filter>
     </ClCompile>
-    <ClCompile Include="visibility.cpp">
+    <ClCompile Include="src\system\Memory.cpp">
+      <Filter>Source Files\system</Filter>
+    </ClCompile>
+    <ClCompile Include="src\system\Threading.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sampler\Sampler.cpp">
+      <Filter>Source Files\sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sampler\Sobol.cpp">
+      <Filter>Source Files\sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sampler\SobolEnum.cpp">
+      <Filter>Source Files\sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="src\visual\Film.cpp">
+      <Filter>Source Files\film</Filter>
+    </ClCompile>
+    <ClCompile Include="src\visual\Intersection.cpp">
       <Filter>Source Files\intersection</Filter>
     </ClCompile>
-    <ClCompile Include="homogeneous.cpp">
+    <ClCompile Include="src\visual\Medium.cpp">
       <Filter>Source Files\media</Filter>
     </ClCompile>
-    <ClCompile Include="integrator.cpp">
-      <Filter>Source Files\integrator</Filter>
+    <ClCompile Include="src\visual\Microfacet.cpp">
+      <Filter>Source Files\bsdf</Filter>
     </ClCompile>
-    <ClCompile Include="vpath.cpp">
-      <Filter>Source Files\integrator</Filter>
+    <ClCompile Include="src\visual\Primitive.cpp">
+      <Filter>Source Files\primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\visual\Sampling.cpp">
+      <Filter>Source Files\sampling</Filter>
+    </ClCompile>
+    <ClCompile Include="src\visual\Scene.cpp">
+      <Filter>Source Files\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\visual\Visibility.cpp">
+      <Filter>Source Files\intersection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\volume\Homogeneous.cpp">
+      <Filter>Source Files\media</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lowdiscrepency.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="halton.h">
-      <Filter>Header Files\sampler</Filter>
-    </ClInclude>
-    <ClInclude Include="sampler.h">
-      <Filter>Header Files\sampler</Filter>
-    </ClInclude>
-    <ClInclude Include="def.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="rng.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="linagl.h">
-      <Filter>Header Files\math</Filter>
-    </ClInclude>
-    <ClInclude Include="utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sampling.h">
-      <Filter>Header Files\sampling</Filter>
-    </ClInclude>
-    <ClInclude Include="scalar.h">
-      <Filter>Header Files\math</Filter>
-    </ClInclude>
-    <ClInclude Include="threading.h">
-      <Filter>Header Files\system</Filter>
-    </ClInclude>
-    <ClInclude Include="AABB.h">
+    <ClInclude Include="src\math\AABB.h">
       <Filter>Header Files\geometry</Filter>
     </ClInclude>
-    <ClInclude Include="ray.h">
-      <Filter>Header Files\geometry</Filter>
+    <ClInclude Include="src\shape\sphere.h">
+      <Filter>Header Files\shape</Filter>
     </ClInclude>
-    <ClInclude Include="intersection.h">
-      <Filter>Header Files\intersection</Filter>
+    <ClInclude Include="src\ForwardDecl.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bsdf.h">
+    <ClInclude Include="external\stb\stb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb\stb_c_lexer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb\stb_connected_components.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb\stb_divide.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb\stb_ds.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb\stb_dxt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb\stb_easy_font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb\stb_herringbone_wang_tile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb\stb_image_resize.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb\stb_image_write.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb\stb_include.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb\stb_leakcheck.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb\stb_perlin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb\stb_rect_pack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb\stb_sprintf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb\stb_textedit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb\stb_tilemap_editor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb\stb_truetype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb\stb_voxel_render.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb\stretchy_buffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\compat\ppl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_aggregator_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_allocator_traits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_concurrent_queue_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_concurrent_skip_list_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_concurrent_unordered_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_flow_graph_async_msg_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_flow_graph_body_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_flow_graph_cache_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_flow_graph_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_flow_graph_indexer_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_flow_graph_item_buffer_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_flow_graph_join_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_flow_graph_node_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_flow_graph_streaming_node.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_flow_graph_tagged_buffer_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_flow_graph_trace_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_flow_graph_types_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_mutex_padding.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_node_handle_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_range_iterator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_tbb_hash_compare_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_tbb_strings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_tbb_trace_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_tbb_windef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_template_helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_x86_eliding_mutex_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\internal\_x86_rtm_rw_mutex_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\machine\gcc_arm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\machine\gcc_generic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\machine\gcc_ia32_common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\machine\gcc_itsx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\machine\ibm_aix51.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\machine\icc_generic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\machine\linux_common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\machine\linux_ia32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\machine\linux_ia64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\machine\linux_intel64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\machine\mac_ppc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\machine\macos_common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\machine\mic_common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\machine\msvc_armv7.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\machine\msvc_ia32_common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\machine\sunos_sparc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\machine\windows_api.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\machine\windows_ia32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\machine\windows_intel64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\aggregator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\aligned_space.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\atomic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\blocked_range.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\blocked_range2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\blocked_range3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\blocked_rangeNd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\cache_aligned_allocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\combinable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\concurrent_hash_map.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\concurrent_lru_cache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\concurrent_map.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\concurrent_priority_queue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\concurrent_queue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\concurrent_set.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\concurrent_unordered_map.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\concurrent_unordered_set.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\concurrent_vector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\critical_section.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\enumerable_thread_specific.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\flow_graph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\flow_graph_abstractions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\flow_graph_opencl_node.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\global_control.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\iterators.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\memory_pool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\mutex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\null_mutex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\null_rw_mutex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\parallel_do.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\parallel_for.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\parallel_for_each.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\parallel_invoke.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\parallel_reduce.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\parallel_scan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\parallel_sort.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\parallel_while.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\partitioner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\pipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\queuing_mutex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\queuing_rw_mutex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\reader_writer_lock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\recursive_mutex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\runtime_loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\scalable_allocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\spin_mutex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\spin_rw_mutex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\task.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\task_arena.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\task_group.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\task_scheduler_init.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\task_scheduler_observer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\tbb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\tbb_allocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\tbb_config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\tbb_disable_exceptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\tbb_exception.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\tbb_machine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\tbb_profiling.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\tbb_stddef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\tbb_thread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\tbbmalloc_proxy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tbb\tick_count.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\tiny_obj_loader\tiny_obj_loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\Core.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\Platform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\Def.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\Linagl.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\image\ImageIO.h">
+      <Filter>Header Files\imageio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\DebugUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\accelerator\Accelerator.h">
+      <Filter>Header Files\accelerator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\accelerator\BruteForceAccel.h">
+      <Filter>Header Files\accelerator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\accelerator\BVHAccel.h">
+      <Filter>Header Files\accelerator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\accelerator\KdTreeAccel.h">
+      <Filter>Header Files\accelerator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\bsdf\BSDF.h">
       <Filter>Header Files\bsdf</Filter>
     </ClInclude>
-    <ClInclude Include="material.h">
-      <Filter>Header Files\material</Filter>
+    <ClInclude Include="src\camera\Camera.h">
+      <Filter>Header Files\camera</Filter>
     </ClInclude>
-    <ClInclude Include="shape.h">
-      <Filter>Header Files\shape</Filter>
+    <ClInclude Include="src\camera\Phinhole.h">
+      <Filter>Header Files\camera</Filter>
     </ClInclude>
-    <ClInclude Include="sphere.h">
-      <Filter>Header Files\shape</Filter>
+    <ClInclude Include="src\integrator\HashGrid.h">
+      <Filter>Header Files\integrator</Filter>
     </ClInclude>
-    <ClInclude Include="light.h">
+    <ClInclude Include="src\integrator\Integrator.h">
+      <Filter>Header Files\integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\integrator\PT.h">
+      <Filter>Header Files\integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\integrator\SPPM.h">
+      <Filter>Header Files\integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\integrator\TiledIntegrator.h">
+      <Filter>Header Files\integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\integrator\VPT.h">
+      <Filter>Header Files\integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\light\AreaLight.h">
       <Filter>Header Files\light</Filter>
     </ClInclude>
-    <ClInclude Include="filter.h">
+    <ClInclude Include="src\light\EnvLight.h">
+      <Filter>Header Files\light</Filter>
+    </ClInclude>
+    <ClInclude Include="src\light\EnvMap.h">
+      <Filter>Header Files\light</Filter>
+    </ClInclude>
+    <ClInclude Include="src\light\Light.h">
+      <Filter>Header Files\light</Filter>
+    </ClInclude>
+    <ClInclude Include="src\light\PointLight.h">
+      <Filter>Header Files\light</Filter>
+    </ClInclude>
+    <ClInclude Include="src\material\Diffuse.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="src\material\Glass.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="src\material\Material.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="src\material\Mirror.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="src\material\Plastic.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="src\material\RoughDielectric.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="src\material\Roughness.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\Filter.h">
       <Filter>Header Files\filter</Filter>
     </ClInclude>
-    <ClInclude Include="film.h">
-      <Filter>Header Files\film</Filter>
+    <ClInclude Include="src\math\GeometryUtils.h">
+      <Filter>Header Files\math</Filter>
     </ClInclude>
-    <ClInclude Include="camera.h">
-      <Filter>Header Files\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="phinhole.h">
-      <Filter>Header Files\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="visibility.h">
-      <Filter>Header Files\intersection</Filter>
-    </ClInclude>
-    <ClInclude Include="integrator.h">
-      <Filter>Header Files\integrator</Filter>
-    </ClInclude>
-    <ClInclude Include="hashgrid.h">
-      <Filter>Header Files\integrator</Filter>
-    </ClInclude>
-    <ClInclude Include="sppm.h">
-      <Filter>Header Files\integrator</Filter>
-    </ClInclude>
-    <ClInclude Include="renderer.h">
+    <ClInclude Include="src\math\LowDiscrepency.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="sampler_enum.h">
-      <Filter>Header Files\sampler</Filter>
-    </ClInclude>
-    <ClInclude Include="geometry_util.h">
+    <ClInclude Include="src\math\MathUtils.h">
       <Filter>Header Files\math</Filter>
     </ClInclude>
-    <ClInclude Include="math_utils.h">
+    <ClInclude Include="src\math\Ray.h">
+      <Filter>Header Files\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\Transform.h">
       <Filter>Header Files\math</Filter>
     </ClInclude>
-    <ClInclude Include="memory.h">
-      <Filter>Header Files\system</Filter>
-    </ClInclude>
-    <ClInclude Include="efloat.h">
-      <Filter>Header Files\numeric</Filter>
-    </ClInclude>
-    <ClInclude Include="numeric_utils.h">
-      <Filter>Header Files\numeric</Filter>
-    </ClInclude>
-    <ClInclude Include="image_io.h">
-      <Filter>Header Files\imageio</Filter>
-    </ClInclude>
-    <ClInclude Include="primitive.h">
-      <Filter>Header Files\primitive</Filter>
-    </ClInclude>
-    <ClInclude Include="debug_utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sse.h">
-      <Filter>Header Files\simd</Filter>
-    </ClInclude>
-    <ClInclude Include="avx.h">
-      <Filter>Header Files\simd</Filter>
-    </ClInclude>
-    <ClInclude Include="transform.h">
-      <Filter>Header Files\math</Filter>
-    </ClInclude>
-    <ClInclude Include="diffuse.h">
-      <Filter>Header Files\material</Filter>
-    </ClInclude>
-    <ClInclude Include="brute_force.h">
-      <Filter>Header Files\accelerator</Filter>
-    </ClInclude>
-    <ClInclude Include="accelerator.h">
-      <Filter>Header Files\accelerator</Filter>
-    </ClInclude>
-    <ClInclude Include="texture.h">
-      <Filter>Header Files\texture</Filter>
-    </ClInclude>
-    <ClInclude Include="constant_texture.h">
-      <Filter>Header Files\texture</Filter>
-    </ClInclude>
-    <ClInclude Include="mirror.h">
-      <Filter>Header Files\material</Filter>
-    </ClInclude>
-    <ClInclude Include="glass.h">
-      <Filter>Header Files\material</Filter>
-    </ClInclude>
-    <ClInclude Include="triangle.h">
-      <Filter>Header Files\shape</Filter>
-    </ClInclude>
-    <ClInclude Include="kdtree_accel.h">
-      <Filter>Header Files\accelerator</Filter>
-    </ClInclude>
-    <ClInclude Include="microfacet.h">
-      <Filter>Header Files\bsdf</Filter>
-    </ClInclude>
-    <ClInclude Include="roughness.h">
-      <Filter>Header Files\material</Filter>
-    </ClInclude>
-    <ClInclude Include="array.h">
-      <Filter>Header Files\math</Filter>
-    </ClInclude>
-    <ClInclude Include="mesh.h">
+    <ClInclude Include="src\mesh\Mesh.h">
       <Filter>Header Files\mesh</Filter>
     </ClInclude>
-    <ClInclude Include="image_texture.h">
-      <Filter>Header Files\texture</Filter>
+    <ClInclude Include="src\numeric\EFloat.h">
+      <Filter>Header Files\numeric</Filter>
     </ClInclude>
-    <ClInclude Include="bvh_accel.h">
-      <Filter>Header Files\accelerator</Filter>
+    <ClInclude Include="src\numeric\NumericUtils.h">
+      <Filter>Header Files\numeric</Filter>
     </ClInclude>
-    <ClInclude Include="environment_map.h">
-      <Filter>Header Files\light</Filter>
-    </ClInclude>
-    <ClInclude Include="environment_light.h">
-      <Filter>Header Files\light</Filter>
-    </ClInclude>
-    <ClInclude Include="tiled_integrator.h">
-      <Filter>Header Files\integrator</Filter>
-    </ClInclude>
-    <ClInclude Include="path.h">
-      <Filter>Header Files\integrator</Filter>
-    </ClInclude>
-    <ClInclude Include="sobol.h">
-      <Filter>Header Files\sampler</Filter>
-    </ClInclude>
-    <ClInclude Include="halton_enum.h">
-      <Filter>Header Files\sampler</Filter>
-    </ClInclude>
-    <ClInclude Include="sobol_enum.h">
-      <Filter>Header Files\sampler</Filter>
-    </ClInclude>
-    <ClInclude Include="plastic.h">
-      <Filter>Header Files\material</Filter>
-    </ClInclude>
-    <ClInclude Include="rough_dielectric.h">
-      <Filter>Header Files\material</Filter>
-    </ClInclude>
-    <ClInclude Include="heart_surface.h">
+    <ClInclude Include="src\shape\HeartSurface.h">
       <Filter>Header Files\shape</Filter>
     </ClInclude>
-    <ClInclude Include="point_light.h">
-      <Filter>Header Files\light</Filter>
+    <ClInclude Include="src\shape\Shape.h">
+      <Filter>Header Files\shape</Filter>
     </ClInclude>
-    <ClInclude Include="area_light.h">
-      <Filter>Header Files\light</Filter>
+    <ClInclude Include="src\shape\Triangle.h">
+      <Filter>Header Files\shape</Filter>
     </ClInclude>
-    <ClInclude Include="medium.h">
+    <ClInclude Include="src\simd\AVX.h">
+      <Filter>Header Files\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="src\simd\SSE.h">
+      <Filter>Header Files\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="src\system\Memory.h">
+      <Filter>Header Files\system</Filter>
+    </ClInclude>
+    <ClInclude Include="src\system\Threading.h">
+      <Filter>Header Files\system</Filter>
+    </ClInclude>
+    <ClInclude Include="src\texture\ConstantTexture.h">
+      <Filter>Header Files\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="src\texture\ImageTexture.h">
+      <Filter>Header Files\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="src\texture\Texture.h">
+      <Filter>Header Files\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sampler\Halton.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sampler\HaltonEnum.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sampler\Sampler.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sampler\SamplerEnum.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sampler\Sobol.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sampler\SobolEnum.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\container\Array.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\visual\Film.h">
+      <Filter>Header Files\film</Filter>
+    </ClInclude>
+    <ClInclude Include="src\visual\Intersection.h">
+      <Filter>Header Files\intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\visual\Medium.h">
       <Filter>Header Files\media</Filter>
     </ClInclude>
-    <ClInclude Include="homogeneous.h">
-      <Filter>Header Files\media</Filter>
+    <ClInclude Include="src\visual\Microfacet.h">
+      <Filter>Header Files\bsdf</Filter>
     </ClInclude>
-    <ClInclude Include="vpath.h">
-      <Filter>Header Files\integrator</Filter>
+    <ClInclude Include="src\visual\Primitive.h">
+      <Filter>Header Files\primitive</Filter>
     </ClInclude>
-    <ClInclude Include="scene.h">
+    <ClInclude Include="src\visual\Renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\visual\Rng.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\visual\Sampling.h">
+      <Filter>Header Files\sampling</Filter>
+    </ClInclude>
+    <ClInclude Include="src\visual\Scene.h">
       <Filter>Header Files\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\visual\Visibility.h">
+      <Filter>Header Files\intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\volume\Homogeneous.h">
+      <Filter>Header Files\media</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="svpng.inc">
+    <None Include="src\image\svpng.inc">
       <Filter>Header Files\imageio</Filter>
     </None>
+    <None Include="external\tbb\index.html" />
   </ItemGroup>
 </Project>

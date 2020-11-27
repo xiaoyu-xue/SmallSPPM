@@ -26,13 +26,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -89,6 +89,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)external</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -103,7 +104,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)external</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -130,6 +131,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <OpenMPSupport>true</OpenMPSupport>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)external</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -149,7 +151,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <OpenMPSupport>false</OpenMPSupport>
-      <AdditionalIncludeDirectories>..\external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)external</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -165,118 +167,254 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AABB.cpp" />
-    <ClCompile Include="bsdf.cpp" />
-    <ClCompile Include="bvh_accel.cpp" />
-    <ClCompile Include="camera.cpp" />
-    <ClCompile Include="debug_utils.cpp" />
-    <ClCompile Include="efloat.cpp" />
-    <ClCompile Include="environment_light.cpp" />
-    <ClCompile Include="heart_surface.cpp" />
-    <ClCompile Include="homogeneous.cpp" />
-    <ClCompile Include="image_io.cpp" />
-    <ClCompile Include="integrator.cpp" />
-    <ClCompile Include="intersection.cpp" />
-    <ClCompile Include="kdtree_accel.cpp" />
-    <ClCompile Include="linagl.cpp" />
-    <ClCompile Include="lowdiscrepency.cpp" />
-    <ClCompile Include="medium.cpp" />
-    <ClCompile Include="memory.cpp" />
-    <ClCompile Include="mesh.cpp" />
-    <ClCompile Include="microfacet.cpp" />
-    <ClCompile Include="path.cpp" />
-    <ClCompile Include="phinhole.cpp" />
-    <ClCompile Include="point_light.cpp" />
-    <ClCompile Include="primitive.cpp" />
-    <ClCompile Include="ray.cpp" />
-    <ClCompile Include="sampler.cpp" />
-    <ClCompile Include="sampling.cpp" />
-    <ClCompile Include="scene.cpp" />
-    <ClCompile Include="shape.cpp" />
-    <ClCompile Include="sobol.cpp" />
-    <ClCompile Include="sobol_enum.cpp" />
-    <ClCompile Include="sppm.cpp" />
-    <ClCompile Include="tiled_integrator.cpp" />
-    <ClCompile Include="transform.cpp" />
-    <ClCompile Include="triangle.cpp" />
-    <ClCompile Include="film.cpp" />
-    <ClCompile Include="visibility.cpp" />
-    <ClCompile Include="vpath.cpp" />
+    <ClCompile Include="external\stb\stb_vorbis.c" />
+    <ClCompile Include="src\math\AABB.cpp" />
+    <ClCompile Include="src\bsdf\BSDF.cpp" />
+    <ClCompile Include="src\accelerator\BVHAccel.cpp" />
+    <ClCompile Include="src\camera\Camera.cpp" />
+    <ClCompile Include="src\common\DebugUtils.cpp" />
+    <ClCompile Include="src\numeric\EFloat.cpp" />
+    <ClCompile Include="src\light\EnvLight.cpp" />
+    <ClCompile Include="src\shape\HeartSurface.cpp" />
+    <ClCompile Include="src\system\Threading.cpp" />
+    <ClCompile Include="src\volume\Homogeneous.cpp" />
+    <ClCompile Include="src\image\ImageIO.cpp" />
+    <ClCompile Include="src\integrator\Integrator.cpp" />
+    <ClCompile Include="src\visual\Intersection.cpp" />
+    <ClCompile Include="src\accelerator\KdTreeAccel.cpp" />
+    <ClCompile Include="src\math\Linagl.cpp" />
+    <ClCompile Include="src\math\LowDiscrepency.cpp" />
+    <ClCompile Include="src\visual\Medium.cpp" />
+    <ClCompile Include="src\system\Memory.cpp" />
+    <ClCompile Include="src\mesh\Mesh.cpp" />
+    <ClCompile Include="src\visual\Microfacet.cpp" />
+    <ClCompile Include="src\integrator\PT.cpp" />
+    <ClCompile Include="src\camera\Phinhole.cpp" />
+    <ClCompile Include="src\light\PointLight.cpp" />
+    <ClCompile Include="src\visual\Primitive.cpp" />
+    <ClCompile Include="src\math\Ray.cpp" />
+    <ClCompile Include="src\sampler\Sampler.cpp" />
+    <ClCompile Include="src\visual\Sampling.cpp" />
+    <ClCompile Include="src\visual\Scene.cpp" />
+    <ClCompile Include="src\shape\Shape.cpp" />
+    <ClCompile Include="src\sampler\Sobol.cpp" />
+    <ClCompile Include="src\sampler\SobolEnum.cpp" />
+    <ClCompile Include="src\integrator\SPPM.cpp" />
+    <ClCompile Include="src\integrator\TiledIntegrator.cpp" />
+    <ClCompile Include="src\math\Transform.cpp" />
+    <ClCompile Include="src\shape\Triangle.cpp" />
+    <ClCompile Include="src\visual\Film.cpp" />
+    <ClCompile Include="src\visual\Visibility.cpp" />
+    <ClCompile Include="src\integrator\VPT.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="svpng.inc" />
+    <None Include="external\tbb\index.html" />
+    <None Include="src\image\svpng.inc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AABB.h" />
-    <ClInclude Include="accelerator.h" />
-    <ClInclude Include="area_light.h" />
-    <ClInclude Include="array.h" />
-    <ClInclude Include="avx.h" />
-    <ClInclude Include="brute_force.h" />
-    <ClInclude Include="bsdf.h" />
-    <ClInclude Include="bvh_accel.h" />
-    <ClInclude Include="camera.h" />
-    <ClInclude Include="constant_texture.h" />
-    <ClInclude Include="debug_utils.h" />
-    <ClInclude Include="def.h" />
-    <ClInclude Include="diffuse.h" />
-    <ClInclude Include="efloat.h" />
-    <ClInclude Include="environment_light.h" />
-    <ClInclude Include="environment_map.h" />
-    <ClInclude Include="film.h" />
-    <ClInclude Include="filter.h" />
-    <ClInclude Include="geometry_util.h" />
-    <ClInclude Include="glass.h" />
-    <ClInclude Include="halton.h" />
-    <ClInclude Include="halton_enum.h" />
-    <ClInclude Include="hashgrid.h" />
-    <ClInclude Include="heart_surface.h" />
-    <ClInclude Include="homogeneous.h" />
-    <ClInclude Include="image_io.h" />
-    <ClInclude Include="image_texture.h" />
-    <ClInclude Include="integrator.h" />
-    <ClInclude Include="intersection.h" />
-    <ClInclude Include="kdtree_accel.h" />
-    <ClInclude Include="light.h" />
-    <ClInclude Include="linagl.h" />
-    <ClInclude Include="lowdiscrepency.h" />
-    <ClInclude Include="material.h" />
-    <ClInclude Include="math_utils.h" />
-    <ClInclude Include="medium.h" />
-    <ClInclude Include="memory.h" />
-    <ClInclude Include="mesh.h" />
-    <ClInclude Include="microfacet.h" />
-    <ClInclude Include="mirror.h" />
-    <ClInclude Include="numeric_utils.h" />
-    <ClInclude Include="path.h" />
-    <ClInclude Include="phinhole.h" />
-    <ClInclude Include="point_light.h" />
-    <ClInclude Include="primitive.h" />
-    <ClInclude Include="ray.h" />
-    <ClInclude Include="renderer.h" />
-    <ClInclude Include="rng.h" />
-    <ClInclude Include="roughness.h" />
-    <ClInclude Include="plastic.h" />
-    <ClInclude Include="rough_dielectric.h" />
-    <ClInclude Include="sampler.h" />
-    <ClInclude Include="sampler_enum.h" />
-    <ClInclude Include="sampling.h" />
-    <ClInclude Include="scalar.h" />
-    <ClInclude Include="scene.h" />
-    <ClInclude Include="shape.h" />
-    <ClInclude Include="sobol.h" />
-    <ClInclude Include="sobol_enum.h" />
-    <ClInclude Include="sphere.h" />
-    <ClInclude Include="sppm.h" />
-    <ClInclude Include="sse.h" />
-    <ClInclude Include="texture.h" />
-    <ClInclude Include="threading.h" />
-    <ClInclude Include="tiled_integrator.h" />
-    <ClInclude Include="transform.h" />
-    <ClInclude Include="triangle.h" />
-    <ClInclude Include="utils.h" />
-    <ClInclude Include="visibility.h" />
-    <ClInclude Include="vpath.h" />
+    <ClInclude Include="external\stb\stb.h" />
+    <ClInclude Include="external\stb\stb_connected_components.h" />
+    <ClInclude Include="external\stb\stb_c_lexer.h" />
+    <ClInclude Include="external\stb\stb_divide.h" />
+    <ClInclude Include="external\stb\stb_ds.h" />
+    <ClInclude Include="external\stb\stb_dxt.h" />
+    <ClInclude Include="external\stb\stb_easy_font.h" />
+    <ClInclude Include="external\stb\stb_herringbone_wang_tile.h" />
+    <ClInclude Include="external\stb\stb_image.h" />
+    <ClInclude Include="external\stb\stb_image_resize.h" />
+    <ClInclude Include="external\stb\stb_image_write.h" />
+    <ClInclude Include="external\stb\stb_include.h" />
+    <ClInclude Include="external\stb\stb_leakcheck.h" />
+    <ClInclude Include="external\stb\stb_perlin.h" />
+    <ClInclude Include="external\stb\stb_rect_pack.h" />
+    <ClInclude Include="external\stb\stb_sprintf.h" />
+    <ClInclude Include="external\stb\stb_textedit.h" />
+    <ClInclude Include="external\stb\stb_tilemap_editor.h" />
+    <ClInclude Include="external\stb\stb_truetype.h" />
+    <ClInclude Include="external\stb\stb_voxel_render.h" />
+    <ClInclude Include="external\stb\stretchy_buffer.h" />
+    <ClInclude Include="external\tbb\aggregator.h" />
+    <ClInclude Include="external\tbb\aligned_space.h" />
+    <ClInclude Include="external\tbb\atomic.h" />
+    <ClInclude Include="external\tbb\blocked_range.h" />
+    <ClInclude Include="external\tbb\blocked_range2d.h" />
+    <ClInclude Include="external\tbb\blocked_range3d.h" />
+    <ClInclude Include="external\tbb\blocked_rangeNd.h" />
+    <ClInclude Include="external\tbb\cache_aligned_allocator.h" />
+    <ClInclude Include="external\tbb\combinable.h" />
+    <ClInclude Include="external\tbb\compat\ppl.h" />
+    <ClInclude Include="external\tbb\concurrent_hash_map.h" />
+    <ClInclude Include="external\tbb\concurrent_lru_cache.h" />
+    <ClInclude Include="external\tbb\concurrent_map.h" />
+    <ClInclude Include="external\tbb\concurrent_priority_queue.h" />
+    <ClInclude Include="external\tbb\concurrent_queue.h" />
+    <ClInclude Include="external\tbb\concurrent_set.h" />
+    <ClInclude Include="external\tbb\concurrent_unordered_map.h" />
+    <ClInclude Include="external\tbb\concurrent_unordered_set.h" />
+    <ClInclude Include="external\tbb\concurrent_vector.h" />
+    <ClInclude Include="external\tbb\critical_section.h" />
+    <ClInclude Include="external\tbb\enumerable_thread_specific.h" />
+    <ClInclude Include="external\tbb\flow_graph.h" />
+    <ClInclude Include="external\tbb\flow_graph_abstractions.h" />
+    <ClInclude Include="external\tbb\flow_graph_opencl_node.h" />
+    <ClInclude Include="external\tbb\global_control.h" />
+    <ClInclude Include="external\tbb\internal\_aggregator_impl.h" />
+    <ClInclude Include="external\tbb\internal\_allocator_traits.h" />
+    <ClInclude Include="external\tbb\internal\_concurrent_queue_impl.h" />
+    <ClInclude Include="external\tbb\internal\_concurrent_skip_list_impl.h" />
+    <ClInclude Include="external\tbb\internal\_concurrent_unordered_impl.h" />
+    <ClInclude Include="external\tbb\internal\_flow_graph_async_msg_impl.h" />
+    <ClInclude Include="external\tbb\internal\_flow_graph_body_impl.h" />
+    <ClInclude Include="external\tbb\internal\_flow_graph_cache_impl.h" />
+    <ClInclude Include="external\tbb\internal\_flow_graph_impl.h" />
+    <ClInclude Include="external\tbb\internal\_flow_graph_indexer_impl.h" />
+    <ClInclude Include="external\tbb\internal\_flow_graph_item_buffer_impl.h" />
+    <ClInclude Include="external\tbb\internal\_flow_graph_join_impl.h" />
+    <ClInclude Include="external\tbb\internal\_flow_graph_node_impl.h" />
+    <ClInclude Include="external\tbb\internal\_flow_graph_streaming_node.h" />
+    <ClInclude Include="external\tbb\internal\_flow_graph_tagged_buffer_impl.h" />
+    <ClInclude Include="external\tbb\internal\_flow_graph_trace_impl.h" />
+    <ClInclude Include="external\tbb\internal\_flow_graph_types_impl.h" />
+    <ClInclude Include="external\tbb\internal\_mutex_padding.h" />
+    <ClInclude Include="external\tbb\internal\_node_handle_impl.h" />
+    <ClInclude Include="external\tbb\internal\_range_iterator.h" />
+    <ClInclude Include="external\tbb\internal\_tbb_hash_compare_impl.h" />
+    <ClInclude Include="external\tbb\internal\_tbb_strings.h" />
+    <ClInclude Include="external\tbb\internal\_tbb_trace_impl.h" />
+    <ClInclude Include="external\tbb\internal\_tbb_windef.h" />
+    <ClInclude Include="external\tbb\internal\_template_helpers.h" />
+    <ClInclude Include="external\tbb\internal\_x86_eliding_mutex_impl.h" />
+    <ClInclude Include="external\tbb\internal\_x86_rtm_rw_mutex_impl.h" />
+    <ClInclude Include="external\tbb\iterators.h" />
+    <ClInclude Include="external\tbb\machine\gcc_arm.h" />
+    <ClInclude Include="external\tbb\machine\gcc_generic.h" />
+    <ClInclude Include="external\tbb\machine\gcc_ia32_common.h" />
+    <ClInclude Include="external\tbb\machine\gcc_itsx.h" />
+    <ClInclude Include="external\tbb\machine\ibm_aix51.h" />
+    <ClInclude Include="external\tbb\machine\icc_generic.h" />
+    <ClInclude Include="external\tbb\machine\linux_common.h" />
+    <ClInclude Include="external\tbb\machine\linux_ia32.h" />
+    <ClInclude Include="external\tbb\machine\linux_ia64.h" />
+    <ClInclude Include="external\tbb\machine\linux_intel64.h" />
+    <ClInclude Include="external\tbb\machine\macos_common.h" />
+    <ClInclude Include="external\tbb\machine\mac_ppc.h" />
+    <ClInclude Include="external\tbb\machine\mic_common.h" />
+    <ClInclude Include="external\tbb\machine\msvc_armv7.h" />
+    <ClInclude Include="external\tbb\machine\msvc_ia32_common.h" />
+    <ClInclude Include="external\tbb\machine\sunos_sparc.h" />
+    <ClInclude Include="external\tbb\machine\windows_api.h" />
+    <ClInclude Include="external\tbb\machine\windows_ia32.h" />
+    <ClInclude Include="external\tbb\machine\windows_intel64.h" />
+    <ClInclude Include="external\tbb\memory_pool.h" />
+    <ClInclude Include="external\tbb\mutex.h" />
+    <ClInclude Include="external\tbb\null_mutex.h" />
+    <ClInclude Include="external\tbb\null_rw_mutex.h" />
+    <ClInclude Include="external\tbb\parallel_do.h" />
+    <ClInclude Include="external\tbb\parallel_for.h" />
+    <ClInclude Include="external\tbb\parallel_for_each.h" />
+    <ClInclude Include="external\tbb\parallel_invoke.h" />
+    <ClInclude Include="external\tbb\parallel_reduce.h" />
+    <ClInclude Include="external\tbb\parallel_scan.h" />
+    <ClInclude Include="external\tbb\parallel_sort.h" />
+    <ClInclude Include="external\tbb\parallel_while.h" />
+    <ClInclude Include="external\tbb\partitioner.h" />
+    <ClInclude Include="external\tbb\pipeline.h" />
+    <ClInclude Include="external\tbb\queuing_mutex.h" />
+    <ClInclude Include="external\tbb\queuing_rw_mutex.h" />
+    <ClInclude Include="external\tbb\reader_writer_lock.h" />
+    <ClInclude Include="external\tbb\recursive_mutex.h" />
+    <ClInclude Include="external\tbb\runtime_loader.h" />
+    <ClInclude Include="external\tbb\scalable_allocator.h" />
+    <ClInclude Include="external\tbb\spin_mutex.h" />
+    <ClInclude Include="external\tbb\spin_rw_mutex.h" />
+    <ClInclude Include="external\tbb\task.h" />
+    <ClInclude Include="external\tbb\task_arena.h" />
+    <ClInclude Include="external\tbb\task_group.h" />
+    <ClInclude Include="external\tbb\task_scheduler_init.h" />
+    <ClInclude Include="external\tbb\task_scheduler_observer.h" />
+    <ClInclude Include="external\tbb\tbb.h" />
+    <ClInclude Include="external\tbb\tbbmalloc_proxy.h" />
+    <ClInclude Include="external\tbb\tbb_allocator.h" />
+    <ClInclude Include="external\tbb\tbb_config.h" />
+    <ClInclude Include="external\tbb\tbb_disable_exceptions.h" />
+    <ClInclude Include="external\tbb\tbb_exception.h" />
+    <ClInclude Include="external\tbb\tbb_machine.h" />
+    <ClInclude Include="external\tbb\tbb_profiling.h" />
+    <ClInclude Include="external\tbb\tbb_stddef.h" />
+    <ClInclude Include="external\tbb\tbb_thread.h" />
+    <ClInclude Include="external\tbb\tick_count.h" />
+    <ClInclude Include="external\tiny_obj_loader\tiny_obj_loader.h" />
+    <ClInclude Include="src\ForwardDecl.h" />
+    <ClInclude Include="src\math\AABB.h" />
+    <ClInclude Include="src\accelerator\Accelerator.h" />
+    <ClInclude Include="src\light\AreaLight.h" />
+    <ClInclude Include="src\container\Array.h" />
+    <ClInclude Include="src\common\Platform.h" />
+    <ClInclude Include="src\simd\AVX.h" />
+    <ClInclude Include="src\accelerator\BruteForceAccel.h" />
+    <ClInclude Include="src\bsdf\BSDF.h" />
+    <ClInclude Include="src\accelerator\BVHAccel.h" />
+    <ClInclude Include="src\camera\Camera.h" />
+    <ClInclude Include="src\texture\ConstantTexture.h" />
+    <ClInclude Include="src\common\DebugUtils.h" />
+    <ClInclude Include="src\common\Def.h" />
+    <ClInclude Include="src\material\Diffuse.h" />
+    <ClInclude Include="src\numeric\EFloat.h" />
+    <ClInclude Include="src\light\EnvLight.h" />
+    <ClInclude Include="src\light\EnvMap.h" />
+    <ClInclude Include="src\visual\Film.h" />
+    <ClInclude Include="src\math\Filter.h" />
+    <ClInclude Include="src\math\GeometryUtils.h" />
+    <ClInclude Include="src\material\Glass.h" />
+    <ClInclude Include="src\sampler\Halton.h" />
+    <ClInclude Include="src\sampler\HaltonEnum.h" />
+    <ClInclude Include="src\integrator\HashGrid.h" />
+    <ClInclude Include="src\shape\HeartSurface.h" />
+    <ClInclude Include="src\volume\Homogeneous.h" />
+    <ClInclude Include="src\image\ImageIO.h" />
+    <ClInclude Include="src\texture\ImageTexture.h" />
+    <ClInclude Include="src\integrator\Integrator.h" />
+    <ClInclude Include="src\visual\Intersection.h" />
+    <ClInclude Include="src\accelerator\KdTreeAccel.h" />
+    <ClInclude Include="src\light\Light.h" />
+    <ClInclude Include="src\math\Linagl.h" />
+    <ClInclude Include="src\math\LowDiscrepency.h" />
+    <ClInclude Include="src\material\Material.h" />
+    <ClInclude Include="src\math\MathUtils.h" />
+    <ClInclude Include="src\visual\Medium.h" />
+    <ClInclude Include="src\system\Memory.h" />
+    <ClInclude Include="src\mesh\Mesh.h" />
+    <ClInclude Include="src\visual\Microfacet.h" />
+    <ClInclude Include="src\material\Mirror.h" />
+    <ClInclude Include="src\numeric\NumericUtils.h" />
+    <ClInclude Include="src\integrator\PT.h" />
+    <ClInclude Include="src\camera\Phinhole.h" />
+    <ClInclude Include="src\light\PointLight.h" />
+    <ClInclude Include="src\visual\Primitive.h" />
+    <ClInclude Include="src\math\Ray.h" />
+    <ClInclude Include="src\visual\Renderer.h" />
+    <ClInclude Include="src\visual\Rng.h" />
+    <ClInclude Include="src\material\Roughness.h" />
+    <ClInclude Include="src\material\Plastic.h" />
+    <ClInclude Include="src\material\RoughDielectric.h" />
+    <ClInclude Include="src\sampler\Sampler.h" />
+    <ClInclude Include="src\sampler\SamplerEnum.h" />
+    <ClInclude Include="src\visual\Sampling.h" />
+    <ClInclude Include="src\visual\Scene.h" />
+    <ClInclude Include="src\shape\Shape.h" />
+    <ClInclude Include="src\sampler\Sobol.h" />
+    <ClInclude Include="src\sampler\SobolEnum.h" />
+    <ClInclude Include="src\shape\sphere.h" />
+    <ClInclude Include="src\integrator\SPPM.h" />
+    <ClInclude Include="src\simd\SSE.h" />
+    <ClInclude Include="src\texture\Texture.h" />
+    <ClInclude Include="src\system\Threading.h" />
+    <ClInclude Include="src\integrator\TiledIntegrator.h" />
+    <ClInclude Include="src\math\Transform.h" />
+    <ClInclude Include="src\shape\Triangle.h" />
+    <ClInclude Include="src\common\Core.h" />
+    <ClInclude Include="src\visual\Visibility.h" />
+    <ClInclude Include="src\integrator\VPT.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
