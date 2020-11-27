@@ -409,7 +409,7 @@ bool BVHAccel::Intersect(const Ray& ray, Intersection* isect) const {
     while (true) {
         const LinearBVHNode* node = &nodes[nodeNum];
         // Check ray against BVH node
-        if (::IntersectP(node->bounds, ray, invDir, dirIsNeg)) {
+        if (IntersectP(node->bounds, ray, invDir, dirIsNeg)) {
             if (node->nPrimitives > 0) {
                 // Intersect ray with primitives in leaf BVH node
                 for (uint32_t i = 0; i < node->nPrimitives; ++i)
@@ -453,7 +453,7 @@ bool BVHAccel::Intersect(const Ray& ray) const {
     uint32_t todoOffset = 0, nodeNum = 0;
     while (true) {
         const LinearBVHNode* node = &nodes[nodeNum];
-        if (::IntersectP(node->bounds, ray, invDir, dirIsNeg)) {
+        if (IntersectP(node->bounds, ray, invDir, dirIsNeg)) {
             // Process BVH node _node_ for traversal
             if (node->nPrimitives > 0) {
                 for (uint32_t i = 0; i < node->nPrimitives; ++i) {
@@ -486,5 +486,4 @@ bool BVHAccel::Intersect(const Ray& ray) const {
     return false;
 }
 
-
-NAMESPACE_BEGIN
+NAMESPACE_END

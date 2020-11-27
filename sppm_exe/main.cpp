@@ -43,6 +43,8 @@
 #include "integrator\VPT.h"
 #include "CornellBox.h"
 
+using namespace SmallSPPM;
+
 #define _CRTDBG_MAP_ALLOC
 
 //#define DEBUG_TRANSMIT

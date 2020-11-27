@@ -1,11 +1,13 @@
 #pragma once
 #include "Integrator.h"
 
+
+
+NAMESPACE_BEGIN
+
 class Sampler;
 class SamplerEnum;
 class StateSequence;
-
-NAMESPACE_BEGIN
 
 struct Tile {
 	int minX, minY, maxX, maxY;

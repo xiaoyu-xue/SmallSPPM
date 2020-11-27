@@ -28,6 +28,8 @@
 
 #include "Sobol.h"
 
+NAMESPACE_BEGIN
+
 namespace sobol {
 
     const unsigned Matrices::num_dimensions;
@@ -10688,3 +10690,4 @@ namespace sobol {
 
 } // namespace sobol
 
+NAMESPACE_END

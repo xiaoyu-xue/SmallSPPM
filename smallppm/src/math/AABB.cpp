@@ -1,6 +1,8 @@
 #include "AABB.h"
 #include "numeric/NumericUtils.h"
 
+NAMESPACE_BEGIN
+
 bool AABB::Intersect(const Ray& ray, real* hitt0, real* hitt1) const {
 	real t0 = 0, t1 = ray.tMax;
 	for (int i = 0; i < 3; ++i) {
@@ -55,3 +57,5 @@ AABB Union(const AABB& a, const Vec3& p) {
 	);
 	return ret;
 }
+
+NAMESPACE_END
