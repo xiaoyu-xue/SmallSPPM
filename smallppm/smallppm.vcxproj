@@ -352,6 +352,7 @@
     <ClInclude Include="src\container\Array.h" />
     <ClInclude Include="src\common\Platform.h" />
     <ClInclude Include="src\math\Frame.h" />
+    <ClInclude Include="src\shape\Sphere.h" />
     <ClInclude Include="src\simd\AVX.h" />
     <ClInclude Include="src\accelerator\BruteForceAccel.h" />
     <ClInclude Include="src\bsdf\BSDF.h" />
@@ -406,7 +407,6 @@
     <ClInclude Include="src\shape\Shape.h" />
     <ClInclude Include="src\sampler\Sobol.h" />
     <ClInclude Include="src\sampler\SobolEnum.h" />
-    <ClInclude Include="src\shape\sphere.h" />
     <ClInclude Include="src\integrator\SPPM.h" />
     <ClInclude Include="src\simd\SSE.h" />
     <ClInclude Include="src\texture\Texture.h" />

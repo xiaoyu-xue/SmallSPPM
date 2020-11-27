@@ -266,9 +266,6 @@
     <ClInclude Include="src\math\AABB.h">
       <Filter>Header Files\geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\shape\sphere.h">
-      <Filter>Header Files\shape</Filter>
-    </ClInclude>
     <ClInclude Include="src\ForwardDecl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -876,6 +873,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\common\Dict.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shape\Sphere.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
