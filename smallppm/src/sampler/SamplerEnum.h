@@ -14,7 +14,7 @@ extern const unsigned long long vdc_sobol_matrices_inv[][52];
 class SamplerEnum {
 public:
 	SamplerEnum(){}
-	SamplerEnum(uint32 width, uint32 height): resX(width), resY(height) {}
+	SamplerEnum(uint32 width, uint32 height): mResX(width), mResY(height) {}
 	virtual uint64 GetIndex(uint32 sampleNum, uint32 x, uint32 y) const {
 		return sampleNum * y;
 	}
@@ -24,8 +24,8 @@ public:
 	virtual real SampleY(uint32 y, real v) const {
 		return v;
 	}
-private:
-	uint32 resX, resY;
+protected:
+	uint32 mResX, mResY;
 };
 
 NAMESPACE_END

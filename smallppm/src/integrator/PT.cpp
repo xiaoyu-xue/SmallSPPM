@@ -26,7 +26,7 @@ Vec3 PathTracing::Li(const Ray &r, const Scene& scene, StateSequence& rand, Memo
 
 		DEBUG_PIXEL_IF(ThreadIndex()) {
 			std::cout << "Depth: " << i << " ************************************ \n";
-			std::cout << "wo: " << -ray.d << std::endl;
+			std::cout << "wo: " << -ray.mDir << std::endl;
 		}
 
 		if ((i == 0 || deltaBoundEvent) && isect.primitive->IsLight()) {
@@ -43,7 +43,7 @@ Vec3 PathTracing::Li(const Ray &r, const Scene& scene, StateSequence& rand, Memo
 		}
 		Vec3 wi;
 		real pdf;
-		Vec3 f = bsdf->Sample_f(-ray.d, &wi, &pdf, Vec3(rand(), rand(), rand()));
+		Vec3 f = bsdf->Sample_f(-ray.mDir, &wi, &pdf, Vec3(rand(), rand(), rand()));
 		if (f == Vec3() || pdf == 0) break;
 		Vec3 estimation = f * std::abs(Dot(isect.n, wi)) / pdf;
 		deltaBoundEvent = bsdf->IsDelta();

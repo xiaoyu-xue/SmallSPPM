@@ -25,7 +25,7 @@ Vec3 VisibilityTester::Tr(const Scene& scene, StateSequence& rand) const {
         //        << ", Tr: " << Tr << std::endl;
         //}
 
-        if (ray.medium) Tr *= ray.medium->Tr(ray, rand);
+        if (ray.mpMedium) Tr *= ray.mpMedium->Tr(ray, rand);
 
         if (!hitSurface) break;
         scene.QueryIntersectionInfo(ray, &isect);

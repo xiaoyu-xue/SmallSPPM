@@ -100,9 +100,9 @@ Transform Transform::LookAt(const Vector3 &pos, const Vector3 &look, const Vecto
 
 	Vector3 right = Cross(up.Norm(), dir).Norm();
 	Vector3 newUp = Cross(dir, right);
-	cameraToWorld(0, 0) = right.x;
-	cameraToWorld(1, 0) = right.y;
-	cameraToWorld(2, 0) = right.z;
+	cameraToWorld(0, 0) = -right.x;
+	cameraToWorld(1, 0) = -right.y;
+	cameraToWorld(2, 0) = -right.z;
 	cameraToWorld(3, 0) = 0.;
 	cameraToWorld(0, 1) = newUp.x;
 	cameraToWorld(1, 1) = newUp.y;
@@ -123,18 +123,19 @@ Transform Transform::Perspective(real fovy, real aspect, real dis, real n, real 
 
 	real t = dis * std::tan(Radians(fovy) * 0.5);
 	real r = t * aspect;
-	//NDC x in [-1, 1], y in [-1, 1], z in [-1, 1]
-	//Matrix4 persp(dis / r, 0, 0, 0,
-	//			  0, dis / t, 0, 0,
-	//			  0, 0, (f + n) / (f - n), -2 * f * n / (f - n),
-	//			  0, 0, 1, 0);
+	//NDC x in[-1, 1], y in[-1, 1], z in[-1, 1]
+		Matrix4 persp(dis / r, 0, 0, 0,
+			0, dis / t, 0, 0,
+			0, 0, (f + n) / (f - n), -2 * f * n / (f - n),
+			0, 0, 1, 0);
 
 	//NDC x in [-1, 1], y in [-1, 1], z in [0, 1]
 	//We use unstandard NDC since z in [0, 1] is more natural
-	Matrix4 persp(dis / r, 0, 0, 0,
-				0, dis / t, 0, 0,
-				0, 0, f / (f - n), - f * n / (f - n),
-				0, 0, 1, 0);
+	//Matrix4 persp(dis / r, 0, 0, 0,
+	//			0, dis / t, 0, 0,
+	//			0, 0, f / (f - n), - f * n / (f - n),
+	//			0, 0, 1, 0);
+
 	return Transform(persp, Inverse(persp));
 }
 

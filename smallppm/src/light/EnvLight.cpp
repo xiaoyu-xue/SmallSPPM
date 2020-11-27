@@ -8,7 +8,7 @@ void EnvironmentLight::Initialize(const Scene& scene) {
 }
 
 Vec3 EnvironmentLight::Emission(const Ray& ray) const {
-	Vec3 w = ray.d.Norm();
+	Vec3 w = ray.mDir.Norm();
 	return envMap->Lookup(w);
 }
 

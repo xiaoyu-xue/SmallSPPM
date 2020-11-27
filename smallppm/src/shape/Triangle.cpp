@@ -124,10 +124,10 @@ void Triangle::QueryIntersectionInfo(const Ray& ray, Intersection* isect) const 
 	//isect->hit = b0 * p0 + b1 * p1 + b2 * p2;
 	isect->uv = Vec2(u, v);
 	isect->ng = (Dot(faceNormal, ns) < 0) ? -faceNormal : faceNormal;
-	isect->nl = isect->ng.Dot(ray.d) < 0 ? isect->ng : isect->ng * -1;
+	isect->nl = isect->ng.Dot(ray.mDir) < 0 ? isect->ng : isect->ng * -1;
 	isect->dpdu = dpdu;
 	isect->dpdv = dpdv;
-	isect->wo = -ray.d;
+	isect->wo = -ray.mDir;
 	isect->pError = gamma(7) * Vec3(xAbsSum, yAbsSum, zAbsSum);
 	
 
@@ -141,7 +141,7 @@ void Triangle::QueryIntersectionInfo(const Ray& ray, Intersection* isect) const 
 	//ns = (Dot(ns, isect->ng) > 0) ? ns : -ns;
 	
 	//method3
-	real sgn = (Dot(ray.o - p0, ns) > 0) ? 1.0f : -1.0f;
+	real sgn = (Dot(ray.mOrig - p0, ns) > 0) ? 1.0f : -1.0f;
 	dpdus = e1.Norm();
 	dpdvs = Cross(sgn * ns, dpdus).Norm();
 	dpdus = Cross(dpdvs, ns).Norm();
@@ -150,7 +150,7 @@ void Triangle::QueryIntersectionInfo(const Ray& ray, Intersection* isect) const 
 }
 
 bool Triangle::Intersect(const Ray& ray, Intersection* isect, real* t) const {
-	Vec3 s1 = Cross(ray.d, e2);
+	Vec3 s1 = Cross(ray.mDir, e2);
 	real divisor = Dot(s1, e1);
 
 	if (divisor == 0.)
@@ -158,14 +158,14 @@ bool Triangle::Intersect(const Ray& ray, Intersection* isect, real* t) const {
 	real invDivisor = 1.f / divisor;
 
 	// Compute first barycentric coordinate
-	Vec3 s = ray.o - p0;
+	Vec3 s = ray.mOrig - p0;
 	real b1 = Dot(s, s1) * invDivisor;
 	if (b1 < 0. || b1 > 1.)
 		return false;
 
 	// Compute second barycentric coordinate
 	Vec3 s2 = Cross(s, e1);
-	real b2 = Dot(ray.d, s2) * invDivisor;
+	real b2 = Dot(ray.mDir, s2) * invDivisor;
 	if (b2 < 0. || b1 + b2 > 1.)
 		return false;
 
@@ -187,7 +187,7 @@ bool Triangle::Intersect(const Ray& ray, Intersection* isect, real* t) const {
 bool Triangle::Intersect(const Ray& ray) const {
 	//Vec3 e1 = p1 - p0;
 	//Vec3 e2 = p2 - p0;
-	Vec3 s1 = Cross(ray.d, e2);
+	Vec3 s1 = Cross(ray.mDir, e2);
 	real divisor = Dot(s1, e1);
 
 	//std::cout << "divisor: " << divisor << std::endl;
@@ -197,7 +197,7 @@ bool Triangle::Intersect(const Ray& ray) const {
 	real invDivisor = 1.f / divisor;
 
 	// Compute first barycentric coordinate
-	Vec3 s = ray.o - p0;
+	Vec3 s = ray.mOrig - p0;
 	real b1 = Dot(s, s1) * invDivisor;
 
 	//std::cout << "b1: " << b1 << std::endl;
@@ -207,7 +207,7 @@ bool Triangle::Intersect(const Ray& ray) const {
 
 	// Compute second barycentric coordinate
 	Vec3 s2 = Cross(s, e1);
-	real b2 = Dot(ray.d, s2) * invDivisor;
+	real b2 = Dot(ray.mDir, s2) * invDivisor;
 	if (b2 < 0. || b1 + b2 > 1.)
 		return false;
 

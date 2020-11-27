@@ -62,6 +62,10 @@ struct AABB {
 			return 2;
 	}
 
+	FORCE_INLINE Vec3 Center() const {
+		return (maxPoint + minPoint) * 0.5f;
+	}
+
 	FORCE_INLINE void GetBoundingSphere(Vec3* center, real* radius) const {
 		*center = (minPoint + maxPoint) * 0.5;
 		*radius = (maxPoint - minPoint).Length() * 0.5;
@@ -75,4 +79,7 @@ FORCE_INLINE std::ostream& operator<<(std::ostream &os, const AABB &aabb) {
 
 AABB Union(const AABB& a, const AABB& b);
 AABB Union(const AABB& a, const Vec3& p);
+
+using BBox = AABB;
+
 NAMESPACE_END

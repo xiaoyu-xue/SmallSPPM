@@ -3,7 +3,7 @@
 NAMESPACE_BEGIN
 
 std::ostream& operator<<(std::ostream &os, const Ray &ray) {
-	os << "ray: " << "orig: " << ray.o << " dir: " << ray.d << " tMin: " << ray.tMin << " tMax: " << ray.tMax;
+	os << "ray: " << "orig: " << ray.mOrig << " dir: " << ray.mDir << " tMin: " << ray.tMin << " tMax: " << ray.tMax;
 	return os;
 }
 

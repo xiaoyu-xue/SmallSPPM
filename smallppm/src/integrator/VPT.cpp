@@ -21,11 +21,11 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 		if (useEquiAngularSample) {
 			const Light* light = scene.SampleOneLight(&eqLightProb, rand());
 			eqLightLe = light->SampleOnePoint(&eqLightPoint, &eqLightPdf, Vec2(rand(), rand()));
-			if (ray.medium) throughput *= ray.medium->EquiAngularSampling(ray, rand, arena, eqLightPoint, &mi);
+			if (ray.mpMedium) throughput *= ray.mpMedium->EquiAngularSampling(ray, rand, arena, eqLightPoint, &mi);
 
 		}
 		else {
-			if (ray.medium) throughput *= ray.medium->Sample(ray, rand, arena, &mi);
+			if (ray.mpMedium) throughput *= ray.mpMedium->Sample(ray, rand, arena, &mi);
 		}
 
 		if (throughput == Vec3()) break;
@@ -34,7 +34,7 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 			if (useEquiAngularSample) {
 				L += throughput * ConnectToLight(scene, rand, mi, eqLightPoint, eqLightLe, eqLightPdf) / eqLightProb;
 				Vec3 wi;
-				mi.phase->Sample_p(-ray.d, &wi, Vec2(rand(), rand()));
+				mi.phase->Sample_p(-ray.mDir, &wi, Vec2(rand(), rand()));
 				ray = mi.SpawnRay(wi);
 				deltaBoundEvent = false;
 				
@@ -49,7 +49,7 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 				//if (intersect) scene.QueryIntersectionInfo(ray, &isect);
 				L += throughput * DirectIllumination(scene, mi, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()), rand, true);
 				Vec3 wi;
-				mi.phase->Sample_p(-ray.d, &wi, Vec2(rand(), rand()));
+				mi.phase->Sample_p(-ray.mDir, &wi, Vec2(rand(), rand()));
 				ray = mi.SpawnRay(wi);
 				deltaBoundEvent = false;
 			}
@@ -66,7 +66,7 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 			isect.ComputeScatteringFunction(arena);
 			BSDF* bsdf = isect.bsdf;
 			if (!bsdf) {
-				ray = isect.SpawnRay(ray.d);
+				ray = isect.SpawnRay(ray.mDir);
 				i--;
 				continue;
 			}
@@ -82,7 +82,7 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 
 			Vec3 wi;
 			real pdf;
-			Vec3 f = bsdf->Sample_f(-ray.d, &wi, &pdf, Vec3(rand(), rand(), rand()));
+			Vec3 f = bsdf->Sample_f(-ray.mDir, &wi, &pdf, Vec3(rand(), rand(), rand()));
 			if (f == Vec3() || pdf == 0) break;
 			Vec3 estimation = f * std::abs(Dot(isect.n, wi)) / pdf;
 			deltaBoundEvent = bsdf->IsDelta();

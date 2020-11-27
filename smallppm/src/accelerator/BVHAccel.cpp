@@ -127,18 +127,18 @@ struct LinearBVHNode {
 static inline bool IntersectP(const AABB& bounds, const Ray& ray,
     const Vec3& invDir, const uint32_t dirIsNeg[3]) {
     // Check for ray intersection against $x$ and $y$ slabs
-    float tmin = (bounds[dirIsNeg[0]].x - ray.o.x) * invDir.x;
-    float tmax = (bounds[1 - dirIsNeg[0]].x - ray.o.x) * invDir.x;
-    float tymin = (bounds[dirIsNeg[1]].y - ray.o.y) * invDir.y;
-    float tymax = (bounds[1 - dirIsNeg[1]].y - ray.o.y) * invDir.y;
+    float tmin = (bounds[dirIsNeg[0]].x - ray.mOrig.x) * invDir.x;
+    float tmax = (bounds[1 - dirIsNeg[0]].x - ray.mOrig.x) * invDir.x;
+    float tymin = (bounds[dirIsNeg[1]].y - ray.mOrig.y) * invDir.y;
+    float tymax = (bounds[1 - dirIsNeg[1]].y - ray.mOrig.y) * invDir.y;
     if ((tmin > tymax) || (tymin > tmax))
         return false;
     if (tymin > tmin) tmin = tymin;
     if (tymax < tmax) tmax = tymax;
 
     // Check for ray intersection against $z$ slab
-    float tzmin = (bounds[dirIsNeg[2]].z - ray.o.z) * invDir.z;
-    float tzmax = (bounds[1 - dirIsNeg[2]].z - ray.o.z) * invDir.z;
+    float tzmin = (bounds[dirIsNeg[2]].z - ray.mOrig.z) * invDir.z;
+    float tzmax = (bounds[1 - dirIsNeg[2]].z - ray.mOrig.z) * invDir.z;
     if ((tmin > tzmax) || (tzmin > tmax))
         return false;
     if (tzmin > tmin)
@@ -401,7 +401,7 @@ BVHAccel::~BVHAccel() {
 bool BVHAccel::Intersect(const Ray& ray, Intersection* isect) const {
     if (!nodes) return false;
     bool hit = false;
-    Vec3 invDir(1.f / ray.d.x, 1.f / ray.d.y, 1.f / ray.d.z);
+    Vec3 invDir(1.f / ray.mDir.x, 1.f / ray.mDir.y, 1.f / ray.mDir.z);
     uint32_t dirIsNeg[3] = { invDir.x < 0, invDir.y < 0, invDir.z < 0 };
     // Follow ray through BVH nodes to find primitive intersections
     uint32_t todoOffset = 0, nodeNum = 0;
@@ -447,7 +447,7 @@ bool BVHAccel::Intersect(const Ray& ray, Intersection* isect) const {
 
 bool BVHAccel::Intersect(const Ray& ray) const {
     if (!nodes) return false;
-    Vec3 invDir(1.f / ray.d.x, 1.f / ray.d.y, 1.f / ray.d.z);
+    Vec3 invDir(1.f / ray.mDir.x, 1.f / ray.mDir.y, 1.f / ray.mDir.z);
     uint32_t dirIsNeg[3] = { invDir.x < 0, invDir.y < 0, invDir.z < 0 };
     uint32_t todo[64];
     uint32_t todoOffset = 0, nodeNum = 0;
