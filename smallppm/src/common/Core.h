@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Platform.h"
-#include "common/Def.h"
+#include "Def.h"
 
 #include <iostream>
 #include <fstream>
