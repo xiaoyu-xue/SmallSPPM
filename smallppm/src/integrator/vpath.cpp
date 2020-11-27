@@ -4,7 +4,7 @@
 
 NAMESPACE_BEGIN
 
-Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, MemoryArena& arena) const {
+Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, MemoryPool& arena) const {
 	Ray ray = r;
 	bool deltaBoundEvent = false;
 	Vec3 throughput = Vec3(1, 1, 1);

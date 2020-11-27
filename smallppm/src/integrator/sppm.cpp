@@ -25,7 +25,7 @@ void SPPM::GeneratePhoton(const Scene& scene, Ray* pr, Vec3* f, real u, const Ve
 	}
 }
 
-void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray, int64 pixel, MemoryArena& arena) {
+void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray, int64 pixel, MemoryPool& arena) {
 	Ray r = ray;
 	bool deltaBoundEvent = false;
 	Vec3 importance(1.0, 1.0, 1.0);
@@ -90,7 +90,7 @@ void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray,
 	}
 }
 
-void SPPM::TracePhoton(const Scene& scene, StateSequence& rand, const Ray& ray, Vec3 photonFlux, MemoryArena& arena) {
+void SPPM::TracePhoton(const Scene& scene, StateSequence& rand, const Ray& ray, Vec3 photonFlux, MemoryPool& arena) {
 	Ray r = ray;
 	for (int i = 0; i < maxDepth; ++i) {
 		Intersection isect;
@@ -183,12 +183,12 @@ void SPPM::Render(const Scene& scene, const Camera &camera) {
 	int resX = camera.GetFilm()->resX;
 	int resY = camera.GetFilm()->resY;
 	Initialize(resX, resY);
-	std::vector<MemoryArena> memoryArenas(ThreadsNumber());
+	std::vector<MemoryPool> memoryArenas(ThreadsNumber());
 	for (int iter = 0; iter < nIterations; ++iter) {
 		//Trace eye_path
 		ParallelFor(0, resY, [&](int y) {
 			for (int x = 0; x < resX; x++) {
-				MemoryArena& arena = memoryArenas[ThreadIndex()];
+				MemoryPool& arena = memoryArenas[ThreadIndex()];
 				int pixel = x + y * resX;
 				hitPoints[pixel].used = false;
 				uint64 instance = samplerEnum->GetIndex(iter, x, y);
@@ -214,7 +214,7 @@ void SPPM::Render(const Scene& scene, const Camera &camera) {
 
 		//Trace photon
 		ParallelFor((int64)0, nPhotonsPerRenderStage, [&](int64 j) {
-			MemoryArena& arena = memoryArenas[ThreadIndex()];
+			MemoryPool& arena = memoryArenas[ThreadIndex()];
 			Ray ray;
 			Vec3 photonFlux;
 			RandomStateSequence rand(sampler, iter * nPhotonsPerRenderStage + j);

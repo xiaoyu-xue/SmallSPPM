@@ -179,7 +179,7 @@ BVHAccel::BVHAccel(const std::vector<std::shared_ptr<Primitive> >& p,
     }
 
     // Recursively build BVH tree for primitives
-    MemoryArena buildArena;
+    MemoryPool buildArena;
     uint32_t totalNodes = 0;
     std::vector<std::shared_ptr<Primitive> > orderedPrims;
     orderedPrims.reserve(primitives.size());
@@ -205,7 +205,7 @@ AABB BVHAccel::WorldBound() const {
 }
 
 
-BVHBuildNode* BVHAccel::RecursiveBuild(MemoryArena& buildArena,
+BVHBuildNode* BVHAccel::RecursiveBuild(MemoryPool& buildArena,
     std::vector<BVHPrimitiveInfo>& buildData, uint32_t start,
     uint32_t end, uint32_t* totalNodes,
     std::vector<std::shared_ptr<Primitive> >& orderedPrims) {

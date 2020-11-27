@@ -8,7 +8,7 @@
 
 NAMESPACE_BEGIN
 
-#define ARENA_ALLOC(arena, Type) new ((arena).Alloc(sizeof(Type))) Type
+#define MEMORY_POOL_ALLOC(arena, Type) new ((arena).Alloc(sizeof(Type))) Type
 
 
 void* AllocAligned(size_t size);
@@ -25,11 +25,11 @@ class
 #ifdef HAVE_ALIGNAS
     alignas(L1_CACHE_LINE_SIZE)
 #endif
-    MemoryArena {
+    MemoryPool {
 public:
-    MemoryArena(size_t blockSize = 262144) : blockSize(blockSize) {}
+    MemoryPool(size_t blockSize = 262144) : blockSize(blockSize) {}
 
-    ~MemoryArena() {
+    ~MemoryPool() {
         FreeAligned(currentBlock);
         for (auto& block : usedBlocks) FreeAligned(block.second);
         for (auto& block : availableBlocks) FreeAligned(block.second);
@@ -99,8 +99,8 @@ public:
 		return total;
 	}
 private:
-    MemoryArena(const MemoryArena&) = delete;
-    MemoryArena& operator=(const MemoryArena&) = delete;
+    MemoryPool(const MemoryPool&) = delete;
+    MemoryPool& operator=(const MemoryPool&) = delete;
     // MemoryArena Private Data
     const size_t blockSize;
     size_t currentBlockPos = 0, currentAllocSize = 0;

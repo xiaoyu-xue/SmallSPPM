@@ -9,7 +9,7 @@ Vec3 HomogeneousMedium::Tr(const Ray& ray, StateSequence& rand) const {
 }
 
 
-Vec3 HomogeneousMedium::Sample(const Ray& ray, StateSequence& rand, MemoryArena& arena, MediumIntersection* mi) const {
+Vec3 HomogeneousMedium::Sample(const Ray& ray, StateSequence& rand, MemoryPool& arena, MediumIntersection* mi) const {
     // Sample a channel and distance along the ray
     int channel = std::min((int)(rand() * 3), 2);
     //int channel = 0;
@@ -18,7 +18,7 @@ Vec3 HomogeneousMedium::Sample(const Ray& ray, StateSequence& rand, MemoryArena&
     real t = std::min(dist / ray.d.Length(), ray.tMax);
     bool sampledMedium = t < ray.tMax;
     if (sampledMedium)
-        *mi = MediumIntersection(ray(t), -ray.d, this, ARENA_ALLOC(arena, HenyeyGreenstein)(g));
+        *mi = MediumIntersection(ray(t), -ray.d, this, MEMORY_POOL_ALLOC(arena, HenyeyGreenstein)(g));
 
     // Compute the transmittance and sampling density
     Vec3 Tr = Exp(-sigma_t * std::min(t, MaxReal) * ray.d.Length());
@@ -36,7 +36,7 @@ Vec3 HomogeneousMedium::Sample(const Ray& ray, StateSequence& rand, MemoryArena&
 }
 
 Vec3 HomogeneousMedium::EquiAngularSampling(
-    const Ray& ray, StateSequence& rand, MemoryArena& arena,
+    const Ray& ray, StateSequence& rand, MemoryPool& arena,
     const Intersection& lightPoint, MediumIntersection* mi) const {
     //real rrProb = Exp(-sigma_t * std::min(ray.tMax * ray.d.Length(), MaxReal)).x;
     //real rrProb = Tr(ray, rand).x;
@@ -58,7 +58,7 @@ Vec3 HomogeneousMedium::EquiAngularSampling(
     real pdf = sampleMedia ?
         D / ((theta_b - theta_a) * (D * D + tau * tau))
         : 1 - (std::atan2(std::min(tMax, ray.tMax) - delta, D) - theta_a) / (theta_b - theta_a);
-    if(sampleMedia) *mi = MediumIntersection(ray(t), -ray.d, this, ARENA_ALLOC(arena, HenyeyGreenstein)(g));
+    if(sampleMedia) *mi = MediumIntersection(ray(t), -ray.d, this, MEMORY_POOL_ALLOC(arena, HenyeyGreenstein)(g));
 
     return sampleMedia ? Tr * sigma_s / pdf : this->Tr(ray, rand) / pdf;
 }

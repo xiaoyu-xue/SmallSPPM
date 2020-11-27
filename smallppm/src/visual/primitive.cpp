@@ -21,7 +21,7 @@ bool Primitive::Intersect(const Ray& r) const {
 	return shape->Intersect(r);
 }
 
-void Primitive::ComputeScatteringFunction(Intersection* isect, MemoryArena& arena,
+void Primitive::ComputeScatteringFunction(Intersection* isect, MemoryPool& arena,
 	TransportMode mode) const {
 	if (material) {
 		material->ComputeScatteringFunction(isect, arena, mode);
