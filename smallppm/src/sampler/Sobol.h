@@ -27,6 +27,8 @@
 #include <cassert>
 #include "Sampler.h"
 
+NAMESPACE_BEGIN
+
 namespace sobol {
 
     struct Matrices
@@ -74,6 +76,7 @@ public:
 	}
 };
 
+NAMESPACE_END
 
 #endif
 

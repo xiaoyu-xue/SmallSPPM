@@ -17,7 +17,7 @@
 #include "light\PointLight.h"
 #include "volume\Homogeneous.h"
 
-NAMESPACE_BEGIN
+using namespace SmallSPPM;
 
 class CornellBoxSphere {
 public:
@@ -1362,4 +1362,3 @@ public:
 		//scene->AddLight(light);
 	}
 };
-NAMESPACE_END

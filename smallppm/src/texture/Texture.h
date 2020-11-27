@@ -8,6 +8,8 @@ NAMESPACE_BEGIN
 template<typename T>
 class Texture {
 public:
+	Texture() = default;
+
 	virtual ~Texture() { }
 
 	virtual T Sample(const Vec3& coord) const {

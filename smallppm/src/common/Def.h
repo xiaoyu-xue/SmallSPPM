@@ -2,5 +2,5 @@
 #include <cassert>
 
 #define ASSERT assert
-#define NAMESPACE_BEGIN
-#define NAMESPACE_END
+#define NAMESPACE_BEGIN namespace SmallSPPM {
+#define NAMESPACE_END }

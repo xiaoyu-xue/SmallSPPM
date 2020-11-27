@@ -33,7 +33,7 @@
 #include "Accelerator.h"
 #include "visual/Primitive.h"
 #include "system/Memory.h"
-#include <vector>
+#include "common/Core.h"
 
 NAMESPACE_BEGIN
 
@@ -69,4 +69,4 @@ private:
     LinearBVHNode* nodes;
 };
 
-NAMESPACE_BEGIN
+NAMESPACE_END

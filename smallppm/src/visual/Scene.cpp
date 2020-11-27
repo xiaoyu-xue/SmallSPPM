@@ -25,4 +25,4 @@ bool Scene::IntersectTr(Ray& ray, StateSequence& rand, Intersection* isect, Vec3
     }
 }
 
-NAMESPACE_BEGIN
+NAMESPACE_END
