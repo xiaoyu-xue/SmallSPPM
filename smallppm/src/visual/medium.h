@@ -1,11 +1,10 @@
 #pragma once
 
-#include "def.h"
-#include "utils.h"
-#include "math/linagl.h"
-#include "math/ray.h"
-#include "sampler/sampler.h"
-#include "system/memory.h"
+#include "common/Core.h"
+#include "math/Linagl.h"
+#include "math/Ray.h"
+#include "sampler/Sampler.h"
+#include "system/Memory.h"
 
 NAMESPACE_BEGIN
 

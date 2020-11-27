@@ -23,12 +23,11 @@
 #pragma once 
 
 
-#include "utils.h"
-#include "math/lowdiscrepency.h"
-#include "visual/rng.h"
-#include "sampler.h"
-#include <algorithm>
-#include <vector>
+#include "common/Core.h"
+#include "math/LowDiscrepency.h"
+#include "visual/Rng.h"
+#include "Sampler.h"
+
 
 // Compute points of the Halton sequence with with digit-permutations for different bases.
 

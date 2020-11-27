@@ -1,5 +1,5 @@
-#include "triangle.h"
-#include "visual/sampling.h"
+#include "Triangle.h"
+#include "visual/Sampling.h"
 
 NAMESPACE_BEGIN
 

@@ -1,8 +1,8 @@
-#include "integrator.h"
-#include "visual/medium.h"
-#include "visual/visibility.h"
-#include "visual/scene.h"
-#include "bsdf/bsdf.h"
+#include "Integrator.h"
+#include "visual/Medium.h"
+#include "visual/Visibility.h"
+#include "visual/Scene.h"
+#include "bsdf/BSDF.h"
 
 NAMESPACE_BEGIN
 

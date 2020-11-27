@@ -1,6 +1,6 @@
 #pragma once
 
-#include "visual/medium.h"
+#include "visual/Medium.h"
 
 NAMESPACE_BEGIN
 

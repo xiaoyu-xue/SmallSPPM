@@ -1,5 +1,5 @@
-#include "linagl.h"
-#include "def.h"
+#include "Linagl.h"
+#include "common/Core.h"
 
 NAMESPACE_BEGIN
 

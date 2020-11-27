@@ -1,8 +1,8 @@
 #pragma once
-#include "def.h"
-#include "math/ray.h"
-#include "visual/intersection.h"
-#include "visual/primitive.h"
+#include "common/Core.h"
+#include "math/Ray.h"
+#include "visual/Intersection.h"
+#include "visual/Primitive.h"
 #include "math/AABB.h"
 
 NAMESPACE_BEGIN

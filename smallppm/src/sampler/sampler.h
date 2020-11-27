@@ -2,8 +2,8 @@
 
 #include <memory>
 #include <random>
-#include "math/lowdiscrepency.h"
-#include "visual/rng.h"
+#include "math/LowDiscrepency.h"
+#include "visual/Rng.h"
 
 NAMESPACE_BEGIN
 

@@ -1,5 +1,5 @@
-#include "film.h"
-#include "image/image_io.h"
+#include "Film.h"
+#include "image/ImageIO.h"
 
 NAMESPACE_BEGIN
 

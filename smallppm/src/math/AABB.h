@@ -1,8 +1,8 @@
 #pragma once
 
 #include <algorithm>
-#include "math/linagl.h"
-#include "math/ray.h"
+#include "math/Linagl.h"
+#include "math/Ray.h"
 
 NAMESPACE_BEGIN
 

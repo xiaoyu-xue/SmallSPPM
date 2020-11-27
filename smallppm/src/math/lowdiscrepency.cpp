@@ -1,4 +1,4 @@
-#include "lowdiscrepency.h"
+#include "LowDiscrepency.h"
 
 NAMESPACE_BEGIN
 

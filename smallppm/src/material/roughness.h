@@ -1,10 +1,10 @@
 #pragma once
 
-#include "def.h"
-#include "material.h"
-#include "texture/texture.h"
-#include "bsdf/bsdf.h"
-#include "visual/microfacet.h"
+#include "common/Core.h"
+#include "Material.h"
+#include "texture/Texture.h"
+#include "bsdf/BSDF.h"
+#include "visual/Microfacet.h"
 
 NAMESPACE_BEGIN
 

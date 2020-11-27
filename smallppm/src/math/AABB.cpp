@@ -1,5 +1,5 @@
 #include "AABB.h"
-#include "numeric/numeric_utils.h"
+#include "numeric/NumericUtils.h"
 
 bool AABB::Intersect(const Ray& ray, real* hitt0, real* hitt1) const {
 	real t0 = 0, t1 = ray.tMax;

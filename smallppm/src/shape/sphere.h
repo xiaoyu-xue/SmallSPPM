@@ -1,9 +1,9 @@
 #pragma once
 
-#include "utils.h"
-#include "shape.h"
-#include "math/geometry_util.h"
-#include "common/debug_utils.h"
+#include "common/Core.h"
+#include "Shape.h"
+#include "math/GeometryUtils.h"
+#include "common/DebugUtils.h"
 
 NAMESPACE_BEGIN
 

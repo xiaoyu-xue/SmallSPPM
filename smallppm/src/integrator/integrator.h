@@ -1,10 +1,10 @@
 #pragma once
 
-#include "utils.h"
-#include "visual/scene.h"
-#include "visual/intersection.h"
-#include "visual/visibility.h"
-#include "common/debug_utils.h"
+#include "common/Core.h"
+#include "visual/Scene.h"
+#include "visual/Intersection.h"
+#include "visual/Visibility.h"
+#include "common/DebugUtils.h"
 
 NAMESPACE_BEGIN
 

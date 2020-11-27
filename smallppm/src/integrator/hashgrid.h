@@ -1,10 +1,9 @@
 #pragma once
 
-#include "utils.h"
-#include "math/linagl.h"
+#include "common/Core.h"
+#include "math/Linagl.h"
 #include "math/AABB.h"
-#include "system/threading.h"
-#include <vector>
+#include "system/Threading.h"
 #include <mutex>
 
 NAMESPACE_BEGIN

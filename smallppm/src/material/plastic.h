@@ -1,9 +1,9 @@
 #pragma once
 
-#include "material.h"
-#include "visual/microfacet.h"
-#include "texture/texture.h"
-#include "bsdf/bsdf.h"
+#include "Material.h"
+#include "visual/Microfacet.h"
+#include "texture/Texture.h"
+#include "bsdf/BSDF.h"
 
 NAMESPACE_BEGIN
 

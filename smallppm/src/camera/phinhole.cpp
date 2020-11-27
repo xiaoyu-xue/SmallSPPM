@@ -1,5 +1,5 @@
-#include "phinhole.h"
-#include "visual/film.h"
+#include "Phinhole.h"
+#include "visual/Film.h"
 
 NAMESPACE_BEGIN
 

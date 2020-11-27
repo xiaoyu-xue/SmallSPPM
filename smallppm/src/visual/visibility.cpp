@@ -1,6 +1,6 @@
-#include "visibility.h"
-#include "scene.h"
-#include "medium.h"
+#include "Visibility.h"
+#include "Scene.h"
+#include "Medium.h"
 
 NAMESPACE_BEGIN
 

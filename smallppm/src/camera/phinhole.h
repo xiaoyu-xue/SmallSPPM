@@ -1,6 +1,6 @@
 #pragma once
 
-#include "camera.h"
+#include "Camera.h"
 
 NAMESPACE_BEGIN
 

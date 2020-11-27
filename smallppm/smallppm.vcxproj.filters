@@ -147,331 +147,130 @@
     <ClCompile Include="src\math\AABB.cpp">
       <Filter>Source Files\geometry</Filter>
     </ClCompile>
-    <ClCompile Include="src\accelerator\bvh_accel.cpp">
-      <Filter>Source Files\accelerator</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\debug_utils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\light\environment_light.cpp">
-      <Filter>Source Files\light</Filter>
-    </ClCompile>
-    <ClCompile Include="src\volume\homogeneous.cpp">
-      <Filter>Source Files\media</Filter>
-    </ClCompile>
-    <ClCompile Include="src\shape\heart_surface.cpp">
-      <Filter>Source Files\shape</Filter>
-    </ClCompile>
-    <ClCompile Include="src\accelerator\kdtree_accel.cpp">
-      <Filter>Source Files\accelerator</Filter>
-    </ClCompile>
-    <ClCompile Include="src\math\lowdiscrepency.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\integrator\path.cpp">
-      <Filter>Source Files\integrator</Filter>
-    </ClCompile>
-    <ClCompile Include="src\system\memory.cpp">
-      <Filter>Source Files\system</Filter>
-    </ClCompile>
-    <ClCompile Include="src\mesh\mesh.cpp">
-      <Filter>Source Files\mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="src\camera\phinhole.cpp">
-      <Filter>Source Files\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="src\light\point_light.cpp">
-      <Filter>Source Files\light</Filter>
-    </ClCompile>
-    <ClCompile Include="src\math\ray.cpp">
-      <Filter>Source Files\geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="src\sampler\sobol.cpp">
-      <Filter>Source Files\sampler</Filter>
-    </ClCompile>
-    <ClCompile Include="src\sampler\sobol_enum.cpp">
-      <Filter>Source Files\sampler</Filter>
-    </ClCompile>
-    <ClCompile Include="src\integrator\sppm.cpp">
-      <Filter>Source Files\integrator</Filter>
-    </ClCompile>
-    <ClCompile Include="src\math\transform.cpp">
-      <Filter>Source Files\math</Filter>
-    </ClCompile>
-    <ClCompile Include="src\integrator\vpath.cpp">
-      <Filter>Source Files\integrator</Filter>
-    </ClCompile>
-    <ClCompile Include="src\shape\triangle.cpp">
-      <Filter>Source Files\shape</Filter>
-    </ClCompile>
-    <ClCompile Include="src\integrator\tiled_integrator.cpp">
-      <Filter>Source Files\integrator</Filter>
-    </ClCompile>
-    <ClCompile Include="src\camera\camera.cpp">
-      <Filter>Source Files\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="src\integrator\integrator.cpp">
-      <Filter>Source Files\integrator</Filter>
-    </ClCompile>
-    <ClCompile Include="src\sampler\sampler.cpp">
-      <Filter>Source Files\sampler</Filter>
-    </ClCompile>
-    <ClCompile Include="src\math\linagl.cpp">
-      <Filter>Source Files\math</Filter>
-    </ClCompile>
-    <ClCompile Include="src\shape\shape.cpp">
-      <Filter>Source Files\shape</Filter>
-    </ClCompile>
-    <ClCompile Include="src\numeric\efloat.cpp">
-      <Filter>Source Files\numeric</Filter>
-    </ClCompile>
-    <ClCompile Include="src\bsdf\bsdf.cpp">
-      <Filter>Source Files\bsdf</Filter>
-    </ClCompile>
-    <ClCompile Include="src\image\image_io.cpp">
-      <Filter>Source Files\imageio</Filter>
-    </ClCompile>
-    <ClCompile Include="src\visual\film.cpp">
-      <Filter>Source Files\film</Filter>
-    </ClCompile>
-    <ClCompile Include="src\visual\intersection.cpp">
-      <Filter>Source Files\intersection</Filter>
-    </ClCompile>
-    <ClCompile Include="src\visual\medium.cpp">
-      <Filter>Source Files\media</Filter>
-    </ClCompile>
-    <ClCompile Include="src\visual\microfacet.cpp">
-      <Filter>Source Files\bsdf</Filter>
-    </ClCompile>
-    <ClCompile Include="src\visual\primitive.cpp">
-      <Filter>Source Files\primitive</Filter>
-    </ClCompile>
-    <ClCompile Include="src\visual\sampling.cpp">
-      <Filter>Source Files\sampling</Filter>
-    </ClCompile>
-    <ClCompile Include="src\visual\scene.cpp">
-      <Filter>Source Files\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\visual\visibility.cpp">
-      <Filter>Source Files\intersection</Filter>
-    </ClCompile>
     <ClCompile Include="external\stb\stb_vorbis.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\system\threading.cpp">
+    <ClCompile Include="src\math\Linagl.cpp">
+      <Filter>Source Files\math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\image\ImageIO.cpp">
+      <Filter>Source Files\imageio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\DebugUtils.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\accelerator\BVHAccel.cpp">
+      <Filter>Source Files\accelerator</Filter>
+    </ClCompile>
+    <ClCompile Include="src\accelerator\KdTreeAccel.cpp">
+      <Filter>Source Files\accelerator</Filter>
+    </ClCompile>
+    <ClCompile Include="src\bsdf\BSDF.cpp">
+      <Filter>Source Files\bsdf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\camera\Camera.cpp">
+      <Filter>Source Files\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\camera\Phinhole.cpp">
+      <Filter>Source Files\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\integrator\Integrator.cpp">
+      <Filter>Source Files\integrator</Filter>
+    </ClCompile>
+    <ClCompile Include="src\integrator\PT.cpp">
+      <Filter>Source Files\integrator</Filter>
+    </ClCompile>
+    <ClCompile Include="src\integrator\SPPM.cpp">
+      <Filter>Source Files\integrator</Filter>
+    </ClCompile>
+    <ClCompile Include="src\integrator\TiledIntegrator.cpp">
+      <Filter>Source Files\integrator</Filter>
+    </ClCompile>
+    <ClCompile Include="src\integrator\VPT.cpp">
+      <Filter>Source Files\integrator</Filter>
+    </ClCompile>
+    <ClCompile Include="src\light\EnvLight.cpp">
+      <Filter>Source Files\light</Filter>
+    </ClCompile>
+    <ClCompile Include="src\light\PointLight.cpp">
+      <Filter>Source Files\light</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\LowDiscrepency.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\Ray.cpp">
+      <Filter>Source Files\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\Transform.cpp">
+      <Filter>Source Files\math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mesh\Mesh.cpp">
+      <Filter>Source Files\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\numeric\EFloat.cpp">
+      <Filter>Source Files\numeric</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shape\HeartSurface.cpp">
+      <Filter>Source Files\shape</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shape\Shape.cpp">
+      <Filter>Source Files\shape</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shape\Triangle.cpp">
+      <Filter>Source Files\shape</Filter>
+    </ClCompile>
+    <ClCompile Include="src\system\Memory.cpp">
+      <Filter>Source Files\system</Filter>
+    </ClCompile>
+    <ClCompile Include="src\system\Threading.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sampler\Sampler.cpp">
+      <Filter>Source Files\sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sampler\Sobol.cpp">
+      <Filter>Source Files\sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sampler\SobolEnum.cpp">
+      <Filter>Source Files\sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="src\visual\Film.cpp">
+      <Filter>Source Files\film</Filter>
+    </ClCompile>
+    <ClCompile Include="src\visual\Intersection.cpp">
+      <Filter>Source Files\intersection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\visual\Medium.cpp">
+      <Filter>Source Files\media</Filter>
+    </ClCompile>
+    <ClCompile Include="src\visual\Microfacet.cpp">
+      <Filter>Source Files\bsdf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\visual\Primitive.cpp">
+      <Filter>Source Files\primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\visual\Sampling.cpp">
+      <Filter>Source Files\sampling</Filter>
+    </ClCompile>
+    <ClCompile Include="src\visual\Scene.cpp">
+      <Filter>Source Files\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\visual\Visibility.cpp">
+      <Filter>Source Files\intersection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\volume\Homogeneous.cpp">
+      <Filter>Source Files\media</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\def.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\math\AABB.h">
       <Filter>Header Files\geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="src\accelerator\accelerator.h">
-      <Filter>Header Files\accelerator</Filter>
-    </ClInclude>
-    <ClInclude Include="src\simd\avx.h">
-      <Filter>Header Files\simd</Filter>
-    </ClInclude>
-    <ClInclude Include="src\accelerator\brute_force.h">
-      <Filter>Header Files\accelerator</Filter>
-    </ClInclude>
-    <ClInclude Include="src\accelerator\bvh_accel.h">
-      <Filter>Header Files\accelerator</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\debug_utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\material\diffuse.h">
-      <Filter>Header Files\material</Filter>
-    </ClInclude>
-    <ClInclude Include="src\light\environment_light.h">
-      <Filter>Header Files\light</Filter>
-    </ClInclude>
-    <ClInclude Include="src\light\environment_map.h">
-      <Filter>Header Files\light</Filter>
-    </ClInclude>
-    <ClInclude Include="src\math\filter.h">
-      <Filter>Header Files\filter</Filter>
-    </ClInclude>
-    <ClInclude Include="src\texture\constant_texture.h">
-      <Filter>Header Files\texture</Filter>
-    </ClInclude>
-    <ClInclude Include="src\sampler\halton.h">
-      <Filter>Header Files\sampler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\sampler\halton_enum.h">
-      <Filter>Header Files\sampler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\math\geometry_util.h">
-      <Filter>Header Files\math</Filter>
-    </ClInclude>
-    <ClInclude Include="src\material\glass.h">
-      <Filter>Header Files\material</Filter>
-    </ClInclude>
-    <ClInclude Include="src\volume\homogeneous.h">
-      <Filter>Header Files\media</Filter>
-    </ClInclude>
-    <ClInclude Include="src\shape\heart_surface.h">
-      <Filter>Header Files\shape</Filter>
-    </ClInclude>
-    <ClInclude Include="src\integrator\hashgrid.h">
-      <Filter>Header Files\integrator</Filter>
-    </ClInclude>
-    <ClInclude Include="src\texture\image_texture.h">
-      <Filter>Header Files\texture</Filter>
-    </ClInclude>
-    <ClInclude Include="src\accelerator\kdtree_accel.h">
-      <Filter>Header Files\accelerator</Filter>
-    </ClInclude>
-    <ClInclude Include="src\math\linagl.h">
-      <Filter>Header Files\math</Filter>
-    </ClInclude>
-    <ClInclude Include="src\math\lowdiscrepency.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\integrator\path.h">
-      <Filter>Header Files\integrator</Filter>
-    </ClInclude>
-    <ClInclude Include="src\system\memory.h">
-      <Filter>Header Files\system</Filter>
-    </ClInclude>
-    <ClInclude Include="src\mesh\mesh.h">
-      <Filter>Header Files\mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="src\camera\phinhole.h">
-      <Filter>Header Files\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="src\light\point_light.h">
-      <Filter>Header Files\light</Filter>
-    </ClInclude>
-    <ClInclude Include="src\math\math_utils.h">
-      <Filter>Header Files\math</Filter>
-    </ClInclude>
-    <ClInclude Include="src\material\rough_dielectric.h">
-      <Filter>Header Files\material</Filter>
-    </ClInclude>
-    <ClInclude Include="src\material\roughness.h">
-      <Filter>Header Files\material</Filter>
-    </ClInclude>
-    <ClInclude Include="src\material\mirror.h">
-      <Filter>Header Files\material</Filter>
-    </ClInclude>
-    <ClInclude Include="src\material\plastic.h">
-      <Filter>Header Files\material</Filter>
-    </ClInclude>
-    <ClInclude Include="src\math\ray.h">
-      <Filter>Header Files\geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="src\sampler\sobol.h">
-      <Filter>Header Files\sampler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\sampler\sobol_enum.h">
-      <Filter>Header Files\sampler</Filter>
     </ClInclude>
     <ClInclude Include="src\shape\sphere.h">
       <Filter>Header Files\shape</Filter>
     </ClInclude>
-    <ClInclude Include="src\simd\sse.h">
-      <Filter>Header Files\simd</Filter>
-    </ClInclude>
-    <ClInclude Include="src\integrator\sppm.h">
-      <Filter>Header Files\integrator</Filter>
-    </ClInclude>
-    <ClInclude Include="src\math\transform.h">
-      <Filter>Header Files\math</Filter>
-    </ClInclude>
-    <ClInclude Include="src\integrator\vpath.h">
-      <Filter>Header Files\integrator</Filter>
-    </ClInclude>
-    <ClInclude Include="src\shape\triangle.h">
-      <Filter>Header Files\shape</Filter>
-    </ClInclude>
-    <ClInclude Include="src\sampler\sampler_enum.h">
-      <Filter>Header Files\sampler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\integrator\tiled_integrator.h">
-      <Filter>Header Files\integrator</Filter>
-    </ClInclude>
-    <ClInclude Include="src\system\threading.h">
-      <Filter>Header Files\system</Filter>
-    </ClInclude>
-    <ClInclude Include="src\camera\camera.h">
-      <Filter>Header Files\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="src\integrator\integrator.h">
-      <Filter>Header Files\integrator</Filter>
-    </ClInclude>
-    <ClInclude Include="src\light\light.h">
-      <Filter>Header Files\light</Filter>
-    </ClInclude>
-    <ClInclude Include="src\sampler\sampler.h">
-      <Filter>Header Files\sampler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\shape\shape.h">
-      <Filter>Header Files\shape</Filter>
-    </ClInclude>
-    <ClInclude Include="src\texture\texture.h">
-      <Filter>Header Files\texture</Filter>
-    </ClInclude>
     <ClInclude Include="src\ForwardDecl.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\light\area_light.h">
-      <Filter>Header Files\light</Filter>
-    </ClInclude>
-    <ClInclude Include="src\utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\numeric\efloat.h">
-      <Filter>Header Files\numeric</Filter>
-    </ClInclude>
-    <ClInclude Include="src\numeric\numeric_utils.h">
-      <Filter>Header Files\numeric</Filter>
-    </ClInclude>
-    <ClInclude Include="src\container\array.h">
-      <Filter>Header Files\math</Filter>
-    </ClInclude>
-    <ClInclude Include="src\material\material.h">
-      <Filter>Header Files\material</Filter>
-    </ClInclude>
-    <ClInclude Include="src\bsdf\bsdf.h">
-      <Filter>Header Files\bsdf</Filter>
-    </ClInclude>
-    <ClInclude Include="src\image\image_io.h">
-      <Filter>Header Files\imageio</Filter>
-    </ClInclude>
-    <ClInclude Include="src\visual\film.h">
-      <Filter>Header Files\film</Filter>
-    </ClInclude>
-    <ClInclude Include="src\visual\intersection.h">
-      <Filter>Header Files\intersection</Filter>
-    </ClInclude>
-    <ClInclude Include="src\visual\medium.h">
-      <Filter>Header Files\media</Filter>
-    </ClInclude>
-    <ClInclude Include="src\visual\microfacet.h">
-      <Filter>Header Files\bsdf</Filter>
-    </ClInclude>
-    <ClInclude Include="src\visual\primitive.h">
-      <Filter>Header Files\primitive</Filter>
-    </ClInclude>
-    <ClInclude Include="src\visual\renderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\visual\rng.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\visual\sampling.h">
-      <Filter>Header Files\sampling</Filter>
-    </ClInclude>
-    <ClInclude Include="src\visual\scene.h">
-      <Filter>Header Files\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="src\visual\visibility.h">
-      <Filter>Header Files\intersection</Filter>
     </ClInclude>
     <ClInclude Include="external\stb\stb.h">
       <Filter>Header Files</Filter>
@@ -869,8 +668,209 @@
     <ClInclude Include="external\tiny_obj_loader\tiny_obj_loader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\platform.h">
+    <ClInclude Include="src\common\Core.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\Platform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\Def.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\Linagl.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\image\ImageIO.h">
+      <Filter>Header Files\imageio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\DebugUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\accelerator\Accelerator.h">
+      <Filter>Header Files\accelerator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\accelerator\BruteForceAccel.h">
+      <Filter>Header Files\accelerator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\accelerator\BVHAccel.h">
+      <Filter>Header Files\accelerator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\accelerator\KdTreeAccel.h">
+      <Filter>Header Files\accelerator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\bsdf\BSDF.h">
+      <Filter>Header Files\bsdf</Filter>
+    </ClInclude>
+    <ClInclude Include="src\camera\Camera.h">
+      <Filter>Header Files\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="src\camera\Phinhole.h">
+      <Filter>Header Files\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="src\integrator\HashGrid.h">
+      <Filter>Header Files\integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\integrator\Integrator.h">
+      <Filter>Header Files\integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\integrator\PT.h">
+      <Filter>Header Files\integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\integrator\SPPM.h">
+      <Filter>Header Files\integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\integrator\TiledIntegrator.h">
+      <Filter>Header Files\integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\integrator\VPT.h">
+      <Filter>Header Files\integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="src\light\AreaLight.h">
+      <Filter>Header Files\light</Filter>
+    </ClInclude>
+    <ClInclude Include="src\light\EnvLight.h">
+      <Filter>Header Files\light</Filter>
+    </ClInclude>
+    <ClInclude Include="src\light\EnvMap.h">
+      <Filter>Header Files\light</Filter>
+    </ClInclude>
+    <ClInclude Include="src\light\Light.h">
+      <Filter>Header Files\light</Filter>
+    </ClInclude>
+    <ClInclude Include="src\light\PointLight.h">
+      <Filter>Header Files\light</Filter>
+    </ClInclude>
+    <ClInclude Include="src\material\Diffuse.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="src\material\Glass.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="src\material\Material.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="src\material\Mirror.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="src\material\Plastic.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="src\material\RoughDielectric.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="src\material\Roughness.h">
+      <Filter>Header Files\material</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\Filter.h">
+      <Filter>Header Files\filter</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\GeometryUtils.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\LowDiscrepency.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\MathUtils.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\Ray.h">
+      <Filter>Header Files\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\Transform.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mesh\Mesh.h">
+      <Filter>Header Files\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\numeric\EFloat.h">
+      <Filter>Header Files\numeric</Filter>
+    </ClInclude>
+    <ClInclude Include="src\numeric\NumericUtils.h">
+      <Filter>Header Files\numeric</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shape\HeartSurface.h">
+      <Filter>Header Files\shape</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shape\Shape.h">
+      <Filter>Header Files\shape</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shape\Triangle.h">
+      <Filter>Header Files\shape</Filter>
+    </ClInclude>
+    <ClInclude Include="src\simd\AVX.h">
+      <Filter>Header Files\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="src\simd\SSE.h">
+      <Filter>Header Files\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="src\system\Memory.h">
+      <Filter>Header Files\system</Filter>
+    </ClInclude>
+    <ClInclude Include="src\system\Threading.h">
+      <Filter>Header Files\system</Filter>
+    </ClInclude>
+    <ClInclude Include="src\texture\ConstantTexture.h">
+      <Filter>Header Files\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="src\texture\ImageTexture.h">
+      <Filter>Header Files\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="src\texture\Texture.h">
+      <Filter>Header Files\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sampler\Halton.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sampler\HaltonEnum.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sampler\Sampler.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sampler\SamplerEnum.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sampler\Sobol.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sampler\SobolEnum.h">
+      <Filter>Header Files\sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\container\Array.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\visual\Film.h">
+      <Filter>Header Files\film</Filter>
+    </ClInclude>
+    <ClInclude Include="src\visual\Intersection.h">
+      <Filter>Header Files\intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\visual\Medium.h">
+      <Filter>Header Files\media</Filter>
+    </ClInclude>
+    <ClInclude Include="src\visual\Microfacet.h">
+      <Filter>Header Files\bsdf</Filter>
+    </ClInclude>
+    <ClInclude Include="src\visual\Primitive.h">
+      <Filter>Header Files\primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\visual\Renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\visual\Rng.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\visual\Sampling.h">
+      <Filter>Header Files\sampling</Filter>
+    </ClInclude>
+    <ClInclude Include="src\visual\Scene.h">
+      <Filter>Header Files\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\visual\Visibility.h">
+      <Filter>Header Files\intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\volume\Homogeneous.h">
+      <Filter>Header Files\media</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

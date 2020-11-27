@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "platform.h"
+#include "common/Platform.h"
 
 int main(int argc, char* argv[]) {
 	testing::InitGoogleTest(&argc, argv);

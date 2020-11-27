@@ -2,7 +2,7 @@
 
 #include <thread>
 #include <atomic>
-#include "def.h"
+#include "common/Core.h"
 #include "tbb/parallel_for.h"
 
 NAMESPACE_BEGIN

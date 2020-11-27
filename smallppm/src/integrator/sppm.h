@@ -1,12 +1,12 @@
 #pragma once
 
-#include "utils.h"
-#include "math/linagl.h"
-#include "integrator.h"
-#include "sampler/sampler_enum.h"
-#include "sampler/sampler.h"
-#include "hashgrid.h"
-#include "common/debug_utils.h"
+#include "common/Core.h"
+#include "math/Linagl.h"
+#include "Integrator.h"
+#include "sampler/SamplerEnum.h"
+#include "sampler/Sampler.h"
+#include "HashGrid.h"
+#include "common/DebugUtils.h"
 
 NAMESPACE_BEGIN
 

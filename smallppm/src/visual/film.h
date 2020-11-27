@@ -1,9 +1,9 @@
 #pragma once
 
-#include "math/linagl.h"
-#include "math/filter.h"
-#include "math/math_utils.h"
-#include "system/threading.h"
+#include "math/Linagl.h"
+#include "math/Filter.h"
+#include "math/MathUtils.h"
+#include "system/Threading.h"
 #include <mutex>
 #include <vector>
 #include <algorithm>

@@ -1,10 +1,8 @@
 #pragma once
 #define HAVE_ALIGNAS
 #define L1_CACHE_LINE_SIZE 64
-#include "def.h"
-#include <list>
-#include <algorithm>
-//#include "scalar.h"
+
+#include "common/Core.h"
 
 NAMESPACE_BEGIN
 

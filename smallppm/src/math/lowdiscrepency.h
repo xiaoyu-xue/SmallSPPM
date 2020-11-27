@@ -1,6 +1,6 @@
 #pragma once
-#include "def.h"
-#include "utils.h"
+#include "common/Core.h"
+#include "common/Core.h"
 
 NAMESPACE_BEGIN
 

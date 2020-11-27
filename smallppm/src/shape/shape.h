@@ -1,10 +1,10 @@
 #pragma once
 
-#include "math/linagl.h"
-#include "math/ray.h"
-#include "math/transform.h"
-#include "visual/intersection.h"
-#include "bsdf/bsdf.h"
+#include "math/Linagl.h"
+#include "math/Ray.h"
+#include "math/Transform.h"
+#include "visual/Intersection.h"
+#include "bsdf/BSDF.h"
 
 
 NAMESPACE_BEGIN

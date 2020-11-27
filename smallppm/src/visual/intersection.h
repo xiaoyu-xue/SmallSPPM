@@ -1,10 +1,10 @@
 #pragma once
 
-#include "math/linagl.h"
-#include "math/ray.h"
-#include "math/geometry_util.h"
-#include "material/material.h"
-#include "visual/medium.h"
+#include "math/Linagl.h"
+#include "math/Ray.h"
+#include "math/GeometryUtils.h"
+#include "material/Material.h"
+#include "visual/Medium.h"
 
 NAMESPACE_BEGIN
 

@@ -1,13 +1,9 @@
 #pragma once
 
-#include <cstring>
-#include <iostream>
-#include <algorithm>
-#include <vector>
 #include <functional>
-#include "utils.h"
-#include "simd/sse.h"
-#include "simd/avx.h"
+#include "common/Core.h"
+#include "simd/SSE.h"
+#include "simd/AVX.h"
 
 NAMESPACE_BEGIN
 

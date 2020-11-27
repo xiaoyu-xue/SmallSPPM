@@ -1,5 +1,5 @@
-#include "microfacet.h"
-#include "bsdf/bsdf.h"
+#include "Microfacet.h"
+#include "bsdf/BSDF.h"
 
 NAMESPACE_BEGIN
 

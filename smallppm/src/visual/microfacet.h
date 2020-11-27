@@ -1,7 +1,7 @@
 #pragma once
 
-#include "def.h"
-#include "math/linagl.h"
+#include "common/Core.h"
+#include "math/Linagl.h"
 
 NAMESPACE_BEGIN
 

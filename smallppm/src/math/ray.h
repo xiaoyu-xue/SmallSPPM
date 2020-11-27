@@ -1,7 +1,7 @@
 #pragma once
 
-#include "linagl.h"
-#include "utils.h"
+#include "Linagl.h"
+#include "common/Core.h"
 
 NAMESPACE_BEGIN
 

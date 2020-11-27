@@ -1,13 +1,13 @@
 #pragma once
 
-#include "math/linagl.h"
-#include "utils.h"
-#include "visual/intersection.h"
-#include "math/transform.h"
-#include "visual/sampling.h"
-#include "visual/microfacet.h"
-#include "system/threading.h"
-#include "math/math_utils.h"
+#include "math/Linagl.h"
+#include "common/Core.h"
+#include "visual/Intersection.h"
+#include "math/Transform.h"
+#include "visual/Sampling.h"
+#include "visual/Microfacet.h"
+#include "system/Threading.h"
+#include "math/MathUtils.h"
 
 NAMESPACE_BEGIN
 

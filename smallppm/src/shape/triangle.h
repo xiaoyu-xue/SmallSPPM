@@ -1,6 +1,6 @@
 #pragma once
-#include "def.h"
-#include "shape.h"
+#include "common/Core.h"
+#include "Shape.h"
 
 NAMESPACE_BEGIN
 

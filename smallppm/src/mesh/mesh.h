@@ -1,8 +1,8 @@
 #pragma once
-#include "def.h"
-#include "math/linagl.h"
-#include "math/transform.h"
-#include "shape/triangle.h"
+#include "common/Core.h"
+#include "math/Linagl.h"
+#include "math/Transform.h"
+#include "shape/Triangle.h"
 
 NAMESPACE_BEGIN
 

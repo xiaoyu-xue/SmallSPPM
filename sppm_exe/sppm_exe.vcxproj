@@ -146,7 +146,7 @@ copy /y "$(SolutionDir)\external\lib\tbb\*.dll" "$(OutDir)"</Command>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cornellbox.h" />
+    <ClInclude Include="CornellBox.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

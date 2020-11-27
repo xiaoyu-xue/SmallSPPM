@@ -1,8 +1,8 @@
 #pragma once
 
-#include "math/linagl.h"
-#include "visual/intersection.h"
-#include "shape/shape.h"
+#include "math/Linagl.h"
+#include "visual/Intersection.h"
+#include "shape/Shape.h"
 
 NAMESPACE_BEGIN
 

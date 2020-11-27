@@ -1,9 +1,9 @@
 #pragma once
-#include "linagl.h"
-#include "ray.h"
-#include "numeric/numeric_utils.h"
+#include "Linagl.h"
+#include "Ray.h"
+#include "numeric/NumericUtils.h"
 #include "AABB.h"
-#include "visual/intersection.h"
+#include "visual/Intersection.h"
 
 NAMESPACE_BEGIN
 

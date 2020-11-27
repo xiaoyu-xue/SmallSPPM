@@ -25,7 +25,7 @@
 #define SOBOL_H
 
 #include <cassert>
-#include "sampler.h"
+#include "Sampler.h"
 
 namespace sobol {
 

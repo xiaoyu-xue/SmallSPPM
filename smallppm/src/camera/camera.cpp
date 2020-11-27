@@ -1,5 +1,5 @@
-#include "camera.h"
-#include "visual/film.h"
+#include "Camera.h"
+#include "visual/Film.h"
 
 NAMESPACE_BEGIN
 

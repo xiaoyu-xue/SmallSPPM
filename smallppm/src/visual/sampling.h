@@ -1,11 +1,8 @@
 #pragma once
-#include "utils.h"
-#include "def.h"
-#include "math/math_utils.h"
-#include "math/linagl.h"
-#include <string.h>
-#include <vector>
-#include <algorithm>
+#include "common/Core.h"
+#include "math/MathUtils.h"
+#include "math/Linagl.h"
+
 NAMESPACE_BEGIN
 
 struct Distribution1D

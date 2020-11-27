@@ -1,7 +1,7 @@
 #pragma once
 
-#include "utils.h"
-#include "numeric_utils.h"
+#include "common/Core.h"
+#include "NumericUtils.h"
 #include <iostream>
 
 NAMESPACE_BEGIN

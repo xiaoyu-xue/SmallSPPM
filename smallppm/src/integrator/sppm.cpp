@@ -1,10 +1,10 @@
-#include "sppm.h"
-#include "image/image_io.h"
-#include "visual/scene.h"
-#include "system/threading.h"
-#include "light/light.h"
-#include "bsdf/bsdf.h"
-#include "visual/intersection.h"
+#include "SPPM.h"
+#include "image/ImageIO.h"
+#include "visual/Scene.h"
+#include "system/Threading.h"
+#include "light/Light.h"
+#include "bsdf/BSDF.h"
+#include "visual/Intersection.h"
 
 NAMESPACE_BEGIN
 

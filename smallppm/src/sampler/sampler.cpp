@@ -1,4 +1,4 @@
-#include "sampler.h"
+#include "Sampler.h"
 
 NAMESPACE_BEGIN
 

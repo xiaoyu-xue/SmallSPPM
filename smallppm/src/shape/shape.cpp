@@ -1,5 +1,5 @@
-#include "shape.h"
-#include "visual/intersection.h"
+#include "Shape.h"
+#include "visual/Intersection.h"
 
 NAMESPACE_BEGIN
 

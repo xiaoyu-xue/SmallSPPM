@@ -1,7 +1,7 @@
 #pragma once
 
-#include "integrator/integrator.h"
-#include "scene.h"
+#include "integrator/Integrator.h"
+#include "Scene.h"
 
 NAMESPACE_BEGIN
 

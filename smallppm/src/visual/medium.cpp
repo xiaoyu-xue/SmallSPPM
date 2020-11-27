@@ -1,5 +1,5 @@
-#include "medium.h"
-#include "math/geometry_util.h"
+#include "Medium.h"
+#include "math/GeometryUtils.h"
 #include <algorithm>
 
 NAMESPACE_BEGIN

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "camera/camera.h"
-#include "shape/shape.h"
-#include "shape/triangle.h"
-#include "light/light.h"
-#include "sampling.h"
-#include "accelerator/accelerator.h"
-#include "common/debug_utils.h"
-#include "mesh/mesh.h"
+#include "camera/Camera.h"
+#include "shape/Shape.h"
+#include "shape/Triangle.h"
+#include "light/Light.h"
+#include "Sampling.h"
+#include "accelerator/Accelerator.h"
+#include "common/DebugUtils.h"
+#include "mesh/Mesh.h"
 
 
 NAMESPACE_BEGIN

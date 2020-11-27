@@ -1,6 +1,6 @@
-#include "homogeneous.h"
-#include "visual/intersection.h"
-#include "visual/scene.h"
+#include "Homogeneous.h"
+#include "visual/Intersection.h"
+#include "visual/Scene.h"
 #include <algorithm>
 NAMESPACE_BEGIN
 

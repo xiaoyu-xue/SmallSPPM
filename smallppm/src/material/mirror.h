@@ -1,8 +1,8 @@
 #pragma once
-#include "def.h"
-#include "material.h"
-#include "texture/texture.h"
-#include "bsdf/bsdf.h"
+#include "common/Core.h"
+#include "Material.h"
+#include "texture/Texture.h"
+#include "bsdf/BSDF.h"
 NAMESPACE_BEGIN
 
 class MirrorMaterial : public Material {

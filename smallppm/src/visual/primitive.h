@@ -1,10 +1,10 @@
 #pragma once
-#include "intersection.h"
-#include "shape/shape.h"
-#include "material/material.h"
-#include "light/light.h"
+#include "Intersection.h"
+#include "shape/Shape.h"
+#include "material/Material.h"
+#include "light/Light.h"
 #include "math/AABB.h"
-#include "medium.h"
+#include "Medium.h"
 
 NAMESPACE_BEGIN
 

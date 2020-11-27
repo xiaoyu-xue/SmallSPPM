@@ -1,6 +1,6 @@
 #pragma once
 
-#include "intersection.h"
+#include "Intersection.h"
 
 NAMESPACE_BEGIN
 

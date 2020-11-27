@@ -1,5 +1,5 @@
-#include "transform.h"
-#include "math/math_utils.h"
+#include "Transform.h"
+#include "math/MathUtils.h"
 
 Transform Transform::Translate(const Vector3 &v) {
 	Matrix4 m(1, 0, 0, v.x, 
