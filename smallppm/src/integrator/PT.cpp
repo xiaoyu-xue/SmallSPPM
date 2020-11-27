@@ -7,12 +7,13 @@
 
 NAMESPACE_BEGIN
 
-Vec3 PathTracing::Li(const Ray &r, const Scene& scene, StateSequence& rand, MemoryPool& arena) const {
+Vec3 PathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, MemoryPool& arena) const
+{
 	Ray ray = r;
 	bool deltaBoundEvent = false;
 	Vec3 throughput = Vec3(1, 1, 1);
 	Vec3 L;
-	for (int i = 0; i < maxDepth; ++i) {
+	for (int i = 0; i < mMaxDepth; ++i) {
 		Intersection isect;
 		if (!scene.Intersect(ray, &isect)) {
 			if ((i == 0 || deltaBoundEvent) && scene.GetEnvironmentLight()) {
@@ -63,6 +64,12 @@ Vec3 PathTracing::Li(const Ray &r, const Scene& scene, StateSequence& rand, Memo
 		//if (!(bsdf->IsDelta() || (bsdf->MatchScatterType(ScatterEventType::BSDF_GLOSSY) && i < maxDepth - 1))) break;
 	}
 	return L;
+}
+
+PathTracing::PathTracing(int samplePerPixel, int maxDepth, const std::shared_ptr<Sampler>& pSampler, const std::shared_ptr<SamplerEnum>& pSamplerEnum)
+	:TiledIntegrator(samplePerPixel, pSampler, pSamplerEnum), mMaxDepth(maxDepth)
+{
+
 }
 
 NAMESPACE_END

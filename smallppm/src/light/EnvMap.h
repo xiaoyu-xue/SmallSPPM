@@ -4,19 +4,20 @@
 
 NAMESPACE_BEGIN
 
-class EnvironmentMap {
+class EnvironmentMap 
+{
 public:
 	EnvironmentMap(const std::string &filename, real rotate, float scale = 1.f) {
-		this->scale = scale;
+		this->mScale = scale;
 		LoadImage(filename, rotate, scale);
-		distribution.reset(ConvertImageToPdf(image.get()));
+		mpDistribution.reset(ConvertImageToPdf(mpImage.get()));
 	}
 
 	Vec3 Sample(Vec3* dir, real* pdfW, const Vec2& u) const {
 		real uv[2];
 		real pdf;
-		distribution->SampleContinuous(u[0], u[1], uv, &pdf);
-		real sinTheta = SinTheta(uv[1], image->Height());
+		mpDistribution->SampleContinuous(u[0], u[1], uv, &pdf);
+		real sinTheta = SinTheta(uv[1], mpImage->Height());
 		if (sinTheta == 0)
 			*pdfW = 0;
 		else
@@ -33,12 +34,12 @@ public:
 
 		if (pdfW) {
 			Vec2 uv = DirToLatLong(normDir);
-			real sinTheta = SinTheta(uv[1], image->Height());
+			real sinTheta = SinTheta(uv[1], mpImage->Height());
 
 			if (sinTheta == 0) 
 				*pdfW = 0;
 			else
-				*pdfW = distribution->Pdf(uv[0], uv[1]) / (2 * PI * PI * sinTheta);
+				*pdfW = mpDistribution->Pdf(uv[0], uv[1]) / (2 * PI * PI * sinTheta);
 
 		}
 		DEBUG_PIXEL_IF(ThreadIndex()) {
@@ -52,28 +53,28 @@ public:
 	real PdfDir(const Vec3& dir) const {
 		Vec3 normDir = dir.Norm();
 		Vec2 uv = DirToLatLong(normDir);
-		real sinTheta = SinTheta(uv[1], image->Height());
+		real sinTheta = SinTheta(uv[1], mpImage->Height());
 		if (sinTheta == 0)
 			return 0;
 		else 
-			return distribution->Pdf(uv[0], uv[1]) / (2 * PI * PI * sinTheta);
+			return mpDistribution->Pdf(uv[0], uv[1]) / (2 * PI * PI * sinTheta);
 	}
 
 	Vec3 LookupRadiance(real u, real v) const {
-		return image->Sample(Vec2(u, 1 - v)) * scale;
+		return mpImage->Sample(Vec2(u, 1 - v)) * mScale;
 	}
 private:
 
 	void LoadImage(const std::string& filename, real rotate, real scale) {
 
 		ImageTexture<Vec3>* imageTexture = new ImageTexture<Vec3>(filename);
-		image.reset(imageTexture);
+		mpImage.reset(imageTexture);
 		
 	}
 
 	Distribution2D* ConvertImageToPdf(const ImageTexture<Vec3>* pImage) const {
-		int height = image->Height();
-		int width = image->Width();
+		int height = mpImage->Height();
+		int width = mpImage->Width();
 		real* data = new real[width * height];
 		for (int r = 0; r < height; ++r) {
 			real v = (real)(r + 0.5f) / (real)(height);
@@ -126,9 +127,9 @@ private:
 	}
 
 public:
-	std::unique_ptr<ImageTexture<Vec3>> image;
-	std::unique_ptr<Distribution2D> distribution;
-	real scale;
+	std::unique_ptr<ImageTexture<Vec3>> mpImage;
+	std::unique_ptr<Distribution2D> mpDistribution;
+	real mScale;
 };
 
 NAMESPACE_END

@@ -4,12 +4,13 @@
 
 NAMESPACE_BEGIN
 
-Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, MemoryPool& arena) const {
+Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, MemoryPool& arena) const 
+{
 	Ray ray = r;
 	bool deltaBoundEvent = false;
 	Vec3 throughput = Vec3(1, 1, 1);
 	Vec3 L;
-	for (int i = 0; i < maxDepth; ++i) {
+	for (int i = 0; i < mMaxDepth; ++i) {
 		Intersection isect;
 		bool intersect = scene.Intersect(ray, &isect);
 		MediumIntersection mi;
@@ -18,7 +19,7 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 		real eqLightProb;
 		real eqLightPdf;
 		Vec3 eqLightLe;
-		if (useEquiAngularSample) {
+		if (mUseEquiAngularSample) {
 			const Light* light = scene.SampleOneLight(&eqLightProb, rand());
 			eqLightLe = light->SampleOnePoint(&eqLightPoint, &eqLightPdf, Vec2(rand(), rand()));
 			if (ray.mpMedium) throughput *= ray.mpMedium->EquiAngularSampling(ray, rand, arena, eqLightPoint, &mi);
@@ -31,7 +32,7 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 		if (throughput == Vec3()) break;
 
 		if (mi.IsValid()) {
-			if (useEquiAngularSample) {
+			if (mUseEquiAngularSample) {
 				L += throughput * ConnectToLight(scene, rand, mi, eqLightPoint, eqLightLe, eqLightPdf) / eqLightProb;
 				Vec3 wi;
 				mi.phase->Sample_p(-ray.mDir, &wi, Vec2(rand(), rand()));
