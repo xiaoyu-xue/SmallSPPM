@@ -656,8 +656,8 @@ int main(int argc, char *argv[]) {
 
 	std::cout << GGXDistribution::RoughnessToAlpha(0.118) << std::endl;
 
-	TestSPPM5(argc, argv);
-	//TestPathTracing(argc, argv);
+	//TestSPPM5(argc, argv);
+	TestPathTracing(argc, argv);
 	//TestVolPathTracing(argc, argv);
 	//TestTransmittance();
 
