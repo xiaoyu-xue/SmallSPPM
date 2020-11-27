@@ -12,46 +12,55 @@
 
 NAMESPACE_BEGIN
 
-class Scene {
+class Scene
+{
+private:
+	std::vector<std::shared_ptr<Primitive>> mPrimitives;
+	std::vector<std::shared_ptr<Light>> mLights;
+	std::shared_ptr<Light> mpEnvLight = nullptr;
+	std::unique_ptr<Distribution1D> mLightPowerDistribution;
+	std::shared_ptr<Accelerator> mAccelerator;
+	int64 mShapeNum;
+	int64 mPrimitiveNum;
 public:
 	void Initialize() {
-		for (auto light : lights) {
+		for (auto light : mLights) {
 			light->Initialize(*this);
 		}
-		lightPowerDistribution = ComputeLightPowerDistribution();
-		accelerator->SetPrimitives(primitives);
-		shapeNum = 0;
+		mLightPowerDistribution = ComputeLightPowerDistribution();
+		mAccelerator->SetPrimitives(mPrimitives);
+		mShapeNum = 0;
 	}
 
 	void SetAccelerator(const std::shared_ptr<Accelerator>& pAccelerator) {
-		accelerator = pAccelerator;
+		mAccelerator = pAccelerator;
 	}
 
 	void AddPrimitive(std::shared_ptr<Shape> shape, std::shared_ptr<Material> material, MediumInterface mi = MediumInterface()) {
-		shape->shapeId = shapeNum;
+		shape->shapeId = mShapeNum;
 		std::shared_ptr<Primitive> primitive =
 			std::make_shared<GeometryPrimitive>(shape, material, nullptr, mi);
-		primitive->primId = primitiveNum;
-		primitives.push_back(primitive);
-		++shapeNum;
-		++primitiveNum;
+		primitive->mPrimId = mPrimitiveNum;
+		mPrimitives.push_back(primitive);
+		++mShapeNum;
+		++mPrimitiveNum;
 	}
 
 	void AddPrimitive(std::shared_ptr<Primitive> primitive) {
 		Shape* shape = primitive->GetShape();
 		if (shape) {
-			shape->shapeId = shapeNum;
-			++shapeNum;
+			shape->shapeId = mShapeNum;
+			++mShapeNum;
 		}
-		primitive->primId = primitiveNum;
-		primitives.push_back(primitive);
-		++primitiveNum;
+		primitive->mPrimId = mPrimitiveNum;
+		mPrimitives.push_back(primitive);
+		++mPrimitiveNum;
 	}
 
 	void AddLight(std::shared_ptr<Light> light) {
-		lights.push_back(light);
+		mLights.push_back(light);
 		if (light->IsEnvironmentLight()) {
-			envLight = light;
+			mpEnvLight = light;
 		}
 	}
 
@@ -67,39 +76,39 @@ public:
 	}
 
 	const Light* GetEnvironmentLight() const {
-		return envLight.get();
+		return mpEnvLight.get();
 	}
 
 	bool Intersect(const Ray& r, Intersection* isect) const {
-		return accelerator->Intersect(r, isect);
+		return mAccelerator->Intersect(r, isect);
 	}
 
 	bool Intersect(const Ray& r) const {
-		return accelerator->Intersect(r);
+		return mAccelerator->Intersect(r);
 	}
 
 	bool IntersectTr(Ray& ray, StateSequence& rand, Intersection* isect, Vec3* Tr) const;
 
 	const std::vector<std::shared_ptr<Light>>& GetLights() const {
-		return lights;
+		return mLights;
 	}
 
 	Light* SampleOneLight(real *lightPdf, real u) const {
-		int nLights = (int)(lights.size());
+		int nLights = (int)(mLights.size());
 		int lightNum;
-		if (lightPowerDistribution != nullptr) {
-			lightNum = lightPowerDistribution->SampleDiscrete(u, lightPdf);
+		if (mLightPowerDistribution != nullptr) {
+			lightNum = mLightPowerDistribution->SampleDiscrete(u, lightPdf);
 			if (*lightPdf == 0) return nullptr;
 		}
 		else {
 			lightNum = std::min((int)(u * nLights), nLights - 1);
 			*lightPdf = 1.f / nLights;
 		}
-		return lights[lightNum].get();
+		return mLights[lightNum].get();
 	}
 
 	const std::vector<std::shared_ptr<Primitive>>& GetPrimitives() const {
-		return primitives;
+		return mPrimitives;
 	}
 
 	void QueryIntersectionInfo(const Ray& ray, Intersection* isect) const;
@@ -109,22 +118,13 @@ public:
 private:
 
 	std::unique_ptr<Distribution1D> ComputeLightPowerDistribution() {
-		if (lights.size() == 0) return nullptr;
+		if (mLights.size() == 0) return nullptr;
 		std::vector<real> lightPower;
-		for (const auto &light : lights)
+		for (const auto &light : mLights)
 			lightPower.push_back(light->Power().Y());
 		return std::unique_ptr<Distribution1D>(
 			new Distribution1D(&lightPower[0], (int)lightPower.size()));
 	}
-
-private:
-	std::vector<std::shared_ptr<Primitive>> primitives;
-	std::vector<std::shared_ptr<Light>> lights;
-	std::shared_ptr<Light> envLight = nullptr;
-	std::unique_ptr<Distribution1D> lightPowerDistribution;
-	std::shared_ptr<Accelerator> accelerator;
-	int64 shapeNum;
-	int64 primitiveNum;
 };
 
 NAMESPACE_END

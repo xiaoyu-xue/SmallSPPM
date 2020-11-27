@@ -564,7 +564,7 @@ void TestPathTracing(int argc, char* argv[]) {
 	std::shared_ptr<SamplerEnum> sobolSamplerEnum = std::shared_ptr<SamplerEnum>(new SobolEnum(resX, resY));
 
 	//std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(100, 20, sobolSampler, sobolSamplerEnum));
-	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(50, 10, randomSampler, samplerEnum));
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(100, 10, randomSampler, samplerEnum));
 
 	fprintf(stderr, "Load Scene ...\n");
 
@@ -656,8 +656,8 @@ int main(int argc, char *argv[]) {
 
 	std::cout << GGXDistribution::RoughnessToAlpha(0.118) << std::endl;
 
-	//TestSPPM5(argc, argv);
-	TestPathTracing(argc, argv);
+	TestSPPM5(argc, argv);
+	//TestPathTracing(argc, argv);
 	//TestVolPathTracing(argc, argv);
 	//TestTransmittance();
 

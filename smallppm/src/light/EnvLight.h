@@ -8,10 +8,11 @@ NAMESPACE_BEGIN
 struct Ray;
 class Intersection;
 
-class EnvironmentLight : public Light {
+class EnvironmentLight : public Light
+{
 public:
 	EnvironmentLight(const std::string& filename, real rotate, real scale = 1.f) {
-		envMap.reset(new EnvironmentMap(filename, rotate, scale));
+		mpEnvMap.reset(new EnvironmentMap(filename, rotate, scale));
 	}
 
 	void Initialize(const Scene& scene);
@@ -28,9 +29,9 @@ public:
 	bool IsEnvironmentLight() const override { return true; }
 
 private:
-	std::unique_ptr<EnvironmentMap> envMap;
-	Vec3 center;
-	real radius;
+	std::unique_ptr<EnvironmentMap> mpEnvMap;
+	Vec3 mCenter;
+	real mRadius;
 };
 
 NAMESPACE_END

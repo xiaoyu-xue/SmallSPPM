@@ -20,9 +20,9 @@ public:
 	virtual real Pdf(const Vec3& wo, const Vec3& wh) const;
 
 protected:
-	MicrofacetDistribution(bool sampleVisibleArea) : sampleVisibleArea(sampleVisibleArea) {}
+	MicrofacetDistribution(bool sampleVisibleArea) : mSampleVisibleArea(sampleVisibleArea) {}
 
-	const bool sampleVisibleArea;
+	const bool mSampleVisibleArea;
 
 };
 
@@ -38,15 +38,18 @@ protected:
 //	real alphax, alphay;
 //};
 
-class GGXDistribution : public MicrofacetDistribution {
+class GGXDistribution : public MicrofacetDistribution 
+{
+private:
+	real mAlphax, mAlphay;
 public:
 	GGXDistribution(real alpha, bool samplevis = false)
-		: MicrofacetDistribution(samplevis), alphax(alpha), alphay(alpha) {
+		: MicrofacetDistribution(samplevis), mAlphax(alpha), mAlphay(alpha) {
 
 	}
 
 	GGXDistribution(real alphax, real alphay, bool samplevis = false) 
-		: MicrofacetDistribution(samplevis), alphax(alphax), alphay(alphay) {
+		: MicrofacetDistribution(samplevis), mAlphax(alphax), mAlphay(alphay) {
 	}
 
 	real D(const Vec3& wh) const;
@@ -69,10 +72,6 @@ public:
 	real SmithG1(const Vec3& v, const Vec3& m) const;
 
 	real Pdf(const Vec3& wo, const Vec3& wh) const override;
-
-
-private:
-	real alphax, alphay;
 };
 
 NAMESPACE_END

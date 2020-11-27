@@ -3,11 +3,11 @@
 NAMESPACE_BEGIN
 
 void Scene::QueryIntersectionInfo(const Ray& ray, Intersection* isect) const {
-	primitives[isect->primId]->QueryIntersectionInfo(ray, isect);
+	mPrimitives[isect->primId]->QueryIntersectionInfo(ray, isect);
 }
 
 void Scene::GetBoundingSphere(Vec3* center, real* radius) const {
-	accelerator->WorldBound().GetBoundingSphere(center, radius);
+	mAccelerator->WorldBound().GetBoundingSphere(center, radius);
 }
 
 

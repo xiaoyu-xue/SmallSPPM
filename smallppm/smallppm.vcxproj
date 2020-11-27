@@ -344,12 +344,14 @@
     <ClInclude Include="external\tbb\tbb_thread.h" />
     <ClInclude Include="external\tbb\tick_count.h" />
     <ClInclude Include="external\tiny_obj_loader\tiny_obj_loader.h" />
+    <ClInclude Include="src\common\Dict.h" />
     <ClInclude Include="src\ForwardDecl.h" />
     <ClInclude Include="src\math\AABB.h" />
     <ClInclude Include="src\accelerator\Accelerator.h" />
     <ClInclude Include="src\light\AreaLight.h" />
     <ClInclude Include="src\container\Array.h" />
     <ClInclude Include="src\common\Platform.h" />
+    <ClInclude Include="src\math\Frame.h" />
     <ClInclude Include="src\simd\AVX.h" />
     <ClInclude Include="src\accelerator\BruteForceAccel.h" />
     <ClInclude Include="src\bsdf\BSDF.h" />

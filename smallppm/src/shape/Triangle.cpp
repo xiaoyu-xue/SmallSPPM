@@ -171,7 +171,7 @@ bool Triangle::Intersect(const Ray& ray, Intersection* isect, real* t) const {
 
 	// Compute _t_ to intersection point
 	real tHit = Dot(e2, s2) * invDivisor;
-	if (tHit < ray.tMin || tHit > ray.tMax)
+	if (tHit < ray.m_tMin || tHit > ray.m_tMax)
 		return false;
 
 	*t = tHit;
@@ -213,7 +213,7 @@ bool Triangle::Intersect(const Ray& ray) const {
 
 	// Compute _t_ to intersection point
 	real tHit = Dot(e2, s2) * invDivisor;
-	if (tHit < ray.tMin || tHit > ray.tMax)
+	if (tHit < ray.m_tMin || tHit > ray.m_tMax)
 		return false;
 
 	return true;

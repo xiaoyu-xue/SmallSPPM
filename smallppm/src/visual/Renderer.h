@@ -5,23 +5,25 @@
 
 NAMESPACE_BEGIN
 
-class Renderer {
+class Renderer 
+{
+private:
+	std::shared_ptr<Scene> mpScene;
+	std::shared_ptr<Integrator> mpIntegrator;
+	std::shared_ptr<Film> mpFilm;
+	std::shared_ptr<Camera> mpCamera;
 public:
 	Renderer(const std::shared_ptr<Scene> &pScene, const std::shared_ptr<Camera> &pCamera, 
-		const std::shared_ptr<Integrator> &pIntegrator, const std::shared_ptr<Film> &pFilm) :
-		scene(pScene), integrator(pIntegrator), film(pFilm), camera(pCamera) {
+		const std::shared_ptr<Integrator> &pIntegrator, const std::shared_ptr<Film> &pFilm) 
+		: mpScene(pScene), mpIntegrator(pIntegrator), mpFilm(pFilm), mpCamera(pCamera) 
+	{
 
 	}
-	void Render() {
-		integrator->Render(*scene, *camera);
-		film->SaveImage();
+	void Render() 
+	{
+		mpIntegrator->Render(*mpScene, *mpCamera);
+		mpFilm->SaveImage();
 	}
-private:
-	std::shared_ptr<Scene> scene;
-	std::shared_ptr<Integrator> integrator;
-	std::shared_ptr<Film> film;
-	std::shared_ptr<Camera> camera;
-	
 };
 
 NAMESPACE_END

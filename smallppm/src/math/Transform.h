@@ -219,7 +219,7 @@ FORCE_INLINE Ray Transform::operator()(const Ray& r) const {
 	Vector3 d = this->TransformVector(r.mDir);
 
 	real length2 = d.Length2();
-	real tMax = r.tMax, tMin = r.tMin;
+	real tMax = r.m_tMax, tMin = r.m_tMin;
 	if(length2 > 0) {
 		real dt = Dot(Abs(d), oError) / length2;
 		o += d * dt;
@@ -232,8 +232,8 @@ FORCE_INLINE Ray Transform::operator()(const Ray& r) const {
 FORCE_INLINE Ray Transform::operator()(const Ray &r, Vector3 *oError, Vector3 *dError) const {
 	Vector3 o = (*this)(r.mOrig, oError);
 	Vector3 d = this->TransformVector(r.mDir, dError);
-	real tMax = r.tMax;
-	real tMin = r.tMin;
+	real tMax = r.m_tMax;
+	real tMin = r.m_tMin;
 	real length2 = d.Length2();
 	if (length2 > 0) {
 		real dt = Dot(Abs(d), *oError) / length2;

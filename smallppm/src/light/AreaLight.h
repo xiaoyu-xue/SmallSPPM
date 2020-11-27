@@ -9,74 +9,61 @@
 
 NAMESPACE_BEGIN
 
-class AreaLight : public Light {
+class AreaLight : public Light 
+{
+private:
+	std::shared_ptr<Shape> mpShape;
+	Vec3 mLemit;
 public:
-	AreaLight(const std::shared_ptr<Shape>& pShape) : shape(pShape) {}
-	AreaLight(const std::shared_ptr<Shape>& pShape, const Vec3 & Lemit) : shape(pShape), Lemit(Lemit) {}
-	//Vec3 Illumination(const Intersection &isect, const std::shared_ptr<BSDF> &bsdf,
-	//	const Vec3 &importance, Vec3 *dir, Intersection *lightPoint, const Vec2 &u) const override {
-	//	real pdf;
-	//	*lightPoint = shape->Sample(isect, &pdf, u);
-	//	*dir = (lightPoint->hit - isect.hit).Norm();
-	//	Vec3 f = bsdf->f(isect.wo, *dir);
-	//	return importance * f * std::abs((*dir).Dot(isect.n)) * Emission(*lightPoint, *dir) / pdf;
-	//}
+	AreaLight(const std::shared_ptr<Shape>& pShape) : mpShape(pShape) {}
+	AreaLight(const std::shared_ptr<Shape>& pShape, const Vec3 & Lemit) : mpShape(pShape), mLemit(Lemit) {}
 
-	Vec3 Sample_Li(const Intersection &isect, Vec3 *wi, real *pdf, Intersection *lightPoint, const Vec2 &u) const override {
-		//lightPoint->hit = shape->Sample(isect, pdf, u);
-		//lightPoint->n = lightPoint->nl = shape->GetNorm(lightPoint->hit);
-		*lightPoint = shape->Sample(isect, pdf, u);
+	Vec3 Sample_Li(const Intersection &isect, Vec3 *wi, real *pdf, Intersection *lightPoint, const Vec2 &u) const override 
+	{
+		*lightPoint = mpShape->Sample(isect, pdf, u);
 		*wi = (lightPoint->hit - isect.hit).Norm();
 		return Emission(*lightPoint, -*wi);
 	}
 
-	real Pdf_Li(const Intersection &isect, const Vec3 &wi) const override {
-		return shape->Pdf(isect, wi);
+	real Pdf_Li(const Intersection &isect, const Vec3 &wi) const override 
+	{
+		return mpShape->Pdf(isect, wi);
 	}
 
-	Vec3 Emission() const override {
-		return Lemit;
+	Vec3 Emission() const override 
+	{
+		return mLemit;
 	}
 
-	Vec3 Emission(const Intersection &isect, const Vec3 &w) const override {
-		if (Dot(isect.n, w) > 0) return Lemit;
+	Vec3 Emission(const Intersection &isect, const Vec3 &w) const override 
+	{
+		if (Dot(isect.n, w) > 0) return mLemit;
 		else return Vec3(0, 0, 0);
-		//return Lemit;
+
 	}
 
-	//int64 GetId() const override {
-	//	return shape->GetId();
-	//}
-
-	Vec3 Power() const override {
-		return Emission() * shape->Area() * PI;
+	Vec3 Power() const override 
+	{
+		return Emission() * mpShape->Area() * PI;
 	}
 
 	bool IsAreaLight() const override { return true; }
 
-	std::shared_ptr<Shape> GetShapePtr() const override { return shape; }
+	std::shared_ptr<Shape> GetShapePtr() const override { return mpShape; }
 
-	Vec3 SampleOnePoint(Intersection* isect, real* pdf, const Vec2& u) const override {
-		*isect = shape->Sample(pdf, u);
-		return Lemit;
+	Vec3 SampleOnePoint(Intersection* isect, real* pdf, const Vec2& u) const override 
+	{
+		*isect = mpShape->Sample(pdf, u);
+		return mLemit;
 	}
 
 protected:
-	//void SampleOnLight(Vec3 *pos, Vec3 *dir, Vec3 *lightNorm, real *pdfPos, real *pdfDir, const Vec2 &u, const Vec2 &v) const override{
-	//	//sample a position
-	//	*pos = shape->Sample(pdfPos, u);
-	//	*lightNorm = shape->GetNorm(*pos);
-	//	Vec3 ss, ts;
-	//	CoordinateSystem(*lightNorm, &ss, &ts);
-	//	Vec3 dirLocal = CosineSampleHemisphere(v);
-	//	real cosTheta = dirLocal.z;
-	//	*dir = (ss * dirLocal.x + ts * dirLocal.y + *lightNorm * dirLocal.z).Norm();
-	//	*pdfDir = CosineHemispherePdf(cosTheta);
-	//}
 
-	void SampleOnLight(Intersection *isect, Vec3 *dir, real *pdfPos, real *pdfDir, const Vec2 &u, const Vec2 &v) const override {
+
+	void SampleOnLight(Intersection *isect, Vec3 *dir, real *pdfPos, real *pdfDir, const Vec2 &u, const Vec2 &v) const override 
+	{
 		//sample a position
-		*isect = shape->Sample(pdfPos, u);
+		*isect = mpShape->Sample(pdfPos, u);
 		Vec3 ss, ts;
 		CoordinateSystem(isect->n, &ss, &ts);
 		Vec3 dirLocal = CosineSampleHemisphere(v);
@@ -84,9 +71,6 @@ protected:
 		*dir = (ss * dirLocal.x + ts * dirLocal.y + isect->n * dirLocal.z).Norm();
 		*pdfDir = CosineHemispherePdf(cosTheta);
 	}
-private:
-	std::shared_ptr<Shape> shape;
-	Vec3 Lemit;
 };
 
 NAMESPACE_END

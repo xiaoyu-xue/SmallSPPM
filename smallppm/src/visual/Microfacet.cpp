@@ -156,7 +156,7 @@ static Vec3 GGXSampleVisible(const Vec3& _wi, const Vec2& sample, real alphaU, r
 
 
 real MicrofacetDistribution::Pdf(const Vec3& wo, const Vec3& wh) const {
-	if (sampleVisibleArea) {
+	if (mSampleVisibleArea) {
 		DEBUG_PIXEL_IF(ThreadIndex()) {
 			std::cout << "D: " << D(wh) << " G1: " << G1(wo, wh) << std::endl;
 		}
@@ -171,13 +171,13 @@ real GGXDistribution::Lambda(const Vec3& w) const {
 	real tanTheta = BSDFCoordinate::TanTheta(w);
 	if (std::isinf(std::abs(tanTheta))) return 0.f;
 	real inv_a2;
-	if (alphax == alphay) {
-		inv_a2 = alphax * alphax * tanTheta * tanTheta;
+	if (mAlphax == mAlphay) {
+		inv_a2 = mAlphax * mAlphax * tanTheta * tanTheta;
 	}
 	else {
 		real cos2Phi = BSDFCoordinate::Cos2Phi(w);
 		real sin2Phi = BSDFCoordinate::Sin2Phi(w);
-		real alpha_o = std::sqrt(cos2Phi * alphax * alphax + sin2Phi * alphay * alphay);
+		real alpha_o = std::sqrt(cos2Phi * mAlphax * mAlphax + sin2Phi * mAlphay * mAlphay);
 		inv_a2 = alpha_o * alpha_o * tanTheta * tanTheta;
 	}
 	return (-1 + std::sqrt(1 + inv_a2)) / 2;
@@ -234,14 +234,14 @@ real GGXDistribution::D(const Vec3& m) const {
 		return 0.0f;
 
 	real cosTheta2 = BSDFCoordinate::Cos2Theta(m);
-	real beckmannExponent = ((m.x * m.x) / (alphax * alphax)
-		+ (m.y * m.y) / (alphay * alphay)) / cosTheta2;
+	real beckmannExponent = ((m.x * m.x) / (mAlphax * mAlphax)
+		+ (m.y * m.y) / (mAlphay * mAlphay)) / cosTheta2;
 
 	real result;
 	
 	/* GGX / Trowbridge-Reitz distribution function for rough surfaces */
 	real root = ((real)1 + beckmannExponent) * cosTheta2;
-	result = (real)1 / (PI * alphax * alphay * root * root);
+	result = (real)1 / (PI * mAlphax * mAlphay * root * root);
 	
 
 	/* Prevent potential numerical issues in other stages of the model */
@@ -263,10 +263,10 @@ real GGXDistribution::G(const Vec3& wo, const Vec3& wi, const Vec3& wh) const {
 }
 
 Vec3 GGXDistribution::Sample_wh(const Vec3& wo, const Vec2& u) const {
-	if (!sampleVisibleArea) {
+	if (!mSampleVisibleArea) {
 		Vec3 wh;
-		if (alphax == alphay) {
-			real alpha = alphax;
+		if (mAlphax == mAlphay) {
+			real alpha = mAlphax;
 			real alpha2 = alpha * alpha;
 			real tan2Theta = alpha2 * u[0] / (1 - u[0]);
 			real cosTheta = 1.f / std::sqrt(1 + tan2Theta);
@@ -276,7 +276,7 @@ Vec3 GGXDistribution::Sample_wh(const Vec3& wo, const Vec2& u) const {
 			wh = SphericalDirection(sinTheta, cosTheta, phi);
 		}
 		else {
-			real tanPhi = alphay / alphax * std::tan(2 * PI * u[1]);
+			real tanPhi = mAlphay / mAlphax * std::tan(2 * PI * u[1]);
 			real phi;
 			if (u[1] >= 0 && u[1] <= 0.25) {
 				phi = std::atan(tanPhi);
@@ -291,8 +291,8 @@ Vec3 GGXDistribution::Sample_wh(const Vec3& wo, const Vec2& u) const {
 			real cos2Phi = cosPhi * cosPhi;
 			real sinPhi = std::sin(phi);
 			real sin2Phi = sinPhi * sinPhi;
-			real alphax2 = alphax * alphax;
-			real alphay2 = alphay * alphay;
+			real alphax2 = mAlphax * mAlphax;
+			real alphay2 = mAlphay * mAlphay;
 			real tanTheta = u[0] / ((1 - u[0]) * (cos2Phi / alphax2 + sin2Phi / alphay2));
 			real theta = std::atan(tanTheta);
 			real cosTheta = std::cos(theta);
@@ -317,7 +317,7 @@ Vec3 GGXDistribution::Sample_wh(const Vec3& wo, const Vec2& u) const {
 //https://hal.archives-ouvertes.fr/hal-01509746
 Vec3 GGXDistribution::SampleGGXVNDF(const Vec3& v_, const Vec2& u) const {
 	//stretch view
-	Vec3 v = Vec3(alphax * v_.x, alphay * v_.y, v_.z).Norm();
+	Vec3 v = Vec3(mAlphax * v_.x, mAlphay * v_.y, v_.z).Norm();
 
 	//orthonormal basis
 	Vec3 T1 = (v.z < 0.9999) ? Cross(v, Vec3(0, 0, 1)).Norm() : Vec3(1, 0, 0);
@@ -334,7 +334,7 @@ Vec3 GGXDistribution::SampleGGXVNDF(const Vec3& v_, const Vec2& u) const {
 	Vec3 dir = P1 * T1 + P2 * T2 + std::sqrt(std::max(real(0), 1 - P1 * P1 - P2 * P2)) * v;
 
 	//unstretch
-	dir = Vec3(alphax * dir.x, alphay * dir.y, std::max(real(0), dir.z)).Norm();
+	dir = Vec3(mAlphax * dir.x, mAlphay * dir.y, std::max(real(0), dir.z)).Norm();
 	return dir;
 }
 
@@ -345,13 +345,13 @@ Vec3 GGXDistribution::SampleGGXVNDF(const Vec3& v_, const Vec2& u) const {
 real GGXDistribution::ProjectRoughness(const Vec3& v) const {
 	real invSinTheta2 = 1 / BSDFCoordinate::Sin2Theta(v);
 
-	if (alphax == alphay || invSinTheta2 <= 0)
-		return alphax;
+	if (mAlphax == mAlphay || invSinTheta2 <= 0)
+		return mAlphax;
 
 	real cosPhi2 = v.x * v.x * invSinTheta2;
 	real sinPhi2 = v.y * v.y * invSinTheta2;
 
-	return std::sqrt(cosPhi2 * alphax * alphax + sinPhi2 * alphay * alphay);
+	return std::sqrt(cosPhi2 * mAlphax * mAlphax + sinPhi2 * mAlphay * mAlphay);
 }
 
 real GGXDistribution::SmithG1(const Vec3& v, const Vec3& m) const {

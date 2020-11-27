@@ -8,12 +8,14 @@
 
 NAMESPACE_BEGIN
 
-FORCE_INLINE real PowerHeuristic(int nf, real fPdf, int ng, real gPdf) {
+FORCE_INLINE real PowerHeuristic(int nf, real fPdf, int ng, real gPdf) 
+{
 	real f = nf * fPdf, g = ng * gPdf;
 	return (f * f) / (f * f + g * g);
 }
 
-class Integrator {
+class Integrator
+{
 public:
 	virtual void Render(const Scene &scene, const Camera &camera) = 0;
 

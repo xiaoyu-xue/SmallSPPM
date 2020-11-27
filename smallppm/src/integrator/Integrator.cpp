@@ -7,7 +7,8 @@
 NAMESPACE_BEGIN
 
 Vec3 Integrator::DirectIllumination(const Scene& scene, const Intersection& isect, 
-	real uLight, const Vec2& u, const Vec3& v, StateSequence& rand, bool handleMedia) {
+	real uLight, const Vec2& u, const Vec3& v, StateSequence& rand, bool handleMedia) 
+{
 	Vec3 L;
 	//Sample light
 	real lightSamplingPdf;

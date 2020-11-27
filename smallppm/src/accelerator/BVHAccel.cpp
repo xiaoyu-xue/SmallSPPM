@@ -145,7 +145,7 @@ static inline bool IntersectP(const AABB& bounds, const Ray& ray,
         tmin = tzmin;
     if (tzmax < tmax)
         tmax = tzmax;
-    return (tmin < ray.tMax) && (tmax > ray.tMin);
+    return (tmin < ray.m_tMax) && (tmax > ray.m_tMin);
 }
 
 
