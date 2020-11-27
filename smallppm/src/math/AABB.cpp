@@ -7,9 +7,9 @@ bool AABB::Intersect(const Ray& ray, real* hitt0, real* hitt1) const {
 	real t0 = 0, t1 = ray.tMax;
 	for (int i = 0; i < 3; ++i) {
 		// Update interval for _i_th bounding box slab
-		real invRayDir = 1 / ray.d[i];
-		real tNear = (minPoint[i] - ray.o[i]) * invRayDir;
-		real tFar = (maxPoint[i] - ray.o[i]) * invRayDir;
+		real invRayDir = 1 / ray.mDir[i];
+		real tNear = (minPoint[i] - ray.mOrig[i]) * invRayDir;
+		real tFar = (maxPoint[i] - ray.mOrig[i]) * invRayDir;
 
 		// Update parametric interval from slab intersection $t$ values
 		if (tNear > tFar) std::swap(tNear, tFar);

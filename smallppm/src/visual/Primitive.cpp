@@ -11,7 +11,7 @@ bool Primitive::Intersect(const Ray& r, Intersection* isect) const {
 		if (mediumInterface.IsMediumTransition())
 			isect->mediumInterface = mediumInterface;
 		else
-			isect->mediumInterface = MediumInterface(r.medium);
+			isect->mediumInterface = MediumInterface(r.mpMedium);
 		return true;
 	}
 	return false;

@@ -7,12 +7,15 @@ NAMESPACE_BEGIN
 extern const unsigned long long vdc_sobol_matrices[][52];
 extern const unsigned long long vdc_sobol_matrices_inv[][52];
 
-class SobolEnum : public SamplerEnum {
+class SobolEnum : public SamplerEnum 
+{
+private:
+    int mResolution, mLog2Resolution;
 public:
 	SobolEnum() {}
 
-	SobolEnum(uint32 width, uint32 height) : resX(width), resY(height) {
-		mResolution = RoundUpPow2(std::max((int32)resX,  (int32)resY));
+	SobolEnum(uint32 width, uint32 height) : SamplerEnum(width, height) {
+		mResolution = RoundUpPow2(std::max((int32)mResX,  (int32)mResY));
 		mLog2Resolution = Log2Int(mResolution);
 		assert(1 << mLog2Resolution == mResolution);
 	}
@@ -67,9 +70,6 @@ private:
 
         return index;
     }
-
-	uint32 resX, resY;
-	int mResolution, mLog2Resolution;
 };
 
 NAMESPACE_END

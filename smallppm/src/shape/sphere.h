@@ -29,8 +29,8 @@ public:
 			r = ray;
 		}
 
-		Vec3 po = r.o - p;
-		real vd = po.Dot(r.d), d2 = r.d.Dot(r.d), po2 = po.Dot(po);
+		Vec3 po = r.mOrig - p;
+		real vd = po.Dot(r.mDir), d2 = r.mDir.Dot(r.mDir), po2 = po.Dot(po);
 		real det = vd * vd - d2 * po2 + d2 * rad * rad;
 
 
@@ -62,12 +62,12 @@ public:
 		//isect->wo = -1 * r.d;
 		//isect->pError = Abs(p) * gamma(1) + Abs(scaledDir) * gamma(6);
 
-		Vec3 hit = r.o + r.d * (tHit);
+		Vec3 hit = r.mOrig + r.mDir * (tHit);
 		Vec3 scaledDir = (hit - p) * rad / Distance(hit, p);
 		hit = p + scaledDir;
 		Vec3 n = GetNorm(hit);
-		Vec3 nl = n.Dot(r.d) < 0 ? n : n * -1;
-		Vec3 wo = -1 * r.d;
+		Vec3 nl = n.Dot(r.mDir) < 0 ? n : n * -1;
+		Vec3 wo = -1 * r.mDir;
 		Vec3 pError = Abs(p) * gamma(1) + Abs(scaledDir) * gamma(6);
 
 		//Compute dpdu, dpdv
@@ -136,9 +136,9 @@ public:
 			r = ray;
 		}
 
-		Vec3 op = p - r.o;
-		Vec3 v = r.o - p;
-		real vd = v.Dot(r.d), d2 = r.d.Dot(r.d), v2 = v.Dot(v);
+		Vec3 op = p - r.mOrig;
+		Vec3 v = r.mOrig - p;
+		real vd = v.Dot(r.mDir), d2 = r.mDir.Dot(r.mDir), v2 = v.Dot(v);
 		real det = vd * vd - d2 * v.Dot(v) + d2 * rad * rad;
 
 		if (det < 0) {

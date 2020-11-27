@@ -14,7 +14,7 @@ public:
 
 	Ray GenerateRay(int pixelX, int pixelY, const Vec2 &u, real offset) const override {
 
-		Vec3 sampledPos = RasterToWorld(Vec3(pixelX + u.x, pixelY + u.y, 0));
+		Vec3 sampledPos = RasterToWorld(Vec3(pixelX + u.x, pixelY + u.y, -1));
 
 		Vec3 dir = (sampledPos - pos).Norm();
 		return Ray(pos + dir * offset, dir, Inf, 0);

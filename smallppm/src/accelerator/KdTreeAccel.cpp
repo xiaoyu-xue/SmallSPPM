@@ -231,7 +231,7 @@ bool KdTreeAccel::Intersect(const Ray& ray, Intersection* isect) const {
 	}
 
 	// Prepare to traverse kd-tree for ray
-	Vector3f invDir(1 / ray.d.x, 1 / ray.d.y, 1 / ray.d.z);
+	Vector3f invDir(1 / ray.mDir.x, 1 / ray.mDir.y, 1 / ray.mDir.z);
 	constexpr int maxTodo = 64;
 	KdToDo todo[maxTodo];
 	int todoPos = 0;
@@ -247,13 +247,13 @@ bool KdTreeAccel::Intersect(const Ray& ray, Intersection* isect) const {
 
 			// Compute parametric distance along ray to split plane
 			int axis = node->SplitAxis();
-			real tPlane = (node->SplitPos() - ray.o[axis]) * invDir[axis];
+			real tPlane = (node->SplitPos() - ray.mOrig[axis]) * invDir[axis];
 
 			// Get node children pointers for ray
 			const KdAccelNode* firstChild, * secondChild;
 			int belowFirst =
-				(ray.o[axis] < node->SplitPos()) ||
-				(ray.o[axis] == node->SplitPos() && ray.d[axis] <= 0);
+				(ray.mOrig[axis] < node->SplitPos()) ||
+				(ray.mOrig[axis] == node->SplitPos() && ray.mDir[axis] <= 0);
 			if (belowFirst) {
 				firstChild = node + 1;
 				secondChild = &nodes[node->AboveChild()];
@@ -319,7 +319,7 @@ bool KdTreeAccel::Intersect(const Ray& ray) const {
 	}
 
 	// Prepare to traverse kd-tree for ray
-	Vector3f invDir(1 / ray.d.x, 1 / ray.d.y, 1 / ray.d.z);
+	Vector3f invDir(1 / ray.mDir.x, 1 / ray.mDir.y, 1 / ray.mDir.z);
 	constexpr int maxTodo = 64;
 	KdToDo todo[maxTodo];
 	int todoPos = 0;
@@ -362,13 +362,13 @@ bool KdTreeAccel::Intersect(const Ray& ray) const {
 
 			// Compute parametric distance along ray to split plane
 			int axis = node->SplitAxis();
-			real tPlane = (node->SplitPos() - ray.o[axis]) * invDir[axis];
+			real tPlane = (node->SplitPos() - ray.mOrig[axis]) * invDir[axis];
 
 			// Get node children pointers for ray
 			const KdAccelNode* firstChild, * secondChild;
 			int belowFirst =
-				(ray.o[axis] < node->SplitPos()) ||
-				(ray.o[axis] == node->SplitPos() && ray.d[axis] <= 0);
+				(ray.mOrig[axis] < node->SplitPos()) ||
+				(ray.mOrig[axis] == node->SplitPos() && ray.mDir[axis] <= 0);
 			if (belowFirst) {
 				firstChild = node + 1;
 				secondChild = &nodes[node->AboveChild()];

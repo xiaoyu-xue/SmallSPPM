@@ -104,13 +104,13 @@ void HeartSurface::QueryIntersectionInfo(const Ray& ray, Intersection* isect) co
 	Vec3 dpdu, dpdv;
 	CoordinateSystem(normal, &dpdu, &dpdv);
 	isect->ng = normal;
-	isect->nl = isect->ng.Dot(ray.d) < 0 ? isect->ng : isect->ng * -1;
+	isect->nl = isect->ng.Dot(ray.mDir) < 0 ? isect->ng : isect->ng * -1;
 	//std::cout << "nl: " << std::endl;
 	//std::cout << isect->nl << std::endl;
 	//std::cout << Sgn(Dot(normal, -ray.d)) * normal << std::endl;
 	isect->dpdu = dpdu;
 	isect->dpdv = dpdv;
-	isect->wo = (-ray.d).Norm();
+	isect->wo = (-ray.mDir).Norm();
 	isect->SetShading(normal, dpdu, dpdv);
 }
 

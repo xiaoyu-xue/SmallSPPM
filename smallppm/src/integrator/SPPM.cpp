@@ -45,7 +45,7 @@ void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray,
 		real pdf;
 
 		if (bsdf->IsDelta()) {
-			Vec3 f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec3(rand(), rand(), rand()));
+			Vec3 f = bsdf->Sample_f(-1 * r.mDir, &wi, &pdf, Vec3(rand(), rand(), rand()));
 			if (f == Vec3() || pdf == 0) return;
 			importance = f * std::abs(wi.Dot(isect.n)) * importance / pdf;
 			//r.o = isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n;
@@ -60,7 +60,7 @@ void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray,
 			Vec3 Ld = importance * DirectIllumination(scene, isect, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()), rand);
 			directillum[pixel] = directillum[pixel] + Ld;
 
-			Vec3 f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec3(rand(), rand(), rand()));
+			Vec3 f = bsdf->Sample_f(-1 * r.mDir, &wi, &pdf, Vec3(rand(), rand(), rand()));
 			if (f == Vec3() || pdf == 0) return;
 			importance = f * std::abs(wi.Dot(isect.n)) * importance / pdf;
 			r = isect.SpawnRay(wi);
@@ -73,7 +73,7 @@ void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray,
 			hp.pos = isect.hit;
 			hp.nrm = isect.nl;
 			hp.pix = pixel;
-			hp.outDir = -1 * r.d;
+			hp.outDir = -1 * r.mDir;
 			hitPoints[pixel] = hp;
 			if ((i == 0 || deltaBoundEvent) && isect.primitive->IsLight()) {
 				const Light* emissionShape = isect.primitive->GetLight();
@@ -101,7 +101,7 @@ void SPPM::TracePhoton(const Scene& scene, StateSequence& rand, const Ray& ray, 
 
 		Vec3 wi;
 		real pdf;
-		Vec3 f = bsdf->Sample_f(-1 * r.d, &wi, &pdf, Vec3(rand(), rand(), rand()));
+		Vec3 f = bsdf->Sample_f(-1 * r.mDir, &wi, &pdf, Vec3(rand(), rand(), rand()));
 		if (f == Vec3() || pdf == 0) break;
 		Vec3 estimation = f * std::abs(wi.Dot(isect.n)) / pdf;
 		if (bsdf->IsDelta()) {
@@ -122,12 +122,12 @@ void SPPM::TracePhoton(const Scene& scene, StateSequence& rand, const Ray& ray, 
 							real g = (photonNums[hitpoint->pix] * alpha + alpha) / (photonNums[hitpoint->pix] * alpha + 1.f);
 							radius2[hitpoint->pix] = radius2[hitpoint->pix] * g;
 							photonNums[hitpoint->pix] += 1;
-							Vec3 contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.d) * photonFlux;
+							Vec3 contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.mDir) * photonFlux;
 							flux[hitpoint->pix] = (flux[hitpoint->pix] + contribution) * g;
 						}
 						else {
 							hitpoint->m++;
-							Vec3 contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.d) * photonFlux;
+							Vec3 contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.mDir) * photonFlux;
 							flux[hitpoint->pix] = (flux[hitpoint->pix] + contribution);
 						}
 					}
