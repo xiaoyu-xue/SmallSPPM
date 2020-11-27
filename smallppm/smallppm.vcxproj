@@ -350,6 +350,7 @@
     <ClInclude Include="src\light\AreaLight.h" />
     <ClInclude Include="src\container\Array.h" />
     <ClInclude Include="src\common\Platform.h" />
+    <ClInclude Include="src\math\Frame.h" />
     <ClInclude Include="src\simd\AVX.h" />
     <ClInclude Include="src\accelerator\BruteForceAccel.h" />
     <ClInclude Include="src\bsdf\BSDF.h" />

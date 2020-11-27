@@ -872,6 +872,9 @@
     <ClInclude Include="src\volume\Homogeneous.h">
       <Filter>Header Files\media</Filter>
     </ClInclude>
+    <ClInclude Include="src\math\Frame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\image\svpng.inc">
