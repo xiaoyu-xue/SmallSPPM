@@ -1,4 +1,4 @@
 [submodule "external/tbb"]
-	path = smallppm/external/tbb
+	path = Gyunity/external/tbb
 	url = https://github.com/oneapi-src/oneTBB.git
 
