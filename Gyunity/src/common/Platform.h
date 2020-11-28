@@ -9,7 +9,7 @@
 
 // Windows
 #if defined(_WIN64)
-#define PLATFORM_WINDOWS
+#define GY_PLATFORM_WINDOWS
 #endif
 
 #if defined(_WIN32) && !defined(_WIN64)
@@ -19,7 +19,7 @@ static_assert(false, "32-bit Windows systems are not supported")
 // Compilers
 // MSVC
 #if defined(_MSC_VER)
-#define COMPILER_MSVC
+#define GY_COMPILER_MSVC
 #endif
 
 #   pragma warning(disable : 4275)

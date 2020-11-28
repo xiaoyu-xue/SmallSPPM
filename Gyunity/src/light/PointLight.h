@@ -18,7 +18,7 @@ public:
 		return 0;
 	}
 
-	FORCE_INLINE Vec3 Power() const override 
+	GY_FORCE_INLINE Vec3 Power() const override 
 	{
 		return 4 * PI * mI;
 	}

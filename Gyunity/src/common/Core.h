@@ -48,13 +48,13 @@ using real = float;
 using real_bit = uint32;
 #endif
 
-#if defined(PLATFORM_WINDOWS)
-#define FORCE_INLINE __forceinline
+#if defined(GY_PLATFORM_WINDOWS)
+#define GY_FORCE_INLINE __forceinline
 #else
 #define FORCE_INLINE inline __attribute__((always_inline))
 #endif
 
-#if defined(COMPILER_MSVC)
+#if defined(GY_COMPILER_MSVC)
 #define ALIGNED(x) __declspec(align(x))
 #endif
 

@@ -29,7 +29,7 @@ public:
 		CoordinateSystem(mZ, &mX, &mY);
 	}
 
-	FORCE_INLINE void SetFromZ(const Vec3& normal) 
+	GY_FORCE_INLINE void SetFromZ(const Vec3& normal) 
 	{
 		mZ = normal;
 		CoordinateSystem(mZ, &mX, &mY);
@@ -45,11 +45,11 @@ public:
 		return Vec3(Dot(v, mX), Dot(v, mY), Dot(v, mZ));
 	}
 
-	FORCE_INLINE const Vec3& Binormal() const { return mX; }
+	GY_FORCE_INLINE const Vec3& Binormal() const { return mX; }
 
-	FORCE_INLINE const Vec3& Tangent() const { return mY; }
+	GY_FORCE_INLINE const Vec3& Tangent() const { return mY; }
 
-	FORCE_INLINE const Vec3& Normal() const { return mZ; }
+	GY_FORCE_INLINE const Vec3& Normal() const { return mZ; }
 };
 
 GY_NAMESPACE_END

@@ -18,7 +18,7 @@ public:
 
 
 // Media Inline Functions
-FORCE_INLINE real PhaseHG(real cosTheta, real g) {
+GY_FORCE_INLINE real PhaseHG(real cosTheta, real g) {
     real denom = 1 + g * g + 2 * g * cosTheta;
     return INV_4PI * (1 - g * g) / (denom * std::sqrt(denom));
 }

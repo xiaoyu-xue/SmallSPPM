@@ -8,7 +8,7 @@
 
 GY_NAMESPACE_BEGIN
 
-FORCE_INLINE real PowerHeuristic(int nf, real fPdf, int ng, real gPdf) 
+GY_FORCE_INLINE real PowerHeuristic(int nf, real fPdf, int ng, real gPdf) 
 {
 	real f = nf * fPdf, g = ng * gPdf;
 	return (f * f) / (f * f + g * g);
