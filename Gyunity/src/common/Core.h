@@ -13,9 +13,11 @@
 #include <type_traits>
 #include <cstdint>
 #include <algorithm>
+#include <functional>
 #include <memory>
 #include <csignal>
 #include <vector>
+#include <map>
 #include <list>
 
 #define ISE_SSE

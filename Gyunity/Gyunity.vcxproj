@@ -169,6 +169,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="external\stb\stb_vorbis.c" />
+    <ClCompile Include="src\common\Interfaces.cpp" />
     <ClCompile Include="src\math\AABB.cpp" />
     <ClCompile Include="src\bsdf\BSDF.cpp" />
     <ClCompile Include="src\accelerator\BVHAccel.cpp" />
@@ -346,6 +347,7 @@
     <ClInclude Include="external\tbb\tick_count.h" />
     <ClInclude Include="external\tiny_obj_loader\tiny_obj_loader.h" />
     <ClInclude Include="src\common\Dict.h" />
+    <ClInclude Include="src\common\Interface.h" />
     <ClInclude Include="src\ForwardDecl.h" />
     <ClInclude Include="src\math\AABB.h" />
     <ClInclude Include="src\accelerator\Accelerator.h" />
