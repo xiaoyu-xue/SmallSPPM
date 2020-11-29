@@ -4,14 +4,23 @@
 GY_NAMESPACE_BEGIN
 
 template<typename T>
-T* CreateInstanceRawPtr(std::string alias);
+inline T* CreateInstanceRawPtr(std::string alias);
 
-template<typename T>
-std::shared_ptr<T> CreateInstanceSharedPtr(std::string alias);
 
-template<typename T>
-std::unique_ptr<T> CreateInstanceUniquePtr(std::string alias);
-
+class InstanceCreator
+{
+public:
+	template<typename T>
+	inline T* CreateRawPtr(std::string alias)
+	{
+		return nullptr;
+	}
+	static InstanceCreator* GetInstancePtr()
+	{
+		static InstanceCreator factoryHolder;
+		return &factoryHolder;
+	}
+};
 
 template<typename T>
 class FactoryBase
@@ -20,7 +29,7 @@ class FactoryBase
 protected:
 	std::map<std::string, CreateMethod> mCreateMethods;
 public:
-	T* CreateInstanceRawPtr(std::string alias)
+	T* CreateRawPtr(std::string alias)
 	{
 		if (mCreateMethods.find(alias) != mCreateMethods.end())
 			return mCreateMethods[alias]();
@@ -41,22 +50,17 @@ public:
 #define GY_FACTORY_NAME(T) Factory_##T
 #define GY_IMPLEMENTATION_NAME(T) Impementation_##T##_Injector
 
-#define GY_INTERFACE(BaseClassName)															\
+#define GY_INTERFACE_DEF(BaseClassName)														\
 class GY_FACTORY_NAME(BaseClassName) : public FactoryBase<BaseClassName>					\
 {																							\
 																							\
-};																							
-
-
-#define GY_INTERFACE_DEF(BaseClassName)														\
+};																							\
 template<>																					\
-BaseClassName* CreateInstanceRawPtr<BaseClassName>(std::string alias)						\
+inline BaseClassName* CreateInstanceRawPtr<BaseClassName>(std::string alias)				\
 {																							\
 	auto factory = GY_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\
-	return factory->CreateInstanceRawPtr(alias);											\
+	return factory->CreateRawPtr(alias);													\
 }
-
-
 
 #define GY_IMPLEMENTATION_DEF(BaseClassName, ClassName, Alias)								\
 class GY_IMPLEMENTATION_NAME(ClassName)														\
@@ -70,5 +74,6 @@ public:																						\
 		factory->Register(Alias, createMethod);												\
 	}																						\
 }Impementation_##BaseClassName##_Instance_##ClassName;
+
 
 GY_NAMESPACE_END
