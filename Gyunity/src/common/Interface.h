@@ -15,6 +15,14 @@ std::unique_ptr<T> CreateInstanceUniquePtr(const std::string& alias);
 template<typename T>
 T* CreateInstancePlacementPtr(const std::string& alias, void* placement);
 
+
+class Object 
+{
+public:
+	virtual ~Object() {}
+};
+
+
 template<typename T>
 class FactoryBase
 {
@@ -103,7 +111,7 @@ inline BaseClassName* CreateInstanceRawPtr<BaseClassName>(const std::string &ali
 }																							\
 																							\
 template<>																					\
-inline  std::shared_ptr<BaseClassName>														\
+inline std::shared_ptr<BaseClassName>														\
 CreateInstanceSharedPtr<BaseClassName>(const std::string &alias)							\
 {																							\
 	auto factory = GY_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\

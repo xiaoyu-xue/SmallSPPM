@@ -124,6 +124,8 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	static constexpr int elements = dim_;
 	static constexpr TensorType tensorType = TensorType::VECTOR;
 
+	using type = T;
+
 	template <int dim__, typename T_, IntrinsicSet ISE_>
 	static constexpr bool SIMD_4_32F = (dim__ == 3 || dim__ == 4) &&
 		std::is_same<T_, float32>::value && ISE_ >= IntrinsicSet::SSE;
@@ -141,8 +143,6 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 	template<int dim__, typename T_, IntrinsicSet ISE_>
 	static constexpr bool SSE_4_32F = (dim__ == 3 || dim__ == 4) &&
 		std::is_same<T_, float32>::value && ISE_ == IntrinsicSet::SSE;
-	
-	using type = T;
 
 	GY_FORCE_INLINE Vector() {
 		for (int i = 0; i < dim; ++i) {
@@ -1334,5 +1334,20 @@ using Matrix4f = Matrix<4, float32, defaultInstructionSet>;
 using Matrix2d = Matrix<2, float64, defaultInstructionSet>;
 using Matrix3d = Matrix<3, float64, defaultInstructionSet>;
 using Matrix4d = Matrix<4, float64, defaultInstructionSet>;
+
+namespace type
+{
+	template <typename>
+	struct is_Vector : public std::false_type {};
+
+	template <int N, typename T, IntrinsicSet ISE>
+	struct is_Vector<Vector<N, T, ISE>> : public std::true_type {};
+
+	template <typename>
+	struct is_Matrix : public std::false_type {};
+
+	template <int N, typename T, IntrinsicSet ISE>
+	struct is_Matrix<Matrix<N, T, ISE>> : public std::true_type {};
+}
 
 GY_NAMESPACE_END

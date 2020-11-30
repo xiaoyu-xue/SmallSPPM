@@ -649,6 +649,9 @@ void TestTransmittance() {
 	std::cout << Tr << std::endl;
 	std::cout << std::exp(-0.6) << std::endl;
 }
+
+#include "common/Config.h"
+
 int main(int argc, char *argv[]) {
 	//AABB aabb;
 	//aabb = Union(Union(aabb, Vec3(-1, -2, -2)), Vec3(1, 2, 3));
@@ -657,9 +660,22 @@ int main(int argc, char *argv[]) {
 	std::cout << GGXDistribution::RoughnessToAlpha(0.118) << std::endl;
 
 	//TestSPPM5(argc, argv);
-	TestPathTracing(argc, argv);
+	//TestPathTracing(argc, argv);
 	//TestVolPathTracing(argc, argv);
 	//TestTransmittance();
+
+	Config config;
+	Vec3 a(1, 2, 3);
+	config.Set("abc", a);
+	Vec3 b = config.Get<Vec3>("abc");
+
+	std::cout << b << std::endl;
+
+	int v = 1;
+	int* p = &v;
+	std::stringstream ss;
+	ss << p;
+	std::cout << typeid(Vec3).name() << std::endl;
 
 
 	//TestHashGrid();
