@@ -134,13 +134,13 @@ inline bool StartsWith(std::string const& str, std::string const& ending)
 }
 
 
-/****************** Constant *********************/
-#define GY_TRACE(...)
-#define GY_DEBUG(...)
-#define GY_INFO(...)
-#define GY_WARN(...)
-#define GY_ERROR(...)
-#define GY_ASSERT_INFO(x, ...)
+/****************** Logging *********************/
+#define GYT_TRACE(...)
+#define GYT_DEBUG(...)
+#define GYT_INFO(...)
+#define GYT_WARN(...)
+#define GYT_ERROR(...)
+#define GYT_ASSERT_INFO(x, ...)
 
 /****************** Constant *********************/
 

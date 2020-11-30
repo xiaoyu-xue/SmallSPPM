@@ -34,7 +34,7 @@ public:
 	std::string GetString(const std::string& key) const
 	{
 		if (mData.find(key) == mData.end())
-			GY_ERROR("Key named '{}' not found.", key);
+			GYT_ERROR("Key named '{}' not found.", key);
 
 		return mData.find(key)->second;
 	}
@@ -47,7 +47,7 @@ public:
 		std::string t;
 		int64 ptrInt64;
 		std::getline(ss, t, '\t');
-		GY_ASSERT_INFO(t == typeid(T).name(),
+		GYT_ASSERT_INFO(t == typeid(T).name(),
 			"Pointer type mismatch, expect: \"" + typeid(T).name() + "\"" + " but actual \"" + t + "\"");
 
 		return reinterpret_cast<T*>(ptrInt64);
@@ -183,7 +183,7 @@ private:
 	{
 		if (!IsIntegral(str))
 		{
-			GY_ERROR("The '{}' is not an integar value.", str);
+			GYT_ERROR("The '{}' is not an integar value.", str);
 		}
 	}
 
@@ -246,7 +246,7 @@ inline bool Config::Get<bool>(const std::string& key) const
 	};
 	if (dict.find(str) == dict.end())
 	{
-		GY_ERROR("Token is not recognized.");
+		GYT_ERROR("Token is not recognized.");
 		ASSERT(false);
 	}
 	return dict.find(str)->second;
