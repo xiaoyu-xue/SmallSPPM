@@ -93,19 +93,17 @@ public:
 class GY_FACTORY_NAME(BaseClassName) : public FactoryBase<BaseClassName>					\
 {																							\
 																							\
-};																							
-
-
-#define GY_IMPLEMENTATION_DEF(BaseClassName, ClassName, Alias)								\
+};																							\
+																							\
 template<>																					\
-BaseClassName* CreateInstanceRawPtr<BaseClassName>(const std::string &alias)				\
+inline BaseClassName* CreateInstanceRawPtr<BaseClassName>(const std::string &alias)			\
 {																							\
 	auto factory = GY_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\
 	return factory->CreateRawPtr(alias);													\
 }																							\
 																							\
 template<>																					\
-std::shared_ptr<BaseClassName>																\
+inline  std::shared_ptr<BaseClassName>														\
 CreateInstanceSharedPtr<BaseClassName>(const std::string &alias)							\
 {																							\
 	auto factory = GY_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\
@@ -113,7 +111,7 @@ CreateInstanceSharedPtr<BaseClassName>(const std::string &alias)							\
 }																							\
 																							\
 template<>																					\
-std::unique_ptr<BaseClassName>																\
+inline std::unique_ptr<BaseClassName>														\
 CreateInstanceUniquePtr<BaseClassName>(const std::string& alias)							\
 {																							\
 	auto factory = GY_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\
@@ -121,13 +119,16 @@ CreateInstanceUniquePtr<BaseClassName>(const std::string& alias)							\
 }																							\
 																							\
 template<>																					\
-BaseClassName*																				\
+inline BaseClassName*																		\
 CreateInstancePlacementPtr<BaseClassName>(const std::string& alias, void* placement)		\
 {																							\
 	auto factory = GY_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\
 	return factory->CreatePlacementPtr(alias, placement);									\
 }																							\
 																							\
+
+
+#define GY_IMPLEMENTATION_DEF(BaseClassName, ClassName, Alias)								\
 class GY_IMPLEMENTATION_NAME(ClassName)														\
 {																							\
 	using CreateMethod = std::function<BaseClassName*()>;									\
