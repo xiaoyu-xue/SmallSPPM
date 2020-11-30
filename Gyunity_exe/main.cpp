@@ -664,20 +664,17 @@ int main(int argc, char *argv[]) {
 	//TestVolPathTracing(argc, argv);
 	//TestTransmittance();
 
+
 	Config config;
-	Vec3 a(1, 2, 3);
-	config.Set("abc", a);
-	Vec3 b = config.Get<Vec3>("abc");
+	int instance = 100;
+	int* ptr = &instance;
+	config.Set("maxDepth", 10);
+	config.Set("position", Vec3(1, 0, 1));
+	config.Set("pInstance", ptr);
 
-	std::cout << b << std::endl;
-
-	int v = 1;
-	int* p = &v;
-	std::stringstream ss;
-	ss << p;
-	std::cout << typeid(Vec3).name() << std::endl;
-
-
+	std::cout << config.Get<int>("maxDepth") << std::endl;
+	std::cout << config.Get<Vec3>("position") << std::endl;
+	std::cout << config.Get<int*>("pInstance") << " " << *(config.Get<int*>("pInstance")) << std::endl;
 	//TestHashGrid();
 	//_CrtDumpMemoryLeaks();
 }

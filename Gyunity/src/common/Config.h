@@ -25,7 +25,7 @@ public:
 	static std::string GetPtrString(T* ptr)
 	{
 		std::stringstream ss;
-		ss << typeid(T).name << "\t" << reinterpret_cast<uint64>(ptr);
+		ss << typeid(T).name() << "\t" << reinterpret_cast<uint64>(ptr);
 		return ss.str();
 	}
 
@@ -49,13 +49,20 @@ public:
 		std::getline(ss, t, '\t');
 		GYT_ASSERT_INFO(t == typeid(T).name(),
 			"Pointer type mismatch, expect: \"" + typeid(T).name() + "\"" + " but actual \"" + t + "\"");
-
+		ss >> ptrInt64;
 		return reinterpret_cast<T*>(ptrInt64);
 	}
 
 	template<typename T>
-	typename std::enable_if_t<(!type::is_Vector<T>::value && !std::is_reference<T>::value && !std::is_pointer<T>::value), T>
+	typename std::enable_if_t<(!(type::is_Vector<T>::value) && !(std::is_reference<T>::value) && !(std::is_pointer<T>::value)), T>
 	Get(const std::string& key) const;
+
+	template<typename T>
+	std::enable_if_t<std::is_pointer<T>::value, T>
+	Get(const std::string& key) const 
+	{
+		return GetPtr<std::remove_pointer_t<T>>(key);
+	}
 
 	template<typename T, typename std::enable_if_t<(type::is_Vector<T>::value), T>* = nullptr>
 	T Get(const std::string& key) const
