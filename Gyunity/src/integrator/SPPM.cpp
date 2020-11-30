@@ -169,7 +169,7 @@ void SPPM::TracePhoton(const Scene& scene, StateSequence& rand, const Ray& ray, 
 void SPPM::GenerateRadiusImage(const Scene& scene, const Camera &camera) {
 	int resX = camera.GetFilm()->resX;
 	int resY = camera.GetFilm()->resY;
-	std::vector<Vec3> radImg(resX * resY);
+	std::vector<Vec3> radImg((int64)resX * resY);
 	real minRadius2 = Inf, maxRadius2 = 0.0, avgRadius = 0.0;
 	for (int y = 0; y < resY; ++y) {
 		for (int x = 0; x < resX; ++x) {
