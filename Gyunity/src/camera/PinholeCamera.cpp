@@ -1,4 +1,4 @@
-#include "Phinhole.h"
+#include "PinholeCamera.h"
 #include "visual/Film.h"
 
 GY_NAMESPACE_BEGIN

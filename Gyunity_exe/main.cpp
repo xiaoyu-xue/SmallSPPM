@@ -28,7 +28,7 @@
 #include "visual\Renderer.h"
 #include "light\Light.h"
 #include "light\AreaLight.h"
-#include "camera\Phinhole.h"
+#include "camera\PinholeCamera.h"
 #include "accelerator\BruteForceAccel.h"
 #include "accelerator\KdTreeAccel.h"
 #include "accelerator\BVHAccel.h"
