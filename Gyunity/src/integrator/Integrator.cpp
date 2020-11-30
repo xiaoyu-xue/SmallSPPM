@@ -4,7 +4,7 @@
 #include "visual/Scene.h"
 #include "bsdf/BSDF.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 Vec3 Integrator::DirectIllumination(const Scene& scene, const Intersection& isect, 
 	real uLight, const Vec2& u, const Vec3& v, StateSequence& rand, bool handleMedia) 
@@ -106,4 +106,4 @@ Vec3 Integrator::DirectIllumination(const Scene& scene, const Intersection& isec
 	return (L1 * weight1 + L2 * weight2) / lightSamplingPdf;
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

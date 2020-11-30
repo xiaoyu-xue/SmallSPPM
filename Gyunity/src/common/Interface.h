@@ -1,7 +1,7 @@
 #pragma once
 #include "common/Core.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 template<typename T>
 T* CreateRawPtr(const std::string& alias);
@@ -148,4 +148,4 @@ public:																						\
 	}																						\
 } Impementation_##BaseClassName##_##ClassName##_Instance;
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

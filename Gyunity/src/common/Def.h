@@ -2,5 +2,5 @@
 #include <cassert>
 
 #define ASSERT assert
-#define GY_NAMESPACE_BEGIN namespace Gyunity {
-#define GY_NAMESPACE_END }
+#define GYT_NAMESPACE_BEGIN namespace Gyunity {
+#define GYT_NAMESPACE_END }

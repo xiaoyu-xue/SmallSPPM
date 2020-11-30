@@ -3,10 +3,10 @@
 #include "Linagl.h"
 #include <algorithm>
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 template <typename T>
-GY_FORCE_INLINE
+GYT_FORCE_INLINE
 typename std::enable_if_t<std::is_floating_point<T>::value, bool>
 Equal(const T &a, const T &b, float64 tolerance = NumericalEps) {
 	return std::abs(a - b) <= tolerance;
@@ -40,7 +40,7 @@ template<typename T, typename TensorType TType = T::tensorType,
 }
 
 template <typename T>
-GY_FORCE_INLINE
+GYT_FORCE_INLINE
 typename std::enable_if_t<!std::is_floating_point<T>::value, bool>
 Equal(const T &a, const T &b, float64 tolerance = NumericalEps) {
 	return std::abs(Maximum(a - b)) <= tolerance;
@@ -60,17 +60,17 @@ V Lerp(T a, V x0, V x1) {
 	return (T(1) - a) * x0 + a * x1;
 }
 
-GY_FORCE_INLINE real Radians(real deg) { return (PI / 180) * deg; }
+GYT_FORCE_INLINE real Radians(real deg) { return (PI / 180) * deg; }
 
-GY_FORCE_INLINE real Degrees(real rad) { return (180 / PI) * rad; }
+GYT_FORCE_INLINE real Degrees(real rad) { return (180 / PI) * rad; }
 
 
-GY_FORCE_INLINE real Log2(real x) {
+GYT_FORCE_INLINE real Log2(real x) {
 	const real invLog2 = 1.442695040888963387004650940071;
 	return std::log(x) * invLog2;
 }
 
-GY_FORCE_INLINE int Log2Int(uint32_t v) {
+GYT_FORCE_INLINE int Log2Int(uint32_t v) {
 #if defined(_MSC_VER)
 	unsigned long lz = 0;
 	if (_BitScanReverse(&lz, v)) return lz;
@@ -80,9 +80,9 @@ GY_FORCE_INLINE int Log2Int(uint32_t v) {
 #endif
 }
 
-GY_FORCE_INLINE int Log2Int(int32_t v) { return Log2Int((uint32_t)v); }
+GYT_FORCE_INLINE int Log2Int(int32_t v) { return Log2Int((uint32_t)v); }
 
-GY_FORCE_INLINE int Log2Int(uint64_t v) {
+GYT_FORCE_INLINE int Log2Int(uint64_t v) {
 #if defined(_MSC_VER)
 	unsigned long lz = 0;
 #if defined(_WIN64)
@@ -99,10 +99,10 @@ GY_FORCE_INLINE int Log2Int(uint64_t v) {
 #endif
 }
 
-GY_FORCE_INLINE int Log2Int(int64_t v) { return Log2Int((uint64_t)v); }
+GYT_FORCE_INLINE int Log2Int(int64_t v) { return Log2Int((uint64_t)v); }
 
 template <typename T>
-GY_FORCE_INLINE  bool IsPowerOf2(T v) {
+GYT_FORCE_INLINE  bool IsPowerOf2(T v) {
 	return v && !(v & (v - 1));
 }
 
@@ -136,4 +136,4 @@ inline real SafeSqrt(real value) {
 	return std::sqrt(std::max((real)0.0f, value));
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

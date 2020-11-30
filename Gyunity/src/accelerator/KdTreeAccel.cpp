@@ -2,7 +2,7 @@
 #include "system/Memory.h"
 #include "math/MathUtils.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 struct KdAccelNode {
 	// KdAccelNode Methods
@@ -398,4 +398,4 @@ bool KdTreeAccel::Intersect(const Ray& ray) const {
 }
 
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

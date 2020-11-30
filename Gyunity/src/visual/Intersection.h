@@ -6,7 +6,7 @@
 #include "material/Material.h"
 #include "visual/Medium.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class BSDF;
 class Primitive;
@@ -118,4 +118,4 @@ public:
 	const PhaseFunction* phase;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

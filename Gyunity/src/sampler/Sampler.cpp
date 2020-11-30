@@ -1,7 +1,7 @@
 #include "Sampler.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 PrimeList RegularHaltonSampler::primeList;
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

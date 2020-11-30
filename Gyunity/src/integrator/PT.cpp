@@ -5,7 +5,7 @@
 #include "common/DebugUtils.h"
 #include "visual/Intersection.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 Vec3 PathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, MemoryPool& arena) const
 {
@@ -72,4 +72,4 @@ PathTracing::PathTracing(int samplePerPixel, int maxDepth, const std::shared_ptr
 
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

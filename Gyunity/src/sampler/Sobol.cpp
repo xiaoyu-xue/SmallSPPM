@@ -28,7 +28,7 @@
 
 #include "Sobol.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 namespace sobol {
 
@@ -10690,4 +10690,4 @@ namespace sobol {
 
 } // namespace sobol
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

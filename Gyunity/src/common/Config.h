@@ -4,7 +4,7 @@
 #include <map>
 #include <sstream>
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class Config
 {
@@ -253,4 +253,4 @@ inline bool Config::Get<bool>(const std::string& key) const
 
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

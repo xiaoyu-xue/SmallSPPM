@@ -3,7 +3,7 @@
 #include "Material.h"
 #include "texture/Texture.h"
 #include "bsdf/BSDF.h"
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class MirrorMaterial : public Material {
 public:
@@ -34,4 +34,4 @@ private:
 	std::shared_ptr<Texture<Vec3>> kr;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

@@ -1,7 +1,7 @@
 #include "Memory.h"
 #include <memory>
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 void* AllocAligned(size_t size) {
 
@@ -15,4 +15,4 @@ void FreeAligned(void* ptr) {
     _aligned_free(ptr);
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

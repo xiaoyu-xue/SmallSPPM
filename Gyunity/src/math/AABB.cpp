@@ -1,7 +1,7 @@
 #include "AABB.h"
 #include "numeric/NumericUtils.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 bool AABB::Intersect(const Ray& ray, real* hitt0, real* hitt1) const {
 	real t0 = 0, t1 = ray.m_tMax;
@@ -58,4 +58,4 @@ AABB Union(const AABB& a, const Vec3& p) {
 	return ret;
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

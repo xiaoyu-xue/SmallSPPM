@@ -3,7 +3,7 @@
 #include "common/Core.h"
 #include "common/Core.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 // Determine the index of the i-th sample falling into a pixel, based on the
 // elementary interval property of the Halton sequence.
@@ -141,4 +141,4 @@ inline uint64 HaltonEnum::halton3_inverse(uint64 index, const uint32 digits)
 
 
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

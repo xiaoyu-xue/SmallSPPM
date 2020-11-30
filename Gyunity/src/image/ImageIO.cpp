@@ -6,7 +6,7 @@
 #include <stb/stb_image_write.h>
 
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 void ImageIO::WritePngFile(const std::string& filename, const std::vector<Vec3>& image, uint32 resX, uint32 resY, real gamma) {
 	FILE* f = fopen(filename.c_str(), "wb");
@@ -149,4 +149,4 @@ void ImageIO::WriteImage(const std::string& filename, const std::vector<Vec3>& i
 }
 
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

@@ -6,9 +6,9 @@
 #include "visual/Visibility.h"
 #include "common/DebugUtils.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
-GY_FORCE_INLINE real PowerHeuristic(int nf, real fPdf, int ng, real gPdf) 
+GYT_FORCE_INLINE real PowerHeuristic(int nf, real fPdf, int ng, real gPdf) 
 {
 	real f = nf * fPdf, g = ng * gPdf;
 	return (f * f) / (f * f + g * g);
@@ -26,4 +26,4 @@ public:
 
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

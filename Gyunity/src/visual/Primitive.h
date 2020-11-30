@@ -6,7 +6,7 @@
 #include "math/AABB.h"
 #include "Medium.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 //class Primitive {
 //public:
@@ -122,4 +122,4 @@ public:
 
 using GeometryPrimitive = Primitive;
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

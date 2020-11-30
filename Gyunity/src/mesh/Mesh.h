@@ -4,7 +4,7 @@
 #include "math/Transform.h"
 #include "shape/Triangle.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 struct Face {
 	Face() {}
@@ -37,4 +37,4 @@ public:
 	MediumInterface mediumInterface;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

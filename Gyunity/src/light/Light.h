@@ -4,7 +4,7 @@
 #include "visual/Intersection.h"
 #include "shape/Shape.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class Light {
 public:
@@ -35,4 +35,4 @@ protected:
 
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

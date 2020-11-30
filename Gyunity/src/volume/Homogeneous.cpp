@@ -2,7 +2,7 @@
 #include "visual/Intersection.h"
 #include "visual/Scene.h"
 #include <algorithm>
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 Vec3 HomogeneousMedium::Tr(const Ray& ray, StateSequence& rand) const {
     return Exp(-sigma_t * std::min(ray.m_tMax * ray.mDir.Length(), MaxReal));
@@ -62,4 +62,4 @@ Vec3 HomogeneousMedium::EquiAngularSampling(
 
     return sampleMedia ? Tr * sigma_s / pdf : this->Tr(ray, rand) / pdf;
 }
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

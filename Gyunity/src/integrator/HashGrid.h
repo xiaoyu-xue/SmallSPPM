@@ -6,7 +6,7 @@
 #include "system/Threading.h"
 #include <mutex>
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 template<typename T>
 class HashGrid 
@@ -125,4 +125,4 @@ private:
 };
 
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

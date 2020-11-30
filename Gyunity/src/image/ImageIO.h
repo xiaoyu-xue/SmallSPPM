@@ -8,7 +8,7 @@
 #include "container/Array.h"
 
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class ImageIO {
 public:
@@ -48,4 +48,4 @@ public:
 
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

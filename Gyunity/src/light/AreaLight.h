@@ -7,7 +7,7 @@
 #include "math/GeometryUtils.h"
 #include "shape/Shape.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class AreaLight : public Light 
 {
@@ -73,4 +73,4 @@ protected:
 	}
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

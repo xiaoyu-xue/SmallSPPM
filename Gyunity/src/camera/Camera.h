@@ -6,7 +6,7 @@
 #include "math/Transform.h"
 #include "visual/Film.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 
 class Camera {
@@ -42,4 +42,4 @@ public:
 	Transform CameraToRaster, RasterToCamera;
 	Transform RasterToWorld;
 };
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

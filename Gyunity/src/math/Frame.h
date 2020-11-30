@@ -3,7 +3,7 @@
 #include "math/Linagl.h"
 #include "math/GeometryUtils.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class Frame
 {
@@ -29,7 +29,7 @@ public:
 		CoordinateSystem(mZ, &mX, &mY);
 	}
 
-	GY_FORCE_INLINE void SetFromZ(const Vec3& normal) 
+	GYT_FORCE_INLINE void SetFromZ(const Vec3& normal) 
 	{
 		mZ = normal;
 		CoordinateSystem(mZ, &mX, &mY);
@@ -45,11 +45,11 @@ public:
 		return Vec3(Dot(v, mX), Dot(v, mY), Dot(v, mZ));
 	}
 
-	GY_FORCE_INLINE const Vec3& Binormal() const { return mX; }
+	GYT_FORCE_INLINE const Vec3& Binormal() const { return mX; }
 
-	GY_FORCE_INLINE const Vec3& Tangent() const { return mY; }
+	GYT_FORCE_INLINE const Vec3& Tangent() const { return mY; }
 
-	GY_FORCE_INLINE const Vec3& Normal() const { return mZ; }
+	GYT_FORCE_INLINE const Vec3& Normal() const { return mZ; }
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

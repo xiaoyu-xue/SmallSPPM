@@ -2,7 +2,7 @@
 
 #include "Shape.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class HeartSurface : public Shape {
 public:
@@ -83,4 +83,4 @@ private:
 	bool BinarySearch(real left, real right, const Ray& ray, real *t) const;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

@@ -31,7 +31,7 @@
 
 // Compute points of the Halton sequence with with digit-permutations for different bases.
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class HaltonSampler: public Sampler
 {
@@ -3307,4 +3307,4 @@ inline float HaltonSampler::halton1619(const uint64 index) const
 		m_perm1619[(index / 2621161ull) % 1619ull]) * float(0x1.fffffcp-1 / 4243659659ull); // Results in [0,1).
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

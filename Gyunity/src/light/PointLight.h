@@ -1,7 +1,7 @@
 #pragma once
 #include "Light.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class PointLight : public Light {
 public:
@@ -18,7 +18,7 @@ public:
 		return 0;
 	}
 
-	GY_FORCE_INLINE Vec3 Power() const override 
+	GYT_FORCE_INLINE Vec3 Power() const override 
 	{
 		return 4 * PI * mI;
 	}
@@ -36,4 +36,4 @@ private:
 	Vec3 mI;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

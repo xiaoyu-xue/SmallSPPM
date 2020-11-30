@@ -5,7 +5,7 @@
 #include "math/LowDiscrepency.h"
 #include "visual/Rng.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class Sampler {
 public:
@@ -141,4 +141,4 @@ private:
 };
 
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

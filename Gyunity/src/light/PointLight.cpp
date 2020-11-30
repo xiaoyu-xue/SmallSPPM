@@ -1,7 +1,7 @@
 #include "PointLight.h"
 #include "visual/Sampling.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 Vec3 PointLight::Sample_Li(const Intersection& isect, Vec3* wi, real* pdf, Intersection* lightPoint, const Vec2& u) const 
 {
@@ -25,4 +25,4 @@ Vec3 PointLight::SampleLight(Intersection* isect, Vec3* dir, real* pdfPos, real*
 	return mI;
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

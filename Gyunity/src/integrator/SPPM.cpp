@@ -6,7 +6,7 @@
 #include "bsdf/BSDF.h"
 #include "visual/Intersection.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 void SPPM::Initialize(int w, int h)
 {
@@ -281,4 +281,4 @@ SPPM::SPPM(int iterations, int nPhotonsPerStage, int maxDepth, real initialRadiu
 
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END
