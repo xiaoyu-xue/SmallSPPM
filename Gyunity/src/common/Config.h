@@ -14,7 +14,8 @@ private:
 public:
 	static bool IsIntegral(const std::string& str)
 	{
-		if (str.empty() || ((!isdigit(str[0])) && (str[0] != '-') && (str[0] != '+'))) return false;
+		if (str.empty() || ((!isdigit(str[0])) && (str[0] != '-') && (str[0] != '+'))) 
+			return false;
 		char* p;
 		strtol(str.c_str(), &p, 10);
 		return (*p == 0);
@@ -53,10 +54,10 @@ public:
 	}
 
 	template<typename T>
-	typename std::enable_if_t<(!type::is_Vector<T>() && !std::is_reference<T>::value && !std::is_pointer<T>::value), T>
+	typename std::enable_if_t<(!type::is_Vector<T>::value && !std::is_reference<T>::value && !std::is_pointer<T>::value), T>
 	Get(const std::string& key) const;
 
-	template<typename T, typename std::enable_if_t<(type::is_Vector<T>()), T>* = nullptr>
+	template<typename T, typename std::enable_if_t<(type::is_Vector<T>::value), T>* = nullptr>
 	T Get(const std::string& key) const
 	{
 		constexpr int N = T::dim;
@@ -75,27 +76,27 @@ public:
 		for (int i = 0; i < N; ++i)
 		{
 			std::string placeHolder;
-			if (std::is_same<ElementType, float32>())
+			if (std::is_same<ElementType, float32>::value)
 			{
 				placeHolder = "%f";
 			}
-			else if (std::is_same<ElementType, float64>())
+			else if (std::is_same<ElementType, float64>::value)
 			{
 				placeHolder = "%lf";
 			}
-			else if (std::is_same<ElementType, int32>())
+			else if (std::is_same<ElementType, int32>::value)
 			{
 				placeHolder = "%d";
 			}
-			else if (std::is_same<ElementType, uint32>())
+			else if (std::is_same<ElementType, uint32>::value)
 			{
 				placeHolder = "%u";
 			}
-			else if (std::is_same<ElementType, int64>())
+			else if (std::is_same<ElementType, int64>::value)
 			{
 				placeHolder = "%lld";
 			}
-			else if (std::is_same<ElementType, uint64>())
+			else if (std::is_same<ElementType, uint64>::value)
 			{
 				placeHolder = "%llu";
 			}
@@ -137,7 +138,7 @@ public:
 		return value;
 	}
 
-	template<typename T>
+	template<typename T, typename std::enable_if_t<!type::is_Vector<T>::value, int> = 0>
 	Config& Set(const std::string& name, T value)
 	{
 		std::stringstream ss;
