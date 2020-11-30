@@ -4,41 +4,80 @@
 GY_NAMESPACE_BEGIN
 
 template<typename T>
-inline T* CreateInstanceRawPtr(std::string alias);
+T* CreateInstanceRawPtr(const std::string& alias);
 
+template<typename T>
+std::shared_ptr<T> CreateInstanceSharedPtr(const std::string& alias);
 
-class InstanceCreator
-{
-public:
-	template<typename T>
-	inline T* CreateRawPtr(std::string alias)
-	{
-		return nullptr;
-	}
-	static InstanceCreator* GetInstancePtr()
-	{
-		static InstanceCreator factoryHolder;
-		return &factoryHolder;
-	}
-};
+template<typename T>
+std::unique_ptr<T> CreateInstanceUniquePtr(const std::string& alias);
+
+template<typename T>
+T* CreateInstancePlacementPtr(const std::string& alias, void* placement);
 
 template<typename T>
 class FactoryBase
 {
-	using CreateMethod = std::function<T* ()>;
+	using CreateRawPtrMethod = std::function<T* ()>;
+	using CreateSharedPtrMethod = std::function<std::shared_ptr<T>()>;
+	using CreateUniquePtrMethod = std::function<std::unique_ptr<T>()>;
+	using CreatePlacementMethod = std::function<T* (void*)>;
 protected:
-	std::map<std::string, CreateMethod> mCreateMethods;
+	std::map<std::string, CreateRawPtrMethod> mCreateRawPtrMethods;
+	std::map<std::string, CreateSharedPtrMethod> mCreateSharedPtrMethods;
+	std::map<std::string, CreateUniquePtrMethod> mCreateUniquePtrMethods;
+	std::map<std::string, CreatePlacementMethod> mCreatePlacementMethods;
 public:
-	T* CreateRawPtr(std::string alias)
+	T* CreateRawPtr(const std::string& alias)
 	{
-		if (mCreateMethods.find(alias) != mCreateMethods.end())
-			return mCreateMethods[alias]();
+		auto createMethod = mCreateRawPtrMethods.find(alias);
+		if (createMethod != mCreateRawPtrMethods.end())
+			return (createMethod->second)();
 		return nullptr;
 	}
-	void Register(std::string alias, CreateMethod createMethod)
+
+	std::shared_ptr<T> CreateSharedPtr(const std::string& alias)
 	{
-		mCreateMethods[alias] = createMethod;
+		auto createMethod = mCreateSharedPtrMethods.find(alias);
+		if (createMethod != mCreateSharedPtrMethods.end())
+			return (createMethod->second)();
+		return nullptr;
 	}
+
+	std::unique_ptr<T> CreateUniquePtr(const std::string& alias)
+	{
+		auto createMethod = mCreateUniquePtrMethods.find(alias);
+		if (createMethod != mCreateUniquePtrMethods.end())
+			return (createMethod->second)();
+		return nullptr;
+	}
+
+	T* CreatePlacementPtr(const std::string& alias, void* placement)
+	{
+		auto createMethod = mCreatePlacementMethods.find(alias);
+		if (createMethod != mCreatePlacementMethods.end())
+			return (createMethod->second)(placement);
+		return nullptr;
+	}
+
+	template<typename ProductType>
+	void Register(std::string alias)
+	{
+		mCreateRawPtrMethods.insert(
+			std::make_pair(alias, []()->T* { return new ProductType(); })
+		);
+		mCreateSharedPtrMethods.insert(
+			std::make_pair(alias, []()->std::shared_ptr<T> { return std::make_shared<ProductType>(); })
+		);
+		mCreateUniquePtrMethods.insert(
+			std::make_pair(alias, []()->std::unique_ptr<T> { return std::make_unique<ProductType>(); })
+		);
+		mCreatePlacementMethods.insert(
+			std::make_pair(alias, [](void* placement)->T* { return new (placement) ProductType(); })
+		);
+
+	}
+
 	static FactoryBase<T>* GetInstancePtr()
 	{
 		static FactoryBase<T> instance;
@@ -54,15 +93,41 @@ public:
 class GY_FACTORY_NAME(BaseClassName) : public FactoryBase<BaseClassName>					\
 {																							\
 																							\
-};																							\
+};																							
+
+
+#define GY_IMPLEMENTATION_DEF(BaseClassName, ClassName, Alias)								\
 template<>																					\
-inline BaseClassName* CreateInstanceRawPtr<BaseClassName>(std::string alias)				\
+BaseClassName* CreateInstanceRawPtr<BaseClassName>(const std::string &alias)				\
 {																							\
 	auto factory = GY_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\
 	return factory->CreateRawPtr(alias);													\
-}
-
-#define GY_IMPLEMENTATION_DEF(BaseClassName, ClassName, Alias)								\
+}																							\
+																							\
+template<>																					\
+std::shared_ptr<BaseClassName>																\
+CreateInstanceSharedPtr<BaseClassName>(const std::string &alias)							\
+{																							\
+	auto factory = GY_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\
+	return factory->CreateSharedPtr(alias);													\
+}																							\
+																							\
+template<>																					\
+std::unique_ptr<BaseClassName>																\
+CreateInstanceUniquePtr<BaseClassName>(const std::string& alias)							\
+{																							\
+	auto factory = GY_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\
+	return factory->CreateUniquePtr(alias);													\
+}																							\
+																							\
+template<>																					\
+BaseClassName*																				\
+CreateInstancePlacementPtr<BaseClassName>(const std::string& alias, void* placement)		\
+{																							\
+	auto factory = GY_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\
+	return factory->CreatePlacementPtr(alias, placement);									\
+}																							\
+																							\
 class GY_IMPLEMENTATION_NAME(ClassName)														\
 {																							\
 	using CreateMethod = std::function<BaseClassName*()>;									\
@@ -70,10 +135,8 @@ public:																						\
 	GY_IMPLEMENTATION_NAME(ClassName)()														\
 	{																						\
 		auto factory = GY_FACTORY_NAME(BaseClassName)::GetInstancePtr();					\
-		CreateMethod createMethod = []()->BaseClassName* {return new ClassName(); };		\
-		factory->Register(Alias, createMethod);												\
+		factory->Register<ClassName>(Alias);												\
 	}																						\
-}Impementation_##BaseClassName##_Instance_##ClassName;
-
+} Impementation_##BaseClassName##_##ClassName##_Instance;
 
 GY_NAMESPACE_END
