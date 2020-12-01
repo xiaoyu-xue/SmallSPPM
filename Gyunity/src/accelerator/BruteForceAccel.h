@@ -3,7 +3,7 @@
 #include "accelerator/Accelerator.h"
 #include "visual/Primitive.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class BruteForce : public Accelerator {
 public:
@@ -47,4 +47,4 @@ private:
 	AABB bounds;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

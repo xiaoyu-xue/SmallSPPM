@@ -1,7 +1,7 @@
 #include "Transform.h"
 #include "math/MathUtils.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 Transform Transform::Translate(const Vector3 &v) {
 	Matrix4 m(1, 0, 0, v.x, 
@@ -139,4 +139,4 @@ Transform Transform::Perspective(real fovy, real aspect, real dis, real n, real 
 	return Transform(persp, Inverse(persp));
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

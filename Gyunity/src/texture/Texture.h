@@ -3,7 +3,7 @@
 #include "math/Linagl.h"
 #include "visual/Intersection.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 template<typename T>
 class Texture {
@@ -25,4 +25,4 @@ public:
 	}
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

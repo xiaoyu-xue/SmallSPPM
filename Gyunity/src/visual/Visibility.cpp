@@ -2,7 +2,7 @@
 #include "Scene.h"
 #include "Medium.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 bool VisibilityTester::Unoccluded(const Scene& scene) const {
 	Ray ray = p0.SpawnTo(p1);
@@ -34,4 +34,4 @@ Vec3 VisibilityTester::Tr(const Scene& scene, StateSequence& rand) const {
     return Tr;
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

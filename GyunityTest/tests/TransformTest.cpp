@@ -4,7 +4,7 @@
 #include "gtest/gtest.h"
 
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 TEST(TestTranslateVector, TranslateVector) {
 	{
@@ -334,4 +334,4 @@ TEST(TestRotateNormal, RotateV) {
 		EXPECT_EQ(Equal(transformeVector, expectedVector), true);
 	}
 };
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

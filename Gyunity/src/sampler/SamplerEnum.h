@@ -4,7 +4,7 @@
 #include <cassert>
 #include "math/LowDiscrepency.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 
 extern const unsigned long long vdc_sobol_matrices[][52];
@@ -28,4 +28,4 @@ protected:
 	uint32 mResX, mResY;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

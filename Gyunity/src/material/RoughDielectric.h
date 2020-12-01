@@ -5,7 +5,7 @@
 #include "texture/Texture.h"
 #include "bsdf/BSDF.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class RoughDielectricMaterial : public Material {
 public:
@@ -46,4 +46,4 @@ private:
     std::shared_ptr<Texture<real>> index;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

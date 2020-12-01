@@ -5,7 +5,7 @@
 #include "texture/Texture.h"
 #include "bsdf/BSDF.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class PlasticMaterial : public Material {
 public:
@@ -30,4 +30,4 @@ private:
 	std::shared_ptr<Texture<real>> roughness;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

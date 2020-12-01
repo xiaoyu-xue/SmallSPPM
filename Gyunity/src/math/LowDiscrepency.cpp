@@ -1,6 +1,6 @@
 #include "LowDiscrepency.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 int IsPrime(int a) noexcept {
 	ASSERT(a >= 2);
@@ -11,4 +11,4 @@ int IsPrime(int a) noexcept {
 	return true;
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

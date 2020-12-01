@@ -1,7 +1,7 @@
 #include "Triangle.h"
 #include "visual/Sampling.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 //bool Triangle::Intersect(const Ray& ray, Intersection* isect, real* t) const {
 //	//Vec3 e1 = p1 - p0;
@@ -238,4 +238,4 @@ Intersection Triangle::Sample(real* pdf, const Vec2& rand) const {
 
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

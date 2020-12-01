@@ -2,7 +2,7 @@
 
 #include "Intersection.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class Scene;
 class StateSequence;
@@ -21,4 +21,4 @@ private:
 	Intersection p0, p1;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

@@ -22,7 +22,7 @@
 
 #define ISE_SSE
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 /***************** Type ******************/
 using uchar = unsigned char;
@@ -50,14 +50,14 @@ using real = float;
 using real_bit = uint32;
 #endif
 
-#if defined(GY_PLATFORM_WINDOWS)
-#define GY_FORCE_INLINE __forceinline
+#if defined(GYT_PLATFORM_WINDOWS)
+#define GYT_FORCE_INLINE __forceinline
 #else
 #define FORCE_INLINE inline __attribute__((always_inline))
 #endif
 
-#if defined(GY_COMPILER_MSVC)
-#define ALIGNED(x) __declspec(align(x))
+#if defined(GYT_COMPILER_MSVC)
+#define GYT_ALIGNED(x) __declspec(align(x))
 #endif
 
 
@@ -134,13 +134,13 @@ inline bool StartsWith(std::string const& str, std::string const& ending)
 }
 
 
-/****************** Constant *********************/
-#define GY_TRACE(...)
-#define GY_DEBUG(...)
-#define GY_INFO(...)
-#define GY_WARN(...)
-#define GY_ERROR(...)
-#define GY_ASSERT_INFO(x, ...)
+/****************** Logging *********************/
+#define GYT_TRACE(...)
+#define GYT_DEBUG(...)
+#define GYT_INFO(...)
+#define GYT_WARN(...)
+#define GYT_ERROR(...)
+#define GYT_ASSERT_INFO(x, ...)
 
 /****************** Constant *********************/
 
@@ -160,4 +160,4 @@ constexpr real MachineEps = std::numeric_limits<real>::epsilon() * (real)0.5;
 constexpr real MaxReal = std::numeric_limits<real>::max();
 constexpr real Infinity = std::numeric_limits<real>::infinity();
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

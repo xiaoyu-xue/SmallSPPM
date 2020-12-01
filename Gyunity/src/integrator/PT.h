@@ -2,7 +2,7 @@
 #include "TiledIntegrator.h"
 
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class StateSequence;
 class PathTracing : public TiledIntegrator {
@@ -13,4 +13,4 @@ public:
 	Vec3 Li(const Ray &r, const Scene& scene, StateSequence& rand, MemoryPool& arena) const override;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

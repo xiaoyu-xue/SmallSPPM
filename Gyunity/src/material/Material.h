@@ -1,7 +1,7 @@
 #pragma once
 #include "system/Memory.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 enum ReflectionType { DIFF, SPEC, REFR };  // material types, used in radiance()
 enum class TransportMode { Radiance = 1, Importance };
@@ -17,4 +17,4 @@ public:
 		TransportMode mode = TransportMode::Radiance) const = 0;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

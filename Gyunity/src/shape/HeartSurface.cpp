@@ -1,6 +1,6 @@
 #include "HeartSurface.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 bool HeartSurface::BinarySearch(real left, real right, const Ray &ray, real *t) const {
 	if (left > right) return false;
@@ -114,4 +114,4 @@ void HeartSurface::QueryIntersectionInfo(const Ray& ray, Intersection* isect) co
 	isect->SetShading(normal, dpdu, dpdv);
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

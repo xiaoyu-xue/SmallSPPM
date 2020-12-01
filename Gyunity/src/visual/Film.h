@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <fstream>
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 struct Pixel
 {
@@ -126,4 +126,4 @@ private:
 
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

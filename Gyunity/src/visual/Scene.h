@@ -10,7 +10,7 @@
 #include "mesh/Mesh.h"
 
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class Scene
 {
@@ -127,4 +127,4 @@ private:
 	}
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

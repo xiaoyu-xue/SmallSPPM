@@ -1,7 +1,7 @@
 #include "Microfacet.h"
 #include "bsdf/BSDF.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 static void TrowbridgeReitzSample11(real cosTheta, real U1, real U2,
 	real* slope_x, real* slope_y) {
@@ -378,4 +378,4 @@ real GGXDistribution::Pdf(const Vec3& wo, const Vec3& wh) const {
 	return SmithG1(wo, wh) * std::abs(Dot(wo, wh)) * D(wh) / std::abs(BSDFCoordinate::CosTheta(wo));
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

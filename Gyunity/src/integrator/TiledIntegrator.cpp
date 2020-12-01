@@ -2,7 +2,7 @@
 #include "sampler/Sampler.h"
 #include "sampler/SamplerEnum.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 void TiledIntegrator::Render(const Scene& scene, const Camera& camera) {
 
@@ -59,4 +59,4 @@ void TiledIntegrator::Render(const Scene& scene, const Camera& camera) {
 	});
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

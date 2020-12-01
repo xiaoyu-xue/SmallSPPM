@@ -5,7 +5,7 @@
 #include "math/GeometryUtils.h"
 #include "common/DebugUtils.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class Sphere : public Shape {
 public:
@@ -369,4 +369,4 @@ private:
 	const real mPhiMax = 2 * PI;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

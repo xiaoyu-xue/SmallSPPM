@@ -1,19 +1,19 @@
 #pragma once
 #include "common/Core.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 template<typename T>
-T* CreateInstanceRawPtr(const std::string& alias);
+T* CreateRawPtr(const std::string& alias);
 
 template<typename T>
-std::shared_ptr<T> CreateInstanceSharedPtr(const std::string& alias);
+std::shared_ptr<T> CreateSharedPtr(const std::string& alias);
 
 template<typename T>
-std::unique_ptr<T> CreateInstanceUniquePtr(const std::string& alias);
+std::unique_ptr<T> CreateUniquePtr(const std::string& alias);
 
 template<typename T>
-T* CreateInstancePlacementPtr(const std::string& alias, void* placement);
+T* CreatePlacementPtr(const std::string& alias, void* placement);
 
 
 class Object 
@@ -27,8 +27,8 @@ template<typename T>
 class FactoryBase
 {
 	using CreateRawPtrMethod = std::function<T* ()>;
-	using CreateSharedPtrMethod = std::function<std::shared_ptr<T>()>;
-	using CreateUniquePtrMethod = std::function<std::unique_ptr<T>()>;
+	using CreateSharedPtrMethod = std::function<std::shared_ptr<T> ()>;
+	using CreateUniquePtrMethod = std::function<std::unique_ptr<T> ()>;
 	using CreatePlacementMethod = std::function<T* (void*)>;
 protected:
 	std::map<std::string, CreateRawPtrMethod> mCreateRawPtrMethods;
@@ -104,7 +104,7 @@ class GY_FACTORY_NAME(BaseClassName) : public FactoryBase<BaseClassName>					\
 };																							\
 																							\
 template<>																					\
-inline BaseClassName* CreateInstanceRawPtr<BaseClassName>(const std::string &alias)			\
+inline BaseClassName* CreateRawPtr<BaseClassName>(const std::string &alias)					\
 {																							\
 	auto factory = GY_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\
 	return factory->CreateRawPtr(alias);													\
@@ -112,7 +112,7 @@ inline BaseClassName* CreateInstanceRawPtr<BaseClassName>(const std::string &ali
 																							\
 template<>																					\
 inline std::shared_ptr<BaseClassName>														\
-CreateInstanceSharedPtr<BaseClassName>(const std::string &alias)							\
+CreateSharedPtr<BaseClassName>(const std::string &alias)									\
 {																							\
 	auto factory = GY_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\
 	return factory->CreateSharedPtr(alias);													\
@@ -128,7 +128,7 @@ CreateInstanceUniquePtr<BaseClassName>(const std::string& alias)							\
 																							\
 template<>																					\
 inline BaseClassName*																		\
-CreateInstancePlacementPtr<BaseClassName>(const std::string& alias, void* placement)		\
+CreatePlacementPtr<BaseClassName>(const std::string& alias, void* placement)				\
 {																							\
 	auto factory = GY_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\
 	return factory->CreatePlacementPtr(alias, placement);									\
@@ -148,4 +148,4 @@ public:																						\
 	}																						\
 } Impementation_##BaseClassName##_##ClassName##_Instance;
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

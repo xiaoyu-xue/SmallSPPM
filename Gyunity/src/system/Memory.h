@@ -4,7 +4,7 @@
 
 #include "common/Core.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 #define MEMORY_POOL_ALLOC(arena, Type) new ((arena).Alloc(sizeof(Type))) Type
 
@@ -106,4 +106,4 @@ private:
     std::list<std::pair<size_t, uint8_t*>> usedBlocks, availableBlocks;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

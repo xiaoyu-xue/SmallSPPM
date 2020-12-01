@@ -1,7 +1,7 @@
 #include "Camera.h"
 #include "visual/Film.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 ProjectiveCamera::ProjectiveCamera(const std::shared_ptr<Film>& pFilm, const Vec3& position,
 	const Vec3& pCz, const Vec3& pCx, const Vec3& pCy, real pFovy, real dis) :
@@ -54,4 +54,4 @@ void ProjectiveCamera::Initialize() {
 }
 
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

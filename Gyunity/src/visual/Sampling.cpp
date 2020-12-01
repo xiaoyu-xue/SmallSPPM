@@ -1,6 +1,6 @@
 #include "Sampling.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 Vec2 ConcentricSampleDisk(const Vec2 &u) {
 	// Map uniform Random numbers to $[-1,1]^2$
@@ -53,4 +53,4 @@ real UniformSpherePdf() {
 	return INV_4PI;
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

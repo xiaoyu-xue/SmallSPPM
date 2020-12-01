@@ -1,7 +1,7 @@
 #pragma once
 #include <random>
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class Rng {
 public:
@@ -127,4 +127,4 @@ inline uint32_t RNG::UniformUInt32() {
 
 
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

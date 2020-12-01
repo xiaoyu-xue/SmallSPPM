@@ -1,7 +1,7 @@
 #include "Linagl.h"
 #include "common/Core.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 //Vec operator*(real a, Vec b) { return Vec(a * b.x, a * b.y, a * b.z); }
 //
@@ -10,4 +10,4 @@ GY_NAMESPACE_BEGIN
 //	return os;
 //}
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

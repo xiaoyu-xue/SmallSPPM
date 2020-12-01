@@ -1,6 +1,6 @@
 #include "Primitive.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 bool Primitive::Intersect(const Ray& r, Intersection* isect) const {
 	real t;
@@ -32,4 +32,4 @@ void Primitive::QueryIntersectionInfo(const Ray& ray, Intersection* isect) const
 	mpShape->QueryIntersectionInfo(ray, isect);
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

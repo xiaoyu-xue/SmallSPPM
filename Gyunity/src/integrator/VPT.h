@@ -1,7 +1,7 @@
 #pragma once
 #include "TiledIntegrator.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class VolPathTracing : public TiledIntegrator 
 {
@@ -25,4 +25,4 @@ private:
 		const Vec3 &Le, real lightPdf) const;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

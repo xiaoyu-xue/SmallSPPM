@@ -2,7 +2,7 @@
 #include "common/Core.h"
 #include "common/Core.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 inline uint32 reverse_bit32(uint32 n) {
 	n = (n << 16) | (n >> 16);
@@ -37,4 +37,4 @@ inline uint64 van_der_corput(uint64 bits, const uint64 scramble)
 
 int IsPrime(int a) noexcept;
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

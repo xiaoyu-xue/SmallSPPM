@@ -1,7 +1,7 @@
 #include "PinholeCamera.h"
 #include "visual/Film.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 Vec3 PinHoleCamera::We(const Ray& ray) const  {
 	real pdfA = 1.0; // for the pinhole camera
@@ -19,4 +19,4 @@ real PinHoleCamera::PdfDir(const Ray& cameraRay) const {
 	return filmDistance * filmDistance / (filmArea * cos2Theta * cosTheta);
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

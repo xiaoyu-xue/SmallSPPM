@@ -8,7 +8,7 @@
 #include "HashGrid.h"
 #include "common/DebugUtils.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 struct HPoint {
 	Vec3 importance, pos, nrm, flux, outDir;
@@ -61,4 +61,4 @@ private:
 	void Initialize(int w, int h);
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

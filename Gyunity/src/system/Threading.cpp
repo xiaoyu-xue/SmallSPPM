@@ -1,6 +1,6 @@
 #include "Threading.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 int ThreadIndex() {
 	return tbb::task_arena::current_thread_index();
@@ -14,4 +14,4 @@ int ThreadsNumber() {
 	return NumSystemCores();
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

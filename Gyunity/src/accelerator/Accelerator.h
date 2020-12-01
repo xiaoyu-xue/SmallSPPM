@@ -5,7 +5,7 @@
 #include "visual/Primitive.h"
 #include "math/AABB.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class Accelerator {
 public:
@@ -16,4 +16,4 @@ public:
 	virtual AABB WorldBound() const = 0;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

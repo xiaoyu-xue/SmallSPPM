@@ -5,7 +5,7 @@
 #include "math/LowDiscrepency.h"
 #include "visual/Rng.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class Sampler {
 public:
@@ -15,7 +15,7 @@ public:
 
 class StateSequence {
 protected:
-	int cursor = 0;
+	int mCursor = 0;
 
 public:
 	virtual real Sample() = 0;
@@ -25,7 +25,7 @@ public:
 	}
 
 	int GetCursor() const {
-		return cursor;
+		return mCursor;
 	}
 	/*
 	void assert_cursor_pos(int cursor) const {
@@ -41,17 +41,18 @@ public:
 
 class RandomStateSequence : public StateSequence {
 private:
-	std::shared_ptr<Sampler> sampler;
-	long long instance;
+	std::shared_ptr<Sampler> mpSampler;
+	int64 mInstance;
 
 public:
-	RandomStateSequence(std::shared_ptr<Sampler> sampler, long long instance)
-		: sampler(sampler), instance(instance) {
+	RandomStateSequence(std::shared_ptr<Sampler> sampler, int64 instance)
+		: mpSampler(sampler), mInstance(instance) 
+	{
 	}
 
 	real Sample() override {
 		//assert_info(sampler != nullptr, "null sampler");
-		real ret = sampler->Sample(cursor++, instance);
+		real ret = mpSampler->Sample(mCursor++, mInstance);
 		//assert_info(ret >= 0, "sampler output should be non-neg");
 		if (ret > 1 + 1e-5f) {
 			printf("Warning: sampler returns value > 1: [%f]", ret);
@@ -141,4 +142,4 @@ private:
 };
 
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

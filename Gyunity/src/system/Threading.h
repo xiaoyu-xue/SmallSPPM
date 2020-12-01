@@ -5,7 +5,7 @@
 #include "common/Core.h"
 #include "tbb/parallel_for.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class Spinlock {
 protected:
@@ -65,4 +65,4 @@ void ParallelFor(Range begin, Range end, const T &target) {
 #endif
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

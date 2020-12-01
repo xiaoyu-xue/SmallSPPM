@@ -1,7 +1,7 @@
 #include "Shape.h"
 #include "visual/Intersection.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 Intersection Shape::Sample(const Intersection& isect, real* pdf, const Vec2& u) const {
 	Intersection it = Sample(pdf, u);
@@ -18,4 +18,4 @@ Intersection Shape::Sample(const Intersection& isect, real* pdf, const Vec2& u) 
 	return it;
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END
