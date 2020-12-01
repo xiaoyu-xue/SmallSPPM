@@ -2,8 +2,8 @@
 #include "math/Linagl.h"
 #include "common/Config.h"
 
-
 GYT_NAMESPACE_BEGIN
+
 TEST(TestConfig, TestConfig) {
 	Config config;
 

@@ -676,16 +676,6 @@ int main(int argc, char *argv[]) {
 	std::cout << config.Get<Vec3>("position") << std::endl;
 	std::cout << config.Get<int*>("pInstance") << " " << *(config.Get<int*>("pInstance")) << std::endl;
 
-	Vec3 vec(1,2,3);
-	Vec3* pVec = &vec;
-	auto shapredPtr = std::make_shared<Vec3>(1, 2, 5);
-	config.Set<Vec3*>("pointer1", pVec);
-	config.Set<Vec3>("pointer2", pVec);
-	config.Set<Vec3>("vec", vec);
-	config.Set<std::shared_ptr<Vec3>>("sharedPtr", shapredPtr);
-	std::cout << *(config.Get<Vec3*>("pointer1")) << std::endl;
-	std::cout << *(config.Get<Vec3*>("pointer2")) << std::endl;
-	std::cout << config.Get<Vec3>("vec") << std::endl;
 
 	//TestHashGrid();
 	//_CrtDumpMemoryLeaks();
