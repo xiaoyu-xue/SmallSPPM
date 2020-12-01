@@ -348,6 +348,7 @@
     <ClInclude Include="external\tiny_obj_loader\tiny_obj_loader.h" />
     <ClInclude Include="src\common\Config.h" />
     <ClInclude Include="src\common\Interface.h" />
+    <ClInclude Include="src\common\Logging.h" />
     <ClInclude Include="src\ForwardDecl.h" />
     <ClInclude Include="src\math\AABB.h" />
     <ClInclude Include="src\accelerator\Accelerator.h" />

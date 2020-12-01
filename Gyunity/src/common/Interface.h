@@ -16,10 +16,12 @@ template<typename T>
 T* CreatePlacementPtr(const std::string& alias, void* placement);
 
 
+class Config;
 class Object 
 {
 public:
 	virtual ~Object() {}
+	virtual void Initialize(const Config &config) {}
 };
 
 

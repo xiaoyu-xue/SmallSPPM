@@ -10,8 +10,9 @@ class Config
 {
 private:
 	std::map<std::string, std::string> mData;
-
 public:
+	Config() = default;
+
 	static bool IsIntegral(const std::string& str)
 	{
 		if (str.empty() || ((!isdigit(str[0])) && (str[0] != '-') && (str[0] != '+'))) 
@@ -29,8 +30,6 @@ public:
 		return ss.str();
 	}
 
-	Config() = default;
-
 	std::string GetString(const std::string& key) const
 	{
 		if (mData.find(key) == mData.end())
@@ -45,12 +44,12 @@ public:
 		std::string value = GetString(key);
 		std::stringstream ss(value);
 		std::string t;
-		int64 ptrInt64;
+		uint64 ptrUint64;
 		std::getline(ss, t, '\t');
 		GYT_ASSERT_INFO(t == typeid(T).name(),
 			"Pointer type mismatch, expect: \"" + typeid(T).name() + "\"" + " but actual \"" + t + "\"");
-		ss >> ptrInt64;
-		return reinterpret_cast<T*>(ptrInt64);
+		ss >> ptrUint64;
+		return reinterpret_cast<T*>(ptrUint64);
 	}
 
 	template<typename T>
@@ -145,7 +144,7 @@ public:
 		return value;
 	}
 
-	template<typename T, typename std::enable_if_t<!type::is_Vector<T>::value, int> = 0>
+	template<typename T, typename std::enable_if_t<((!type::is_Vector<T>::value) && (!std::is_pointer<T>::value)), int> = 0>
 	Config& Set(const std::string& name, T value)
 	{
 		std::stringstream ss;
@@ -162,10 +161,11 @@ public:
 		return *this;
 	}
 
-	template<int N, typename T>
-	Config& Set(const std::string& name, const Vector<N, T>& value)
+	template<typename T, typename std::enable_if_t<type::is_Vector<T>::value, int> = 0>
+	Config& Set(const std::string& name, const T& value)
 	{
 		std::stringstream ss;
+		int N = value.dim;
 		ss << "(";
 		for (int i = 0; i < N; ++i)
 		{
@@ -185,6 +185,14 @@ public:
 		mData[name] = GetPtrString(ptr);
 		return *this;
 	}
+
+	template<typename T, typename std::enable_if_t<std::is_pointer<T>::value, T> = nullptr>
+	Config& Set(const std::string& name, T ptr)
+	{
+		mData[name] = GetPtrString(ptr);
+		return *this;
+	}
+
 private:
 	void CheckValueIntegral(const std::string& str) const
 	{
