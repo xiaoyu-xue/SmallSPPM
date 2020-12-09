@@ -2,3 +2,6 @@
 	path = Gyunity/external/tbb
 	url = https://github.com/oneapi-src/oneTBB.git
 
+[submodule "external/spdlog"]
+	path = external/spdlog
+	url = https://github.com/gabime/spdlog.git
