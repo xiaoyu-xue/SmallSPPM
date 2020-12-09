@@ -2,7 +2,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader/tiny_obj_loader.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 void Mesh::LoadFromFile(std::string inputfile, bool reverseVertices) {
 	tinyobj::attrib_t attrib;
@@ -95,4 +95,4 @@ void Mesh::SetMedium(const MediumInterface& mi) {
 	this->mediumInterface = mi;
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

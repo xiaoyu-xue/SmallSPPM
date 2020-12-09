@@ -4,7 +4,7 @@
 #include "NumericUtils.h"
 #include <iostream>
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class EReal {
 public:
@@ -123,7 +123,7 @@ public:
 		//r.Check();
 		return r;
 	}
-	FORCE_INLINE bool operator==(EReal fe) const { return v == fe.v; }
+	GYT_FORCE_INLINE bool operator==(EReal fe) const { return v == fe.v; }
 //	FORCE_INLINE void Check() const {
 //		if (!std::isinf(low) && !std::isnan(low) && !std::isinf(high) &&
 //			!std::isnan(high))
@@ -174,21 +174,21 @@ private:
 #ifndef NDEBUG
 	long double vPrecise;
 #endif  // NDEBUG
-	friend FORCE_INLINE EReal Sqrt(EReal fe);
-	friend FORCE_INLINE EReal Abs(EReal fe);
-	friend FORCE_INLINE bool Quadratic(EReal A, EReal B, EReal C, EReal *t0, EReal *t1);
+	friend GYT_FORCE_INLINE EReal Sqrt(EReal fe);
+	friend GYT_FORCE_INLINE EReal Abs(EReal fe);
+	friend GYT_FORCE_INLINE bool Quadratic(EReal A, EReal B, EReal C, EReal *t0, EReal *t1);
 };
 
 // EReal FORCE_INLINE Functions
-FORCE_INLINE EReal operator*(float f, EReal fe) { return EReal(f) * fe; }
+GYT_FORCE_INLINE EReal operator*(float f, EReal fe) { return EReal(f) * fe; }
 
-FORCE_INLINE EReal operator/(float f, EReal fe) { return EReal(f) / fe; }
+GYT_FORCE_INLINE EReal operator/(float f, EReal fe) { return EReal(f) / fe; }
 
-FORCE_INLINE EReal operator+(float f, EReal fe) { return EReal(f) + fe; }
+GYT_FORCE_INLINE EReal operator+(float f, EReal fe) { return EReal(f) + fe; }
 
-FORCE_INLINE EReal operator-(float f, EReal fe) { return EReal(f) - fe; }
+GYT_FORCE_INLINE EReal operator-(float f, EReal fe) { return EReal(f) - fe; }
 
-FORCE_INLINE EReal Sqrt(EReal fe) {
+GYT_FORCE_INLINE EReal Sqrt(EReal fe) {
 	EReal r;
 	r.v = std::sqrt(fe.v);
 #ifndef NDEBUG
@@ -200,7 +200,7 @@ FORCE_INLINE EReal Sqrt(EReal fe) {
 	return r;
 }
 
-FORCE_INLINE EReal Abs(EReal fe) {
+GYT_FORCE_INLINE EReal Abs(EReal fe) {
 	if (fe.low >= 0)
 		// The entire interval is greater than zero, so we're all set.
 		return fe;
@@ -230,8 +230,8 @@ FORCE_INLINE EReal Abs(EReal fe) {
 	}
 }
 
-FORCE_INLINE bool Quadratic(EReal A, EReal B, EReal C, EReal *t0, EReal *t1);
-FORCE_INLINE bool Quadratic(EReal A, EReal B, EReal C, EReal *t0, EReal *t1) {
+GYT_FORCE_INLINE bool Quadratic(EReal A, EReal B, EReal C, EReal *t0, EReal *t1);
+GYT_FORCE_INLINE bool Quadratic(EReal A, EReal B, EReal C, EReal *t0, EReal *t1) {
 	// Find quadratic discriminant
 	double discrim = (double)B.v * (double)B.v - 4. * (double)A.v * (double)C.v;
 	if (discrim < 0.) return false;
@@ -251,4 +251,4 @@ FORCE_INLINE bool Quadratic(EReal A, EReal B, EReal C, EReal *t0, EReal *t1) {
 	return true;
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

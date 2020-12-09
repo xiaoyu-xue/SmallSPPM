@@ -2,7 +2,7 @@
 #include "sampler/Sampler.h"
 
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, MemoryPool& arena) const 
 {
@@ -169,4 +169,4 @@ Vec3 VolPathTracing::ConnectToLight(const Scene &scene, StateSequence &rand,
 	return L1;
 	//return L2;
 }
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

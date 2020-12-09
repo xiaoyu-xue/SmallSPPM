@@ -9,42 +9,42 @@
 #include "system/Threading.h"
 #include "math/MathUtils.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 namespace BSDFCoordinate {
-	FORCE_INLINE real CosTheta(const Vec3& w) { return w.z; }
+	GYT_FORCE_INLINE real CosTheta(const Vec3& w) { return w.z; }
 
-	FORCE_INLINE real Cos2Theta(const Vec3& w) { return w.z * w.z; }
+	GYT_FORCE_INLINE real Cos2Theta(const Vec3& w) { return w.z * w.z; }
 
-	FORCE_INLINE real AbsCosTheta(const Vec3& w) { return std::abs(w.z); }
+	GYT_FORCE_INLINE real AbsCosTheta(const Vec3& w) { return std::abs(w.z); }
 
-	FORCE_INLINE real Sin2Theta(const Vec3& w) {
+	GYT_FORCE_INLINE real Sin2Theta(const Vec3& w) {
 		return std::max((real)0, (real)1 - Cos2Theta(w));
 	}
 
-	FORCE_INLINE real SinTheta(const Vec3& w) { return std::sqrt(Sin2Theta(w)); }
+	GYT_FORCE_INLINE real SinTheta(const Vec3& w) { return std::sqrt(Sin2Theta(w)); }
 
-	FORCE_INLINE real TanTheta(const Vec3& w) { return SinTheta(w) / CosTheta(w); }
+	GYT_FORCE_INLINE real TanTheta(const Vec3& w) { return SinTheta(w) / CosTheta(w); }
 
-	FORCE_INLINE real Tan2Theta(const Vec3& w) {
+	GYT_FORCE_INLINE real Tan2Theta(const Vec3& w) {
 		return Sin2Theta(w) / Cos2Theta(w);
 	}
 
-	FORCE_INLINE real CosPhi(const Vec3& w) {
+	GYT_FORCE_INLINE real CosPhi(const Vec3& w) {
 		real sinTheta = SinTheta(w);
 		return (sinTheta == 0) ? 1 : Clamp(w.x / sinTheta, -1, 1);
 	}
 
-	FORCE_INLINE real SinPhi(const Vec3& w) {
+	GYT_FORCE_INLINE real SinPhi(const Vec3& w) {
 		real sinTheta = SinTheta(w);
 		return (sinTheta == 0) ? 0 : Clamp(w.y / sinTheta, -1, 1);
 	}
 
-	FORCE_INLINE real Cos2Phi(const Vec3& w) { return CosPhi(w) * CosPhi(w); }
+	GYT_FORCE_INLINE real Cos2Phi(const Vec3& w) { return CosPhi(w) * CosPhi(w); }
 
-	FORCE_INLINE real Sin2Phi(const Vec3& w) { return SinPhi(w) * SinPhi(w); }
+	GYT_FORCE_INLINE real Sin2Phi(const Vec3& w) { return SinPhi(w) * SinPhi(w); }
 
-	FORCE_INLINE real CosDPhi(const Vec3& wa, const Vec3& wb) {
+	GYT_FORCE_INLINE real CosDPhi(const Vec3& wa, const Vec3& wb) {
 		return Clamp(
 			(wa.x * wb.x + wa.y * wb.y) / std::sqrt((wa.x * wa.x + wa.y * wa.y) *
 			(wb.x * wb.x + wb.y * wb.y)),
@@ -681,4 +681,4 @@ private:
 	std::unique_ptr<MicrofacetDistribution> distribution;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

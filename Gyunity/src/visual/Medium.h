@@ -6,7 +6,7 @@
 #include "sampler/Sampler.h"
 #include "system/Memory.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class PhaseFunction {
 public:
@@ -18,7 +18,7 @@ public:
 
 
 // Media Inline Functions
-FORCE_INLINE real PhaseHG(real cosTheta, real g) {
+GYT_FORCE_INLINE real PhaseHG(real cosTheta, real g) {
     real denom = 1 + g * g + 2 * g * cosTheta;
     return INV_4PI * (1 - g * g) / (denom * std::sqrt(denom));
 }
@@ -58,4 +58,4 @@ struct MediumInterface {
     const Medium* inside, * outside;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

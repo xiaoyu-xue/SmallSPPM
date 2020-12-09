@@ -1,6 +1,6 @@
 #include "Scene.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 void Scene::QueryIntersectionInfo(const Ray& ray, Intersection* isect) const {
 	mPrimitives[isect->primId]->QueryIntersectionInfo(ray, isect);
@@ -25,4 +25,4 @@ bool Scene::IntersectTr(Ray& ray, StateSequence& rand, Intersection* isect, Vec3
     }
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

@@ -33,7 +33,7 @@
 #include "BVHAccel.h"
 
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 // BVHAccel Local Declarations
 struct BVHPrimitiveInfo {
@@ -486,4 +486,4 @@ bool BVHAccel::Intersect(const Ray& ray) const {
     return false;
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

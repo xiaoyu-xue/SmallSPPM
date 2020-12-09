@@ -3,7 +3,7 @@
 #include "common/Core.h"
 #include "Accelerator.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 struct KdAccelNode;
 struct BoundEdge;
@@ -42,4 +42,4 @@ struct KdToDo {
 	real tMin, tMax;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

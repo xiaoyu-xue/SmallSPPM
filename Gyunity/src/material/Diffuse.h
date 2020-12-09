@@ -5,7 +5,7 @@
 #include "bsdf/BSDF.h"
 #include "visual/Intersection.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 
 class DiffuseMaterial: public Material{
@@ -33,4 +33,4 @@ private:
 	std::shared_ptr<Texture<Vec3>> kd;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

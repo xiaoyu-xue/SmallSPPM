@@ -7,7 +7,7 @@
 #include "bsdf/BSDF.h"
 
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class Shape {
 public:
@@ -57,4 +57,4 @@ protected:
 	const Transform* ObjectToWorld, * WorldToObject;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

@@ -2,7 +2,7 @@
 
 #include "common/Core.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 
 template<int dim, typename T>
@@ -47,4 +47,4 @@ private:
 template <typename T>
 using Array2D = ArrayND<2, T>;
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

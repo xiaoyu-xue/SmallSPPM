@@ -1,7 +1,7 @@
 #include "EnvLight.h"
 #include "visual/Scene.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 void EnvironmentLight::Initialize(const Scene& scene) 
 {
@@ -62,4 +62,4 @@ Vec3 EnvironmentLight::Power() const
 }
 
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

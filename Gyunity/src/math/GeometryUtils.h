@@ -6,9 +6,9 @@
 #include "numeric/EFloat.h"
 #include "common/DebugUtils.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
-FORCE_INLINE void CoordinateSystem(const Vec3 &v1, Vec3 *v2, Vec3 *v3) {
+GYT_FORCE_INLINE void CoordinateSystem(const Vec3 &v1, Vec3 *v2, Vec3 *v3) {
 	if (std::abs(v1.x) > std::abs(v1.y))
 		*v2 = Vec3(-v1.z, 0, v1.x) / std::sqrt(v1.x * v1.x + v1.z * v1.z);
 	else
@@ -17,26 +17,26 @@ FORCE_INLINE void CoordinateSystem(const Vec3 &v1, Vec3 *v2, Vec3 *v3) {
 }
 
 
-FORCE_INLINE Vec3 Reflect(const Vec3 &inDir, const Vec3 &n) {
+GYT_FORCE_INLINE Vec3 Reflect(const Vec3 &inDir, const Vec3 &n) {
 	return 2.f * inDir.Dot(n) * n - inDir;
 }
 
 
-FORCE_INLINE Vec3 SphericalDirection(real sinTheta, real cosTheta, real phi) {
+GYT_FORCE_INLINE Vec3 SphericalDirection(real sinTheta, real cosTheta, real phi) {
 	return Vec3(sinTheta * std::cos(phi), sinTheta * std::sin(phi), cosTheta);
 }
 
-FORCE_INLINE Vec3 SphericalDirection(real sinTheta, real cosTheta, real phi, 
+GYT_FORCE_INLINE Vec3 SphericalDirection(real sinTheta, real cosTheta, real phi, 
 	const Vec3& x, const Vec3& y, const Vec3& z) {
 	return sinTheta * std::cos(phi) * x + sinTheta * std::sin(phi) * y +
 		cosTheta * z;
 }
 
-FORCE_INLINE bool SameHemisphere(const Vec3& w, const Vec3& wp) {
+GYT_FORCE_INLINE bool SameHemisphere(const Vec3& w, const Vec3& wp) {
 	return w.z * wp.z > 0;
 }
 
-FORCE_INLINE Vec3 OffsetRayOrigin(const Vec3 &p, const Vec3 &pError,
+GYT_FORCE_INLINE Vec3 OffsetRayOrigin(const Vec3 &p, const Vec3 &pError,
 	const Vec3 &n, const Vec3 &w) {
 	real d = Dot(Abs(n), pError);
 #ifdef USING_DOUBLE
@@ -63,8 +63,8 @@ FORCE_INLINE Vec3 OffsetRayOrigin(const Vec3 &p, const Vec3 &pError,
 	return po;
 }
 
-FORCE_INLINE Vec3 Faceforward(const Vec3& v, const Vec3& v2) {
+GYT_FORCE_INLINE Vec3 Faceforward(const Vec3& v, const Vec3& v2) {
 	return (Dot(v, v2) < 0.f) ? -v : v;
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

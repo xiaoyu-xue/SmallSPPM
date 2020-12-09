@@ -2,7 +2,7 @@
 #include "common/Core.h"
 #include "Shape.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class Triangle : public Shape {
 public:
@@ -129,4 +129,4 @@ private:
 	Vec3 dp2;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

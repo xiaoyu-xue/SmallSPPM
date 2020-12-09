@@ -2,7 +2,7 @@
 
 #include "visual/Medium.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 //class MediumIntersection;
 
@@ -23,4 +23,4 @@ private:
 	real g;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

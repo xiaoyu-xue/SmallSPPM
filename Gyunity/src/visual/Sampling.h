@@ -3,7 +3,7 @@
 #include "math/MathUtils.h"
 #include "math/Linagl.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 struct Distribution1D
 {
@@ -158,4 +158,4 @@ real BalanceHeuristic(int nf, real fPdf, int ng, real gPdf);
 real CosineHemispherePdf(real cosTheta);
 
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

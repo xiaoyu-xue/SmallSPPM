@@ -6,7 +6,7 @@
 #include "bsdf/BSDF.h"
 #include "visual/Intersection.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 void SPPM::Initialize(int w, int h)
 {
@@ -169,7 +169,7 @@ void SPPM::TracePhoton(const Scene& scene, StateSequence& rand, const Ray& ray, 
 void SPPM::GenerateRadiusImage(const Scene& scene, const Camera &camera) {
 	int resX = camera.GetFilm()->resX;
 	int resY = camera.GetFilm()->resY;
-	std::vector<Vec3> radImg(resX * resY);
+	std::vector<Vec3> radImg((int64)resX * resY);
 	real minRadius2 = Inf, maxRadius2 = 0.0, avgRadius = 0.0;
 	for (int y = 0; y < resY; ++y) {
 		for (int x = 0; x < resX; ++x) {
@@ -281,4 +281,4 @@ SPPM::SPPM(int iterations, int nPhotonsPerStage, int maxDepth, real initialRadiu
 
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

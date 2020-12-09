@@ -28,7 +28,7 @@
 #include "visual\Renderer.h"
 #include "light\Light.h"
 #include "light\AreaLight.h"
-#include "camera\Phinhole.h"
+#include "camera\PinholeCamera.h"
 #include "accelerator\BruteForceAccel.h"
 #include "accelerator\KdTreeAccel.h"
 #include "accelerator\BVHAccel.h"
@@ -649,6 +649,9 @@ void TestTransmittance() {
 	std::cout << Tr << std::endl;
 	std::cout << std::exp(-0.6) << std::endl;
 }
+
+#include "common/Config.h"
+
 int main(int argc, char *argv[]) {
 	//AABB aabb;
 	//aabb = Union(Union(aabb, Vec3(-1, -2, -2)), Vec3(1, 2, 3));
@@ -657,9 +660,21 @@ int main(int argc, char *argv[]) {
 	std::cout << GGXDistribution::RoughnessToAlpha(0.118) << std::endl;
 
 	//TestSPPM5(argc, argv);
-	TestPathTracing(argc, argv);
+	//TestPathTracing(argc, argv);
 	//TestVolPathTracing(argc, argv);
 	//TestTransmittance();
+
+
+	Config config;
+	int instance = 100;
+	int* ptr = &instance;
+	config.Set("maxDepth", 10);
+	config.Set("position", Vec3(1, 0, 1));
+	config.Set("pInstance", ptr);
+
+	std::cout << config.Get<int>("maxDepth") << std::endl;
+	std::cout << config.Get<Vec3>("position") << std::endl;
+	std::cout << config.Get<int*>("pInstance") << " " << *(config.Get<int*>("pInstance")) << std::endl;
 
 
 	//TestHashGrid();

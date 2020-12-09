@@ -3,7 +3,7 @@
 #include "Light.h"
 #include "EnvMap.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 struct Ray;
 class Intersection;
@@ -34,4 +34,4 @@ private:
 	real mRadius;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

@@ -6,7 +6,7 @@
 #include "bsdf/BSDF.h"
 #include "visual/Microfacet.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class RoughnessMaterial : public Material {
 public:
@@ -51,4 +51,4 @@ private:
 	std::shared_ptr<Texture<Vec3>> k;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

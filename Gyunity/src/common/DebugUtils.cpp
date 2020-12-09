@@ -1,8 +1,8 @@
 #include "DebugUtils.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 int debugPixel[100] = { 0 };
 
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

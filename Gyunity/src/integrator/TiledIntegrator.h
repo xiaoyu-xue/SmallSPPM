@@ -3,7 +3,7 @@
 
 
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class Sampler;
 class SamplerEnum;
@@ -35,4 +35,4 @@ protected:
 	virtual Vec3 Li(const Ray &ray, const Scene& scene, StateSequence &rand, MemoryPool &arena) const = 0;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

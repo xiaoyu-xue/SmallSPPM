@@ -4,22 +4,22 @@
 #include <algorithm>
 #include <cmath>
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
-FORCE_INLINE real_bit FloatToBits(real f) {
+GYT_FORCE_INLINE real_bit FloatToBits(real f) {
 	real_bit ui;
 	memcpy(&ui, &f, sizeof(real));
 	return ui;
 }
 
-FORCE_INLINE real BitsToFloat(real_bit ui) {
+GYT_FORCE_INLINE real BitsToFloat(real_bit ui) {
 	real f;
 	memcpy(&f, &ui, sizeof(real_bit));
 	return f;
 }
 
 
-FORCE_INLINE real NextFloatUp(real v) {
+GYT_FORCE_INLINE real NextFloatUp(real v) {
 	// Handle infinity and negative zero for _NextFloatUp()_
 	if (std::isinf(v) && v > 0.) return v;
 	if (v == (real)-0.f) v = (real)0.f;
@@ -34,7 +34,7 @@ FORCE_INLINE real NextFloatUp(real v) {
 }
 
 
-FORCE_INLINE real NextFloatDown(real v) {
+GYT_FORCE_INLINE real NextFloatDown(real v) {
 	// Handle infinity and positive zero for _NextFloatDown()_
 	if (std::isinf(v) && v < 0.) return v;
 	if (v == (real)0.f) v = (real)-0.f;
@@ -46,9 +46,9 @@ FORCE_INLINE real NextFloatDown(real v) {
 	return BitsToFloat(ui);
 }
 
-FORCE_INLINE real gamma(int n) {
+GYT_FORCE_INLINE real gamma(int n) {
 	return (n * MachineEps) / (1 - n * MachineEps);
 }
 
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

@@ -1,7 +1,7 @@
 #pragma once
 #include "Texture.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 template<typename T>
 class ConstantTexture : public Texture<T> {
@@ -24,4 +24,4 @@ private:
 	T value;
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

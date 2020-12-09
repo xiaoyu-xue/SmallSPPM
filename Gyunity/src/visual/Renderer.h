@@ -3,7 +3,7 @@
 #include "integrator/Integrator.h"
 #include "Scene.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class Renderer 
 {
@@ -26,4 +26,4 @@ public:
 	}
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

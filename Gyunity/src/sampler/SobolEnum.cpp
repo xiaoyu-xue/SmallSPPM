@@ -1,6 +1,6 @@
 #include "SobolEnum.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 const unsigned long long vdc_sobol_matrices[][52] =
 {
@@ -1466,4 +1466,4 @@ const unsigned long long vdc_sobol_matrices_inv[][52] =
 
 
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

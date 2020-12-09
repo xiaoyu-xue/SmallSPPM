@@ -2,7 +2,7 @@
 #include "math/GeometryUtils.h"
 #include <algorithm>
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 // HenyeyGreenstein Method Definitions
 real HenyeyGreenstein::Sample_p(const Vec3& wo, Vec3* wi, const Vec2& u) const {
@@ -28,4 +28,4 @@ real HenyeyGreenstein::p(const Vec3& wo, const Vec3& wi) const {
     return PhaseHG(Dot(wo, wi), g);
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

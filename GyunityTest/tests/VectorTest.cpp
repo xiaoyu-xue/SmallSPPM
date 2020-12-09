@@ -2,7 +2,7 @@
 #include "math/MathUtils.h"
 #include "math/Linagl.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 TEST(TestVectorOstreamOperator, Ostream) {
 	{
@@ -209,4 +209,4 @@ TEST(TestVectorMaxMinValue, MaxMinValue) {
 	}
 }
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

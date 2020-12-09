@@ -2,7 +2,7 @@
 #include "math/Linagl.h"
 #include "math/MathUtils.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 TEST(TestMatrixIsEqual, IsEqual) {
 	{
 		Matrix<4, real, IntrinsicSet::None>
@@ -288,4 +288,4 @@ TEST(TestMatrixInv, Inv) {
 	}
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

@@ -2,7 +2,7 @@
 
 #include "common/Core.h"
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 class Filter
 {
@@ -66,4 +66,4 @@ public:
 	}
 };
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END

@@ -2,7 +2,7 @@
 #include "common/Core.h"
 
 
-GY_NAMESPACE_BEGIN
+GYT_NAMESPACE_BEGIN
 
 extern int debugPixel[100];
 
@@ -18,4 +18,4 @@ else{                              \
 #define DEBUG_PIXEL_IF(threadIndex)\
 if(debugPixel[(threadIndex)] == 1)		\
 
-GY_NAMESPACE_END
+GYT_NAMESPACE_END
