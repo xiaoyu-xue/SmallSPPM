@@ -104,7 +104,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)Gyunity\src;$(SolutionDir)external;$(SolutionDir)external\tbb\include;$(SolutionDir)external\spdlog\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)$(Platform)\$(Configuration)\Gyunity.lib;$(SolutionDir)external\build\spdlog\$(Configuration)\spdlogd.lib;$(SolutionDir)external\build\tbb\$(Configuration)\tbb.lib;$(SolutionDir)external\build\lib\$(Configuration)\*.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)$(Platform)\$(Configuration)\Gyunity.lib;$(SolutionDir)external\build\lib\$(Configuration)\*.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy /y "$(SolutionDir)external\build\runtime\$(Configuration)\*.dll" "$(OutDir)"</Command>
@@ -123,7 +123,7 @@
     <Link>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SolutionDir)$(Platform)\$(Configuration)\Gyunity.lib;$(SolutionDir)external\build\spdlog\$(Configuration)\spdlogd.lib;$(SolutionDir)external\build\tbb\$(Configuration)\tbb.lib;$(SolutionDir)external\build\lib\$(Configuration)\*.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)$(Platform)\$(Configuration)\Gyunity.lib;$(SolutionDir)external\build\lib\$(Configuration)\*.lib</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
