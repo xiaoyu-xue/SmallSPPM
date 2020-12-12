@@ -1,6 +1,6 @@
 #include "Mesh.h"
 #define TINYOBJLOADER_IMPLEMENTATION
-#include "tiny_obj_loader/tiny_obj_loader.h"
+#include "tinyobjloader/tiny_obj_loader.h"
 
 GYT_NAMESPACE_BEGIN
 

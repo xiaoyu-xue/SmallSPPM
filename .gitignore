@@ -17,9 +17,4 @@ ipch/
 *.user
 *.bmp
 *.png
-stdafx.h
-stdafx.cpp
-targetver.h
-StdAfx.h
-StdAfx.cpp
 packages/
