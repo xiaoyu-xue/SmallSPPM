@@ -7,7 +7,7 @@ obj/
 .layout
 .vs/
  
- 
+external/build
 x64/
 x86/
 Debug/
@@ -17,9 +17,4 @@ ipch/
 *.user
 *.bmp
 *.png
-stdafx.h
-stdafx.cpp
-targetver.h
-StdAfx.h
-StdAfx.cpp
 packages/
