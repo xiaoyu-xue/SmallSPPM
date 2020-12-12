@@ -1,0 +1,10 @@
+﻿  Building Custom Rule C:/Users/XXY/Desktop/CG Proj/Gyunity/external/spdlog/CMakeLists.txt
+  spdlog.cpp
+  stdout_sinks.cpp
+  color_sinks.cpp
+  file_sinks.cpp
+  async.cpp
+  cfg.cpp
+  fmt.cpp
+  Generating Code...
+  spdlog.vcxproj -> C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\lib\Release\spdlog.lib

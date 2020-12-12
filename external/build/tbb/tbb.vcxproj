@@ -1,0 +1,424 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EC791E12-156A-3ECD-B00F-F3B1F66B288E}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>tbb</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\runtime\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">tbb.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">tbb</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\runtime\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">tbb.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">tbb</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\runtime\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">tbb.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">tbb</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\runtime\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">tbb.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">tbb</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\rml\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /volatile:iso</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4267;4800;4146;4244;4577;4018</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;__TBB_BUILD=1;__TBB_NO_IMPLICIT_LINKAGE=1;_CRT_SECURE_NO_WARNINGS;TBB_SUPPRESS_DEPRECATED_MESSAGES=1;USE_WINTHREAD;_WIN32_WINNT=0x0600;CMAKE_INTDIR="Debug";tbb_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;__TBB_BUILD=1;__TBB_NO_IMPLICIT_LINKAGE=1;_CRT_SECURE_NO_WARNINGS;TBB_SUPPRESS_DEPRECATED_MESSAGES=1;USE_WINTHREAD;_WIN32_WINNT=0x0600;CMAKE_INTDIR=\"Debug\";tbb_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\rml\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <MASM>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;__TBB_BUILD=1;__TBB_NO_IMPLICIT_LINKAGE=1;_CRT_SECURE_NO_WARNINGS;TBB_SUPPRESS_DEPRECATED_MESSAGES=1;USE_WINTHREAD;_WIN32_WINNT=0x0600;CMAKE_INTDIR="Debug";tbb_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <IncludePaths>C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\rml\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build;%(IncludePaths)</IncludePaths>
+    </MASM>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\rml\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/XXY/Desktop/CG Proj/Gyunity/external/build/lib/Debug/tbb.lib</ImportLibrary>
+      <ModuleDefinitionFile>C:/Users/XXY/Desktop/CG Proj/Gyunity/external/build/tbb/tbb.def</ModuleDefinitionFile>
+      <ProgramDataBaseFile>C:/Users/XXY/Desktop/CG Proj/Gyunity/external/build/runtime/Debug/tbb.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\rml\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /volatile:iso</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4267;4800;4146;4244;4577;4018</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;__TBB_BUILD=1;__TBB_NO_IMPLICIT_LINKAGE=1;_CRT_SECURE_NO_WARNINGS;TBB_SUPPRESS_DEPRECATED_MESSAGES=1;USE_WINTHREAD;_WIN32_WINNT=0x0600;CMAKE_INTDIR="Release";tbb_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;__TBB_BUILD=1;__TBB_NO_IMPLICIT_LINKAGE=1;_CRT_SECURE_NO_WARNINGS;TBB_SUPPRESS_DEPRECATED_MESSAGES=1;USE_WINTHREAD;_WIN32_WINNT=0x0600;CMAKE_INTDIR=\"Release\";tbb_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\rml\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <MASM>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;__TBB_BUILD=1;__TBB_NO_IMPLICIT_LINKAGE=1;_CRT_SECURE_NO_WARNINGS;TBB_SUPPRESS_DEPRECATED_MESSAGES=1;USE_WINTHREAD;_WIN32_WINNT=0x0600;CMAKE_INTDIR="Release";tbb_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <IncludePaths>C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\rml\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build;%(IncludePaths)</IncludePaths>
+    </MASM>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\rml\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/XXY/Desktop/CG Proj/Gyunity/external/build/lib/Release/tbb.lib</ImportLibrary>
+      <ModuleDefinitionFile>C:/Users/XXY/Desktop/CG Proj/Gyunity/external/build/tbb/tbb.def</ModuleDefinitionFile>
+      <ProgramDataBaseFile>C:/Users/XXY/Desktop/CG Proj/Gyunity/external/build/runtime/Release/tbb.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\rml\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /volatile:iso</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4267;4800;4146;4244;4577;4018</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;__TBB_BUILD=1;__TBB_NO_IMPLICIT_LINKAGE=1;_CRT_SECURE_NO_WARNINGS;TBB_SUPPRESS_DEPRECATED_MESSAGES=1;USE_WINTHREAD;_WIN32_WINNT=0x0600;CMAKE_INTDIR="MinSizeRel";tbb_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;__TBB_BUILD=1;__TBB_NO_IMPLICIT_LINKAGE=1;_CRT_SECURE_NO_WARNINGS;TBB_SUPPRESS_DEPRECATED_MESSAGES=1;USE_WINTHREAD;_WIN32_WINNT=0x0600;CMAKE_INTDIR=\"MinSizeRel\";tbb_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\rml\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <MASM>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;__TBB_BUILD=1;__TBB_NO_IMPLICIT_LINKAGE=1;_CRT_SECURE_NO_WARNINGS;TBB_SUPPRESS_DEPRECATED_MESSAGES=1;USE_WINTHREAD;_WIN32_WINNT=0x0600;CMAKE_INTDIR="MinSizeRel";tbb_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <IncludePaths>C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\rml\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build;%(IncludePaths)</IncludePaths>
+    </MASM>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\rml\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/XXY/Desktop/CG Proj/Gyunity/external/build/lib/MinSizeRel/tbb.lib</ImportLibrary>
+      <ModuleDefinitionFile>C:/Users/XXY/Desktop/CG Proj/Gyunity/external/build/tbb/tbb.def</ModuleDefinitionFile>
+      <ProgramDataBaseFile>C:/Users/XXY/Desktop/CG Proj/Gyunity/external/build/runtime/MinSizeRel/tbb.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\rml\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /volatile:iso</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4267;4800;4146;4244;4577;4018</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;__TBB_BUILD=1;__TBB_NO_IMPLICIT_LINKAGE=1;_CRT_SECURE_NO_WARNINGS;TBB_SUPPRESS_DEPRECATED_MESSAGES=1;USE_WINTHREAD;_WIN32_WINNT=0x0600;CMAKE_INTDIR="RelWithDebInfo";tbb_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;__TBB_BUILD=1;__TBB_NO_IMPLICIT_LINKAGE=1;_CRT_SECURE_NO_WARNINGS;TBB_SUPPRESS_DEPRECATED_MESSAGES=1;USE_WINTHREAD;_WIN32_WINNT=0x0600;CMAKE_INTDIR=\"RelWithDebInfo\";tbb_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\rml\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <MASM>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;__TBB_BUILD=1;__TBB_NO_IMPLICIT_LINKAGE=1;_CRT_SECURE_NO_WARNINGS;TBB_SUPPRESS_DEPRECATED_MESSAGES=1;USE_WINTHREAD;_WIN32_WINNT=0x0600;CMAKE_INTDIR="RelWithDebInfo";tbb_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <IncludePaths>C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\rml\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build;%(IncludePaths)</IncludePaths>
+    </MASM>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\rml\include;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/XXY/Desktop/CG Proj/Gyunity/external/build/lib/RelWithDebInfo/tbb.lib</ImportLibrary>
+      <ModuleDefinitionFile>C:/Users/XXY/Desktop/CG Proj/Gyunity/external/build/tbb/tbb.def</ModuleDefinitionFile>
+      <ProgramDataBaseFile>C:/Users/XXY/Desktop/CG Proj/Gyunity/external/build/runtime/RelWithDebInfo/tbb.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/XXY/Desktop/CG Proj/Gyunity/external/tbb/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/XXY/Desktop/CG Proj/Gyunity/external" "-BC:/Users/XXY/Desktop/CG Proj/Gyunity/external/build" --check-stamp-file "C:/Users/XXY/Desktop/CG Proj/Gyunity/external/build/tbb/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.16\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeASMCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeASMInformation.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeASM_MASMInformation.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeCompilerIdDetection.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeDetermineASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeDetermineASM_MASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeDetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeDetermineCompilerId.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeFindBinUtils.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeTestASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeTestASM_MASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CheckCXXCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CheckCXXSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CheckCXXSourceRuns.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\WriteBasicConfigVersionFile.cmake;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\CMakeFiles\3.16.0-rc3\CMakeASM_MASMCompiler.cmake;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\build\version_string.ver.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/XXY/Desktop/CG Proj/Gyunity/external/tbb/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/XXY/Desktop/CG Proj/Gyunity/external" "-BC:/Users/XXY/Desktop/CG Proj/Gyunity/external/build" --check-stamp-file "C:/Users/XXY/Desktop/CG Proj/Gyunity/external/build/tbb/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.16\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeASMCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeASMInformation.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeASM_MASMInformation.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeCompilerIdDetection.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeDetermineASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeDetermineASM_MASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeDetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeDetermineCompilerId.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeFindBinUtils.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeTestASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeTestASM_MASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CheckCXXCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CheckCXXSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CheckCXXSourceRuns.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\WriteBasicConfigVersionFile.cmake;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\CMakeFiles\3.16.0-rc3\CMakeASM_MASMCompiler.cmake;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\build\version_string.ver.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/XXY/Desktop/CG Proj/Gyunity/external/tbb/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/XXY/Desktop/CG Proj/Gyunity/external" "-BC:/Users/XXY/Desktop/CG Proj/Gyunity/external/build" --check-stamp-file "C:/Users/XXY/Desktop/CG Proj/Gyunity/external/build/tbb/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.16\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeASMCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeASMInformation.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeASM_MASMInformation.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeCompilerIdDetection.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeDetermineASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeDetermineASM_MASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeDetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeDetermineCompilerId.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeFindBinUtils.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeTestASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeTestASM_MASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CheckCXXCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CheckCXXSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CheckCXXSourceRuns.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\WriteBasicConfigVersionFile.cmake;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\CMakeFiles\3.16.0-rc3\CMakeASM_MASMCompiler.cmake;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\build\version_string.ver.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/XXY/Desktop/CG Proj/Gyunity/external/tbb/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/XXY/Desktop/CG Proj/Gyunity/external" "-BC:/Users/XXY/Desktop/CG Proj/Gyunity/external/build" --check-stamp-file "C:/Users/XXY/Desktop/CG Proj/Gyunity/external/build/tbb/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.16\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeASMCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeASMInformation.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeASM_MASMInformation.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeCompilerIdDetection.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeDetermineASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeDetermineASM_MASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeDetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeDetermineCompilerId.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeFindBinUtils.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeTestASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CMakeTestASM_MASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CheckCXXCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CheckCXXSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\CheckCXXSourceRuns.cmake;C:\Program Files\CMake\share\cmake-3.16\Modules\WriteBasicConfigVersionFile.cmake;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\CMakeFiles\3.16.0-rc3\CMakeASM_MASMCompiler.cmake;C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\build\version_string.ver.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\old\concurrent_queue_v2.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\old\concurrent_vector_v2.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\old\spin_rw_mutex_v2.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\old\task_v2.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\arena.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\cache_aligned_allocator.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\concurrent_hash_map.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\concurrent_monitor.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\concurrent_queue.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\concurrent_vector.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\condition_variable.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\critical_section.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\dynamic_link.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\governor.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\itt_notify.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\market.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\mutex.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\observer_proxy.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\pipeline.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\private_server.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\queuing_mutex.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\queuing_rw_mutex.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\reader_writer_lock.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\recursive_mutex.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\scheduler.cpp">
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4458;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4458;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">4458;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">4458;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\semaphore.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\spin_mutex.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\spin_rw_mutex.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\task.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\task_group_context.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\tbb_main.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\tbb_misc.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\tbb_misc_ex.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\tbb_statistics.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\tbb_thread.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\x86_rtm_rw_mutex.cpp" />
+    <ClCompile Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\rml\client\rml_tbb.cpp" />
+    <MASM Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\intel64-masm\atomic_support.asm" />
+    <MASM Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\intel64-masm\itsx.asm" />
+    <MASM Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\tbb\src\tbb\intel64-masm\intel64_misc.asm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\ZERO_CHECK.vcxproj">
+      <Project>{FBE5DBE4-1A5C-3476-9128-DD6306E71312}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\XXY\Desktop\CG Proj\Gyunity\external\build\tbb\tbb_def_files.vcxproj">
+      <Project>{A023B9B7-ADB6-3C12-8534-6AF8300B6EC9}</Project>
+      <Name>tbb_def_files</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+</Project>
