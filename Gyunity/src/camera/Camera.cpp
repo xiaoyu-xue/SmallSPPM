@@ -47,10 +47,12 @@ void ProjectiveCamera::Initialize() {
 	film->LL = filmCenter - cy * film->height * 0.5 - cx * film->width * 0.5;
 	film->RU = filmCenter + cy * film->height * 0.5 + cx * film->width * 0.5;
 	film->RL = filmCenter - cy * film->height * 0.5 + cx * film->width * 0.5;
-	std::cout << "LL: " << film->LL << std::endl
-		<< "LU: " << film->LU << std::endl
-		<< "RL: " << film->RL << std::endl
-		<< "RR: " << film->RU << std::endl;
+
+	GYT_Print("LL: {} \n", film->LL);
+	GYT_Print("LL: {} \n", film->LU);
+	GYT_Print("LL: {} \n", film->RL);
+	GYT_Print("LL: {} \n", film->RU);
+
 }
 
 

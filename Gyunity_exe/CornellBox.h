@@ -297,7 +297,7 @@ public:
 		scene->AddPrimitive(botomTriangle2);
 
 		//std::shared_ptr<Texture<Vec3>> botomTexture =
-		//	std::shared_ptr<Texture<Vec3>>(new ImageTexture<Vec3>("..\\texture_images\\checkboard3.bmp"));
+		//	std::shared_ptr<Texture<Vec3>>(new ImageTexture<Vec3>("..\\resources\\texture_images\\checkboard3.bmp"));
 		//static Vec2 uvs1[3] = { Vec2(0, 0), Vec2(1, 0), Vec2(1, 1) };
 		//static Vec2 uvs2[3] = { Vec2(0, 0), Vec2(1, 1), Vec2(0, 1) };
 		//Vec3 normalBotom = Vec3(0, 1, 0);
@@ -364,7 +364,7 @@ public:
 			Transform::Translate(Vec3(-0.5f, -0.6f, -0.3f)) * Transform::RotateY(220) * Transform::Scale(1, 1, 1);
 		static Transform w2o = Inverse(o2w);
 		std::shared_ptr<Texture<Vec3>> imageTexture1 =
-			std::shared_ptr<Texture<Vec3>>(new ImageTexture<Vec3>("..\\texture_images\\sphere_mapping_8k.jpg"));
+			std::shared_ptr<Texture<Vec3>>(new ImageTexture<Vec3>("..\\resources\\texture_images\\sphere_mapping_8k.jpg"));
 		std::shared_ptr<Shape> diffuseBallShape = std::shared_ptr<Shape>(new Sphere(&o2w, &w2o, 0.35f, Vec3(0, 0, 0)));
 		std::shared_ptr<Material> diffuseBallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(imageTexture1));
 		std::shared_ptr<Primitive> diffuseBall = std::shared_ptr<Primitive>(new GeometryPrimitive(diffuseBallShape, diffuseBallMaterial));
@@ -522,14 +522,14 @@ public:
 		//	std::shared_ptr<Material>(new RoughnessMaterial(fullWhiteConstant, roughnessx, roughnessy, eta, k));
 		
 		std::shared_ptr<Mesh> mesh = std::shared_ptr<Mesh>(new Mesh());
-		//mesh->LoadFromFile("..\\meshs\\bunny.obj");
+		//mesh->LoadFromFile("..\\resources\\meshs\\bunny.obj");
 		//mesh->SetMaterial(glassMeshMaterial);
 		//Transform transform = Transform::Translate(Vec3(0, -1, 0)) * Transform::Scale(6.0, 6.0, 6.0);
-		//mesh->LoadFromFile("..\\meshs\\bunny2.obj");
+		//mesh->LoadFromFile("..\\resources\\meshs\\bunny2.obj");
 		//mesh->SetMaterial(glassMeshMaterial);
 		//Transform transform = Transform::Translate(Vec3(0, -0.65, 0)) * Transform::Scale(0.65, 0.65, 0.65);
 
-		mesh->LoadFromFile("..\\meshs\\bunny3.obj");
+		mesh->LoadFromFile("..\\resources\\meshs\\bunny3.obj");
 		mesh->SetMaterial(glassMeshMaterial);
 		Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
 		scene->AddMesh(*mesh, transform);
@@ -539,7 +539,7 @@ public:
 		//scene->AddPrimitive(ballPrimitive);
 
 		//std::shared_ptr<Mesh> waterMesh = std::shared_ptr<Mesh>(new Mesh());
-		//waterMesh->LoadFromFile("..\\meshs\\water.obj");
+		//waterMesh->LoadFromFile("..\\resources\\meshs\\water.obj");
 		//Transform transformWater =
 		//	Transform::Translate(Vec3(0, -0.5, 0)) *
 
@@ -554,7 +554,7 @@ public:
 
 
 		//std::shared_ptr<Mesh> objMesh = std::shared_ptr<Mesh>(new Mesh());
-		//objMesh->LoadFromFile("..\\meshs\\Alucy.obj");
+		//objMesh->LoadFromFile("..\\resources\\meshs\\Alucy.obj");
 
 		//Transform transformWater =
 		//	Transform::Translate(Vec3(0, -1, 0)) *
@@ -565,7 +565,7 @@ public:
 
 
 		//std::shared_ptr<Mesh> meshVenus = std::shared_ptr<Mesh>(new Mesh());
-		//meshVenus->LoadFromFile("..\\meshs\\venusm.obj");
+		//meshVenus->LoadFromFile("..\\resources\\meshs\\venusm.obj");
 		//meshVenus->SetMaterial(diffuseMeshMaterial);
 		//Transform transformVenus = Transform::Translate(Vec3(-0.4, -0.73, 0)) * Transform::Scale(0.0003, 0.0003, 0.0003);
 		//scene->AddMesh(*meshVenus, transformVenus);
@@ -731,14 +731,14 @@ public:
 
 
 		std::shared_ptr<Mesh> mesh = std::shared_ptr<Mesh>(new Mesh());
-		//mesh->LoadFromFile("..\\meshs\\bunny.obj");
+		//mesh->LoadFromFile("..\\resources\\meshs\\bunny.obj");
 		//mesh->SetMaterial(glassMeshMaterial);
 		//Transform transform = Transform::Translate(Vec3(0, -1, 0)) * Transform::Scale(6.0, 6.0, 6.0);
-		//mesh->LoadFromFile("..\\meshs\\bunny2.obj");
+		//mesh->LoadFromFile("..\\resources\\meshs\\bunny2.obj");
 		//mesh->SetMaterial(glassMeshMaterial);
 		//Transform transform = Transform::Translate(Vec3(0, -0.65, 0)) * Transform::Scale(0.65, 0.65, 0.65);
 
-		//mesh->LoadFromFile("..\\meshs\\bunny3.obj");
+		//mesh->LoadFromFile("..\\resources\\meshs\\bunny3.obj");
 		//mesh->SetMaterial(diffuseMeshMaterial);
 		//Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
 		//scene->AddMesh(*mesh, transform);
@@ -748,7 +748,7 @@ public:
 		//scene->AddPrimitive(ballPrimitive);
 
 		std::shared_ptr<Mesh> waterMesh = std::shared_ptr<Mesh>(new Mesh());
-		waterMesh->LoadFromFile("..\\meshs\\water.obj");
+		waterMesh->LoadFromFile("..\\resources\\meshs\\water.obj");
 		Transform transformWater =
 			Transform::Translate(Vec3(0, -0.35, 0)) *
 
@@ -764,7 +764,7 @@ public:
 
 
 		std::shared_ptr<Mesh> objMesh = std::shared_ptr<Mesh>(new Mesh());
-		objMesh->LoadFromFile("..\\meshs\\Alucy.obj");
+		objMesh->LoadFromFile("..\\resources\\meshs\\Alucy.obj");
 
 		Transform transformObj =
 			Transform::Translate(Vec3(-0.3, 0, -0.2)) *
@@ -910,7 +910,7 @@ public:
 		//	Transform::Translate(Vec3(-0.5f, -0.6f, -0.3f)) * Transform::RotateY(220) * Transform::Scale(1, 1, 1);
 		//static Transform w2o = Inverse(o2w);
 		//std::shared_ptr<Texture<Vec3>> imageTexture1 =
-		//	std::shared_ptr<Texture<Vec3>>(new ImageTexture<Vec3>("..\\texture_images\\sphere_mapping_8k.jpg"));
+		//	std::shared_ptr<Texture<Vec3>>(new ImageTexture<Vec3>("..\\resources\\texture_images\\sphere_mapping_8k.jpg"));
 		//std::shared_ptr<Shape> diffuseBallShape = std::shared_ptr<Shape>(new Sphere(&o2w, &w2o, 0.35f, Vec3(0, 0, 0)));
 		//std::shared_ptr<Material> diffuseBallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(imageTexture1));
 		//std::shared_ptr<Primitive> diffuseBall = std::shared_ptr<Primitive>(new GeometryPrimitive(diffuseBallShape, diffuseBallMaterial));
@@ -929,7 +929,7 @@ public:
 
 		//Mesh
 		//std::shared_ptr<Mesh> meshBunny = std::shared_ptr<Mesh>(new Mesh());
-		//meshBunny->LoadFromFile("..\\meshs\\bunny3.obj");
+		//meshBunny->LoadFromFile("..\\resources\\meshs\\bunny3.obj");
 		//std::shared_ptr<Material> meshMaterial = std::shared_ptr<Material>(new DiffuseMaterial(redConstant));
 		//meshBunny->SetMaterial(meshMaterial);
 		//Transform transformBunny = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(-0.28, 0.28, 0.28);
@@ -1042,8 +1042,8 @@ public:
 		//scene->AddPrimitive(heartSurface2);
 
 		//Light
-		std::shared_ptr<Light> light = std::shared_ptr<Light>(new EnvironmentLight("..\\media\\pictures\\uffizi-large.hdr", 0));
-		//std::shared_ptr<Light> light = std::shared_ptr<Light>(new EnvironmentLight("..\\media\\pictures\\grace-new.hdr", 0));
+		std::shared_ptr<Light> light = std::shared_ptr<Light>(new EnvironmentLight("..\\resources\\media\\pictures\\uffizi-large.hdr", 0));
+		//std::shared_ptr<Light> light = std::shared_ptr<Light>(new EnvironmentLight("..\\resources\\media\\pictures\\grace-new.hdr", 0));
 		scene->AddLight(light);
 
 	}
@@ -1118,20 +1118,20 @@ public:
 		//scene->AddPrimitive(diffuseBall);
 
 		//std::shared_ptr<Mesh> meshVenus = std::shared_ptr<Mesh>(new Mesh());
-		//meshVenus->LoadFromFile("..\\meshs\\venusm.obj");
+		//meshVenus->LoadFromFile("..\\resources\\meshs\\venusm.obj");
 		//meshVenus->SetMaterial(roughDielectricMaterial);
 		//Transform transformVenus = Transform::Translate(Vec3(-0.4, -0.69, 0)) * Transform::Scale(0.00035, 0.00035, 0.00035);
 		//scene->AddMesh(*meshVenus, transformVenus);
 
 		std::shared_ptr<Mesh> meshBunny = std::shared_ptr<Mesh>(new Mesh());
-		meshBunny->LoadFromFile("..\\meshs\\bunny3.obj");
+		meshBunny->LoadFromFile("..\\resources\\meshs\\bunny3.obj");
 		meshBunny->SetMaterial(roughMeshMaterial);
 		//Transform transformBunny = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(-0.28, 0.28, 0.28);
 		Transform transformBunny = Transform::Translate(Vec3(0.52, -0.92, 0.3)) * Transform::Scale(0.22, 0.22, 0.22);
 		scene->AddMesh(*meshBunny, transformBunny);
 
 		std::shared_ptr<Mesh> objMesh = std::shared_ptr<Mesh>(new Mesh());
-		objMesh->LoadFromFile("..\\meshs\\Alucy.obj");
+		objMesh->LoadFromFile("..\\resources\\meshs\\Alucy.obj");
 		//Transform transformObj =
 		//	Transform::Translate(Vec3(0, -1, 0)) *
 		//	Transform::RotateY(60) * 
@@ -1146,8 +1146,8 @@ public:
 		scene->AddMesh(*objMesh, transformObj);
 
 		//Light
-		std::shared_ptr<Light> light = std::shared_ptr<Light>(new EnvironmentLight("..\\media\\pictures\\uffizi-large.hdr", 0));
-		//std::shared_ptr<Light> light = std::shared_ptr<Light>(new EnvironmentLight("..\\media\\pictures\\grace-new.hdr", 0));
+		std::shared_ptr<Light> light = std::shared_ptr<Light>(new EnvironmentLight("..\\resources\\media\\pictures\\uffizi-large.hdr", 0));
+		//std::shared_ptr<Light> light = std::shared_ptr<Light>(new EnvironmentLight("..\\resources\\media\\pictures\\grace-new.hdr", 0));
 		scene->AddLight(light);
 
 		//////Light
@@ -1305,7 +1305,7 @@ public:
 
 
 		std::shared_ptr<Mesh> mesh = std::shared_ptr<Mesh>(new Mesh());
-		mesh->LoadFromFile("..\\meshs\\bunny3.obj");
+		mesh->LoadFromFile("..\\resources\\meshs\\bunny3.obj");
 		mesh->SetMaterial(diffuseMeshMaterial);
 		Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
 		scene->AddMesh(*mesh, transform);
@@ -1313,7 +1313,7 @@ public:
 
 		//Cube
 		//std::shared_ptr<Mesh> cubeMesh = std::shared_ptr<Mesh>(new Mesh());
-		//cubeMesh->LoadFromFile("..\\meshs\\cube.obj");
+		//cubeMesh->LoadFromFile("..\\resources\\meshs\\cube.obj");
 		//Transform cubeTransform =
 		//	Transform::Scale(0.6, 0.6, 0.6) *
 		//	Transform::Translate(Vec3(-0.5, -0.5, -0.5));
