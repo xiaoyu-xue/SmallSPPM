@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/Core.h"
 #include "math/Linagl.h"
 #include "math/Ray.h"
 #include "visual/Intersection.h"

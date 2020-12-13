@@ -15,6 +15,7 @@ ipch/
 *.db
 *.filters
 *.user
-*.bmp
-*.png
+Gyunity_exe/*.bmp
+Gyunity_exe/*.png
+Gyunity_exe/Result/
 packages/
