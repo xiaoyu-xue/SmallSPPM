@@ -3,6 +3,7 @@
 
 GYT_NAMESPACE_BEGIN
 
+class Config;
 class Medium;
 class StateSequence;
 class MemoryPool;
