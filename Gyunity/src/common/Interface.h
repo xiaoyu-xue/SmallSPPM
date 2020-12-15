@@ -17,11 +17,11 @@ T* CreatePlacementPtr(const std::string& alias, void* placement);
 
 
 class Config;
-class Object 
+class Object
 {
 public:
 	virtual ~Object() {}
-	virtual void Initialize(const Config &config) {}
+	virtual void Initialize(const Config& config) {}
 };
 
 
@@ -29,8 +29,8 @@ template<typename T>
 class FactoryBase
 {
 	using CreateRawPtrMethod = std::function<T* ()>;
-	using CreateSharedPtrMethod = std::function<std::shared_ptr<T> ()>;
-	using CreateUniquePtrMethod = std::function<std::unique_ptr<T> ()>;
+	using CreateSharedPtrMethod = std::function<std::shared_ptr<T>()>;
+	using CreateUniquePtrMethod = std::function<std::unique_ptr<T>()>;
 	using CreatePlacementMethod = std::function<T* (void*)>;
 protected:
 	std::map<std::string, CreateRawPtrMethod> mCreateRawPtrMethods;
@@ -96,11 +96,11 @@ public:
 };
 
 
-#define GY_FACTORY_NAME(T) Factory_##T
-#define GY_IMPLEMENTATION_NAME(T) Impementation_##T##_Injector
+#define GYT_FACTORY_NAME(T) Factory_##T
+#define GYT_IMPLEMENTATION_NAME(T) Impementation_##T##_Injector
 
-#define GY_INTERFACE_DEF(BaseClassName)														\
-class GY_FACTORY_NAME(BaseClassName) : public FactoryBase<BaseClassName>					\
+#define GYT_INTERFACE_DEF(BaseClassName)													\
+class GYT_FACTORY_NAME(BaseClassName) : public FactoryBase<BaseClassName>					\
 {																							\
 																							\
 };																							\
@@ -108,7 +108,7 @@ class GY_FACTORY_NAME(BaseClassName) : public FactoryBase<BaseClassName>					\
 template<>																					\
 inline BaseClassName* CreateRawPtr<BaseClassName>(const std::string &alias)					\
 {																							\
-	auto factory = GY_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\
+	auto factory = GYT_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\
 	return factory->CreateRawPtr(alias);													\
 }																							\
 																							\
@@ -116,15 +116,15 @@ template<>																					\
 inline std::shared_ptr<BaseClassName>														\
 CreateSharedPtr<BaseClassName>(const std::string &alias)									\
 {																							\
-	auto factory = GY_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\
+	auto factory = GYT_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\
 	return factory->CreateSharedPtr(alias);													\
 }																							\
 																							\
 template<>																					\
 inline std::unique_ptr<BaseClassName>														\
-CreateInstanceUniquePtr<BaseClassName>(const std::string& alias)							\
+CreateUniquePtr<BaseClassName>(const std::string& alias)									\
 {																							\
-	auto factory = GY_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\
+	auto factory = GYT_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\
 	return factory->CreateUniquePtr(alias);													\
 }																							\
 																							\
@@ -132,22 +132,24 @@ template<>																					\
 inline BaseClassName*																		\
 CreatePlacementPtr<BaseClassName>(const std::string& alias, void* placement)				\
 {																							\
-	auto factory = GY_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\
+	auto factory = GYT_FACTORY_NAME(BaseClassName)::GetInstancePtr();						\
 	return factory->CreatePlacementPtr(alias, placement);									\
 }																							\
 																							\
 
 
-#define GY_IMPLEMENTATION_DEF(BaseClassName, ClassName, Alias)								\
-class GY_IMPLEMENTATION_NAME(ClassName)														\
+#define GYT_IMPLEMENTATION_DEF(BaseClassName, ClassName, Alias)								\
+class GYT_IMPLEMENTATION_NAME(ClassName)													\
 {																							\
 	using CreateMethod = std::function<BaseClassName*()>;									\
 public:																						\
-	GY_IMPLEMENTATION_NAME(ClassName)()														\
+	GYT_IMPLEMENTATION_NAME(ClassName)()													\
 	{																						\
-		auto factory = GY_FACTORY_NAME(BaseClassName)::GetInstancePtr();					\
+		GYT_STATIC_ASSERT((std::is_base_of<BaseClassName, ClassName>::value));				\
+		auto factory = GYT_FACTORY_NAME(BaseClassName)::GetInstancePtr();					\
 		factory->Register<ClassName>(Alias);												\
 	}																						\
 } Impementation_##BaseClassName##_##ClassName##_Instance;
+
 
 GYT_NAMESPACE_END
