@@ -115,8 +115,18 @@ Transform Transform::LookAt(const Vector3 &pos, const Vector3 &look, const Vecto
 	return Transform(Inverse(cameraToWorld), cameraToWorld);
 }
 
-Transform Transform::Orthographic(real zNear, real zFar) {
-	return Scale(1, 1, 1 / (zFar - zNear)) * Translate(Vector3(0, 0, -zNear));
+Transform Transform::Orthographic(real n, real f) {
+	return Scale(1, 1, 1 / (f - n)) * Translate(Vector3(0, 0, -n));
+}
+
+Transform Transform::Orthographic(real width, real height, real n, real f) {
+	Matrix4 orthoGraphic(
+		1 / width, 0, 0, 0,
+		0, 1 / height, 0, 0,
+		0, 0, 2.f / (f - n), -(f + n) / (f - n),
+		0, 0, 0, 1
+	);
+	return Transform(orthoGraphic, Inverse(orthoGraphic));
 }
 
 Transform Transform::Perspective(real fovy, real aspect, real dis, real n, real f) {
