@@ -5,19 +5,19 @@
 GYT_NAMESPACE_BEGIN
 
 bool VisibilityTester::Unoccluded(const Scene& scene) const {
-	Ray ray = p0.SpawnTo(p1);
+	Ray ray = mP0.SpawnTo(mP1);
 	return !scene.Intersect(ray);
 }
 
 
 Vec3 VisibilityTester::Tr(const Scene& scene, StateSequence& rand) const {
-    Ray ray(p0.SpawnTo(p1));
+    Ray ray(mP0.SpawnTo(mP1));
     Vec3 Tr(1.f);
     while (true) {
         Intersection isect;
 
         bool hitSurface = scene.Intersect(ray, &isect);
-        if (hitSurface && isect.primitive->GetMaterial() != nullptr)
+        if (hitSurface && isect.mpPrimitive->GetMaterial() != nullptr)
             return Vec3();
 
         //DEBUG_PIXEL_IF(ThreadIndex()) {
@@ -29,7 +29,7 @@ Vec3 VisibilityTester::Tr(const Scene& scene, StateSequence& rand) const {
 
         if (!hitSurface) break;
         scene.QueryIntersectionInfo(ray, &isect);
-        ray = isect.SpawnTo(p1);
+        ray = isect.SpawnTo(mP1);
     }
     return Tr;
 }

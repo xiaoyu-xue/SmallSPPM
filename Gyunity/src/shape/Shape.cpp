@@ -5,16 +5,16 @@ GYT_NAMESPACE_BEGIN
 
 Intersection Shape::Sample(const Intersection& isect, real* pdf, const Vec2& u) const {
 	Intersection it = Sample(pdf, u);
-	Vec3 wi = isect.hit - it.hit;
+	Vec3 wi = isect.mPos - it.mPos;
 	if (wi.Length() == 0) {
 		*pdf = 0;
 	}
 	else {
 		wi.Normalize();
-		*pdf *= Distance2(isect.hit, it.hit) / std::abs(Dot(it.n, -wi));
+		*pdf *= Distance2(isect.mPos, it.mPos) / std::abs(Dot(it.mNormal, -wi));
 		if (std::isinf(*pdf)) *pdf = 0;
 	}
-	it.shapeId = shapeId;
+	it.mShapeId = mShapeId;
 	return it;
 }
 

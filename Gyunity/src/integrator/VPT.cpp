@@ -65,16 +65,16 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 			}
 			scene.QueryIntersectionInfo(ray, &isect);
 			isect.ComputeScatteringFunction(arena);
-			BSDF* bsdf = isect.bsdf;
+			BSDF* bsdf = isect.mpBSDF;
 			if (!bsdf) {
 				ray = isect.SpawnRay(ray.mDir);
 				i--;
 				continue;
 			}
 
-			if ((i == 0 || deltaBoundEvent) && isect.primitive->IsLight()) {
-				const Light* emissionShape = isect.primitive->GetLight();
-				L += throughput * emissionShape->Emission(isect, isect.wo);
+			if ((i == 0 || deltaBoundEvent) && isect.mpPrimitive->IsLight()) {
+				const Light* emissionShape = isect.mpPrimitive->GetLight();
+				L += throughput * emissionShape->Emission(isect, isect.mOutDir);
 			}
 			else {
 				L += throughput * DirectIllumination(scene, isect, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()), rand, true);
@@ -83,9 +83,9 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 
 			Vec3 wi;
 			real pdf;
-			Vec3 f = bsdf->Sample_f(-ray.mDir, &wi, &pdf, Vec3(rand(), rand(), rand()));
+			Vec3 f = bsdf->Sample(-ray.mDir, &wi, &pdf, Vec3(rand(), rand(), rand()));
 			if (f == Vec3() || pdf == 0) break;
-			Vec3 estimation = f * std::abs(Dot(isect.n, wi)) / pdf;
+			Vec3 estimation = f * std::abs(Dot(isect.mNormal, wi)) / pdf;
 			deltaBoundEvent = bsdf->IsDelta();
 
 			throughput = throughput * estimation;
@@ -129,19 +129,19 @@ Vec3 VolPathTracing::ConnectToLight(const Scene &scene, StateSequence &rand,
 	{
 		Vec3 f;
 		real cosTheta = 1;
-		Vec3 dir = isect.hit - lightPoint.hit;
+		Vec3 dir = isect.mPos - lightPoint.mPos;
 		Vec3 wi = -dir.Norm();
-		if (lightPoint.n != Vec3()) {
-			cosTheta = Dot(dir.Norm(), lightPoint.n);
+		if (lightPoint.mNormal != Vec3()) {
+			cosTheta = Dot(dir.Norm(), lightPoint.mNormal);
 			if (cosTheta < 0) return Vec3();
 		}
 		VisibilityTester visibilityTester(isect, lightPoint);
 		const MediumIntersection& mi = (const MediumIntersection&)isect;
-		real p = mi.phase->p(mi.wo, wi);
+		real p = mi.phase->p(mi.mOutDir, wi);
 		f = Vec3(p);
 		real geomTerm = std::abs(cosTheta) / dir.Length2();
 		real pdfPhase = p * geomTerm;
-		weight1 = (lightPoint.n != Vec3()) ? PowerHeuristic(1, lightPdf, 1, pdfPhase) : 1;
+		weight1 = (lightPoint.mNormal != Vec3()) ? PowerHeuristic(1, lightPdf, 1, pdfPhase) : 1;
 		L1 = Le * f * visibilityTester.Tr(scene, rand) * cosTheta / dir.Length2() / lightPdf;
 	}
 	//{

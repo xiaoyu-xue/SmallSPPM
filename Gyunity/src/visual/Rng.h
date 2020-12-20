@@ -4,28 +4,27 @@
 GYT_NAMESPACE_BEGIN
 
 class Rng {
+private:
+	std::mt19937_64 mRng;
+	std::uniform_real_distribution<real> mUniform;
 public:
-	Rng(int seed = 123) : rng(seed){}
+	Rng(int seed = 123) : mRng(seed){}
 
 	real operator()() {
-		return uniform(rng);
+		return mUniform(mRng);
 	}
 
 	double operator()(unsigned long long i) {
-		return uniform(rng);
+		return mUniform(mRng);
 	}
 
 	double GetDouble() {
-		return uniform(rng);
+		return mUniform(mRng);
 	}
 
 	std::mt19937_64 GetRngEngine() {
-		return rng;
+		return mRng;
 	}
-
-private:
-	std::mt19937_64 rng;
-	std::uniform_real_distribution<real> uniform;
 };
 
 
@@ -49,8 +48,8 @@ class RNG {
   public:
     // RNG Public Methods
     RNG();
-    RNG(uint64_t sequenceIndex) { SetSequence(sequenceIndex); }
-    void SetSequence(uint64_t sequenceIndex);
+    RNG(uint64 sequenceIndex) { SetSequence(sequenceIndex); }
+    void SetSequence(uint64 sequenceIndex);
     uint32_t UniformUInt32();
     uint32_t UniformUInt32(uint32_t b) {
         uint32_t threshold = (~b + 1u) % b;
@@ -74,8 +73,8 @@ class RNG {
                            begin + UniformUInt32((uint32_t)(it - begin + 1)));
     }
     void Advance(int64_t idelta) {
-        uint64_t cur_mult = PCG32_MULT, cur_plus = inc, acc_mult = 1u,
-                 acc_plus = 0u, delta = (uint64_t)idelta;
+        uint64 cur_mult = PCG32_MULT, cur_plus = inc, acc_mult = 1u,
+                 acc_plus = 0u, delta = (uint64)idelta;
         while (delta > 0) {
             if (delta & 1) {
                 acc_mult *= cur_mult;
@@ -88,7 +87,7 @@ class RNG {
         state = acc_mult * state + acc_plus;
     }
     int64_t operator-(const RNG &other) const {
-        uint64_t cur_mult = PCG32_MULT, cur_plus = inc, cur_state = other.state,
+        uint64 cur_mult = PCG32_MULT, cur_plus = inc, cur_state = other.state,
                  the_bit = 1u, distance = 0u;
         while (state != cur_state) {
             if ((state & the_bit) != (cur_state & the_bit)) {
@@ -104,12 +103,12 @@ class RNG {
 
   private:
     // RNG Private Data
-    uint64_t state, inc;
+    uint64 state, inc;
 };
 
 // RNG Inline Method Definitions
 inline RNG::RNG() : state(PCG32_DEFAULT_STATE), inc(PCG32_DEFAULT_STREAM) {}
-inline void RNG::SetSequence(uint64_t initseq) {
+inline void RNG::SetSequence(uint64 initseq) {
     state = 0u;
     inc = (initseq << 1u) | 1u;
     UniformUInt32();
@@ -118,7 +117,7 @@ inline void RNG::SetSequence(uint64_t initseq) {
 }
 
 inline uint32_t RNG::UniformUInt32() {
-    uint64_t oldstate = state;
+    uint64 oldstate = state;
     state = oldstate * PCG32_MULT + inc;
     uint32_t xorshifted = (uint32_t)(((oldstate >> 18u) ^ oldstate) >> 27u);
     uint32_t rot = (uint32_t)(oldstate >> 59u);

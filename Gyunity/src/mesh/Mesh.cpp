@@ -74,7 +74,7 @@ void Mesh::LoadFromFile(std::string inputfile, bool reverseVertices) {
 			}
 
 			untransformedTriangles.push_back(
-				Triangle(nullptr, nullptr,
+				Triangle(Transform(), Transform(),
 					vertices[i], vertices[j], vertices[k],
 					normals[i], normals[j], normals[k],
 					uvs[i], uvs[j], uvs[k]));

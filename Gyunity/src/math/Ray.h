@@ -2,10 +2,10 @@
 
 #include "Linagl.h"
 #include "common/Core.h"
+#include "ForwardDecl.h"
 
 GYT_NAMESPACE_BEGIN
 
-class Medium;
 struct Ray {
 	Ray() 
 		: mpMedium(nullptr)

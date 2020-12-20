@@ -27,7 +27,7 @@ public:
 
 	Vec3 SampleOnePoint(Intersection* isect, real* pdf, const Vec2& u) const override 
 	{
-		isect->hit = mLightPosition;
+		isect->mPos = mLightPosition;
 		*pdf = 1.f;
 		return mI;
 	}

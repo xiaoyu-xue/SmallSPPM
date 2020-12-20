@@ -6,12 +6,12 @@ bool Primitive::Intersect(const Ray& r, Intersection* isect) const {
 	real t;
 	if (mpShape->Intersect(r, isect, &t)) {
 		r.m_tMax = t;
-		isect->primitive = this;
-		isect->primId = this->mPrimId;
+		isect->mpPrimitive = this;
+		isect->mPrimId = this->mPrimId;
 		if (mMediumInterface.IsMediumTransition())
-			isect->mediumInterface = mMediumInterface;
+			isect->mMediumInterface = mMediumInterface;
 		else
-			isect->mediumInterface = MediumInterface(r.mpMedium);
+			isect->mMediumInterface = MediumInterface(r.mpMedium);
 		return true;
 	}
 	return false;

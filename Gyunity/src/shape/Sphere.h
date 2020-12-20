@@ -7,10 +7,19 @@
 
 GYT_NAMESPACE_BEGIN
 
-class Sphere : public Shape {
-public:
+class Sphere : public Shape 
+{
+private:
+	real mRad;
+	Vec3 mPos;
+	bool mInside;
+	AABB mBBox;
+	const real mThetaMin = 0;
+	const real mThetaMax = PI;
+	const real mPhiMax = 2 * PI;
 
-	Sphere(const Transform* ObjectToWorld, const Transform* WorldToObject,
+public:
+	Sphere(const Transform& ObjectToWorld, const Transform& WorldToObject,
 		real radius, Vec3 position, bool inside = false) :
 		Shape(ObjectToWorld, WorldToObject), mRad(radius), mPos(position), mInside(inside) {
 
@@ -22,12 +31,8 @@ public:
 
 		Ray r;
 		real tHit;
-		if (WorldToObject) {
-			r = (*WorldToObject)(ray);
-		}
-		else {
-			r = ray;
-		}
+
+		r = WorldToObject(ray);
 
 		Vec3 po = r.mOrig - mPos;
 		real vd = po.Dot(r.mDir), d2 = r.mDir.Dot(r.mDir), po2 = po.Dot(po);
@@ -109,14 +114,10 @@ public:
 		Vec3 dpdvs = Cross(n, dpdus).Norm();
 		it.SetShading(n, dpdus, dpdvs);
 
-		if (ObjectToWorld) {
-			*isect = (*ObjectToWorld)(it);
-		}
-		else {
-			*isect = it;
-		}
-		isect->uv = Vec2(u, v);
-		isect->shapeId = shapeId;
+		ObjectToWorld(it);
+
+		isect->mUV = Vec2(u, v);
+		isect->mShapeId = mShapeId;
 		*t = tHit;
 
 		return true;
@@ -129,12 +130,8 @@ public:
 
 		Ray r;
 		real tHit;
-		if (WorldToObject) {
-			r = (*WorldToObject)(ray);
-		}
-		else {
-			r = ray;
-		}
+
+		WorldToObject(ray);
 
 		Vec3 op = mPos - r.mOrig;
 		Vec3 v = r.mOrig - mPos;
@@ -179,19 +176,14 @@ public:
 		Intersection isect;
 		Vec3 hit = mPos + scaledDir;
 		Vec3 n = GetNorm(hit);
-		Vec3 nl = isect.n;
+		Vec3 nl = isect.mNormal;
 		Vec3 pError = Abs(mPos) * gamma(1) + Abs(scaledDir) * gamma(6);
 
-		if (ObjectToWorld) {
-			isect.hit = (*ObjectToWorld)(hit, pError, &isect.pError);
-			isect.n = (*ObjectToWorld).TransformNormal(n).Norm();
-		}
-		else {
-			isect.hit = hit;
-			isect.n = n;
-		}
-		isect.nl = nl;
-		isect.shapeId = shapeId;
+		isect.mPos = ObjectToWorld(hit, pError, &isect.mPointError);
+		isect.mNormal = ObjectToWorld.TransformNormal(n).Norm();
+
+		isect.mAbsNormal = nl;
+		isect.mShapeId = mShapeId;
 		return isect;
 	}
 
@@ -252,26 +244,23 @@ public:
 		//ret.pError = gamma(5) * Abs(pWorld);
 		
 		Vec3 pCenter;
-		if (ObjectToWorld) {
-			pCenter = (*ObjectToWorld)(mPos);
-		}
-		else {
-			pCenter = mPos;
-		}
-		if ((pCenter - isect.hit).Length2() <= mRad * mRad) {
+
+		pCenter = ObjectToWorld(mPos);
+
+		if ((pCenter - isect.mPos).Length2() <= mRad * mRad) {
 			Intersection lightPoint = Sample(pdf, u);
-			Vec3 wi = lightPoint.hit - isect.hit;
+			Vec3 wi = lightPoint.mPos - isect.mPos;
 			if (wi.Dot(wi) == 0)
 				*pdf = 0;
 			else {
 				real s = wi.Length();
 				wi.Normalize();
-				*pdf *= s / std::abs((lightPoint.hit - pCenter).Norm().Dot(-1 * wi));
+				*pdf *= s / std::abs((lightPoint.mPos - pCenter).Norm().Dot(-1 * wi));
 			}
 			if (std::isinf(*pdf)) *pdf = 0.f;
 			return lightPoint;
 		}
-		Vec3 localZ = (pCenter - isect.hit);
+		Vec3 localZ = (pCenter - isect.mPos);
 		real dis = localZ.Length();
 		localZ.Normalize();
 		Vec3 localX, localY;
@@ -295,12 +284,12 @@ public:
 		//Vec3 lightPoint = isect.hit + wi * s;
 		*pdf = 1 / (2 * PI * (1 - cosThetaMax));
 		Intersection ret;
-		ret.hit = pWorld;
-		ret.n = nWorld;
-		ret.nl = ret.n;
+		ret.mPos = pWorld;
+		ret.mNormal = nWorld;
+		ret.mAbsNormal = ret.mNormal;
 		//ret.pError = gamma(6) * Abs(pWorld) + gamma(6) * Abs(scaledDir);
-		ret.pError = gamma(5) * Abs(pWorld);
-		ret.shapeId = shapeId;
+		ret.mPointError = gamma(5) * Abs(pWorld);
+		ret.mShapeId = mShapeId;
 		return ret;
 
 
@@ -358,15 +347,6 @@ public:
 	AABB ObjectBound() const override {
 		return mBBox;
 	}
-
-private:
-	real mRad; 
-	Vec3 mPos;
-	bool mInside;
-	AABB mBBox;
-	const real mThetaMin = 0;
-	const real mThetaMax = PI;
-	const real mPhiMax = 2 * PI;
 };
 
 GYT_NAMESPACE_END

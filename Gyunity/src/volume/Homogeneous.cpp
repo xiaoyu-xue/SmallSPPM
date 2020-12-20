@@ -45,7 +45,7 @@ Vec3 HomogeneousMedium::EquiAngularSampling(
     //real tMax = std::min((real)10, ray.tMax);
 
 
-    Vec3 lightPos = lightPoint.hit;
+    Vec3 lightPos = lightPoint.mPos;
     real delta = Dot(lightPos - ray.mOrig, ray.mDir);
     real D = (ray.mOrig + delta * ray.mDir - lightPos).Length();
     real theta_a = std::atan2(0.f - delta, D);

@@ -5,10 +5,10 @@ GYT_NAMESPACE_BEGIN
 
 Vec3 PointLight::Sample_Li(const Intersection& isect, Vec3* wi, real* pdf, Intersection* lightPoint, const Vec2& u) const 
 {
-	lightPoint->hit = mLightPosition;
-	Vec3 dir = isect.hit - mLightPosition;
+	lightPoint->mPos = mLightPosition;
+	Vec3 dir = isect.mPos - mLightPosition;
 	*wi = -dir.Norm();
-	lightPoint->n = lightPoint->nl = lightPoint->ng = -(*wi);
+	lightPoint->mNormal = lightPoint->mAbsNormal = lightPoint->mGeometryNormal = -(*wi);
 	*pdf = 1.f;
 	return mI / dir.Length2();
 }
@@ -20,8 +20,8 @@ Vec3 PointLight::SampleLight(Intersection* isect, Vec3* dir, real* pdfPos, real*
 	Vec3 sampledDir = UniformSampleSphere(v);
 	*dir = sampledDir.Norm();
 	*pdfDir = UniformSpherePdf();
-	isect->hit = mLightPosition;
-	isect->n = isect->ng = isect->nl = *dir;
+	isect->mPos = mLightPosition;
+	isect->mNormal = isect->mGeometryNormal = isect->mAbsNormal = *dir;
 	return mI;
 }
 

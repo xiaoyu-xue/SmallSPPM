@@ -17,12 +17,12 @@ ProjectiveCamera::ProjectiveCamera(const std::shared_ptr<Film>& pFilm, const Vec
 
 	WorldToCamera = Inverse(CameraToWorld);
 
-	CameraToNDC = Transform::Perspective(fovy, film->aspect, filmDistance, filmDistance, 100000.f);
+	CameraToNDC = Transform::Perspective(fovy, film->mAspect, filmDistance, filmDistance, 100000.f);
 
 	NDCToCamera = Inverse(CameraToNDC);
 
 	NDCToRaster =
-		Transform::Scale(real(film->resX), real(film->resY), 1) *
+		Transform::Scale(real(film->mResX), real(film->mResY), 1) *
 		Transform::Scale(0.5f, -0.5f, 1) *
 		Transform::Translate(Vec3(1, -1, 0));
 
@@ -39,19 +39,19 @@ ProjectiveCamera::ProjectiveCamera(const std::shared_ptr<Film>& pFilm, const Vec
 void ProjectiveCamera::Initialize() {
 	Vec3 filmCenter = pos + czz * filmDistance;
 	//std::cout << "film cetner: " << filmCenter << std::endl;
-	film->height = filmDistance * std::tan(fovy * 0.5f * PI / 180) * 2.f;
-	film->width = film->height * film->aspect;
-	film->area = film->width * film->height;
+	film->mHeight = filmDistance * std::tan(fovy * 0.5f * PI / 180) * 2.f;
+	film->mWidth = film->mHeight * film->mAspect;
+	film->mArea = film->mWidth * film->mHeight;
 
-	film->LU = filmCenter + cy * film->height * 0.5 - cx * film->width * 0.5;
-	film->LL = filmCenter - cy * film->height * 0.5 - cx * film->width * 0.5;
-	film->RU = filmCenter + cy * film->height * 0.5 + cx * film->width * 0.5;
-	film->RL = filmCenter - cy * film->height * 0.5 + cx * film->width * 0.5;
+	film->mLU = filmCenter + cy * film->mHeight * 0.5 - cx * film->mWidth * 0.5;
+	film->mLL = filmCenter - cy * film->mHeight * 0.5 - cx * film->mWidth * 0.5;
+	film->mRU = filmCenter + cy * film->mHeight * 0.5 + cx * film->mWidth * 0.5;
+	film->mRL = filmCenter - cy * film->mHeight * 0.5 + cx * film->mWidth * 0.5;
 
-	GYT_Print("LL: {} \n", film->LL);
-	GYT_Print("LL: {} \n", film->LU);
-	GYT_Print("LL: {} \n", film->RL);
-	GYT_Print("LL: {} \n", film->RU);
+	GYT_Print("LL: {} \n", film->mLL);
+	GYT_Print("LL: {} \n", film->mLU);
+	GYT_Print("LL: {} \n", film->mRL);
+	GYT_Print("LL: {} \n", film->mRU);
 
 }
 

@@ -10,7 +10,7 @@ public:
 		Initialize();
 	}
 
-	HeartSurface(Transform* ObjectToWorld, Transform* WorldToObject) : Shape(ObjectToWorld, WorldToObject){
+	HeartSurface(const Transform& ObjectToWorld, const Transform& WorldToObject) : Shape(ObjectToWorld, WorldToObject){
 		Initialize();
 	}
 

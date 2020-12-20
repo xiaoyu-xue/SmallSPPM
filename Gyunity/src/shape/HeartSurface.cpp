@@ -20,8 +20,7 @@ bool HeartSurface::BinarySearch(real left, real right, const Ray &ray, real *t) 
 }
 
 bool HeartSurface::Intersect(const Ray& r, Intersection* isect, real* t) const {
-	Ray ray = r;
-	if (WorldToObject) ray = (*WorldToObject)(r);
+	Ray ray = WorldToObject(r);
 
 	real t0, t1;
 	if (!bounding.Intersect(ray, &t0, &t1)) return false;
@@ -47,23 +46,17 @@ bool HeartSurface::Intersect(const Ray& r, Intersection* isect, real* t) const {
 
 	if (!BinarySearch(segmentPoint0, segmentPoint1, ray, t)) return false;
 
-	isect->hit = ray(*t);
-	if (ObjectToWorld) isect->hit = (*ObjectToWorld).TransformPoint(ray(*t));
+	isect->mPos = ray(*t);
+	isect->mPos = ObjectToWorld.TransformPoint(ray(*t));
 
-	isect->rayEps = 5e-3;
+	isect->mRayEps = 5e-3;
 	//std::cout << isect->rayEps << std::endl;
-	isect->shapeId = shapeId;
+	isect->mShapeId = mShapeId;
 	return true;
 }
 
 bool HeartSurface::Intersect(const Ray& r) const {
-	Ray ray;
-	if (WorldToObject) {
-		ray = (*WorldToObject)(r);
-	}
-	else {
-		ray = r;
-	}
+	Ray ray = WorldToObject(r);
 
 	real t0, t1;
 	if (!bounding.Intersect(ray, &t0, &t1)) return false;
@@ -92,25 +85,22 @@ bool HeartSurface::Intersect(const Ray& r) const {
 }
 
 void HeartSurface::QueryIntersectionInfo(const Ray& ray, Intersection* isect) const {
-	Vec3 p = isect->hit;
-	if (WorldToObject) p = (*WorldToObject)(isect->hit);
+	Vec3 p = WorldToObject(isect->mPos);
 
 	Vec3 normal = Gradient(p);
 
-	if (ObjectToWorld) normal = (*ObjectToWorld).TransformNormal(normal).Norm();
-	//DEBUG_PIXEL_IF(ThreadIndex()) {
-	//	std::cout << "Gradient: " << Gradient(p) << " " << Gradient2(p) << " " << normal << std::endl;
-	//}
+	normal = ObjectToWorld.TransformNormal(normal).Norm();
+
 	Vec3 dpdu, dpdv;
 	CoordinateSystem(normal, &dpdu, &dpdv);
-	isect->ng = normal;
-	isect->nl = isect->ng.Dot(ray.mDir) < 0 ? isect->ng : isect->ng * -1;
+	isect->mGeometryNormal = normal;
+	isect->mAbsNormal = isect->mGeometryNormal.Dot(ray.mDir) < 0 ? isect->mGeometryNormal : isect->mGeometryNormal * -1;
 	//std::cout << "nl: " << std::endl;
 	//std::cout << isect->nl << std::endl;
 	//std::cout << Sgn(Dot(normal, -ray.d)) * normal << std::endl;
-	isect->dpdu = dpdu;
-	isect->dpdv = dpdv;
-	isect->wo = (-ray.mDir).Norm();
+	isect->mDpDu = dpdu;
+	isect->mDpDv = dpdv;
+	isect->mOutDir = (-ray.mDir).Norm();
 	isect->SetShading(normal, dpdu, dpdv);
 }
 
