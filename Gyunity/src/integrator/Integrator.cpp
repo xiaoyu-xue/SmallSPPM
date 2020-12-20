@@ -33,7 +33,7 @@ Vec3 Integrator::DirectIllumination(const Scene& scene, const Intersection& isec
 			}
 			else {
 				const MediumIntersection& mi = (const MediumIntersection&)isect;
-				real p = mi.phase->p(mi.mOutDir, wi);
+				real p = mi.mpPhase->p(mi.mOutDir, wi);
 				f = Vec3(p);
 				scatteringPdf = p;
 			}
@@ -69,7 +69,7 @@ Vec3 Integrator::DirectIllumination(const Scene& scene, const Intersection& isec
 		}
 		else {
 			const MediumIntersection& mi = (const MediumIntersection&)isect;
-			real p = mi.phase->Sample_p(mi.mOutDir, &wi, Vec2(v[0], v[1]));
+			real p = mi.mpPhase->Sample_p(mi.mOutDir, &wi, Vec2(v[0], v[1]));
 			f = Vec3(p);
 			pdf = p;
 		}

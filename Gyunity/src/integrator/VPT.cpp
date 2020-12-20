@@ -35,7 +35,7 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 			if (mUseEquiAngularSample) {
 				L += throughput * ConnectToLight(scene, rand, mi, eqLightPoint, eqLightLe, eqLightPdf) / eqLightProb;
 				Vec3 wi;
-				mi.phase->Sample_p(-ray.mDir, &wi, Vec2(rand(), rand()));
+				mi.mpPhase->Sample_p(-ray.mDir, &wi, Vec2(rand(), rand()));
 				ray = mi.SpawnRay(wi);
 				deltaBoundEvent = false;
 				
@@ -50,7 +50,7 @@ Vec3 VolPathTracing::Li(const Ray& r, const Scene& scene, StateSequence& rand, M
 				//if (intersect) scene.QueryIntersectionInfo(ray, &isect);
 				L += throughput * DirectIllumination(scene, mi, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()), rand, true);
 				Vec3 wi;
-				mi.phase->Sample_p(-ray.mDir, &wi, Vec2(rand(), rand()));
+				mi.mpPhase->Sample_p(-ray.mDir, &wi, Vec2(rand(), rand()));
 				ray = mi.SpawnRay(wi);
 				deltaBoundEvent = false;
 			}
@@ -137,7 +137,7 @@ Vec3 VolPathTracing::ConnectToLight(const Scene &scene, StateSequence &rand,
 		}
 		VisibilityTester visibilityTester(isect, lightPoint);
 		const MediumIntersection& mi = (const MediumIntersection&)isect;
-		real p = mi.phase->p(mi.mOutDir, wi);
+		real p = mi.mpPhase->p(mi.mOutDir, wi);
 		f = Vec3(p);
 		real geomTerm = std::abs(cosTheta) / dir.Length2();
 		real pdfPhase = p * geomTerm;
