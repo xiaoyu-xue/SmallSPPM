@@ -94,16 +94,16 @@ public:
 class MediumIntersection : public Intersection {
 public:
 	// MediumInteraction Public Methods
-	MediumIntersection() : phase(nullptr) {}
+	MediumIntersection() : mpPhase(nullptr) {}
 
 	MediumIntersection(const Vec3& p, const Vec3& wo, 
 		const Medium* medium, const PhaseFunction* phase)
-		: Intersection(p, wo, medium), phase(phase) {}
+		: Intersection(p, wo, medium), mpPhase(phase) {}
 
-	bool IsValid() const { return phase != nullptr; }
+	bool IsValid() const { return mpPhase != nullptr; }
 
 	// MediumInteraction Public Data
-	const PhaseFunction* phase;
+	const PhaseFunction* mpPhase;
 };
 
 GYT_NAMESPACE_END
