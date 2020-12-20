@@ -5,7 +5,7 @@
 GYT_NAMESPACE_BEGIN
 
 void Intersection::ComputeScatteringFunction(MemoryPool &arena, TransportMode mode) {
-	primitive->ComputeScatteringFunction(this, arena, mode);
+	mpPrimitive->ComputeScatteringFunction(this, arena, mode);
 }
 
 GYT_NAMESPACE_END

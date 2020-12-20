@@ -37,7 +37,7 @@ public:
 	}
 
 	void AddPrimitive(std::shared_ptr<Shape> shape, std::shared_ptr<Material> material, MediumInterface mi = MediumInterface()) {
-		shape->shapeId = mShapeNum;
+		shape->mShapeId = mShapeNum;
 		std::shared_ptr<Primitive> primitive =
 			std::make_shared<GeometryPrimitive>(shape, material, nullptr, mi);
 		primitive->mPrimId = mPrimitiveNum;
@@ -49,7 +49,7 @@ public:
 	void AddPrimitive(std::shared_ptr<Primitive> primitive) {
 		Shape* shape = primitive->GetShape();
 		if (shape) {
-			shape->shapeId = mShapeNum;
+			shape->mShapeId = mShapeNum;
 			++mShapeNum;
 		}
 		primitive->mPrimId = mPrimitiveNum;
@@ -68,9 +68,10 @@ public:
 	void AddMesh(Mesh &mesh, const Transform &transform) {
 		for (int i = 0; i < mesh.untransformedTriangles.size(); ++i) {
 			Triangle* triangle = new Triangle();
-			*triangle = mesh.untransformedTriangles[i];
-			triangle->SetTransform(transform);
-			std::shared_ptr<Shape> shape = std::shared_ptr<Shape>(triangle);
+			//*triangle = mesh.untransformedTriangles[i];
+			auto pTriangle = std::make_shared<Triangle>(mesh.untransformedTriangles[i]);
+			pTriangle->SetTransform(transform);
+			std::shared_ptr<Shape> shape = std::shared_ptr<Shape>(pTriangle);
 			AddPrimitive(shape, mesh.material, mesh.mediumInterface);
 		}
 	}

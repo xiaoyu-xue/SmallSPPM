@@ -295,15 +295,15 @@ GYT_FORCE_INLINE AABB Transform::TransformAABB(const AABB &bound) const {
 
 GYT_FORCE_INLINE Intersection Transform::operator()(const Intersection& isect) const {
 	Intersection ret;
-	ret.hit = (*this)(isect.hit, isect.pError, &ret.pError);
-	ret.n = this->TransformNormal(isect.n).Norm();
-	ret.nl = this->TransformNormal(isect.nl).Norm();
-	ret.wo = this->TransformVector(isect.wo).Norm();
-	ret.dpdu = this->TransformVector(isect.dpdu).Norm();
-	ret.dpdv = this->TransformVector(isect.dpdv).Norm();
-	ret.ng = this->TransformNormal(isect.ng).Norm();
-	ret.dpdus = this->TransformVector(isect.dpdus).Norm();
-	ret.dpdvs = this->TransformVector(isect.dpdvs).Norm();
+	ret.mPos = (*this)(isect.mPos, isect.mPointError, &ret.mPointError);
+	ret.mNormal = this->TransformNormal(isect.mNormal).Norm();
+	ret.mAbsNormal = this->TransformNormal(isect.mAbsNormal).Norm();
+	ret.mOutDir = this->TransformVector(isect.mOutDir).Norm();
+	ret.mDpDu = this->TransformVector(isect.mDpDu).Norm();
+	ret.mDpDv = this->TransformVector(isect.mDpDv).Norm();
+	ret.mGeometryNormal = this->TransformNormal(isect.mGeometryNormal).Norm();
+	ret.mShadingDpDu = this->TransformVector(isect.mShadingDpDu).Norm();
+	ret.mShadingDpDv = this->TransformVector(isect.mShadingDpDv).Norm();
 	return ret;
 }
 

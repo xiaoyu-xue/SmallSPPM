@@ -9,7 +9,7 @@ void TiledIntegrator::Render(const Scene& scene, const Camera& camera) {
 	fprintf(stderr, "Rendering ...\n");
 
 	std::shared_ptr<Film> film = camera.GetFilm();
-	int resX = film->resX, resY = film->resY;
+	int resX = film->mResX, resY = film->mResY;
 	const int tileSize = 32;
 	std::vector<Tile> tiles;
 	int tileIndex = 0;

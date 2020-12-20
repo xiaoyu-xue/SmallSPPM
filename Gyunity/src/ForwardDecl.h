@@ -11,5 +11,7 @@ class Scene;
 class Camera;
 class Sampler;
 class SamplerEnum;
-
+class BSDF;
+class Primitive;
+class PhaseFunction;
 GYT_NAMESPACE_END

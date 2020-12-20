@@ -400,7 +400,7 @@ void TestProjection() {
 	//ndc to camera
 	{
 		std::cout << "ndc to camera:" << std::endl;
-		Vec3 cameraPoint = camera->WorldToCamera(camera->GetFilm()->LU);
+		Vec3 cameraPoint = camera->WorldToCamera(camera->GetFilm()->mLU);
 		//cameraPoint.z = 1000;
 		std::cout << cameraPoint << std::endl;
 		Vec3 cameraToNDC = camera->CameraToNDC(cameraPoint);
@@ -568,9 +568,9 @@ void TestPathTracing(int argc, char* argv[]) {
 
 	fprintf(stderr, "Load Scene ...\n");
 
-	CornellBoxMesh::SetScene(scene);
+	//CornellBoxMesh::SetScene(scene);
 	//CornellBoxTriangle2::SetScene(scene);
-	//EnvironmentMapScene::SetScene(scene);
+	EnvironmentMapScene::SetScene(scene);
 	//CornellBoxHeartSurface::SetScene(scene);
 	//HeartSurfaceEnvironmentMapScene::SetScene(scene);
 
@@ -578,7 +578,7 @@ void TestPathTracing(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("CornellBoxPtTest.bmp");
+	film->SetFileName("CornellBoxPtEnvmap.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
@@ -634,9 +634,9 @@ void TestTransmittance() {
 	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
 	CornellBoxMedium::SetScene(scene);
 	Intersection p0(Vec3(0, -0.99999, 0), Vec3(), MediumInterface());
-	p0.n = p0.nl = p0.ng = Vec3(0, 1, 0);
+	p0.mNormal = p0.mAbsNormal = p0.mGeometryNormal = Vec3(0, 1, 0);
 	Intersection p1(Vec3(0, 0.965, 0), Vec3(), MediumInterface());
-	p1.n = p1.nl = p1.ng = Vec3(0, -1, 0);
+	p1.mNormal = p1.mAbsNormal = p1.mGeometryNormal = Vec3(0, -1, 0);
 	VisibilityTester visibilityTester(p0, p1);
 	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
 	scene->SetAccelerator(accelerator);

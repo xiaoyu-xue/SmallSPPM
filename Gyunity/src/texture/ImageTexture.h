@@ -44,7 +44,7 @@ public:
 	}
 
 	T Sample(const Intersection& isect) const override {
-		return Sample(isect.uv);
+		return Sample(isect.mUV);
 	}
 
 	T Texel(int u, int v) const {

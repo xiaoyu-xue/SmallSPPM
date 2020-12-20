@@ -7,9 +7,12 @@ GYT_NAMESPACE_BEGIN
 class Triangle : public Shape {
 public:
 	Triangle(){}
-	Triangle(Transform* ObjectToWorld, Transform* WorldToObject,
-		const Vec3& p0, const Vec3& p1, const Vec3& p2, const Vec3& normal, Vec2 *uvs = nullptr) : 
-		Shape(ObjectToWorld, WorldToObject), p0(p0), p1(p1), p2(p2), faceNormal(normal)
+
+	Triangle(const Triangle& triangle) = default;
+
+	Triangle(const Transform& ObjectToWorld, const Transform& WorldToObject,
+		const Vec3& p0, const Vec3& p1, const Vec3& p2, const Vec3& normal, Vec2 *uvs = nullptr) 
+		: Shape(ObjectToWorld, WorldToObject), p0(p0), p1(p1), p2(p2), faceNormal(normal)
 	{
 		//faceNormal = Cross(p1 - p0, p2 - p0).Norm();
 		n0 = n1 = n2 = faceNormal;
@@ -21,7 +24,7 @@ public:
 		Initialize();
 
 	}
-	Triangle(Transform* ObjectToWorld, Transform* WorldToObject,
+	Triangle(const Transform &ObjectToWorld, const Transform& WorldToObject,
 		const Vec3& p0, const Vec3& p1, const Vec3& p2, 
 		const Vec3& n0, const Vec3& n1, const Vec3& n2, 
 		Vec2* uvs = nullptr) :
@@ -37,7 +40,7 @@ public:
 		Initialize();
 	}
 
-	Triangle(Transform* ObjectToWorld, Transform* WorldToObject,
+	Triangle(const Transform& ObjectToWorld, const Transform& WorldToObject,
 		const Vec3& p0, const Vec3& p1, const Vec3& p2,
 		const Vec3& n0, const Vec3& n1, const Vec3& n2,
 		const Vec2 &uv0, const Vec2& uv1, const Vec2& uv2) :

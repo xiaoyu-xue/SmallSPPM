@@ -5,57 +5,53 @@
 #include "math/GeometryUtils.h"
 #include "material/Material.h"
 #include "visual/Medium.h"
+#include "ForwardDecl.h"
 
 GYT_NAMESPACE_BEGIN
 
-class BSDF;
-class Primitive;
-class Medium;
-class PhaseFunction;
-
 class Intersection {
 public:
-	Vec3 hit, n, nl, ng, wo;
-	Vec3 dpdu, dpdv;
-	Vec3 dpdus, dpdvs;
-	Vec2 uv;
-	real rayEps = 0;
-	Vec3 pError;
-	real b1, b2;
-	int64 shapeId, primId;
-	const Primitive *primitive;
-	BSDF* bsdf;
-	MediumInterface mediumInterface;
+	Vec3 mPos, mNormal, mAbsNormal, mGeometryNormal, mOutDir;
+	Vec3 mDpDu, mDpDv;
+	Vec3 mShadingDpDu, mShadingDpDv;
+	Vec2 mUV;
+	real mRayEps = 0;
+	Vec3 mPointError;
+	real mB1, mB2;
+	int64 mShapeId, mPrimId;
+	const Primitive *mpPrimitive;
+	BSDF* mpBSDF;
+	MediumInterface mMediumInterface;
 
 	Intersection() { 
-		rayEps = 0; 
-		shapeId = -1;
-		n = nl = ng = Vec3();
+		mRayEps = 0; 
+		mShapeId = -1;
+		mNormal = mAbsNormal = mGeometryNormal = Vec3();
 	}
 
 	Intersection(const Vec3& hit, const Vec3& wo, const MediumInterface& medium) :
-		hit(hit), wo(wo), mediumInterface(medium) {
-		rayEps = 0;
-		n = nl = ng = Vec3();
+		mPos(hit), mOutDir(wo), mMediumInterface(medium) {
+		mRayEps = 0;
+		mNormal = mAbsNormal = mGeometryNormal = Vec3();
 	}
 
 	Intersection(const Vec3 &hit, const Vec3 &ng, const Vec3 &nl, const Vec3 &wo, const Vec3 &pError):
-		hit(hit), ng(ng), nl(nl), wo(wo), pError(pError), rayEps(0), primitive(nullptr){
-		bsdf = nullptr;
-		shapeId = -1;
+		mPos(hit), mGeometryNormal(ng), mAbsNormal(nl), mOutDir(wo), mPointError(pError), mRayEps(0), mpPrimitive(nullptr){
+		mpBSDF = nullptr;
+		mShapeId = -1;
 	}
 
 	Intersection(const Vec3& hit, const Vec3& ng, const Vec3& nl, 
 		const Vec3& dpdu, const Vec3& dpdv, const Vec3& wo, const Vec3& pError) :
-		hit(hit), dpdu(dpdu), dpdv(dpdv), ng(ng), nl(nl), wo(wo), pError(pError), rayEps(0), primitive(nullptr) {
-		bsdf = nullptr;
-		shapeId = -1;
+		mPos(hit), mDpDu(dpdu), mDpDv(dpdv), mGeometryNormal(ng), mAbsNormal(nl), mOutDir(wo), mPointError(pError), mRayEps(0), mpPrimitive(nullptr) {
+		mpBSDF = nullptr;
+		mShapeId = -1;
 	}
 
 	void SetShading(const Vec3& ns, const Vec3& dpdus, Vec3& dpdvs) {
-		n = ns;
-		this->dpdus = dpdus;
-		this->dpdvs = dpdvs;
+		mNormal = ns;
+		this->mShadingDpDu = dpdus;
+		this->mShadingDpDv = dpdvs;
 		//n = Cross(dpdus, dpdvs);
 		//n = (Dot(n, ng) > 0) ? n : -n;
 		//this->dpdus = dpdus;
@@ -65,39 +61,31 @@ public:
 	void ComputeScatteringFunction(MemoryPool &arena, TransportMode mode = TransportMode::Radiance);
 
 	Ray SpawnTo(const Intersection &it) const {
-		Vec3 origin = OffsetRayOrigin(hit, pError, nl, it.hit - hit);
-		Vec3 target = OffsetRayOrigin(it.hit, it.pError, it.nl, origin - it.hit);
+		Vec3 origin = OffsetRayOrigin(mPos, mPointError, mAbsNormal, it.mPos - mPos);
+		Vec3 target = OffsetRayOrigin(it.mPos, it.mPointError, it.mAbsNormal, origin - it.mPos);
 		Vec3 d = target - origin;
 		real dis = d.Length();
 		Normalize(d);
-		return Ray(origin, d, dis - ShadowRayEps, rayEps, GetMedium(d));
+		return Ray(origin, d, dis - ShadowRayEps, mRayEps, GetMedium(d));
 		//return Ray(origin, d, 1 - shadowRayEps, 0.f);
 	}
 
 	Ray SpawnRay(const Vec3 &d) const {
-		Vec3 o = OffsetRayOrigin(hit, pError, nl, d);
+		Vec3 o = OffsetRayOrigin(mPos, mPointError, mAbsNormal, d);
 		//Vec3 o = hit + d * 0.0001;
-		return Ray(o, d, Infinity, rayEps, GetMedium(d));
+		return Ray(o, d, Infinity, mRayEps, GetMedium(d));
 	}
 
-	//Ray SpawnTo(const Intersection &isect) const {
-	//	Vec3 dir = isect.hit - (hit + nl * nEps);
-	//	real d = dir.Length();
-	//	dir.Normalize();
-	//	//return Ray(hit + dir * rayeps + nl * rayeps, dir, d - shadowRayEps);
-	//	return Ray(hit, dir, d * (1.f - isect.rayEps), rayEps);
-	//}
-
 	const Medium* GetMedium(const Vec3& w) const {
-		return Dot(w, n) > 0 ? mediumInterface.outside : mediumInterface.inside;
+		return Dot(w, mNormal) > 0 ? mMediumInterface.outside : mMediumInterface.inside;
 	}
 
 	const Medium* GetMedium() const {
-		return mediumInterface.inside;
+		return mMediumInterface.inside;
 	}
 
 	virtual bool IsSurfaceScatter() const {
-		return (n != Vec3());
+		return (mNormal != Vec3());
 	}
 
 };

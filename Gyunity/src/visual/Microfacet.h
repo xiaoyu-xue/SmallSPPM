@@ -26,18 +26,6 @@ protected:
 
 };
 
-//class BeckmannDistribution : public MicrofacetDistribution {
-//public:
-//	BeckmannDistribution(real alphax, real alphay, bool samplevis = true)
-//		: MicrofacetDistribution(samplevis), alphax(alphax), alphay(alphay) {}
-//	real D(const Vec3 &wh) const;
-//	Vec3 Sample_wh(const Vec3 &wo, const Vec2 &u) const;
-//private:
-//	real Lambda(const Vec3& w) const;
-//
-//	real alphax, alphay;
-//};
-
 class GGXDistribution : public MicrofacetDistribution 
 {
 private:

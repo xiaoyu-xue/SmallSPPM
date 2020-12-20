@@ -33,7 +33,7 @@ void SPPM::GeneratePhoton(const Scene& scene, Ray* pr, Vec3* f, real u, const Ve
 	real pdfPos, pdfDir;
 	Vec3 Le = light->SampleLight(&lightPoint, &lightDir, &pdfPos, &pdfDir, v, w);
 	*pr = lightPoint.SpawnRay(lightDir);
-	real cosTheta = std::abs(lightPoint.n.Dot(lightDir));
+	real cosTheta = std::abs(lightPoint.mNormal.Dot(lightDir));
 	if (pdfPos == 0 || pdfDir == 0) {
 		*f = 0;
 	}
@@ -57,14 +57,14 @@ void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray,
 		}
 		scene.QueryIntersectionInfo(r, &isect);
 		isect.ComputeScatteringFunction(arena);
-		BSDF* bsdf = isect.bsdf;
+		BSDF* bsdf = isect.mpBSDF;
 		Vec3 wi;
 		real pdf;
 
 		if (bsdf->IsDelta()) {
-			Vec3 f = bsdf->Sample_f(-1 * r.mDir, &wi, &pdf, Vec3(rand(), rand(), rand()));
+			Vec3 f = bsdf->Sample(-1 * r.mDir, &wi, &pdf, Vec3(rand(), rand(), rand()));
 			if (f == Vec3() || pdf == 0) return;
-			importance = f * std::abs(wi.Dot(isect.n)) * importance / pdf;
+			importance = f * std::abs(wi.Dot(isect.mNormal)) * importance / pdf;
 			//r.o = isect.hit + wi * rayeps + wi.Dot(isect.n) * nEps * isect.n;
 			//r.d = wi;
 			//r = Ray(isect.hit, wi, Inf, isect.rayEps);
@@ -77,9 +77,9 @@ void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray,
 			Vec3 Ld = importance * DirectIllumination(scene, isect, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()), rand);
 			mDirectillum[pixel] = mDirectillum[pixel] + Ld;
 
-			Vec3 f = bsdf->Sample_f(-1 * r.mDir, &wi, &pdf, Vec3(rand(), rand(), rand()));
+			Vec3 f = bsdf->Sample(-1 * r.mDir, &wi, &pdf, Vec3(rand(), rand(), rand()));
 			if (f == Vec3() || pdf == 0) return;
-			importance = f * std::abs(wi.Dot(isect.n)) * importance / pdf;
+			importance = f * std::abs(wi.Dot(isect.mNormal)) * importance / pdf;
 			r = isect.SpawnRay(wi);
 			deltaBoundEvent = false;
 		}
@@ -87,14 +87,14 @@ void SPPM::TraceEyePath(const Scene& scene, StateSequence& rand, const Ray& ray,
 			HPoint& hp = mHitPoints[pixel];
 			hp.used = true;
 			hp.importance = importance;
-			hp.pos = isect.hit;
-			hp.nrm = isect.nl;
+			hp.pos = isect.mPos;
+			hp.nrm = isect.mAbsNormal;
 			hp.pix = pixel;
 			hp.outDir = -1 * r.mDir;
 			mHitPoints[pixel] = hp;
-			if ((i == 0 || deltaBoundEvent) && isect.primitive->IsLight()) {
-				const Light* emissionShape = isect.primitive->GetLight();
-				mDirectillum[hp.pix] = mDirectillum[hp.pix] + importance * emissionShape->Emission(isect, isect.wo);
+			if ((i == 0 || deltaBoundEvent) && isect.mpPrimitive->IsLight()) {
+				const Light* emissionShape = isect.mpPrimitive->GetLight();
+				mDirectillum[hp.pix] = mDirectillum[hp.pix] + importance * emissionShape->Emission(isect, isect.mOutDir);
 				
 			}
 			else {
@@ -114,37 +114,37 @@ void SPPM::TracePhoton(const Scene& scene, StateSequence& rand, const Ray& ray, 
 		if (!scene.Intersect(r, &isect)) return;
 		scene.QueryIntersectionInfo(r, &isect);
 		isect.ComputeScatteringFunction(arena, TransportMode::Importance);
-		BSDF* bsdf = isect.bsdf;
+		BSDF* bsdf = isect.mpBSDF;
 
 		Vec3 wi;
 		real pdf;
-		Vec3 f = bsdf->Sample_f(-1 * r.mDir, &wi, &pdf, Vec3(rand(), rand(), rand()));
+		Vec3 f = bsdf->Sample(-1 * r.mDir, &wi, &pdf, Vec3(rand(), rand(), rand()));
 		if (f == Vec3() || pdf == 0) break;
-		Vec3 estimation = f * std::abs(wi.Dot(isect.n)) / pdf;
+		Vec3 estimation = f * std::abs(wi.Dot(isect.mNormal)) / pdf;
 		if (bsdf->IsDelta()) {
 			//photonFlux = photonFlux * estimation;
 			//r = isect.SpawnRay(wi);
 		}
 		else {
 			if (i > 0) {
-				std::vector<HPoint*>& hp = mHashGrid.GetGrid(isect.hit);
+				std::vector<HPoint*>& hp = mHashGrid.GetGrid(isect.mPos);
 				for (HPoint* hitpoint : hp) {
 					//Use spinlock, but racing condition is rare when using QMC
 					//std::lock_guard<Spinlock> lock(mPixelLocks[hitpoint->pix]);
-					Vec3 v = hitpoint->pos - isect.hit;
+					Vec3 v = hitpoint->pos - isect.mPos;
 					//if ((hitpoint->nrm.Dot(isect.n) > PhtotonEdgeEps) && (v.Dot(v) <= radius2[hitpoint->pix])) {
-					if ((hitpoint->nrm.Dot(isect.nl) > 0.0015) && (v.Dot(v) <= mRadius2[hitpoint->pix])) {
+					if ((hitpoint->nrm.Dot(isect.mAbsNormal) > 0.0015) && (v.Dot(v) <= mRadius2[hitpoint->pix])) {
 						if (!mBatchShrink) {
 							// unlike N in the paper, hitpoint->n stores "N / ALPHA" to make it an integer value
 							real g = (mPhotonNums[hitpoint->pix] * mAlpha + mAlpha) / (mPhotonNums[hitpoint->pix] * mAlpha + 1.f);
 							mRadius2[hitpoint->pix] = mRadius2[hitpoint->pix] * g;
 							mPhotonNums[hitpoint->pix] += 1;
-							Vec3 contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.mDir) * photonFlux;
+							Vec3 contribution = hitpoint->importance * bsdf->Evaluate(hitpoint->outDir, -1 * r.mDir) * photonFlux;
 							mFlux[hitpoint->pix] = (mFlux[hitpoint->pix] + contribution) * g;
 						}
 						else {
 							hitpoint->m++;
-							Vec3 contribution = hitpoint->importance * bsdf->f(hitpoint->outDir, -1 * r.mDir) * photonFlux;
+							Vec3 contribution = hitpoint->importance * bsdf->Evaluate(hitpoint->outDir, -1 * r.mDir) * photonFlux;
 							mFlux[hitpoint->pix] = (mFlux[hitpoint->pix] + contribution);
 						}
 					}
@@ -167,8 +167,8 @@ void SPPM::TracePhoton(const Scene& scene, StateSequence& rand, const Ray& ray, 
 }
 
 void SPPM::GenerateRadiusImage(const Scene& scene, const Camera &camera) {
-	int resX = camera.GetFilm()->resX;
-	int resY = camera.GetFilm()->resY;
+	int resX = camera.GetFilm()->mResX;
+	int resY = camera.GetFilm()->mResY;
 	std::vector<Vec3> radImg((int64)resX * resY);
 	real minRadius2 = Inf, maxRadius2 = 0.0, avgRadius = 0.0;
 	for (int y = 0; y < resY; ++y) {
@@ -197,8 +197,8 @@ void SPPM::GenerateRadiusImage(const Scene& scene, const Camera &camera) {
 
 void SPPM::Render(const Scene& scene, const Camera &camera) {
 	fprintf(stderr, "Rendering ...\n");
-	int resX = camera.GetFilm()->resX;
-	int resY = camera.GetFilm()->resY;
+	int resX = camera.GetFilm()->mResX;
+	int resY = camera.GetFilm()->mResY;
 	Initialize(resX, resY);
 	std::vector<MemoryPool> memoryArenas(ThreadsNumber());
 	for (int iter = 0; iter < mIterations; ++iter) {

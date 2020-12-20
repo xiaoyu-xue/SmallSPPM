@@ -21,7 +21,7 @@ public:
 	Vec3 Sample_Li(const Intersection &isect, Vec3 *wi, real *pdf, Intersection *lightPoint, const Vec2 &u) const override 
 	{
 		*lightPoint = mpShape->Sample(isect, pdf, u);
-		*wi = (lightPoint->hit - isect.hit).Norm();
+		*wi = (lightPoint->mPos - isect.mPos).Norm();
 		return Emission(*lightPoint, -*wi);
 	}
 
@@ -37,7 +37,7 @@ public:
 
 	Vec3 Emission(const Intersection &isect, const Vec3 &w) const override 
 	{
-		if (Dot(isect.n, w) > 0) return mLemit;
+		if (Dot(isect.mNormal, w) > 0) return mLemit;
 		else return Vec3(0, 0, 0);
 
 	}
@@ -65,10 +65,10 @@ protected:
 		//sample a position
 		*isect = mpShape->Sample(pdfPos, u);
 		Vec3 ss, ts;
-		CoordinateSystem(isect->n, &ss, &ts);
+		CoordinateSystem(isect->mNormal, &ss, &ts);
 		Vec3 dirLocal = CosineSampleHemisphere(v);
 		real cosTheta = dirLocal.z;
-		*dir = (ss * dirLocal.x + ts * dirLocal.y + isect->n * dirLocal.z).Norm();
+		*dir = (ss * dirLocal.x + ts * dirLocal.y + isect->mNormal * dirLocal.z).Norm();
 		*pdfDir = CosineHemispherePdf(cosTheta);
 	}
 };

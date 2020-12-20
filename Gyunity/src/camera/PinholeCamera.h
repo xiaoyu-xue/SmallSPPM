@@ -23,13 +23,13 @@ public:
 	Vec3 We(const Ray& ray) const override;
 
 	Vec3 Sample_Wi(const Intersection &isect, real *pdfW, Vec3 *wi, Vec3 u) const override {
-		*wi = (pos - isect.hit);
+		*wi = (pos - isect.mPos);
 		real distance = wi->Length();
 		*wi = wi->Norm();
 		real cosTheta = cz.Dot(-1 * (*wi));
 		*pdfW = 1.f * (distance * distance) / cosTheta;
 		//*PdfW = 1.0 * (dis / CosTheta) * (dis / CosTheta) / CosTheta;
-		return We(Ray(isect.hit, -1 * (*wi)));
+		return We(Ray(isect.mPos, -1 * (*wi)));
 	}
 
 	real PdfPos() const override {

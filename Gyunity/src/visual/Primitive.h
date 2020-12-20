@@ -73,7 +73,15 @@ GYT_NAMESPACE_BEGIN
 //	std::shared_ptr<Primitive> primitive;
 //};
 
-class  Primitive {
+class Primitive
+{
+public:
+	int64 mPrimId;
+	std::shared_ptr<Shape> mpShape;
+	std::shared_ptr<Material> mpMaterial;
+	std::shared_ptr<Light> mpLight;
+	MediumInterface mMediumInterface;
+
 public:
 	Primitive(const std::shared_ptr<Shape>& shape,
 		const std::shared_ptr<Material>& material = nullptr,
@@ -110,13 +118,6 @@ public:
 	}
 
 	void QueryIntersectionInfo(const Ray& ray, Intersection* isect) const;
-
-public:
-	int64 mPrimId;
-	std::shared_ptr<Shape> mpShape;
-	std::shared_ptr<Material> mpMaterial;
-	std::shared_ptr<Light> mpLight;
-	MediumInterface mMediumInterface;
 
 };
 

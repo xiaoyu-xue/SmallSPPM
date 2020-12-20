@@ -14,16 +14,16 @@ public:
 
 	void ComputeScatteringFunction(Intersection* isect, MemoryPool& arena, TransportMode mode = TransportMode::Radiance) const {
 		real alpha = GGXDistribution::RoughnessToAlpha(roughness->Sample(*isect));
-		isect->bsdf = MEMORY_POOL_ALLOC(arena, BSDF)(*isect);
+		isect->mpBSDF = MEMORY_POOL_ALLOC(arena, BSDF)(*isect);
 
 		Vec3 Kd = kd->Sample(*isect);
-		isect->bsdf->Add(MEMORY_POOL_ALLOC(arena, DiffuseBSDF)(Kd));
+		isect->mpBSDF->Add(MEMORY_POOL_ALLOC(arena, DiffuseBSDF)(Kd));
 		Fresnel* fresnel = MEMORY_POOL_ALLOC(arena, FresnelDielectric)(1.5f, 1.f);
 		MicrofacetDistribution* distribution =
 			MEMORY_POOL_ALLOC(arena, GGXDistribution)(alpha, alpha, true);
 		Vec3 Ks = ks->Sample(*isect);
 		BxDF* microfacetReflectionBSDF = MEMORY_POOL_ALLOC(arena, MicrofacetReflectionBSDF)(distribution, fresnel, Ks);
-		isect->bsdf->Add(microfacetReflectionBSDF);
+		isect->mpBSDF->Add(microfacetReflectionBSDF);
 	}
 private:
 	std::shared_ptr<Texture<Vec3>> kd, ks;
