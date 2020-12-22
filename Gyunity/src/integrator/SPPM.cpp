@@ -196,7 +196,8 @@ void SPPM::GenerateRadiusImage(const Scene& scene, const Camera &camera) {
 }
 
 void SPPM::Render(const Scene& scene, const Camera &camera) {
-	fprintf(stderr, "Rendering ...\n");
+	//fprintf(stderr, "Rendering ...\n");
+	GYT_Print("Rendering ...\n");
 	int resX = camera.GetFilm()->mResX;
 	int resY = camera.GetFilm()->mResY;
 	Initialize(resX, resY);
@@ -259,7 +260,8 @@ void SPPM::Render(const Scene& scene, const Camera &camera) {
 			memoryArenas[i].Reset();
 
 		real percentage = 100.f * (iter + 1) / mIterations;
-		fprintf(stderr, "\rIterations: %5.2f%%", percentage);
+		//fprintf(stderr, "\rIterations: %5.2f%%", percentage);
+		GYT_Print("\rIterations: {:5.2f}%", percentage);
 	}
 
 	// density estimation

@@ -30,7 +30,7 @@ private:
 public:
 	int mResX, mResY;
 	real mWidth, mHeight;
-	real mAspect;
+	real mAspectRatio;
 	real mArea;
 	Vec3 mLL, mLU, mRL, mRU;
 
@@ -38,7 +38,7 @@ public:
 	Film(int w, int h, Filter* pFilter = nullptr) 
 		: mResX(w), mResY(h) 
 	{
-		mAspect = (real)(mResX) / (real)(mResY);
+		mAspectRatio = (real)(mResX) / (real)(mResY);
 		//filter = std::unique_ptr<BoxFilter>(new BoxFilter());
 		mPixelBuffer.resize((int64)mResX * mResY);
 		mImageBuffer.resize((int64)mResX * mResY);
