@@ -151,7 +151,7 @@ inline bool StartsWith(std::string const& str, std::string const& ending)
       fmt::format("[{}: {} @{}] ", __FILE__, __FUNCTION__, __LINE__) +          \
       fmt::format(__VA_ARGS__))
 
-#define GYT_PRINT(...) SPD_INFO_LOG(Info, __VA_ARGS__)
+#define GYT_LOG_PRINT(...) SPD_INFO_LOG(Info, __VA_ARGS__)
 #define GYT_SET_LOG_LEVEL(Level) Gyunity::GetDefaultLogger()->SetLevel(Level)
 #define GYT_INFO(...) SPD_LOG(Info, __VA_ARGS__)
 #define GYT_WARN(...) SPD_LOCATED_LOG(Warn, __VA_ARGS__)
