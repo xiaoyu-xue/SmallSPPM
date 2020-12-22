@@ -43,8 +43,8 @@ public:
 	Transform CameraToRaster, RasterToCamera;
 	Transform RasterToWorld;
 public:
-	ProjectiveCamera(std::shared_ptr<Film> pFilm, const Vec3& position, const Vec3& cz, const Vec3& cx, const Vec3& cy, real fovy, real dis);
-	ProjectiveCamera(std::shared_ptr<Film> pFilm, const Vec3& position, const Vec3& lookAt, const Vec3& up, real fovy, real dis);
+	ProjectiveCamera(std::shared_ptr<Film> pFilm, const Vec3& position, const Vec3& cz, const Vec3& cx, const Vec3& cy, real fovy, real filmDis);
+	ProjectiveCamera(std::shared_ptr<Film> pFilm, const Vec3& position, const Vec3& lookAt, const Vec3& up, real fovy, real filmDis);
 	virtual ~ProjectiveCamera() { }
 protected:
 	void Initialize();

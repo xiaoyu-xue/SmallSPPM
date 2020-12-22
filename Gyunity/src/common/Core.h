@@ -151,7 +151,7 @@ inline bool StartsWith(std::string const& str, std::string const& ending)
       fmt::format("[{}: {} @{}] ", __FILE__, __FUNCTION__, __LINE__) +          \
       fmt::format(__VA_ARGS__))
 
-#define GYT_PRINT(...) SPD_INFO_LOG(Info, __VA_ARGS__)
+#define GYT_LOG_PRINT(...) SPD_INFO_LOG(Info, __VA_ARGS__)
 #define GYT_SET_LOG_LEVEL(Level) Gyunity::GetDefaultLogger()->SetLevel(Level)
 #define GYT_INFO(...) SPD_LOG(Info, __VA_ARGS__)
 #define GYT_WARN(...) SPD_LOCATED_LOG(Warn, __VA_ARGS__)
@@ -186,8 +186,8 @@ constexpr real PI = (real)3.14159265358979;
 constexpr real INV_PI = (real)0.31830988618379067154;
 constexpr real INV_2PI = (real)0.15915494309189533577;
 constexpr real INV_4PI = (real)0.07957747154594766788;
-constexpr real PiOver2 = (real)1.57079632679489661923;
-constexpr real PiOver4 = (real)0.78539816339744830961;
+constexpr real PI_Over2 = (real)1.57079632679489661923;
+constexpr real PI_Over4 = (real)0.78539816339744830961;
 constexpr real Eps = (real)1e-6;
 constexpr real Inf = std::numeric_limits<real>::infinity();
 constexpr real RayEps = (real)1e-4;
