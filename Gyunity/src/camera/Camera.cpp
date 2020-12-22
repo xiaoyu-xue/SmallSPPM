@@ -38,33 +38,35 @@ void ProjectiveCamera::Initialize() {
 	RasterToWorld = CameraToWorld * RasterToCamera;
 
 
-	Vec3 filmCenter = mPos + mCz * mFilmDistance;
-	GYT_Print("Film center: {}\n", filmCenter);
+	
 	mpFilm->mHeight = mFilmDistance * std::tan(mFovy * 0.5f * PI / 180) * 2.f;
 	mpFilm->mWidth = mpFilm->mHeight * mpFilm->mAspectRatio;
 	mpFilm->mArea = mpFilm->mWidth * mpFilm->mHeight;
 
+
+	Vec3 filmCenter = mPos + mCz * mFilmDistance;
 	mpFilm->mLU = filmCenter + mCy * mpFilm->mHeight * 0.5 - mCx * mpFilm->mWidth * 0.5;
 	mpFilm->mLL = filmCenter - mCy * mpFilm->mHeight * 0.5 - mCx * mpFilm->mWidth * 0.5;
 	mpFilm->mRU = filmCenter + mCy * mpFilm->mHeight * 0.5 + mCx * mpFilm->mWidth * 0.5;
 	mpFilm->mRL = filmCenter - mCy * mpFilm->mHeight * 0.5 + mCx * mpFilm->mWidth * 0.5;
 
+	GYT_Print("Film center: {}\n", filmCenter);
 	GYT_Print("LL: {} \n", mpFilm->mLL);
-	GYT_Print("LL: {} \n", mpFilm->mLU);
-	GYT_Print("LL: {} \n", mpFilm->mRL);
-	GYT_Print("LL: {} \n", mpFilm->mRU);
+	GYT_Print("LU: {} \n", mpFilm->mLU);
+	GYT_Print("RL: {} \n", mpFilm->mRL);
+	GYT_Print("RU: {} \n", mpFilm->mRU);
 
 }
 
 
-ProjectiveCamera::ProjectiveCamera(std::shared_ptr<Film> pFilm, const Vec3& position, const Vec3& cz, const Vec3& cx, const Vec3& cy, real pFovy, real dis)
-	: Camera(pFilm), mPos(position), mCx(cx), mCy(cy), mCz(cz), mFovy(pFovy), mFilmDistance(dis)
+ProjectiveCamera::ProjectiveCamera(std::shared_ptr<Film> pFilm, const Vec3& position, const Vec3& cz, const Vec3& cx, const Vec3& cy, real pFovy, real filmDis)
+	: Camera(pFilm), mPos(position), mCx(cx), mCy(cy), mCz(cz), mFovy(pFovy), mFilmDistance(filmDis)
 {
 	Initialize();
 }
 
-ProjectiveCamera::ProjectiveCamera(std::shared_ptr<Film> pFilm, const Vec3& position, const Vec3& lookAt, const Vec3& up, real fovy, real dis)
-	: Camera(pFilm), mPos(position), mLookAt(lookAt), mUp(up), mFovy(fovy), mFilmDistance(dis)
+ProjectiveCamera::ProjectiveCamera(std::shared_ptr<Film> pFilm, const Vec3& position, const Vec3& lookAt, const Vec3& up, real fovy, real filmDis)
+	: Camera(pFilm), mPos(position), mLookAt(lookAt), mUp(up), mFovy(fovy), mFilmDistance(filmDis)
 {
 	Initialize();
 }
