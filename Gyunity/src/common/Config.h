@@ -108,7 +108,7 @@ public:
 			}
 			else
 			{
-				ASSERT(false);
+				GYT_ASSERT(false);
 			}
 			pattern += placeHolder;
 			if (i != N - 1)
