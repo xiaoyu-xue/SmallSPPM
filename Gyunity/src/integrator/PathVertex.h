@@ -9,10 +9,10 @@ class PathVertex
 {
 public:
 
-	Intersection isect;
-	Vec3 Throughput;
-	double PdfFwd = 0.0, PdfPrev = 0.0;
-	Camera* camera;
+	Intersection mIsect;
+	Vec3 mThroughput;
+	double mPdfFwd = 0.0, mPdfPrev = 0.0;
+	Camera* mpCamera;
 };
 
 

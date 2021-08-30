@@ -42,6 +42,8 @@
 #include "math\Filter.h"
 #include "integrator\VPT.h"
 #include "CornellBox.h"
+#include "integrator\LT.h"
+#include "common/Config.h"
 
 using namespace Gyunity;
 
@@ -741,7 +743,7 @@ void TestTransmittance() {
 	std::cout << std::exp(-0.6) << std::endl;
 }
 
-#include "common/Config.h"
+
 
 void TestLightTracing(int argc, char* argv[]) {
 
@@ -763,17 +765,11 @@ void TestLightTracing(int argc, char* argv[]) {
 	std::shared_ptr<Sampler> regularHaltonSampler = std::shared_ptr<Sampler>(new RegularHaltonSampler());;
 	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
 	std::shared_ptr<SamplerEnum> haltonSamplerEnum = std::shared_ptr<SamplerEnum>(new HaltonEnum((unsigned)resX, (unsigned)resY));
-	real alpha = 0.66666667;
-	std::shared_ptr<Integrator> integrator =
-		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 0.05, alpha, false, haltonSampler, haltonSamplerEnum, true));
 
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new LightTracing(randomSampler, 10, 10));
 	GYT_Print("Load Scene ...\n");
 	CornellBoxMesh::SetScene(scene);
-	//CornellBoxWater::SetScene(scene);
-	//CornellBoxTriangle2::SetScene(scene);
-	//EnvironmentMapScene::SetScene(scene);
-	//CornellBoxHeartSurface::SetScene(scene);
-	//HeartSurfaceEnvironmentMapScene::SetScene(scene);
+
 
 	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
 	scene->SetAccelerator(accelerator);
@@ -796,8 +792,10 @@ int main(int argc, char *argv[]) {
 
 	std::cout << GGXDistribution::RoughnessToAlpha(0.118) << std::endl;
 
-	//TestSPPM5(argc, argv);
-	TestPathTracing2(argc, argv);
+	TestLightTracing(argc, argv);
+	//TestPathTracing2(argc, argv);
+	//TestSPPM6(argc, argv);
+	//TestPathTracing2(argc, argv);
 	//TestPhathTracingargc, argv);
 	//TestPathTracing2(argc, argv);
 	//TestVolPathTracing(argc, argv);
