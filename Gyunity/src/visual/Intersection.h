@@ -22,6 +22,7 @@ public:
 	const Primitive *mpPrimitive;
 	BSDF* mpBSDF;
 	MediumInterface mMediumInterface;
+	bool mIsDelta = false;
 
 	Intersection() { 
 		mRayEps = 0; 

@@ -14,4 +14,5 @@ class SamplerEnum;
 class BSDF;
 class Primitive;
 class PhaseFunction;
+class LightVertex;
 GYT_NAMESPACE_END
