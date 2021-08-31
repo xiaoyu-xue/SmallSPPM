@@ -41,6 +41,27 @@ public:
 		return We(Ray(isect.mPos, -1 * (*wi)));
 	}
 
+	//Vec3 We(const Ray& ray) const override {
+	//	real PdfA = 1.0; // for the pinhole camera
+	//	//real A = (film->LU - film->LL).length() * (film->RU - film->LU).length();
+	//	//real A = film->width * film->heigh;
+	//	real A = GetFilm()->mArea;
+	//	real CosTheta = mCz.Dot(ray.mDir);
+	//	real CosTheta2 = CosTheta * CosTheta;
+	//	real Value = mFilmDistance * mFilmDistance * PdfA / (A * CosTheta2 * CosTheta2);
+	//	return Vec3(Value, Value, Value);
+	//}
+
+	//Vec3 Sample_Wi(const Intersection& isect, real* PdfW, Vec3* wi, Vec3 u) const {
+	//	*wi = (mPos - isect.mPos);
+	//	real distance = wi->Length();
+	//	*wi = wi->Norm();
+	//	real CosTheta = mCz.Dot(-1 * (*wi));
+	//	*PdfW = 1.0 * (distance * distance) / CosTheta;
+	//	//*PdfW = 1.0 * (dis / CosTheta) * (dis / CosTheta) / CosTheta;
+	//	return We(Ray(isect.mPos, -1 * (*wi)));
+	//}
+
 	GYT_FORCE_INLINE real PdfPos() const override 
 	{
 		return 1.0;

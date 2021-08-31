@@ -4,7 +4,7 @@
 GYT_NAMESPACE_BEGIN
 
 Vec3 PinHoleCamera::We(const Ray& ray) const  {
-	real pdfA = 1.0; // for the pinhole camera
+	real pdfA = 1.0; // for pinhole camera
 	real area = mpFilm->mArea;
 	real cosTheta = mCz.Dot(ray.mDir);
 	real cos2Theta = cosTheta * cosTheta;

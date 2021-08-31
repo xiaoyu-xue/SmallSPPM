@@ -12,15 +12,13 @@ void LightTracing::Render(const Scene& scene, const Camera& camera)
 	std::cout << totalPhotons << std::endl;
 	for(int p = 0; p < totalPhotons; ++p) {
 		int nVertices = GenerateLightPath(scene, camera, rand, maxDepth);
-		for (int s = 0; s < nVertices; ++s) {
+		for (int s = 1; s < nVertices; ++s) {
 			Vec3 pRaster;
 			bool inScreen;
 			Vec3 L = ConnectToCamera(mLightPath[s], s, scene, camera, rand, &pRaster, &inScreen);
 			if (inScreen) {
 				L = L * camera.GetFilm()->mResX * camera.GetFilm()->mResY / totalPhotons;
-				//std::cout << L << std::endl;
 				camera.GetFilm()->AddSplat(pRaster.x, pRaster.y, L);
-				//camera.GetFilm()->AddSample(pRaster.x, pRaster.y, L);
 			}
 		}
 		real percentage = 100.f * p / totalPhotons;
