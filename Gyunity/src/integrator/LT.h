@@ -21,15 +21,15 @@ public:
 
 private:
 
-	int GenerateLightPath(const Scene& scene, const Camera& camera, StateSequence& rand, int maxDepth);
-	int Trace(const Ray& ray, Vec3 throughput, real pdfFwd, StateSequence& rand, int depth, int maxDepth, const Scene& scene, const Camera& camera);
+	int GenerateLightPath(const Scene& scene, const Camera& camera, StateSequence& rand, int maxDepth, MemoryPool& arena);
+	int Trace(const Ray& ray, Vec3 throughput, real pdfFwd, StateSequence& rand, int depth, int maxDepth, const Scene& scene, const Camera& camera, MemoryPool& arena);
 	Vec3 ConnectToCamera(const PathVertex& vertex, int s, const Scene& scene, const Camera& camera, StateSequence& rand, Vec3* pRaster, bool* inScreen);
 	Vec3 WorldToScreen(const Camera &camerea, const Vec3& vertex, bool* isInScreen) const;
 
 	int spp, maxDepth;
 	std::shared_ptr<Sampler> mpSampler;
 	std::vector<PathVertex> mLightPath;
-	MemoryPool arena;
+
 };
 
 
