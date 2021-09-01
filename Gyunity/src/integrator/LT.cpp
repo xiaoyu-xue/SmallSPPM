@@ -64,51 +64,51 @@ void LightTracing::Render(const Scene& scene, const Camera& camera)
 	//}
 
 
-	std::vector<MemoryPool> memoryArenas(ThreadsNumber());
-	GYT_Print("Core number: {}\n", ThreadsNumber());
-	GYT_Print("Total works: {}\n", totalWorks);
-	ParallelFor(0, totalWorks, [&](int p) {
-		MemoryPool& arena = memoryArenas[ThreadIndex()];
-		for (int i = 0; i < tasks[p].mPhotons; ++i) {
-			std::vector<PathVertex> lightPath(maxDepth + 1);
-			int nVertices = GenerateLightPath(scene, camera, rand, arena, lightPath);
-			for (int s = 0; s < nVertices; ++s) {
-				Vec3 pRaster;
-				bool inScreen;
-				Vec3 L = ConnectToCamera(lightPath[s], s, scene, camera, rand, &pRaster, &inScreen);
-				if (inScreen) {
-					L = L * camera.GetFilm()->mResX * camera.GetFilm()->mResY / totalPhotons;
-					//std::cout << L << std::endl;
-					camera.GetFilm()->AddSplat(pRaster.x, pRaster.y, L);
-					//camera.GetFilm()->AddSample(pRaster.x, pRaster.y, L);
-					
-				}
-			}
-		}
-		arena.Reset();
-		workDone += 1;
-		real percentage = 100.f * workDone / totalWorks;
-		fprintf(stderr, "\rPercentage: %5.2f%%", percentage);
-	});
-
-	//MemoryPool arena;
-	//for (int p = 0; p < totalPhotons; ++p) {
-	//	std::vector<PathVertex> lightPath(maxDepth + 1);
-	//	int nVertices = GenerateLightPath(scene, camera, rand, arena, lightPath);
-	//	for (int s = 0; s < nVertices; ++s) {
-	//		Vec3 pRaster;
-	//		bool inScreen;
-	//		Vec3 L = ConnectToCamera(lightPath[s], s, scene, camera, rand, &pRaster, &inScreen);
-	//		if (inScreen) {
-	//			L = L * camera.GetFilm()->mResX * camera.GetFilm()->mResY / totalPhotons;
-	//			camera.GetFilm()->AddSplat(pRaster.x, pRaster.y, L);
-
+	//std::vector<MemoryPool> memoryArenas(ThreadsNumber());
+	//GYT_Print("Core number: {}\n", ThreadsNumber());
+	//GYT_Print("Total works: {}\n", totalWorks);
+	//ParallelFor(0, totalWorks, [&](int p) {
+	//	MemoryPool& arena = memoryArenas[ThreadIndex()];
+	//	for (int i = 0; i < tasks[p].mPhotons; ++i) {
+	//		std::vector<PathVertex> lightPath(maxDepth + 1);
+	//		int nVertices = GenerateLightPath(scene, camera, rand, arena, lightPath);
+	//		for (int s = 0; s < nVertices; ++s) {
+	//			Vec3 pRaster;
+	//			bool inScreen;
+	//			Vec3 L = ConnectToCamera(lightPath[s], s, scene, camera, rand, &pRaster, &inScreen);
+	//			if (inScreen) {
+	//				//L = L * camera.GetFilm()->mResX * camera.GetFilm()->mResY / totalPhotons;
+	//				L = L / spp;
+	//				//std::cout << L << std::endl;
+	//				camera.GetFilm()->AddSplat(pRaster.x, pRaster.y, L);
+	//				//camera.GetFilm()->AddSample(pRaster.x, pRaster.y, L);
+	//				
+	//			}
 	//		}
 	//	}
 	//	arena.Reset();
-	//	real percentage = 100.f * p / totalPhotons;
+	//	workDone += 1;
+	//	real percentage = 100.f * workDone / totalWorks;
 	//	fprintf(stderr, "\rPercentage: %5.2f%%", percentage);
-	//}
+	//});
+
+	MemoryPool arena;
+	for (int p = 0; p < totalPhotons; ++p) {
+		std::vector<PathVertex> lightPath(maxDepth + 1);
+		int nVertices = GenerateLightPath(scene, camera, rand, arena, lightPath);
+		for (int s = 0; s < nVertices; ++s) {
+			Vec3 pRaster;
+			bool inScreen;
+			Vec3 L = ConnectToCamera(lightPath[s], s, scene, camera, rand, &pRaster, &inScreen);
+			if (inScreen) {
+				L = L * camera.GetFilm()->mResX * camera.GetFilm()->mResY / totalPhotons;
+				camera.GetFilm()->AddSplat(pRaster.x, pRaster.y, L);
+			}
+		}
+		arena.Reset();
+		real percentage = 100.f * p / totalPhotons;
+		fprintf(stderr, "\rPercentage: %5.2f%%", percentage);
+	}
 }
 
 int LightTracing::GenerateLightPath(const Scene &scene, const Camera &camera, StateSequence& rand, MemoryPool& arena, std::vector<PathVertex> &lightPath)
@@ -163,6 +163,8 @@ int LightTracing::Trace(const Ray& ray, Vec3 throughput, real pdfFwd, StateSeque
 		lightPath[bound].mThroughput = throughput;
 		lightPath[bound].mPdfFwd = pdfW;
 
+		GYT_Print("{}\n", throughput);
+
 		++bound;
 		if (bound >= maxDepth + 1) break;
 
@@ -215,8 +217,7 @@ Vec3 LightTracing::ConnectToCamera(const PathVertex& vertex, int s, const Scene&
 		return Vec3(0.0, 0.0, 0.0);
 	}
 
-	Ray ray(vertex.mIsect.mPos, hitPointToCam, 0.f, ray_tmax);
-	Intersection isc;
+	Ray ray(vertex.mIsect.mPos + hitPointToCam * RayEps, hitPointToCam, 0.f, ray_tmax);
 
 	if (scene.Intersect(ray)) {
 		* inScreen = false;
@@ -229,7 +230,7 @@ Vec3 LightTracing::ConnectToCamera(const PathVertex& vertex, int s, const Scene&
 	Vec3 wi;
 	Vec3 We = camera.Sample_Wi(vertex.mIsect, &pdfW, &wi, Vec3(rand(), rand(), rand()));
 	Vec3 f = vertex.mIsect.mpBSDF->Evaluate(vertex.mIsect.mOutDir, wi);
-	Vec3 L = We * vertex.mThroughput * f * wi.Dot(vertex.mIsect.mNormal) / pdfW;
+	Vec3 L = We * vertex.mThroughput * f * std::abs(wi.Dot(vertex.mIsect.mNormal)) / pdfW;
 
 	return L;
 }
