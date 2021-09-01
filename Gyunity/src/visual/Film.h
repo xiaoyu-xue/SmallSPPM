@@ -95,9 +95,8 @@ public:
 		Y = Clamp(Y, 0, mResY - 1);
 
 		{
-			std::lock_guard<Spinlock> lock(mBufferLocks[(int64)(Y * mResX + X)]);
-
 			int pixelIndex = Y * mResX + X;
+			std::lock_guard<Spinlock> lock(mBufferLocks[pixelIndex]);
 			Pixel& pixel = mPixelBuffer[pixelIndex];
 			pixel.splat = pixel.splat + sample;
 		}
