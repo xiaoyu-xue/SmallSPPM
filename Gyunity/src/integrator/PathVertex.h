@@ -12,7 +12,6 @@ public:
 	Intersection mIsect;
 	Vec3 mThroughput;
 	real mPdfFwd = 0.0, mPdfPrev = 0.0;
-	Camera* mpCamera;
 	bool mIsDelta = false;
 };
 

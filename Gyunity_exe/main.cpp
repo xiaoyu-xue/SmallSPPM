@@ -719,12 +719,13 @@ void TestPathTracing2(int argc, char* argv[]) {
 	std::shared_ptr<SamplerEnum> sobolSamplerEnum = std::shared_ptr<SamplerEnum>(new SobolEnum(resX, resY));
 
 	//std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(100, 20, sobolSampler, sobolSamplerEnum));
-	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(10, 2, randomSampler, samplerEnum));
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(100, 1, randomSampler, samplerEnum));
 
 	//fprintf(stderr, "Load Scene ...\n");
 	GYT_Print("Load Scene ...\n");
 	//CornellBoxMesh::SetScene(scene);
-	CornellBoxMeshEmpty::SetScene(scene);
+	//CornellBoxMeshEmpty::SetScene(scene);
+	CornellBoxMeshWithSlope::SetScene(scene);
 	//CornellBoxDiffuseBunny::SetScene(scene);
 	//CornellBoxTriangle2::SetScene(scene);
 	//EnvironmentMapScene::SetScene(scene);
@@ -735,7 +736,7 @@ void TestPathTracing2(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("CornellBoxPT1.bmp");
+	film->SetFileName("CornellBoxPT10.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
@@ -766,30 +767,25 @@ void TestLightTracing(int argc, char* argv[]) {
 	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
 	std::shared_ptr<SamplerEnum> haltonSamplerEnum = std::shared_ptr<SamplerEnum>(new HaltonEnum((unsigned)resX, (unsigned)resY));
 
-	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new LightTracing(randomSampler, 3, 5));
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new LightTracing(randomSampler, 15, 512));
 
 	GYT_Print("Load Scene ...\n");
-	CornellBoxMeshEmpty::SetScene(scene);
-	//CornellBoxMesh::SetScene(scene);
+	CornellBoxMesh::SetScene(scene);
+	//CornellBoxMeshEmpty::SetScene(scene);
 	//CornellBoxDiffuseBunny::SetScene(scene);
+	//CornellBoxMeshWithSlope::SetScene(scene);
 
 	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("CornellBoxLT1.bmp");
+	film->SetFileName("CornellBoxLT16.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
 
 
-	//Ray r(Vec3(1.5, 3.5, 7.5), Vec3(0.5, 0.6, 1.9).Norm(), Inf, 1e-4);
-	//Intersection isect;
-	//isect.mPos = Vec3(1, 2, 0);
-	//Vec3 wi;
-	//real pdfDir;
-	//Vec3 we = camera->Sample_Wi(isect, &pdfDir, &wi, Vec3(0.5,0.5,0.5));
-	//std::cout << we << " " << pdfDir << " " << wi << std::endl;
+
 
 	clock_t end = clock();
 	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;

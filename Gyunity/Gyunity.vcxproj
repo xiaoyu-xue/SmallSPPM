@@ -174,7 +174,6 @@
   <ItemGroup>
     <ClCompile Include="src\common\Interfaces.cpp" />
     <ClCompile Include="src\common\Logger.cpp" />
-    <ClCompile Include="src\integrator\LT.cpp" />
     <ClCompile Include="src\math\AABB.cpp" />
     <ClCompile Include="src\bsdf\BSDF.cpp" />
     <ClCompile Include="src\accelerator\BVHAccel.cpp" />

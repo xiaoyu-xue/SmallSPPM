@@ -45,7 +45,7 @@ public:
 		*wi = wi->Norm();
 		real cosTheta = mCz.Dot(-1 * (*wi));
 		*pdfW = 1.f * (distance * distance) / cosTheta;
-		return We(Ray(isect.mPos, -1 * (*wi)));
+		return We(Ray(mPos, -1 * (*wi)));
 	}
 
 

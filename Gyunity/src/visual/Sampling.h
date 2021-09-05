@@ -165,5 +165,7 @@ real BalanceHeuristic(int nf, real fPdf, int ng, real gPdf);
 
 real CosineHemispherePdf(real cosTheta);
 
+Vec3 UniformSampleHemisphere(const Vec2& u);
 
+real UniformSampleHemispherePdf();
 GYT_NAMESPACE_END
