@@ -57,12 +57,10 @@ public:
 		return mLemit;
 	}
 
-protected:
-
-
-	void SampleOnLight(Intersection *isect, Vec3 *dir, real *pdfPos, real *pdfDir, const Vec2 &u, const Vec2 &v) const override 
+	void SampleOnLight(Intersection* isect, Vec3* dir, real* pdfPos, real* pdfDir, const Vec2& u, const Vec2& v) const override
 	{
 		//sample a position
+		//cos importance sampling
 		*isect = mpShape->Sample(pdfPos, u);
 		Vec3 ss, ts;
 		CoordinateSystem(isect->mNormal, &ss, &ts);
@@ -70,7 +68,19 @@ protected:
 		real cosTheta = dirLocal.z;
 		*dir = (ss * dirLocal.x + ts * dirLocal.y + isect->mNormal * dirLocal.z).Norm();
 		*pdfDir = CosineHemispherePdf(cosTheta);
+
+		//*isect = mpShape->Sample(pdfPos, u);
+		//Vec3 ss, ts;
+		//CoordinateSystem(isect->mNormal, &ss, &ts);
+		//Vec3 dirLocal = UniformSampleHemisphere(v);
+		//*dir = (ss * dirLocal.x + ts * dirLocal.y + isect->mNormal * dirLocal.z).Norm();
+		//*pdfDir = UniformSampleHemispherePdf();
 	}
+
+protected:
+
+
+
 };
 
 GYT_NAMESPACE_END

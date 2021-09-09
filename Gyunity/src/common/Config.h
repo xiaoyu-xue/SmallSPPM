@@ -47,7 +47,7 @@ public:
 		uint64 ptrUint64;
 		std::getline(ss, t, '\t');
 		GYT_ASSERT_INFO(t == typeid(T).name(),
-			"Pointer type mismatch, expect: \"" + std::string(typeid(T).name()) + "\"" + " but actual \"" + t + "\"");
+			"Pointer type mismatch, expect: \"" + std::string(typeid(T).name()) + "\"" + " but actual: \"" + t + "\"");
 		ss >> ptrUint64;
 		return reinterpret_cast<T*>(ptrUint64);
 	}
@@ -108,7 +108,7 @@ public:
 			}
 			else
 			{
-				ASSERT(false);
+				GYT_ASSERT(false);
 			}
 			pattern += placeHolder;
 			if (i != N - 1)

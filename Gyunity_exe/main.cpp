@@ -42,6 +42,8 @@
 #include "math\Filter.h"
 #include "integrator\VPT.h"
 #include "CornellBox.h"
+#include "integrator\LT.h"
+#include "common/Config.h"
 
 using namespace Gyunity;
 
@@ -586,51 +588,6 @@ void TestPathTracing(int argc, char* argv[]) {
 	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
 }
 
-
-void TestPathTracing2(int argc, char* argv[]) {
-
-	int resX = 1024, resY = 1024;
-
-	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY, new BoxFilter()));
-	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
-	Vec3 camPos(0, 0, 3);
-	Vec3 lookAt(0, 0, 0);
-	Vec3 up(0, 1, 0);
-	real filmDis = 1;
-	real fovy = 53.13010235415597f;
-
-	std::shared_ptr<Camera> camera = std::shared_ptr<Camera>(new PinHoleCamera(film, camPos, lookAt, up, fovy, filmDis));
-	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
-	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
-
-	std::shared_ptr<Sampler> sobolSampler = std::shared_ptr<Sampler>(new SobolSampler());
-	std::shared_ptr<SamplerEnum> sobolSamplerEnum = std::shared_ptr<SamplerEnum>(new SobolEnum(resX, resY));
-
-	//std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(100, 20, sobolSampler, sobolSamplerEnum));
-	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(100, 10, randomSampler, samplerEnum));
-
-	//fprintf(stderr, "Load Scene ...\n");
-	GYT_Print("Load Scene ...\n");
-	CornellBoxMesh::SetScene(scene);
-	//CornellBoxTriangle2::SetScene(scene);
-	//EnvironmentMapScene::SetScene(scene);
-	//CornellBoxHeartSurface::SetScene(scene);
-	//HeartSurfaceEnvironmentMapScene::SetScene(scene);
-
-	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
-	scene->SetAccelerator(accelerator);
-
-	scene->Initialize();
-	film->SetFileName("CornellBoxPtCamera.bmp");
-	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
-	clock_t begin = clock();
-	renderer->Render();
-	clock_t end = clock();
-	
-	GYT_Print("\nCost time: {:.6f} min\n", (end - begin) / 1000.0 / 60.0);
-}
-
-
 void TestSPPM6(int argc, char* argv[]) {
 
 
@@ -668,7 +625,7 @@ void TestSPPM6(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("CornellBoxSppmTest2.bmp");
+	film->SetFileName("CornellBoxSppmTest3.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
@@ -741,7 +698,100 @@ void TestTransmittance() {
 	std::cout << std::exp(-0.6) << std::endl;
 }
 
-#include "common/Config.h"
+
+void TestPathTracing2(int argc, char* argv[]) {
+
+	int resX = 1024, resY = 1024;
+
+	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY, new BoxFilter()));
+	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
+	Vec3 camPos(0, 0, 3);
+	Vec3 lookAt(0, 0, 0);
+	Vec3 up(0, 1, 0);
+	real filmDis = 1;
+	real fovy = 53.13010235415597f;
+
+	std::shared_ptr<Camera> camera = std::shared_ptr<Camera>(new PinHoleCamera(film, camPos, lookAt, up, fovy, filmDis));
+	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
+	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
+
+	std::shared_ptr<Sampler> sobolSampler = std::shared_ptr<Sampler>(new SobolSampler());
+	std::shared_ptr<SamplerEnum> sobolSamplerEnum = std::shared_ptr<SamplerEnum>(new SobolEnum(resX, resY));
+
+	//std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(100, 20, sobolSampler, sobolSamplerEnum));
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(100, 1, randomSampler, samplerEnum));
+
+	//fprintf(stderr, "Load Scene ...\n");
+	GYT_Print("Load Scene ...\n");
+	//CornellBoxMesh::SetScene(scene);
+	//CornellBoxMeshEmpty::SetScene(scene);
+	CornellBoxMeshWithSlope::SetScene(scene);
+	//CornellBoxDiffuseBunny::SetScene(scene);
+	//CornellBoxTriangle2::SetScene(scene);
+	//EnvironmentMapScene::SetScene(scene);
+	//CornellBoxHeartSurface::SetScene(scene);
+	//HeartSurfaceEnvironmentMapScene::SetScene(scene);
+
+	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
+	scene->SetAccelerator(accelerator);
+
+	scene->Initialize();
+	film->SetFileName("CornellBoxPT10.bmp");
+	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
+	clock_t begin = clock();
+	renderer->Render();
+	clock_t end = clock();
+
+	GYT_Print("\nCost time: {:.6f} min\n", (end - begin) / 1000.0 / 60.0);
+}
+
+
+void TestLightTracing(int argc, char* argv[]) {
+
+
+	int resX = 1024, resY = 1024;
+	int nIterations = (argc == 2) ? atol(argv[1]) : 256;
+
+	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY, new BoxFilter()));
+	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
+	Vec3 camPos(0, 0, 3);
+	Vec3 lookAt(0, 0, 0);
+	Vec3 up(0, 1, 0);
+	real filmDis = 1;
+	real fovy = 53.13010235415597f;
+
+	std::shared_ptr<Camera> camera = std::shared_ptr<Camera>(new PinHoleCamera(film, camPos, lookAt, up, fovy, filmDis));
+	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
+	std::shared_ptr<Sampler> haltonSampler = std::shared_ptr<Sampler>(new HaltonSampler(resX, resY));
+	std::shared_ptr<Sampler> regularHaltonSampler = std::shared_ptr<Sampler>(new RegularHaltonSampler());;
+	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
+	std::shared_ptr<SamplerEnum> haltonSamplerEnum = std::shared_ptr<SamplerEnum>(new HaltonEnum((unsigned)resX, (unsigned)resY));
+
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new LightTracing(randomSampler, 15, 512));
+
+	GYT_Print("Load Scene ...\n");
+	CornellBoxMesh::SetScene(scene);
+	//CornellBoxMeshEmpty::SetScene(scene);
+	//CornellBoxDiffuseBunny::SetScene(scene);
+	//CornellBoxMeshWithSlope::SetScene(scene);
+
+	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
+	scene->SetAccelerator(accelerator);
+
+	scene->Initialize();
+	film->SetFileName("CornellBoxLT16.bmp");
+	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
+	clock_t begin = clock();
+	renderer->Render();
+
+
+
+
+	clock_t end = clock();
+	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+
+}
+
 
 int main(int argc, char *argv[]) {
 	//AABB aabb;
@@ -750,9 +800,11 @@ int main(int argc, char *argv[]) {
 
 	std::cout << GGXDistribution::RoughnessToAlpha(0.118) << std::endl;
 
-	//TestSPPM5(argc, argv);
-	TestSPPM6(argc, argv);
-	//TestPathTracing(argc, argv);
+	TestLightTracing(argc, argv);
+	//TestPathTracing2(argc, argv);
+	//TestSPPM6(argc, argv);
+	//TestPathTracing2(argc, argv);
+	//TestPhathTracingargc, argv);
 	//TestPathTracing2(argc, argv);
 	//TestVolPathTracing(argc, argv);
 	//TestTransmittance();

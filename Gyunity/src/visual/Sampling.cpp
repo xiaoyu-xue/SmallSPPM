@@ -53,4 +53,17 @@ real UniformSpherePdf() {
 	return INV_4PI;
 }
 
+Gyunity::Vec3 UniformSampleHemisphere(const Vec2& u)
+{
+	real x = std::cos(2 * PI * u.y) * std::sqrt(1 - u.x * u.x);
+	real y = std::sin(2 * PI * u.y) * std::sqrt(1 - u.x * u.x);
+	real z = u.x;
+	return Vec3(x, y, z);
+}
+
+Gyunity::real UniformSampleHemispherePdf()
+{
+	return INV_2PI;
+}
+
 GYT_NAMESPACE_END

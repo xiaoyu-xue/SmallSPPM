@@ -88,16 +88,19 @@ public:
 
 	void AddSplat(real x, real y, const Vec3& sample)
 	{
+		
 		int X = (int)(std::floor(x));
 		int Y = (int)(std::floor(y));
 		X = Clamp(X, 0, mResX - 1);
 		Y = Clamp(Y, 0, mResY - 1);
 
-		//int rowAdd = resY - 1 - Y;
-		//int colAdd = X;
-		int pixelIndex = X * mResX + Y;
-		Pixel& pixel = mPixelBuffer[pixelIndex];
-		pixel.splat = pixel.splat + sample;
+		{
+			int pixelIndex = Y * mResX + X;
+			std::lock_guard<Spinlock> lock(mBufferLocks[pixelIndex]);
+			Pixel& pixel = mPixelBuffer[pixelIndex];
+			pixel.splat = pixel.splat + sample;
+		}
+
 	}
 
 	void SetImage(const std::vector<Vec3> &image) 
