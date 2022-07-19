@@ -13,6 +13,10 @@ public:
 		mpDistribution.reset(ConvertImageToPdf(mpImage.get()));
 	}
 
+	~EnvironmentMap() {
+		delete data;
+	}
+
 	Vec3 Sample(Vec3* dir, real* pdfW, const Vec2& u) const {
 		real uv[2];
 		real pdf;
@@ -71,7 +75,7 @@ private:
 	Distribution2D* ConvertImageToPdf(const ImageTexture<Vec3>* pImage) const {
 		int height = mpImage->Height();
 		int width = mpImage->Width();
-		real* data = new real[width * height];
+		data = new real[width * height];
 		for (int r = 0; r < height; ++r) {
 			real v = (real)(r + 0.5f) / (real)(height);
 			real sinTheta = std::sin(PI * v);
@@ -121,6 +125,8 @@ private:
 
 		return result;
 	}
+private:
+	mutable real* data;
 
 public:
 	std::unique_ptr<ImageTexture<Vec3>> mpImage;

@@ -88,7 +88,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SolutionDir)$(Platform)\$(Configuration)\Gyunity.lib;$(SolutionDir)external\build\lib\$(Configuration)\*.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)$(Platform)\$(Configuration)\Gyunity.lib;$(SolutionDir)external\build\lib\$(Configuration)\*.lib;$(SolutionDir)external\lib\vld.lib</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
@@ -123,7 +123,7 @@
     <Link>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SolutionDir)$(Platform)\$(Configuration)\Gyunity.lib;$(SolutionDir)external\build\lib\$(Configuration)\*.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)$(Platform)\$(Configuration)\Gyunity.lib;$(SolutionDir)external\build\lib\$(Configuration)\*.lib;$(SolutionDir)external\lib\vld.lib</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>

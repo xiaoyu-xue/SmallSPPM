@@ -796,7 +796,7 @@ void TestLightTracing(int argc, char* argv[]) {
 
 void RenderAdScene(int idx, real theta) {
 
-	int resX = 1920, resY = 1920;
+	int resX = 2160, resY = 2160;
 	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY, new BoxFilter()));
 	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
 	Vec3 camPos(0, 0, 3);
@@ -809,7 +809,7 @@ void RenderAdScene(int idx, real theta) {
 	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
 	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
 
-	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(32, 10, randomSampler, samplerEnum));
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(256, 10, randomSampler, samplerEnum));
 
 	GYT_Print("Load Scene ...\n");
 
@@ -874,7 +874,7 @@ int main(int argc, char *argv[]) {
 
 
 	//RenderAdScene(281, (real)281);
-	//_CrtDumpMemoryLeaks();
+	_CrtDumpMemoryLeaks();
 
 	return 0;
 }

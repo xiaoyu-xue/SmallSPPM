@@ -111,6 +111,7 @@ Array2D<Vec3> ImageIO::LoadTexture(std::string filename) {
 			}
 		}
 	}
+	delete data;
 	return Array2D<Vec3>(texture, resY, resX);
 }
 
