@@ -42,11 +42,7 @@ public:
 				*pdfW = mpDistribution->Pdf(uv[0], uv[1]) / (2 * PI * PI * sinTheta);
 
 		}
-		DEBUG_PIXEL_IF(ThreadIndex()) {
-			if (std::isnan(radiance.x)) {
-				std::cout << "Radiance: " << radiance << " dir: " << dir << " uv: " << uv << std::endl;
-			}
-		}
+
 		return radiance;
 	}
 

@@ -52,6 +52,12 @@ public:
 
 	}
 
+	~Film() {
+		mPixelBuffer.clear();
+		mImageBuffer.clear();
+		mBufferLocks.clear();
+	}
+
 	real Area() const 
 	{
 		//return area;

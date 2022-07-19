@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tinyobjloader/tiny_obj_loader.h"
+#include "math/AABB.h"
 
 GYT_NAMESPACE_BEGIN
 
@@ -11,7 +12,6 @@ void Mesh::LoadFromFile(std::string inputfile, bool reverseVertices) {
 
 	std::string warn;
 	std::string err;
-
 	bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, inputfile.c_str());
 
 	if (!warn.empty()) {
@@ -81,6 +81,11 @@ void Mesh::LoadFromFile(std::string inputfile, bool reverseVertices) {
 			index_offset += fv;
 		}
 	}
+	for (int i = 0; i < vertices.size(); ++i) {
+		Vec3 vertice = vertices[i];
+		bbox = Union(bbox, vertice);
+	}
+	std::cout << bbox << std::endl;
 }
 
 void Mesh::SetMaterial(const std::shared_ptr<Material> material) {

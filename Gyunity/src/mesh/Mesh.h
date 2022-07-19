@@ -3,6 +3,7 @@
 #include "math/Linagl.h"
 #include "math/Transform.h"
 #include "shape/Triangle.h"
+#include "math/AABB.h"
 
 GYT_NAMESPACE_BEGIN
 
@@ -35,6 +36,7 @@ public:
 	std::shared_ptr<Material> material;
 	std::vector<Triangle> untransformedTriangles;
 	MediumInterface mediumInterface;
+	AABB bbox;
 };
 
 GYT_NAMESPACE_END

@@ -23,6 +23,11 @@ private:
 	int64 mShapeNum;
 	int64 mPrimitiveNum;
 public:
+
+	std::shared_ptr<Accelerator> GetAccelerator() {
+		return mAccelerator;
+	}
+
 	void Initialize() {
 		for (auto light : mLights) {
 			light->Initialize(*this);
@@ -57,6 +62,12 @@ public:
 		++mPrimitiveNum;
 	}
 
+	void PopPrimitive() {
+		mPrimitives.pop_back();
+		mShapeNum--;
+		mPrimitiveNum--;
+	}
+
 	void AddLight(std::shared_ptr<Light> light) {
 		mLights.push_back(light);
 		if (light->IsEnvironmentLight()) {
@@ -64,10 +75,9 @@ public:
 		}
 	}
 
-
 	void AddMesh(Mesh &mesh, const Transform &transform) {
 		for (int i = 0; i < mesh.untransformedTriangles.size(); ++i) {
-			Triangle* triangle = new Triangle();
+			//Triangle* triangle = new Triangle();
 			//*triangle = mesh.untransformedTriangles[i];
 			auto pTriangle = std::make_shared<Triangle>(mesh.untransformedTriangles[i]);
 			pTriangle->SetTransform(transform);
@@ -117,7 +127,6 @@ public:
 	void GetBoundingSphere(Vec3* center, real* radius) const;
 
 private:
-
 	std::unique_ptr<Distribution1D> ComputeLightPowerDistribution() {
 		if (mLights.size() == 0) return nullptr;
 		std::vector<real> lightPower;

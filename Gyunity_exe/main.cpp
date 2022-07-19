@@ -44,7 +44,8 @@
 #include "CornellBox.h"
 #include "integrator\LT.h"
 #include "common/Config.h"
-
+#include <windows.h>
+#include <cstdlib>
 using namespace Gyunity;
 
 #define _CRTDBG_MAP_ALLOC
@@ -793,14 +794,64 @@ void TestLightTracing(int argc, char* argv[]) {
 }
 
 
+void RenderAdScene(int idx, real theta) {
+
+	int resX = 1920, resY = 1920;
+	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY, new BoxFilter()));
+	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
+	Vec3 camPos(0, 0, 3);
+	Vec3 lookAt(0, 0, 0);
+	Vec3 up(0, 1, 0);
+	real filmDis = 1;
+	real fovy = 53.13010235415597f;
+
+	std::shared_ptr<Camera> camera = std::shared_ptr<Camera>(new PinHoleCamera(film, camPos, lookAt, up, fovy, filmDis));
+	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
+	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
+
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(32, 10, randomSampler, samplerEnum));
+
+	GYT_Print("Load Scene ...\n");
+
+	//AdBoardScene::SetScene(scene, theta);
+	AdBoardSceneV2 buildScene;
+	buildScene.SetScene(scene, theta);
+
+
+	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
+	scene->SetAccelerator(accelerator);
+
+	scene->Initialize();
+	film->SetFileName("Result2/" + std::to_string(idx) + ".png");
+	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
+	renderer->Render();
+
+	//{
+	//	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
+	//	for (int i = idx; i <= 360; ++i) {
+	//		real theta = i;
+	//		GYT_Print("\n");
+	//		GYT_Print("\nLoad Scene ...\n");
+	//		GYT_Print("Frame: {} \n", i);
+	//		AdBoardSceneV2::ChangePrimitive(scene, theta);
+	//		std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
+	//		scene->SetAccelerator(accelerator);
+	//		scene->Initialize();
+	//		film->SetFileName("Result2/" + std::to_string(i) + ".png");
+	//		renderer->Render();
+	//	}
+	//}
+
+
+}
+
+
 int main(int argc, char *argv[]) {
-	//AABB aabb;
-	//aabb = Union(Union(aabb, Vec3(-1, -2, -2)), Vec3(1, 2, 3));
-	//std::cout << aabb << std::endl;
 
 	std::cout << GGXDistribution::RoughnessToAlpha(0.118) << std::endl;
 
-	TestLightTracing(argc, argv);
+	//RenderAdBoard(argc, argv);
+	//TestLightTracing(argc, argv);
 	//TestPathTracing2(argc, argv);
 	//TestSPPM6(argc, argv);
 	//TestPathTracing2(argc, argv);
@@ -808,20 +859,22 @@ int main(int argc, char *argv[]) {
 	//TestPathTracing2(argc, argv);
 	//TestVolPathTracing(argc, argv);
 	//TestTransmittance();
+	
+
+	clock_t begin = clock();
+	for (int i = 0; i <= 360; i++) {
+		GYT_Print("\nFrame: {}\n", i);
+		RenderAdScene(i, (real)i);
+	}
+	clock_t end = clock();
+	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+
+ 
+	//RenderAdScene(0, 0);
 
 
-	//Config config;
-	//int instance = 100;
-	//int* ptr = &instance;
-	//config.Set("maxDepth", 10);
-	//config.Set("position", Vec3(1, 0, 1));
-	//config.Set("pInstance", ptr);
-
-	//std::cout << config.Get<int>("maxDepth") << std::endl;
-	//std::cout << config.Get<Vec3>("position") << std::endl;
-	//std::cout << config.Get<int*>("pInstance") << " " << *(config.Get<int*>("pInstance")) << std::endl;
-
-
-	//TestHashGrid();
+	//RenderAdScene(281, (real)281);
 	//_CrtDumpMemoryLeaks();
+
+	return 0;
 }

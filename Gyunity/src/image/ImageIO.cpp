@@ -4,6 +4,7 @@
 #include "container/Array.h"
 #include <stb/stb_image.h>
 #include <stb/stb_image_write.h>
+#include "common/Core.h"
 
 
 GYT_NAMESPACE_BEGIN

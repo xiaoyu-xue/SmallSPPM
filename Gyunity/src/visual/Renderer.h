@@ -24,6 +24,9 @@ public:
 		mpIntegrator->Render(*mpScene, *mpCamera);
 		mpFilm->SaveImage();
 	}
+	~Renderer() {
+
+	}
 };
 
 GYT_NAMESPACE_END
