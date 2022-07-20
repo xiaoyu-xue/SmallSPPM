@@ -4,7 +4,7 @@
 #include "Material.h"
 #include "texture/Texture.h"
 #include "bsdf/BSDF.h"
-#include "visual/Microfacet.h"
+#include "core/Microfacet.h"
 
 GYT_NAMESPACE_BEGIN
 

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "math/Linagl.h"
-#include "visual/Intersection.h"
+#include "core/Intersection.h"
 #include "light/Light.h"
-#include "visual/Sampling.h"
+#include "core/Sampling.h"
 #include "math/GeometryUtils.h"
 #include "shape/Shape.h"
 

@@ -1,5 +1,5 @@
 #include "EnvLight.h"
-#include "visual/Scene.h"
+#include "core/Scene.h"
 
 GYT_NAMESPACE_BEGIN
 

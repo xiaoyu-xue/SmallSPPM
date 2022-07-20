@@ -31,7 +31,7 @@
  */
 
 #include "Accelerator.h"
-#include "visual/Primitive.h"
+#include "core/Primitive.h"
 #include "system/Memory.h"
 #include "common/Core.h"
 

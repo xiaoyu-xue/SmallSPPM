@@ -1,5 +1,5 @@
 #include "Camera.h"
-#include "visual/Film.h"
+#include "core/Film.h"
 
 GYT_NAMESPACE_BEGIN
 

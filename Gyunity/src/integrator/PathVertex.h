@@ -1,6 +1,6 @@
 #pragma once
 
-#include "visual/Intersection.h"
+#include "core/Intersection.h"
 #include "ForwardDecl.h"
 
 GYT_NAMESPACE_BEGIN

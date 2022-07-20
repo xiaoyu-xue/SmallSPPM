@@ -1,9 +1,9 @@
 #pragma once
 
 #include "common/Core.h"
-#include "visual/Scene.h"
-#include "visual/Intersection.h"
-#include "visual/Visibility.h"
+#include "core/Scene.h"
+#include "core/Intersection.h"
+#include "core/Visibility.h"
 #include "common/DebugUtils.h"
 
 GYT_NAMESPACE_BEGIN

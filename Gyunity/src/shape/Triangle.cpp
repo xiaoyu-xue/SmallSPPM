@@ -1,5 +1,5 @@
 #include "Triangle.h"
-#include "visual/Sampling.h"
+#include "core/Sampling.h"
 
 GYT_NAMESPACE_BEGIN
 

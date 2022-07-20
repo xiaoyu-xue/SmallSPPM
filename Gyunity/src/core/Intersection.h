@@ -4,7 +4,7 @@
 #include "math/Ray.h"
 #include "math/GeometryUtils.h"
 #include "material/Material.h"
-#include "visual/Medium.h"
+#include "core/Medium.h"
 #include "ForwardDecl.h"
 
 GYT_NAMESPACE_BEGIN

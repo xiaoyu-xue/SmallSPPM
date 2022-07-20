@@ -1,10 +1,10 @@
 #include "SPPM.h"
 #include "image/ImageIO.h"
-#include "visual/Scene.h"
+#include "core/Scene.h"
 #include "system/Threading.h"
 #include "light/Light.h"
 #include "bsdf/BSDF.h"
-#include "visual/Intersection.h"
+#include "core/Intersection.h"
 
 GYT_NAMESPACE_BEGIN
 

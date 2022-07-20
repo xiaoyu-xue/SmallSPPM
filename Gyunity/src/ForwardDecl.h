@@ -15,4 +15,7 @@ class BSDF;
 class Primitive;
 class PhaseFunction;
 class LightVertex;
+class Saimpler;
+class SimpleSampler;
+class Light;
 GYT_NAMESPACE_END

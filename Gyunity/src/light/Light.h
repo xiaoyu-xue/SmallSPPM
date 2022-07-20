@@ -1,7 +1,7 @@
 #pragma once
 
 #include "math/Linagl.h"
-#include "visual/Intersection.h"
+#include "core/Intersection.h"
 #include "shape/Shape.h"
 
 GYT_NAMESPACE_BEGIN

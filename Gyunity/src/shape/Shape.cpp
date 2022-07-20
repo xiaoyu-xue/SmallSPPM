@@ -1,5 +1,5 @@
 #include "Shape.h"
-#include "visual/Intersection.h"
+#include "core/Intersection.h"
 
 GYT_NAMESPACE_BEGIN
 

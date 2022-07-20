@@ -1,6 +1,6 @@
 #pragma once
 #include "common/Core.h"
-#include "visual\Scene.h"
+#include "core\Scene.h"
 #include "shape\sphere.h"
 #include "material\Diffuse.h"
 #include "material\Mirror.h"

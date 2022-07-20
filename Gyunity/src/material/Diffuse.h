@@ -3,7 +3,7 @@
 #include "Material.h"
 #include "texture/Texture.h"
 #include "bsdf/BSDF.h"
-#include "visual/Intersection.h"
+#include "core/Intersection.h"
 
 GYT_NAMESPACE_BEGIN
 

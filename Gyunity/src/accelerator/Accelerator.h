@@ -1,8 +1,8 @@
 #pragma once
 #include "common/Core.h"
 #include "math/Ray.h"
-#include "visual/Intersection.h"
-#include "visual/Primitive.h"
+#include "core/Intersection.h"
+#include "core/Primitive.h"
 #include "math/AABB.h"
 
 GYT_NAMESPACE_BEGIN

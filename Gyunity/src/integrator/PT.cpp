@@ -3,7 +3,7 @@
 #include "sampler/Sampler.h"
 #include "system/Memory.h"
 #include "common/DebugUtils.h"
-#include "visual/Intersection.h"
+#include "core/Intersection.h"
 
 GYT_NAMESPACE_BEGIN
 

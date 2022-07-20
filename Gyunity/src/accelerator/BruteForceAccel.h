@@ -1,7 +1,7 @@
 #pragma once
 #include "common/Core.h"
 #include "accelerator/Accelerator.h"
-#include "visual/Primitive.h"
+#include "core/Primitive.h"
 
 GYT_NAMESPACE_BEGIN
 

@@ -3,7 +3,7 @@
 #include "Ray.h"
 #include "numeric/NumericUtils.h"
 #include "AABB.h"
-#include "visual/Intersection.h"
+#include "core/Intersection.h"
 
 GYT_NAMESPACE_BEGIN
 

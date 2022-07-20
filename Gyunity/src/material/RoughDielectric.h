@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Material.h"
-#include "visual/Microfacet.h"
+#include "core/Microfacet.h"
 #include "texture/Texture.h"
 #include "bsdf/BSDF.h"
 

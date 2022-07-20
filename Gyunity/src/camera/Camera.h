@@ -3,9 +3,9 @@
 #include "common/Core.h"
 #include "math/Linagl.h"
 #include "math/Ray.h"
-#include "visual/Intersection.h"
+#include "core/Intersection.h"
 #include "math/Transform.h"
-#include "visual/Film.h"
+#include "core/Film.h"
 
 GYT_NAMESPACE_BEGIN
 

@@ -3,7 +3,7 @@
 #include "math/Linagl.h"
 #include "math/Ray.h"
 #include "math/Transform.h"
-#include "visual/Intersection.h"
+#include "core/Intersection.h"
 #include "bsdf/BSDF.h"
 
 

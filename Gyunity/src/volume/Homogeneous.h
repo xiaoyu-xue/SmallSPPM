@@ -1,6 +1,6 @@
 #pragma once
 
-#include "visual/Medium.h"
+#include "core/Medium.h"
 
 GYT_NAMESPACE_BEGIN
 

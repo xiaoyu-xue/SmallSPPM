@@ -1,7 +1,7 @@
 #include "Integrator.h"
-#include "visual/Medium.h"
-#include "visual/Visibility.h"
-#include "visual/Scene.h"
+#include "core/Medium.h"
+#include "core/Visibility.h"
+#include "core/Scene.h"
 #include "bsdf/BSDF.h"
 
 GYT_NAMESPACE_BEGIN

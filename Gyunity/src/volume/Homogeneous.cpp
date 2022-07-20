@@ -1,6 +1,6 @@
 #include "Homogeneous.h"
-#include "visual/Intersection.h"
-#include "visual/Scene.h"
+#include "core/Intersection.h"
+#include "core/Scene.h"
 #include <algorithm>
 GYT_NAMESPACE_BEGIN
 

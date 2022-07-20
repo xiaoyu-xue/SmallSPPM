@@ -2,10 +2,10 @@
 
 #include "math/Linagl.h"
 #include "common/Core.h"
-#include "visual/Intersection.h"
+#include "core/Intersection.h"
 #include "math/Transform.h"
-#include "visual/Sampling.h"
-#include "visual/Microfacet.h"
+#include "core/Sampling.h"
+#include "core/Microfacet.h"
 #include "system/Threading.h"
 #include "math/MathUtils.h"
 #include "math/Frame.h"
