@@ -3,5 +3,5 @@ This project's origin name is SmallSPPM since I have answered someones' question
 
 ## Build
 1. git clone --recursive https://github.com/xiaoyxue/Gyunity.git
-2. run init.cmd
+2. in Developer Command Prompt for VS to run init.cmd
 3. Open Gyunity.sln and build the solution
