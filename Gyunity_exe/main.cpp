@@ -509,7 +509,7 @@ void TestHashGrid() {
 	Rng rng;
 	std::vector<Vec3> points;
 	for (int i = 0; i < 12345; ++i) {
-		points.push_back(Vec3(rng.GetDouble(), rng.GetDouble(), rng.GetDouble()));
+		points.push_back(Vec3(rng.GetFloat(), rng.GetFloat(), rng.GetFloat()));
 	}
 	real searchRadius = 0.15;
 	HashGrid<int> hashGrid;

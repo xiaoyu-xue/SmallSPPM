@@ -14,11 +14,11 @@ public:
 		return mUniform(mRng);
 	}
 
-	double operator()(unsigned long long i) {
+	real operator()(unsigned long long i) {
 		return mUniform(mRng);
 	}
 
-	double GetDouble() {
+	real GetFloat() {
 		return mUniform(mRng);
 	}
 
@@ -123,7 +123,5 @@ inline uint32_t RNG::UniformUInt32() {
     uint32_t rot = (uint32_t)(oldstate >> 59u);
     return (xorshifted >> rot) | (xorshifted << ((~rot + 1u) & 31));
 }
-
-
 
 GYT_NAMESPACE_END

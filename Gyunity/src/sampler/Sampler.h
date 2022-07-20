@@ -2,10 +2,35 @@
 
 #include <memory>
 #include <random>
+#include "math/Linagl.h"
 #include "math/LowDiscrepency.h"
-#include "visual/Rng.h"
+#include "Rng.h"
 
 GYT_NAMESPACE_BEGIN
+
+class SimpleSampler {
+public:
+	SimpleSampler(int seed = 1234) : rng(seed) {}
+
+	real Get1D() {
+		return rng.GetFloat();
+	}
+
+	Vec2 Get2D() {
+		return Vec2(Get1D(), Get1D());
+	}
+
+	Vec3 Get3D() {
+		return Vec3(Get1D(), Get1D(), Get1D());
+	}
+
+	std::shared_ptr<SimpleSampler> Clone(uint32 seed) {
+		return std::make_shared<SimpleSampler>(seed);
+	}
+
+private:
+	Rng rng;
+};
 
 class Sampler {
 public:
@@ -27,16 +52,6 @@ public:
 	int GetCursor() const {
 		return mCursor;
 	}
-	/*
-	void assert_cursor_pos(int cursor) const {
-		assert_info(
-			this->cursor == cursor,
-			std::string("Cursor position should be " + std::to_string(cursor) +
-				" instead of " + std::to_string(this->cursor)));
-	}*/
-
-
-
 };
 
 class RandomStateSequence : public StateSequence {

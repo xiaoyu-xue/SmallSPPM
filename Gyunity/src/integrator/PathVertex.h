@@ -1,7 +1,7 @@
 #pragma once
 
 #include "visual/Intersection.h"
-
+#include "ForwardDecl.h"
 
 GYT_NAMESPACE_BEGIN
 
@@ -13,6 +13,8 @@ public:
 	Vec3 mThroughput;
 	real mPdfFwd = 0.0, mPdfPrev = 0.0;
 	bool mIsDelta = false;
+	Camera* mpCamera;
+	Light* mpLight;
 };
 
 

@@ -174,6 +174,8 @@
   <ItemGroup>
     <ClCompile Include="src\common\Interfaces.cpp" />
     <ClCompile Include="src\common\Logger.cpp" />
+    <ClCompile Include="src\integrator\BDPT.cpp" />
+    <ClCompile Include="src\integrator\BidirectionalRenderer.cpp" />
     <ClCompile Include="src\math\AABB.cpp" />
     <ClCompile Include="src\bsdf\BSDF.cpp" />
     <ClCompile Include="src\accelerator\BVHAccel.cpp" />
@@ -223,6 +225,8 @@
     <ClInclude Include="src\common\vld.h" />
     <ClInclude Include="src\common\vld_def.h" />
     <ClInclude Include="src\ForwardDecl.h" />
+    <ClInclude Include="src\integrator\BDPT.h" />
+    <ClInclude Include="src\integrator\BidirectionalRenderer.h" />
     <ClInclude Include="src\integrator\LT.h" />
     <ClInclude Include="src\integrator\PathVertex.h" />
     <ClInclude Include="src\math\AABB.h" />
@@ -275,7 +279,7 @@
     <ClInclude Include="src\visual\Primitive.h" />
     <ClInclude Include="src\math\Ray.h" />
     <ClInclude Include="src\visual\Renderer.h" />
-    <ClInclude Include="src\visual\Rng.h" />
+    <ClInclude Include="src\sampler\Rng.h" />
     <ClInclude Include="src\material\Roughness.h" />
     <ClInclude Include="src\material\Plastic.h" />
     <ClInclude Include="src\material\RoughDielectric.h" />
