@@ -8,6 +8,12 @@
 
 GYT_NAMESPACE_BEGIN
 
+class Sampler {
+public:
+	virtual real Sample(uint32 d, uint64 i) = 0;
+	virtual std::shared_ptr<Sampler> Clone(uint32 seed) = 0;
+};
+
 class SimpleSampler {
 public:
 	SimpleSampler(int seed = 1234) : rng(seed) {}
@@ -30,12 +36,6 @@ public:
 
 private:
 	Rng rng;
-};
-
-class Sampler {
-public:
-	virtual real Sample(unsigned int d, unsigned long long i) = 0;
-	virtual std::shared_ptr<Sampler> Clone(uint32 seed) = 0;
 };
 
 class StateSequence {

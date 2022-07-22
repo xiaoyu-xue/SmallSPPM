@@ -107,6 +107,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)src;$(SolutionDir)external;$(SolutionDir)external\tbb\include;$(SolutionDir)external\spdlog\include;$(SolutionDir)external\spdlog\include\spdlog</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

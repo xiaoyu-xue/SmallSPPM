@@ -18,4 +18,6 @@ class LightVertex;
 class Saimpler;
 class SimpleSampler;
 class Light;
+class PathVertex;
+
 GYT_NAMESPACE_END

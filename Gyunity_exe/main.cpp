@@ -46,6 +46,8 @@
 #include "common/Config.h"
 #include <windows.h>
 #include <cstdlib>
+#include "integrator/BDPT.h"
+
 using namespace Gyunity;
 
 #define _CRTDBG_MAP_ALLOC
@@ -826,22 +828,45 @@ void RenderAdScene(int idx, real theta) {
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	renderer->Render();
 
-	//{
-	//	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
-	//	for (int i = idx; i <= 360; ++i) {
-	//		real theta = i;
-	//		GYT_Print("\n");
-	//		GYT_Print("\nLoad Scene ...\n");
-	//		GYT_Print("Frame: {} \n", i);
-	//		AdBoardSceneV2::ChangePrimitive(scene, theta);
-	//		std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
-	//		scene->SetAccelerator(accelerator);
-	//		scene->Initialize();
-	//		film->SetFileName("Result2/" + std::to_string(i) + ".png");
-	//		renderer->Render();
-	//	}
-	//}
+}
 
+
+void TestBDPT(int argc, char* argv[]) {
+
+
+	int resX = 1024, resY = 1024;
+	int nIterations = (argc == 2) ? atol(argv[1]) : 256;
+
+	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY, new BoxFilter()));
+	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
+	Vec3 camPos(0, 0, 3);
+	Vec3 lookAt(0, 0, 0);
+	Vec3 up(0, 1, 0);
+	real filmDis = 1;
+	real fovy = 53.13010235415597f;
+	std::shared_ptr<Camera> camera = std::shared_ptr<Camera>(new PinHoleCamera(film, camPos, lookAt, up, fovy, filmDis));
+	std::shared_ptr<SimpleSampler> pSimpleSampler = std::make_shared<SimpleSampler>(1234);
+
+	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
+	std::shared_ptr<Sampler> regularHaltonSampler = std::shared_ptr<Sampler>(new RegularHaltonSampler());;
+	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
+
+	std::shared_ptr<Integrator> integrator = std::make_shared<BDPT>(randomSampler, 5, 4, false, false);
+
+	GYT_Print("Load Scene ...\n");
+	SimpleCornellBox::SetScene(scene);
+
+	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
+	scene->SetAccelerator(accelerator);
+
+	scene->Initialize();
+	film->SetFileName("./Result/BDPT2.bmp");
+	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
+	clock_t begin = clock();
+	renderer->Render();
+
+	clock_t end = clock();
+	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
 
 }
 
@@ -850,7 +875,8 @@ int main(int argc, char *argv[]) {
 
 	std::cout << GGXDistribution::RoughnessToAlpha(0.118) << std::endl;
 
-	//RenderAdBoard(argc, argv);
+
+	TestBDPT(argc, argv);
 	//TestLightTracing(argc, argv);
 	//TestPathTracing2(argc, argv);
 	//TestSPPM6(argc, argv);
@@ -861,13 +887,13 @@ int main(int argc, char *argv[]) {
 	//TestTransmittance();
 	
 
-	clock_t begin = clock();
-	for (int i = 0; i <= 360; i++) {
-		GYT_Print("\nFrame: {}\n", i);
-		RenderAdScene(i, (real)i);
-	}
-	clock_t end = clock();
-	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+	//clock_t begin = clock();
+	//for (int i = 0; i <= 360; i++) {
+	//	GYT_Print("\nFrame: {}\n", i);
+	//	RenderAdScene(i, (real)i);
+	//}
+	//clock_t end = clock();
+	//std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
 
  
 	//RenderAdScene(0, 0);

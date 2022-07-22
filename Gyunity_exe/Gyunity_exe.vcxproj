@@ -116,7 +116,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Gyunity\src;$(SolutionDir)external;$(SolutionDir)external\tbb\include;$(SolutionDir)external\spdlog\include;$(SolutionDir)external\spdlog\include\spdlog</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Gyunity\src;$(SolutionDir)external;$(SolutionDir)external\tbb\include;$(SolutionDir)external\spdlog\include;$(SolutionDir)external\spdlog\include\spdlog;$(SolutionDir)external\lib\vld.lib</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DISABLE_EXTENDED_ALIGNED_STORAGE;__TBB_NO_IMPLICIT_LINKAGE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>

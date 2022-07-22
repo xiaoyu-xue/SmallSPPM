@@ -79,7 +79,7 @@ Vec3 BSDF::Sample(const Vec3& wo, Vec3* wi, real* pdf, const Vec3& rand, Scatter
 
 	*pdf = 0;
 
-	Vec3 f = bxdf->Sample(woLocal, &wiLocal, pdf, Vec3(rand[0], rand[1], rand[2]));
+	Vec3 f = bxdf->Sample(woLocal, &wiLocal, pdf, Vec3(rand.x, rand.y, rand.z));
 	*wi = LocalToWorld(wiLocal);
 
 	for (int i = 0; i < mBsdfCnt; ++i) {
