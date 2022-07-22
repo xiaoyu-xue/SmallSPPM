@@ -822,7 +822,7 @@ void RenderAdScene(int idx, real theta) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("Result2/" + std::to_string(idx) + ".png");
+	film->SetFileName("./Result/" + std::to_string(idx) + ".png");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	renderer->Render();
 

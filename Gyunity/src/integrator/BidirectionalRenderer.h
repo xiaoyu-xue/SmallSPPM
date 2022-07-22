@@ -35,7 +35,10 @@ private:
 class BidirectionalRenderer {
 public:
 	static int GenerateLightPath(const Scene& scene, SimpleSampler& sampler, std::vector<PathVertex>& LightPath, int maxdepth);
+
 	static int GenerateCameraPath(const Camera& camera, Sampler& sampler, std::vector<PathVertex>& CameraPath, const Ray& cameraRay, int maxdepth);
+
+	real ConvertSolidToArea(real pdfW, const PathVertex& Vertex, const PathVertex& nxt);
 };
 
 GYT_NAMESPACE_END
