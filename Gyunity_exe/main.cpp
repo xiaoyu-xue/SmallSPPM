@@ -113,7 +113,7 @@ void TestSppm(int argc, char* argv[]) {
 	//std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, integrator, film));
 	//renderer->Render();
 	//clock_t end = clock();
-	//std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+	//std::cout << "\ncost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
 }
 
 void TestSPPM2(int argc, char* argv[]) {
@@ -224,7 +224,7 @@ void TestSPPM2(int argc, char* argv[]) {
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	renderer->Render();
 	clock_t end = clock();
-	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+	std::cout << "\ncost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
 }
 
 void TestSPPM3(int argc, char* argv[]) {
@@ -377,7 +377,7 @@ void TestSPPM3(int argc, char* argv[]) {
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	renderer->Render();
 	clock_t end = clock();
-	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+	std::cout << "\ncost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
 }
 
 void TestProjection() {
@@ -454,7 +454,7 @@ void TestSPPM4(int argc, char* argv[]) {
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	renderer->Render();
 	clock_t end = clock();
-	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+	std::cout << "\ncost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
 
 }
 
@@ -503,7 +503,7 @@ void TestSPPM5(int argc, char* argv[]) {
 	clock_t begin = clock();
 	renderer->Render();
 	clock_t end = clock();
-	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+	std::cout << "\ncost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
 
 }
 
@@ -588,7 +588,7 @@ void TestPathTracing(int argc, char* argv[]) {
 	clock_t begin = clock();
 	renderer->Render();
 	clock_t end = clock();
-	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+	std::cout << "\ncost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
 }
 
 void TestSPPM6(int argc, char* argv[]) {
@@ -633,7 +633,7 @@ void TestSPPM6(int argc, char* argv[]) {
 	clock_t begin = clock();
 	renderer->Render();
 	clock_t end = clock();
-	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+	std::cout << "\ncost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
 
 }
 
@@ -678,7 +678,7 @@ void TestVolPathTracing(int argc, char* argv[]) {
 	clock_t begin = clock();
 	renderer->Render();
 	clock_t end = clock();
-	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+	std::cout << "\ncost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
 }
 
 void TestTransmittance() {
@@ -782,7 +782,7 @@ void TestLightTracing(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("CornellBoxLT16.bmp");
+	film->SetFileName("./Result/LT.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
@@ -791,7 +791,7 @@ void TestLightTracing(int argc, char* argv[]) {
 
 
 	clock_t end = clock();
-	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+	std::cout << "\ncost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
 
 }
 
@@ -851,7 +851,7 @@ void TestBDPT(int argc, char* argv[]) {
 	std::shared_ptr<Sampler> regularHaltonSampler = std::shared_ptr<Sampler>(new RegularHaltonSampler());;
 	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
 
-	std::shared_ptr<Integrator> integrator = std::make_shared<BDPT>(randomSampler, 5, 4, false, false);
+	std::shared_ptr<Integrator> integrator = std::make_shared<BDPT>(randomSampler, 10, 1, false, false);
 
 	GYT_Print("Load Scene ...\n");
 	SimpleCornellBox::SetScene(scene);
@@ -860,13 +860,13 @@ void TestBDPT(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("./Result/BDPT2.bmp");
+	film->SetFileName("./Result/PT1.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
 
 	clock_t end = clock();
-	std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+	std::cout << "\ncost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
 
 }
 
@@ -893,7 +893,7 @@ int main(int argc, char *argv[]) {
 	//	RenderAdScene(i, (real)i);
 	//}
 	//clock_t end = clock();
-	//std::cout << "cost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+	//std::cout << "\ncost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
 
  
 	//RenderAdScene(0, 0);

@@ -16,7 +16,6 @@ int Gyunity::BidirectionalRenderer::GenerateLightPath(const Scene& scene, StateS
 	real pdfPos, pdfDir;
 	Vec3 Le = pLight->Emission();
 	pLight->SampleOnLight(&isect, &dir, &pdfPos, &pdfDir, Vec2(rand(), rand()), Vec2(rand(), rand()));
-	Ray ray(isect.mPos + dir * RayEps, dir);
 	lightPath[0].mIsect.mPos = isect.mPos;
 	lightPath[0].mIsect.mNormal = isect.mNormal;
 	lightPath[0].mThroughput = Le;
@@ -24,9 +23,10 @@ int Gyunity::BidirectionalRenderer::GenerateLightPath(const Scene& scene, StateS
 	lightPath[0].mIsect.mIsDelta = false;
 	lightPath[0].mpLight = pLight;
 	real cosTheta = dir.Norm().Dot(isect.mNormal);
-	Vec3 throughPut = lightPath[0].mThroughput * std::abs(cosTheta) / pdfPos / pdfDir / pdfLight;
-	int nLightVertices = BidirectionalRenderer::Trace(scene, arena, rand, ray, throughPut, pdfDir, lightPath, 1, maxDepth, TransportMode::Importance);
-	//int nLightVertices = BidirectionalRenderer::TraceV2(scene, arena, rand, ray, 1, throughPut, pdfDir, lightPath, maxDepth, TransportMode::Importance);
+	Vec3 throughPut = Le * std::abs(cosTheta) / pdfPos / pdfDir / pdfLight;
+	Ray ray(isect.mPos + dir * RayEps, dir);
+	//int nLightVertices = BidirectionalRenderer::Trace(scene, arena, rand, ray, throughPut, pdfDir, lightPath, 1, maxDepth, TransportMode::Importance);
+	int nLightVertices = BidirectionalRenderer::TraceV2(scene, arena, rand, ray, 1, throughPut, pdfDir, lightPath, maxDepth, TransportMode::Importance);
 	return nLightVertices;
 }
 
@@ -76,6 +76,7 @@ int BidirectionalRenderer::Trace(
 		path[bounce].mIsDelta = isect.mpBSDF->IsDelta();
 		path[bounce].mThroughput = throughput;
 		path[bounce].mPdfFwd = ConvertSolidToArea(pdfW, prev, vertex);
+		//path[bounce].mPdfFwd = pdfW;
 		++bounce;
 		if (bounce >= maxDepth) break;
 
