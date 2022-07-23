@@ -42,6 +42,7 @@ public:
 		int						maxdepth);
 
 	static int GenerateCameraPath(
+		const Scene				&scene,
 		const Camera			&camera, 
 		StateSequence			&rand, 
 		MemoryPool				&arena, 
@@ -50,29 +51,16 @@ public:
 		int						maxdepth);
 
 	static int Trace(
-		const Scene				&scene, 
-		MemoryPool				&arena, 
-		StateSequence			&rand, 
-		const Ray				&ray, 
-		Vec3					throughput, 
-		real					pdfFwd,
-		std::vector<PathVertex>	&path, 
-		int						depth, 
-		int						maxDepth, 
-		TransportMode			mode);
-
-	static int TraceV2(
-		const Scene				&scene, 
-		MemoryPool				&arena, 
+		const Scene				&scene,
+		MemoryPool				&arena,
 		StateSequence			&rand,
-		const Ray				&r, 
-		int						depth, 
-		Vec3					throughput, 
-		real					pdfFwd, 
-		std::vector<PathVertex>	&lightPath, 
-		int						maxDepth, 
+		const Ray				&r,
+		int						depth,
+		Vec3					throughput,
+		real					pdfFwd,
+		std::vector<PathVertex>	&lightPath,
+		int						maxDepth,
 		TransportMode			mode);
-
 
 	static real ConvertSolidToArea(
 		real				pdfW, 

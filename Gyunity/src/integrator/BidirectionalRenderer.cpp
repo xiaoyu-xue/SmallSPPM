@@ -7,31 +7,42 @@
 
 GYT_NAMESPACE_BEGIN
 
-int Gyunity::BidirectionalRenderer::GenerateLightPath(const Scene& scene, StateSequence& rand, MemoryPool& arena, std::vector<PathVertex>&lightPath, int maxDepth)
+int Gyunity::BidirectionalRenderer::GenerateLightPath(
+	const Scene				&scene, 
+	StateSequence			&rand,
+	MemoryPool				&arena, 
+	std::vector<PathVertex>	&lightPath, 
+	int						maxDepth)
 {
 	real pdfLight;
-	Light* pLight = scene.SampleOneLight(&pdfLight, rand());
-	Intersection isect;
+	real pdfA;
+	real pdfDir;
+	Vec3 Le;
 	Vec3 dir;
-	real pdfPos, pdfDir;
-	Vec3 Le = pLight->Emission();
-	pLight->SampleOnLight(&isect, &dir, &pdfPos, &pdfDir, Vec2(rand(), rand()), Vec2(rand(), rand()));
-	lightPath[0].mIsect.mPos = isect.mPos;
-	lightPath[0].mIsect.mNormal = isect.mNormal;
+	Intersection isect;
+	Light* light = scene.SampleOneLight(&pdfLight, rand());
+	if (light->IsAreaLight()) {
+		Le = light->Emission();
+		light->SampleOnLight(&isect, &dir, &pdfA, &pdfDir, Vec2(rand(), rand()), Vec2(rand(), rand()));
+	}
+	else {
+		Le = light->Emission();
+		light->SampleLight(&isect, &dir, &pdfA, &pdfDir, Vec2(rand(), rand()), Vec2(rand(), rand()));
+	}
+	lightPath[0].mIsect = isect;
+	lightPath[0].mPdfFwd = pdfA;
 	lightPath[0].mThroughput = Le;
-	lightPath[0].mPdfFwd = pdfPos;
-	lightPath[0].mIsect.mIsDelta = false;
-	lightPath[0].mpLight = pLight;
-	real cosTheta = dir.Norm().Dot(isect.mNormal);
-	Vec3 throughPut = Le * std::abs(cosTheta) / pdfPos / pdfDir / pdfLight;
+	lightPath[0].mIsDelta = light->IsDeltaLight();
+	real cosTheta = std::abs(Dot(isect.mNormal, dir));
+	Vec3 throughput = Le * cosTheta / pdfLight / pdfA / pdfDir;
 	Ray ray(isect.mPos + dir * RayEps, dir);
-	//int nLightVertices = BidirectionalRenderer::Trace(scene, arena, rand, ray, throughPut, pdfDir, lightPath, 1, maxDepth, TransportMode::Importance);
-	int nLightVertices = BidirectionalRenderer::TraceV2(scene, arena, rand, ray, 1, throughPut, pdfDir, lightPath, maxDepth, TransportMode::Importance);
-	return nLightVertices;
+
+	int nVertices = BidirectionalRenderer::Trace(scene, arena, rand, ray, 1, throughput, pdfDir, lightPath, maxDepth, TransportMode::Importance);
+	return nVertices;
 }
 
 
-int BidirectionalRenderer::GenerateCameraPath(const Camera& camera, StateSequence& rand, MemoryPool& arena, std::vector<PathVertex>& cameraPath, const Ray& cameraRay, int maxdDpth)
+int BidirectionalRenderer::GenerateCameraPath(const Scene &scene, const Camera& camera, StateSequence& rand, MemoryPool& arena, std::vector<PathVertex>& cameraPath, const Ray& cameraRay, int maxdDpth)
 {
 	if (maxdDpth == 0) return 0;
 	Vec3 throughput(1.f, 1.f, 1.f);
@@ -42,71 +53,21 @@ int BidirectionalRenderer::GenerateCameraPath(const Camera& camera, StateSequenc
 	real pdfDir = camera.PdfDir(cameraRay);
 	const Camera* pCam = &camera;
 	cameraPath[0].mpCamera = const_cast<Camera*>(pCam);
-	
-	return 1;
+	int nCameraVertices = BidirectionalRenderer::Trace(scene, arena, rand, cameraRay, 1, throughput, pdfDir, cameraPath, maxdDpth, TransportMode::Radiance);
+	return nCameraVertices;
 }
+
+
 
 int BidirectionalRenderer::Trace(
 	const Scene				&scene,
 	MemoryPool				&arena,
 	StateSequence			&rand,
-	const Ray				&ray,
+	const Ray				&r,
+	int						depth,
 	Vec3					throughput,
 	real					pdfFwd,
 	std::vector<PathVertex>	&path,
-	int						depth,
-	int						maxDepth,
-	TransportMode			mode)
-{
-	Ray r = ray;
-	int bounce = depth;
-	real pdfW = pdfFwd;
-	while (1) {
-		PathVertex& prev = path[bounce - 1];
-		PathVertex& vertex = path[bounce];
-		Intersection& isect = path[bounce].mIsect;
-
-		if (!scene.Intersect(r, &isect))
-		{
-			return bounce - 1;
-		}
-		scene.QueryIntersectionInfo(r, &isect);
-		isect.ComputeScatteringFunction(arena, mode);
-
-		path[bounce].mIsDelta = isect.mpBSDF->IsDelta();
-		path[bounce].mThroughput = throughput;
-		path[bounce].mPdfFwd = ConvertSolidToArea(pdfW, prev, vertex);
-		//path[bounce].mPdfFwd = pdfW;
-		++bounce;
-		if (bounce >= maxDepth) break;
-
-
-		Vec3 wo;
-		Vec3 f = isect.mpBSDF->Sample(-1 * r.mDir, &wo, &pdfW, Vec3(rand(), rand(), rand()));
-		wo.Normalize();
-		throughput = throughput * f * (std::abs(wo.Dot(isect.mNormal))) / pdfW;
-
-		real pdfWPrev = isect.mpBSDF->Pdf(wo, -1 * r.mDir);
-		prev.mPdfPrev = ConvertSolidToArea(pdfWPrev, vertex, prev);
-
-		if (isect.mIsDelta) {
-			pdfW = pdfWPrev = 0;
-		}
-
-		r = Ray(isect.mPos + wo * RayEps, wo);
-	}
-	return bounce - 1;
-}
-
-int BidirectionalRenderer::TraceV2(
-	const Scene				&scene,
-	MemoryPool				&arena, 
-	StateSequence			&rand,
-	const Ray				&r, 
-	int						depth, 
-	Vec3					throughput, 
-	real					pdfFwd, 
-	std::vector<PathVertex>	&path, 
 	int						maxDepth,
 	TransportMode			mode)
 {
@@ -124,28 +85,22 @@ int BidirectionalRenderer::TraceV2(
 		isect.ComputeScatteringFunction(arena, mode);
 
 		path[bounce].mIsDelta = isect.mpBSDF->IsDelta();
-		path[bounce].mPdfFwd = ConvertSolidToArea(pdfDir, prev, vertex);;
+		path[bounce].mPdfFwd = BidirectionalRenderer::ConvertSolidToArea(pdfDir, prev, vertex);
 		path[bounce].mThroughput = throughput;
 
 		bounce++;
 		if (bounce >= maxDepth) break;
 
-		Vec3 wo;
-		Vec3 f = isect.mpBSDF->Sample(-1 * ray.mDir, &wo, &pdfDir, Vec3(rand(), rand(), rand()));
-		throughput = throughput * f * std::abs(Dot(wo, isect.mNormal)) / pdfDir;
+		Vec3 wi;
+		Vec3 f = isect.mpBSDF->Sample(-1 * ray.mDir, &wi, &pdfDir, Vec3(rand(), rand(), rand()));
+		
+		throughput = throughput * f * std::abs(Dot(wi, isect.mNormal)) / pdfDir;
+		real pdfWPrev = isect.mpBSDF->Pdf(wi, -1 * ray.mDir);
+		prev.mPdfPrev = BidirectionalRenderer::ConvertSolidToArea(pdfWPrev, vertex, prev);
 
-		real pdfWPrev = isect.mpBSDF->Pdf(wo, -1 * r.mDir);
-		prev.mPdfPrev = ConvertSolidToArea(pdfWPrev, vertex, prev);
-
-		if (isect.mIsDelta) {
-			pdfDir = pdfWPrev = 0;
-		}
-
-		ray = Ray(isect.mPos + wo * RayEps, wo);
-
-
+		ray = Ray(isect.mPos + wi * RayEps, wi);
 	}
-	return bounce - 1;
+	return bounce;
 }
 
 real BidirectionalRenderer::ConvertSolidToArea(real pdfW, const PathVertex& vertex, const PathVertex& nxt)

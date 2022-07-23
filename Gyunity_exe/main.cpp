@@ -548,49 +548,6 @@ void TestHashGrid() {
 
 }
 
-void TestPathTracing(int argc, char* argv[]) {
-
-	int resX = 1024, resY = 1024;
-
-	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY, new BoxFilter()));
-	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
-	Vec3 camPos(0, 0, 3);
-	Vec3 cz(0, 0, -1);
-	Vec3 cx = Vec3(1, 0, 0);
-	Vec3 cy = Vec3(0, 1, 0);
-	real filmDis = 1;
-	real fovy = 53.13010235415597f;
-
-	std::shared_ptr<Camera> camera = std::shared_ptr<Camera>(new PinHoleCamera(film, camPos, cz, cx, cy, fovy, filmDis));
-	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
-	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
-	
-	std::shared_ptr<Sampler> sobolSampler = std::shared_ptr<Sampler>(new SobolSampler());
-	std::shared_ptr<SamplerEnum> sobolSamplerEnum = std::shared_ptr<SamplerEnum>(new SobolEnum(resX, resY));
-
-	//std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(100, 20, sobolSampler, sobolSamplerEnum));
-	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new PathTracing(100, 10, randomSampler, samplerEnum));
-
-	fprintf(stderr, "Load Scene ...\n");
-
-	//CornellBoxMesh::SetScene(scene);
-	//CornellBoxTriangle2::SetScene(scene);
-	EnvironmentMapScene::SetScene(scene);
-	//CornellBoxHeartSurface::SetScene(scene);
-	//HeartSurfaceEnvironmentMapScene::SetScene(scene);
-
-	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
-	scene->SetAccelerator(accelerator);
-
-	scene->Initialize();
-	film->SetFileName("CornellBoxPtEnvmap.bmp");
-	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
-	clock_t begin = clock();
-	renderer->Render();
-	clock_t end = clock();
-	std::cout << "\ncost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
-}
-
 void TestSPPM6(int argc, char* argv[]) {
 
 
@@ -748,54 +705,6 @@ void TestPathTracing2(int argc, char* argv[]) {
 	GYT_Print("\nCost time: {:.6f} min\n", (end - begin) / 1000.0 / 60.0);
 }
 
-
-void TestLightTracing(int argc, char* argv[]) {
-
-
-	int resX = 1024, resY = 1024;
-	int nIterations = (argc == 2) ? atol(argv[1]) : 256;
-
-	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY, new BoxFilter()));
-	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
-	Vec3 camPos(0, 0, 3);
-	Vec3 lookAt(0, 0, 0);
-	Vec3 up(0, 1, 0);
-	real filmDis = 1;
-	real fovy = 53.13010235415597f;
-
-	std::shared_ptr<Camera> camera = std::shared_ptr<Camera>(new PinHoleCamera(film, camPos, lookAt, up, fovy, filmDis));
-	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
-	std::shared_ptr<Sampler> haltonSampler = std::shared_ptr<Sampler>(new HaltonSampler(resX, resY));
-	std::shared_ptr<Sampler> regularHaltonSampler = std::shared_ptr<Sampler>(new RegularHaltonSampler());;
-	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
-	std::shared_ptr<SamplerEnum> haltonSamplerEnum = std::shared_ptr<SamplerEnum>(new HaltonEnum((unsigned)resX, (unsigned)resY));
-
-	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new LightTracing(randomSampler, 15, 512));
-
-	GYT_Print("Load Scene ...\n");
-	CornellBoxMesh::SetScene(scene);
-	//CornellBoxMeshEmpty::SetScene(scene);
-	//CornellBoxDiffuseBunny::SetScene(scene);
-	//CornellBoxMeshWithSlope::SetScene(scene);
-
-	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
-	scene->SetAccelerator(accelerator);
-
-	scene->Initialize();
-	film->SetFileName("./Result/LT.bmp");
-	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
-	clock_t begin = clock();
-	renderer->Render();
-
-
-
-
-	clock_t end = clock();
-	std::cout << "\ncost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
-
-}
-
-
 void RenderAdScene(int idx, real theta) {
 
 	int resX = 2160, resY = 2160;
@@ -830,8 +739,7 @@ void RenderAdScene(int idx, real theta) {
 
 }
 
-
-void TestBDPT(int argc, char* argv[]) {
+void TestLightTracing(int argc, char* argv[]) {
 
 
 	int resX = 1024, resY = 1024;
@@ -844,14 +752,45 @@ void TestBDPT(int argc, char* argv[]) {
 	Vec3 up(0, 1, 0);
 	real filmDis = 1;
 	real fovy = 53.13010235415597f;
+
 	std::shared_ptr<Camera> camera = std::shared_ptr<Camera>(new PinHoleCamera(film, camPos, lookAt, up, fovy, filmDis));
-	std::shared_ptr<SimpleSampler> pSimpleSampler = std::make_shared<SimpleSampler>(1234);
+	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
+
+
+	std::shared_ptr<Integrator> integrator = std::shared_ptr<Integrator>(new LightTracing(randomSampler, 15, 512));
+
+	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
+	scene->SetAccelerator(accelerator);
+
+	scene->Initialize();
+	film->SetFileName("./Result/LT2.bmp");
+	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
+	clock_t begin = clock();
+	renderer->Render();
+
+	clock_t end = clock();
+	std::cout << "\ncost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+
+}
+
+void TestPathTracing(int argc, char* argv[]) {
+
+	int resX = 1024, resY = 1024;
+	int nIterations = (argc == 2) ? atol(argv[1]) : 256;
+
+	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY, new BoxFilter()));
+	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
+	Vec3 camPos(0, 0, 3);
+	Vec3 lookAt(0, 0, 0);
+	Vec3 up(0, 1, 0);
+	real filmDis = 1;
+	real fovy = 53.13010235415597f;
+	std::shared_ptr<Camera> camera = std::shared_ptr<Camera>(new PinHoleCamera(film, camPos, lookAt, up, fovy, filmDis));
 
 	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
-	std::shared_ptr<Sampler> regularHaltonSampler = std::shared_ptr<Sampler>(new RegularHaltonSampler());;
 	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
 
-	std::shared_ptr<Integrator> integrator = std::make_shared<BDPT>(randomSampler, 10, 1, false, false);
+	std::shared_ptr<Integrator> integrator = std::make_shared<PathTracing>(512, 15, randomSampler, samplerEnum);
 
 	GYT_Print("Load Scene ...\n");
 	SimpleCornellBox::SetScene(scene);
@@ -860,7 +799,44 @@ void TestBDPT(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("./Result/PT1.bmp");
+	film->SetFileName("./Result/PT.bmp");
+	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
+	clock_t begin = clock();
+	renderer->Render();
+
+	clock_t end = clock();
+	std::cout << "\ncost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
+}
+
+
+
+void TestBDPT(int argc, char* argv[]) {
+
+	int resX = 1024, resY = 1024;
+	int nIterations = (argc == 2) ? atol(argv[1]) : 256;
+
+	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY, new BoxFilter()));
+	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
+	Vec3 camPos(0, 0, 3);
+	Vec3 lookAt(0, 0, 0);
+	Vec3 up(0, 1, 0);
+	real filmDis = 1;
+	real fovy = 53.13010235415597f;
+	std::shared_ptr<Camera> camera = std::shared_ptr<Camera>(new PinHoleCamera(film, camPos, lookAt, up, fovy, filmDis));
+
+	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
+	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
+
+	std::shared_ptr<Integrator> integrator = std::make_shared<BDPT>(randomSampler, samplerEnum, 16, 128, false, false);
+
+	GYT_Print("Load Scene ...\n");
+	SimpleCornellBox::SetScene(scene);
+
+	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
+	scene->SetAccelerator(accelerator);
+
+	scene->Initialize();
+	film->SetFileName("./Result/BDPT5.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
@@ -877,6 +853,7 @@ int main(int argc, char *argv[]) {
 
 
 	TestBDPT(argc, argv);
+	//TestPathTracing(argc, argv);
 	//TestLightTracing(argc, argv);
 	//TestPathTracing2(argc, argv);
 	//TestSPPM6(argc, argv);
