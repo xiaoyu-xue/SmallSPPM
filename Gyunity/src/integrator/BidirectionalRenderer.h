@@ -72,7 +72,34 @@ public:
 		const Vec3		&pointA, 
 		const Vec3		&pointB);
 
+	static real G(
+		const PathVertex& vertexA, 
+		const PathVertex& vertexB);
 
+	static real MISWeight(
+		const Scene				&scene,
+		StateSequence			&rand,
+		std::vector<PathVertex>	&lightPath, 
+		std::vector<PathVertex>	&caameraPath,
+		int						s, 
+		int						t, 
+		PathVertex				&sampled);
+
+	static real MISWeightV2(
+		const Scene				&scene, 
+		StateSequence			&rand, 
+		std::vector<PathVertex>	&lightPath, 
+		std::vector<PathVertex>	&cameraPath, 
+		int						s, 
+		int						t, 
+		PathVertex				&sampled);
+
+	static real PathPdf(
+		const Scene						&scene, 
+		StateSequence					&rand, 
+		const std::vector<PathVertex>	&path, 
+		int								s, 
+		int								t);
 };
 
 GYT_NAMESPACE_END

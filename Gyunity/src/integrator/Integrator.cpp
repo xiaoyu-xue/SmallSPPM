@@ -54,7 +54,6 @@ Vec3 Integrator::DirectIllumination(const Scene& scene, const Intersection& isec
 				L1 = Li * Tr * f * cosTheta / pdf;
 			}
 		}
-
 	}
 	//Sample BSDF
 	if (!light->IsDeltaLight()) {

@@ -799,7 +799,7 @@ void TestPathTracing(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("./Result/PT.bmp");
+	film->SetFileName("./Result/PT3.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
@@ -827,7 +827,7 @@ void TestBDPT(int argc, char* argv[]) {
 	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
 	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
 
-	std::shared_ptr<Integrator> integrator = std::make_shared<BDPT>(randomSampler, samplerEnum, 16, 128, false, false);
+	std::shared_ptr<Integrator> integrator = std::make_shared<BDPT>(randomSampler, samplerEnum, 15, 64, false, false);
 
 	GYT_Print("Load Scene ...\n");
 	SimpleCornellBox::SetScene(scene);
@@ -836,7 +836,7 @@ void TestBDPT(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("./Result/BDPT5.bmp");
+	film->SetFileName("./Result/BDPT6.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
@@ -855,6 +855,7 @@ int main(int argc, char *argv[]) {
 	TestBDPT(argc, argv);
 	//TestPathTracing(argc, argv);
 	//TestLightTracing(argc, argv);
+
 	//TestPathTracing2(argc, argv);
 	//TestSPPM6(argc, argv);
 	//TestPathTracing2(argc, argv);

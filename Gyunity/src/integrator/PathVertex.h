@@ -13,6 +13,7 @@ public:
 	Vec3 mThroughput;
 	real mPdfFwd = 0.0, mPdfPrev = 0.0;
 	bool mIsDelta = false;
+	Vec3 wi;
 	Camera* mpCamera;
 	Light* mpLight;
 };

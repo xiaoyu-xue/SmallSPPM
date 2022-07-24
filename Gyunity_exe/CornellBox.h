@@ -2118,11 +2118,11 @@ public:
 		scene->AddPrimitive(topTriangle2);
 
 
-		//std::shared_ptr<Mesh> mesh = std::shared_ptr<Mesh>(new Mesh());
-		//mesh->LoadFromFile("..\\resources\\meshes\\bunny3.obj");
-		//mesh->SetMaterial(glassMeshMaterial);
-		//Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
-		//scene->AddMesh(*mesh, transform);
+		std::shared_ptr<Mesh> mesh = std::shared_ptr<Mesh>(new Mesh());
+		mesh->LoadFromFile("..\\resources\\meshes\\bunny3.obj");
+		mesh->SetMaterial(glassMeshMaterial);
+		Transform transform = Transform::Translate(Vec3(0, -0.5, 0)) * Transform::Scale(0.28, 0.28, 0.28);
+		scene->AddMesh(*mesh, transform);
 
 		//Light
 		Vec3 lightP0 = Vec3(0.25f, 0.965, 0.25f);

@@ -30,7 +30,6 @@ void BDPT::Render(const Scene& scene, const Camera& camera)
 
 				//int nLightVertices = BidirectionalRenderer::GenerateLightPath(scene, rand, arena, lightPath, mMaxDepth);
 				int nCameraVertices = BidirectionalRenderer::GenerateCameraPath(scene, camera, rand, arena, cameraPath, cameraRay, mMaxDepth);
-
 				real u = mpSamplerEnum->SampleX(x, rand());
 				real v = mpSamplerEnum->SampleY(y, rand());
 				//for (int s = 0; s < nLightVertices; ++s) {
@@ -43,8 +42,12 @@ void BDPT::Render(const Scene& scene, const Camera& camera)
 				//		camera.GetFilm()->AddSplat(pRaster.x, pRaster.y, L);
 				//	}
 				//}
-				for (int t = 1; t <= 1; ++t) {
-					Vec3 L = ConnectToLight(scene, rand, cameraPath, t);
+				
+				Vec3 L = Vec3(0, 0, 0);
+				for (int t = 1; t < nCameraVertices; ++t) {
+					//debug
+					if (nCameraVertices <= 1) continue;
+					L += ConnectToLight(scene, rand, cameraPath, t);
 					camera.GetFilm()->AddSample(x + u, y + v, L);
 				}
 				workDone++;
@@ -130,24 +133,21 @@ Vec3 BDPT::ConnectToCamera(const Scene& scene, const Camera& camera, StateSequen
 Gyunity::Vec3 BDPT::ConnectToLight(const Scene& scene, StateSequence& rand, const std::vector<PathVertex>& path, int t)
 {
 	Light* pLight;
+	Intersection lightPoint;
 	real pdfLight;
-	Intersection isect;
-	real pdf;
-	Vec3 L(0, 0, 0);
+	Vec3 wi;
+	real pdfW;
+	const PathVertex& camerVertex = path[t];
 	pLight = scene.SampleOneLight(&pdfLight, rand());
-	pLight->SampleOnePoint(&isect, &pdf, Vec2(rand(), rand()));
-
-	Vec3 wi = (isect.mPos - path[t].mIsect.mPos);
-	Ray shadowRay(path[t].mIsect.mPos + RayEps, wi.Length(), 0);
-	wi.Normalize();
+	Vec3 Le = pLight->Sample_Li(camerVertex.mIsect, &wi, &pdfW, &lightPoint, Vec2(rand(), rand()));
+	Vec3 f = camerVertex.mIsect.mpBSDF->Evaluate(camerVertex.mIsect.mOutDir, wi);
+	Vec3 hitPointToLight = (lightPoint.mPos - camerVertex.mIsect.mPos);
+	Ray shadowRay(camerVertex.mIsect.mPos, wi, hitPointToLight.Length(), 0.f);
 	if (!scene.Intersect(shadowRay)) {
-		if (t == 1) {
-			return pLight->Emission();
-		}
+		return Vec3(0, 0, 0);
 	}
-	Vec3 f = path[t].mIsect.mpBSDF->Evaluate(path[t].mIsect.mOutDir, wi);
-	//L = path[t].mThroughput * f * std::abs(wi.Dot(path[t].mIsect.mNormal)) * pLight->Emission() / pdfLight / pdf;
-	//Vec3 L = path[t].mThroughput * DirectIllumination(scene, path[t].mIsect, rand(), Vec2(rand(), rand()), Vec3(rand(), rand(), rand()), rand) / pdfLight / pdf ;
+	Vec3 L = path[t].mThroughput * f * std::abs(Dot(wi, camerVertex.mIsect.mNormal)) * pLight->Emission() / pdfW / pdfLight;
+
 	return L;
 }
 
