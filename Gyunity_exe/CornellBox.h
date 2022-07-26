@@ -1971,11 +1971,6 @@ public:
 };
 
 
-
-
-
-
-
 class SimpleCornellBox {
 public:
 	static void SetScene(std::shared_ptr<Scene>& scene) {
@@ -2110,6 +2105,85 @@ public:
 		scene->AddLight(triangleLight1);
 		scene->AddPrimitive(triangleLightPrimitive0);
 		scene->AddPrimitive(triangleLightPrimitive1);
+
+	}
+};
+
+
+
+class EnvGlassBunnyScene {
+public:
+	static void SetScene(std::shared_ptr<Scene>& scene, real theta) {
+		//texture
+		std::shared_ptr<Texture<Vec3>> redConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(.75f, .25f, .25f)));
+		std::shared_ptr<Texture<Vec3>> blueConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(.25f, .25f, .75f)));
+		std::shared_ptr<Texture<Vec3>> whiteConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(.40f, .40f, .40f)));
+		std::shared_ptr<Texture<Vec3>> fullWhiteConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1, 1, 1)));
+		std::shared_ptr<Texture<Vec3>> purpleConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(0.9999f, 0.75f, 0.9999f)));
+
+		std::shared_ptr<Texture<Vec3>> objWhiteConstant = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(.5f, .5f, .5f)));
+
+		std::shared_ptr<Material> glassMeshMaterial = std::shared_ptr<Material>(new GlassMaterial(purpleConstant, purpleConstant));
+		std::shared_ptr<Material> diffuseMeshMaterial = std::shared_ptr<Material>(new DiffuseMaterial(objWhiteConstant));
+		std::shared_ptr<Material> mirrorMeshMaterial = std::shared_ptr<Material>(new MirrorMaterial(fullWhiteConstant));
+		std::shared_ptr<Texture<Vec3>> eta = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1.5f, 1.5f, 1.5f)));
+		std::shared_ptr<Texture<Vec3>> k = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1.5f, 1.5f, 1.5f)));
+		std::shared_ptr<Texture<real>> roughnessx = std::shared_ptr<Texture<real>>(new ConstantTexture<real>(0.02f));
+		std::shared_ptr<Texture<real>> roughnessy = std::shared_ptr<Texture<real>>(new ConstantTexture<real>(0.02f));
+		std::shared_ptr<Material> roughMeshMaterial =
+			std::shared_ptr<Material>(new RoughnessMaterial(fullWhiteConstant, roughnessx, roughnessy, eta, k));
+		std::shared_ptr<Material> waterMaterial = std::shared_ptr<Material>(new GlassMaterial(fullWhiteConstant, fullWhiteConstant, 1.f, 1.33f));
+
+		std::shared_ptr<Texture<Vec3>> kd = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(0.75f, 0.55f, 0.75f)));
+		std::shared_ptr<Texture<Vec3>> ks = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(0.05f, 0.05f, 0.05f)));
+		std::shared_ptr<Texture<real>> roughness = std::shared_ptr<Texture<real>>(new ConstantTexture<real>(0.1f));
+		std::shared_ptr<Material> plasticMaterial = std::shared_ptr<Material>(new PlasticMaterial(kd, ks, roughness));
+
+		std::shared_ptr<Texture<Vec3>> kr = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1.0f, 1.0f, 1.0f)));
+		std::shared_ptr<Texture<Vec3>> kt = std::shared_ptr<Texture<Vec3>>(new ConstantTexture<Vec3>(Vec3(1.0f, 1.0f, 1.0f)));
+		std::shared_ptr<Texture<real>> xRoughness = std::shared_ptr<Texture<real>>(new ConstantTexture<real>(0.02f));
+		std::shared_ptr<Texture<real>> yRoughness = std::shared_ptr<Texture<real>>(new ConstantTexture<real>(0.02f));
+		std::shared_ptr<Texture<real>> index = std::shared_ptr<Texture<real>>(new ConstantTexture<real>(1.5f));
+		std::shared_ptr<Material> roughDielectricMaterial = std::shared_ptr<Material>(new RoughDielectricMaterial(kr, kt, xRoughness, yRoughness, index));
+
+		//Points
+		Vec3 p0(-1, -1, 1);
+		Vec3 p1(-1, -1, -1);
+		Vec3 p2(-1, 1, -1);
+		Vec3 p3(-1, 1, 1);
+		Vec3 p4(1, -1, 1);
+		Vec3 p5(1, -1, -1);
+		Vec3 p6(1, 1, -1);
+		Vec3 p7(1, 1, 1);
+
+
+		//Botom
+		Vec3 normalBotom = Vec3(0, 1, 0);
+		std::shared_ptr<Shape> botomShape1 =
+			std::shared_ptr<Shape>(new Triangle(Transform(), Transform(), p0, p4, p5, normalBotom));
+		std::shared_ptr<Shape> botomShape2 =
+			std::shared_ptr<Shape>(new Triangle(Transform(), Transform(), p0, p5, p1, normalBotom));
+		std::shared_ptr<Material> botomWallMaterial = std::shared_ptr<Material>(new DiffuseMaterial(whiteConstant));
+		std::shared_ptr<Primitive> botomTriangle1 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(botomShape1, botomWallMaterial));
+		std::shared_ptr<Primitive> botomTriangle2 =
+			std::shared_ptr<Primitive>(new GeometryPrimitive(botomShape2, botomWallMaterial));
+		scene->AddPrimitive(botomTriangle1);
+		scene->AddPrimitive(botomTriangle2);
+
+
+		std::shared_ptr<Mesh> mesh = std::shared_ptr<Mesh>(new Mesh());
+		mesh->LoadFromFile("..\\resources\\meshes\\bunny3.obj");
+		mesh->SetMaterial(glassMeshMaterial);
+		Transform transform = Transform::RotateY(theta) * Transform::Translate(Vec3(0.f, -0.6f, 0.f)) * Transform::Scale(0.28f, 0.28f, 0.28f);
+		scene->AddMesh(*mesh, transform);
+
+
+		//Light
+		//std::shared_ptr<Light> light = std::shared_ptr<Light>(new EnvironmentLight("..\\resources\\media\\pictures\\uffizi-large.hdr", 0));
+		std::shared_ptr<Light> light = std::shared_ptr<Light>(new EnvironmentLight("..\\resources\\media\\pictures\\grace-new.hdr", 0));
+		scene->AddLight(light);
+
 
 	}
 };

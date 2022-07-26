@@ -576,10 +576,10 @@ void TestSPPM6(int argc, char* argv[]) {
 
 	GYT_Print("Load Scene ...\n");
 
-	CornellBoxMesh::SetScene(scene);
+	//CornellBoxMesh::SetScene(scene);
 	//CornellBoxWater::SetScene(scene);
 	//CornellBoxTriangle2::SetScene(scene);
-	//EnvironmentMapScene::SetScene(scene);
+	EnvironmentMapScene::SetScene(scene);
 	//CornellBoxHeartSurface::SetScene(scene);
 	//HeartSurfaceEnvironmentMapScene::SetScene(scene);
 
@@ -587,7 +587,7 @@ void TestSPPM6(int argc, char* argv[]) {
 	scene->SetAccelerator(accelerator);
 
 	scene->Initialize();
-	film->SetFileName("CornellBoxSppmTest3.bmp");
+	film->SetFileName("./Result2/1.bmp");
 	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
 	clock_t begin = clock();
 	renderer->Render();
@@ -920,16 +920,70 @@ void PathTracingTestV3(int argc, char* argv[]) {
 }
 
 
+void RenderUsingSppm(int index, real theta) {
+
+
+	int resX = 1920, resY = 1920;
+	int nIterations = 2000;
+	const int renderStagePhononCount = 300000;
+
+	std::shared_ptr<Film> film = std::shared_ptr<Film>(new Film(resX, resY, new BoxFilter()));
+	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
+	Vec3 camPos(0, 0, 3);
+	Vec3 lookAt(0, 0, 0);
+	Vec3 up(0, 1, 0);
+	real filmDis = 1;
+	real fovy = 53.13010235415597f;
+
+	std::shared_ptr<Camera> camera = std::shared_ptr<Camera>(new PinHoleCamera(film, camPos, lookAt, up, fovy, filmDis));
+	std::shared_ptr<Sampler> randomSampler = std::shared_ptr<Sampler>(new RandomSampler(123));
+	std::shared_ptr<Sampler> haltonSampler = std::shared_ptr<Sampler>(new HaltonSampler(resX, resY));
+	std::shared_ptr<Sampler> regularHaltonSampler = std::shared_ptr<Sampler>(new RegularHaltonSampler());;
+	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
+	std::shared_ptr<SamplerEnum> haltonSamplerEnum = std::shared_ptr<SamplerEnum>(new HaltonEnum((unsigned)resX, (unsigned)resY));
+	real alpha = 0.66666667f;
+	std::shared_ptr<Integrator> integrator =
+		std::shared_ptr<Integrator>(new SPPM(nIterations, renderStagePhononCount, 20, 0.05f, alpha, false, haltonSampler, haltonSamplerEnum, true));
+
+	GYT_Print("Load Scene ...\n");
+
+
+	EnvGlassBunnyScene::SetScene(scene, theta);
+
+
+	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
+	scene->SetAccelerator(accelerator);
+
+	scene->Initialize();
+	std::string filename = "./Result2/" + std::to_string(index) + ".png";
+	film->SetFileName(filename);
+	std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(scene, camera, integrator, film));
+	renderer->Render();
+
+	GYT_Print("\n");
+}
+
+
+
+
 int main(int argc, char *argv[]) {
 
 	std::cout << GGXDistribution::RoughnessToAlpha(0.118f) << std::endl;
 
 
-	TestBDPT(argc, argv);
+	//TestBDPT(argc, argv);
 	//PathTracingTestV2(argc, argv);
 	//PathTracingTestV3(argc, argv);
 	//TestPathTracing(argc, argv);
 	//TestLightTracing(argc, argv);
+
+	clock_t begin = clock();
+	for (int i = 0; i <= 360; i++) {
+		GYT_Print("Frame: {}\n", i);
+		RenderUsingSppm(i, i);
+	}
+	clock_t end = clock();
+	std::cout << "\ncost time: " << (end - begin) / 1000.0 / 60.0 << " min" << std::endl;
 
 	//TestPathTracing2(argc, argv);
 	//TestSPPM6(argc, argv);
