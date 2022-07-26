@@ -19,15 +19,15 @@ TEST(TestMatrixIsEqual, IsEqual) {
 	}
 	{
 		Matrix<4, real, IntrinsicSet::None>
-			mat1(1.1, 2, 3, 4,
-				5, 6, 7.3, 8,
+			mat1(1.1f, 2, 3, 4,
+				5, 6, 7.3f, 8,
 				9, 10, 11, 12,
-				13, 14.9, 15, 16);
+				13, 14.9f, 15, 16);
 		Matrix<4, real, IntrinsicSet::None>
-			mat2(1.1, 2, 3, 4,
-				5, 6, 7.3, 8,
+			mat2(1.1f, 2, 3, 4,
+				5, 6, 7.3f, 8,
 				9, 10, 11, 12,
-				13, 14.9, 15, 16);
+				13, 14.9f, 15, 16);
 		EXPECT_EQ(Equal(mat1, mat2), true);
 	}
 };
@@ -35,15 +35,15 @@ TEST(TestMatrixIsEqual, IsEqual) {
 TEST(TestMatrixNotEqual, NotEqual) {
 	{
 		Matrix<4, real, IntrinsicSet::None>
-			mat1(1.1, 2, 3, 4,
-				5, 6, 7.3, 8,
+			mat1(1.1f, 2, 3, 4,
+				5, 6, 7.3f, 8,
 				9, 10, 11, 12,
-				13, 14.9, 15, 16);
+				13, 14.9f, 15, 16);
 		Matrix<4, real, IntrinsicSet::None>
-			mat2(1.1, 2, 3, 4,
-				5, 6, 7.3, 8,
+			mat2(1.1f, 2, 3, 4,
+				5, 6, 7.3f, 8,
 				9, 10, 11, 13,
-				13, 14.9, 15, 16);
+				13, 14.9f, 15, 16);
 		EXPECT_EQ(mat1 != mat2, true);
 	}
 };
@@ -201,26 +201,26 @@ TEST(TestMatrixMulVector, MulVector) {
 				5, 6, 7, 8,
 				9, 10, 11, 12,
 				13, 14, 15, 16);
-		Vector<4, real, IntrinsicSet::None> v1(1.1, 2.2, 3.3, 4.4);
-		Vector<4, real, IntrinsicSet::None> v2(33.0, 77.0, 121.0, 165.0);
+		Vector<4, real, IntrinsicSet::None> v1(1.1f, 2.2f, 3.3f, 4.4f);
+		Vector<4, real, IntrinsicSet::None> v2(33.f, 77.f, 121.f, 165.f);
 		EXPECT_EQ(Equal(mat * v1, v2), true);
 	}
 	{
 		Matrix<4, real, IntrinsicSet::None>
-			mat(0.992797, 0.307158, 0.878931, 0.862293,
-				0.688249, 0.42504, 0.677657, 0.540247,
-				0.970518, 0.0388582, 0.482551, 0.547493,
-				0.973952, 0.116856, 0.645318, 0.350542);
+			mat(0.992797f, 0.307158f, 0.878931f, 0.862293f,
+				0.688249f, 0.42504f, 0.677657f, 0.540247f,
+				0.970518f, 0.0388582f, 0.482551f, 0.547493f,
+				0.973952f, 0.116856f, 0.645318f, 0.350542f);
 		Vector<4, real, IntrinsicSet::None> 
-		v1(0.8310123813548647,
-			0.7829980173878517,
-			0.48269930108431525,
-			0.4714602712916691);
+		v1(0.8310123813548647f,
+			0.7829980173878517f,
+			0.48269930108431525f,
+			0.4714602712916691f);
 		Vector<4, real, IntrinsicSet::None> 
-		v2(1.8963264168581206,
-			1.4865590956869474,
-			1.3279869317662532,
-			1.3776250350210677);
+		v2(1.8963264168581206f,
+			1.4865590956869474f,
+			1.3279869317662532f,
+			1.3776250350210677f);
 		EXPECT_EQ(Equal(mat * v1, v2), true);
 	}
 };
@@ -237,11 +237,11 @@ TEST(TestMatrixDeterminant, Determinant) {
 	}
 	{
 		Matrix<4, real, IntrinsicSet::None>
-			mat(0.992797, 0.307158, 0.878931, 0.862293,
-				0.688249, 0.42504, 0.677657, 0.540247,
-				0.970518, 0.0388582, 0.482551, 0.547493,
-				0.973952, 0.116856, 0.645318, 0.350542);
-		real expectedDeterminant = 0.02143648345371967;
+			mat(0.992797f, 0.307158f, 0.878931f, 0.862293f,
+				0.688249f, 0.42504f, 0.677657f, 0.540247f,
+				0.970518f, 0.0388582f, 0.482551f, 0.547493f,
+				0.973952f, 0.116856f, 0.645318f, 0.350542f);
+		real expectedDeterminant = 0.02143648345371967f;
 		EXPECT_EQ(Equal(Determinant(mat), expectedDeterminant), true);
 	}
 };
@@ -254,36 +254,36 @@ TEST(TestMatrixInv, Inv) {
 				0, 0, 5, 0,
 				0, 0, 0, 1);
 		Matrix<4, real, IntrinsicSet::None>
-			invScaleMatrix(1.0, 0, 0, 0,
-						   0, 0.5, 0, 0,
-						   0, 0, 0.2, 0,
-						   0, 0, 0, 1.0);
+			invScaleMatrix(1.0f, 0, 0, 0,
+						   0, 0.5f, 0, 0,
+						   0, 0, 0.2f, 0,
+						   0, 0, 0, 1.0f);
 		EXPECT_EQ(Equal(Inverse(scaleMatrix), invScaleMatrix), true);
 	}
 	{
 		Matrix<4, real, IntrinsicSet::None>
-			translateMatrix(1, 0, 0, 1.1,
-							0, 1, 0, 2.2,
-							0, 0, 1, 3.3,
+			translateMatrix(1, 0, 0, 1.1f,
+							0, 1, 0, 2.2f,
+							0, 0, 1, 3.3f,
 							0, 0, 0, 1);
 		Matrix<4, real, IntrinsicSet::None>
-			invTranslateMatrix(1.0, 0, 0, -1.1,
-							   0, 1.0, 0, -2.2,
-							   0, 0, 1.0, -3.3,
-							   0, 0, 0, 1.0);
+			invTranslateMatrix(1.0f, 0, 0, -1.1f,
+							   0, 1.0f, 0, -2.2f,
+							   0, 0, 1.0f, -3.3f,
+							   0, 0, 0, 1.0f);
 		EXPECT_EQ(Equal(Inverse(translateMatrix), invTranslateMatrix), true);
 	}
 	{
 		Matrix<4, real, IntrinsicSet::None>
-			mat(0.992797, 0.307158, 0.878931, 0.862293,
-				0.688249, 0.42504, 0.677657, 0.540247,
-				0.970518, 0.0388582, 0.482551, 0.547493,
-				0.973952, 0.116856, 0.645318, 0.350542);
+			mat(0.992797f, 0.307158f, 0.878931f, 0.862293f,
+				0.688249f, 0.42504f, 0.677657f, 0.540247f,
+				0.970518f, 0.0388582f, 0.482551f, 0.547493f,
+				0.973952f, 0.116856f, 0.645318f, 0.350542f);
 		Matrix<4, real, IntrinsicSet::None>
-			expectedInversedMat(-2.84865, 1.83357, 2.73568, -0.091224,
-						-4.12886, 5.67329, 2.146, -1.93875,
-						4.11491, -3.47325, -5.35782, 3.5988,
-						1.71591, -0.591686, 1.54706, -2.8726);
+			expectedInversedMat(-2.84865f, 1.83357f, 2.73568f, -0.091224f,
+						-4.12886f, 5.67329f, 2.146f, -1.93875f,
+						4.11491f, -3.47325f, -5.35782f, 3.5988f,
+						1.71591f, -0.591686f, 1.54706f, -2.8726f);
 		EXPECT_EQ(Equal(Inverse(mat), expectedInversedMat, 1e-4), true);
 	}
 };

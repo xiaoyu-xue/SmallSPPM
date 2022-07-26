@@ -73,7 +73,7 @@ private:
 	}
 
 	Vec3 Gradient2(const Vec3& p) const {
-		real delta = 0.00005;
+		real delta = 0.00005f;
 		real x = (F(Vec3(p.x + delta, p.y, p.z)) - F(Vec3(p.x - delta, p.y, p.z))) / (2.f * delta);
 		real y = (F(Vec3(p.x, p.y + delta, p.z)) - F(Vec3(p.x, p.y - delta, p.z))) / (2.f * delta);
 		real z = (F(Vec3(p.x, p.y, p.z + delta)) - F(Vec3(p.x, p.y, p.z - delta))) / (2.f * delta);

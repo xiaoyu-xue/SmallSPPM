@@ -134,7 +134,7 @@ TEST(TestRotateVector, RotateX) {
 		Transform transform = Transform::RotateX(30);
 		Vec3 absError;
 		Vec3 transformeVector = transform.TransformVector(vector3, &absError);
-		Vec3 expectedVector(1.f, std::sqrt(3) * 0.5, 0.5);
+		Vec3 expectedVector(1.f, std::sqrt(3.f) * 0.5f, 0.5f);
 		//std::cout << transformeVector << std::endl << expectedVector << std::endl;
 		EXPECT_EQ(Equal(transformeVector, expectedVector), true);
 	}
@@ -146,7 +146,7 @@ TEST(TestRotateVector, RotateY) {
 		Transform transform = Transform::RotateY(30);
 		Vec3 absError;
 		Vec3 transformeVector = transform.TransformVector(vector3, &absError);
-		Vec3 expectedVector(std::sqrt(3) * 0.5, 1, -0.5);
+		Vec3 expectedVector(std::sqrt(3.f) * 0.5f, 1, -0.5f);
 		EXPECT_EQ(Equal(transformeVector, expectedVector), true);
 	}
 };
@@ -157,7 +157,7 @@ TEST(TestRotateVector, RotateZ) {
 		Transform transform = Transform::RotateZ(30);
 		Vec3 absError;
 		Vec3 transformeVector = transform.TransformVector(vector3, &absError);
-		Vec3 expectedVector(std::sqrt(3) * 0.5, 0.5, 1);
+		Vec3 expectedVector(std::sqrt(3.f) * 0.5f, 0.5f, 1);
 		EXPECT_EQ(Equal(transformeVector, expectedVector), true);
 	}
 };
@@ -168,7 +168,7 @@ TEST(TestRotateVector, RotateV) {
 		Transform transform = Transform::Rotate(30, Vec3(1, 0, 0));
 		Vec3 absError;
 		Vec3 transformeVector = transform.TransformVector(vector3, &absError);
-		Vec3 expectedVector(1.f, std::sqrt(3) * 0.5, 0.5);
+		Vec3 expectedVector(1.f, std::sqrt(3.f) * 0.5f, 0.5f);
 		EXPECT_EQ(Equal(transformeVector, expectedVector), true);
 	}
 	{
@@ -176,7 +176,7 @@ TEST(TestRotateVector, RotateV) {
 		Transform transform = Transform::Rotate(30, Vec3(0, 1, 0));
 		Vec3 absError;
 		Vec3 transformeVector = transform.TransformVector(vector3, &absError);
-		Vec3 expectedVector(std::sqrt(3) * 0.5, 1, -0.5);
+		Vec3 expectedVector(std::sqrt(3.f) * 0.5f, 1, -0.5f);
 		EXPECT_EQ(Equal(transformeVector, expectedVector), true);
 	}
 	{
@@ -184,7 +184,7 @@ TEST(TestRotateVector, RotateV) {
 		Transform transform = Transform::Rotate(30, Vec3(0, 0, 1));
 		Vec3 absError;
 		Vec3 transformeVector = transform.TransformVector(vector3, &absError);
-		Vec3 expectedVector(std::sqrt(3) * 0.5, 0.5, 1);
+		Vec3 expectedVector(std::sqrt(3.f) * 0.5f, 0.5f, 1);
 		EXPECT_EQ(Equal(transformeVector, expectedVector), true);
 	}
 };
@@ -196,7 +196,7 @@ TEST(TestRotatePoint, RotateX) {
 		Transform transform = Transform::RotateX(30);
 		Vec3 absError;
 		Vec3 transformePoint = transform.TransformPoint(point3, &absError);
-		Vec3 expectedPoint(1.f, std::sqrt(3) * 0.5, 0.5);
+		Vec3 expectedPoint(1.f, std::sqrt(3.f) * 0.5f, 0.5f);
 		//std::cout << transformeVector << std::endl << expectedVector << std::endl;
 		EXPECT_EQ(Equal(transformePoint, expectedPoint), true);
 	}
@@ -208,7 +208,7 @@ TEST(TestRotatePoint, RotateY) {
 		Transform transform = Transform::RotateY(30);
 		Vec3 absError;
 		Vec3 transformePoint = transform.TransformVector(point3, &absError);
-		Vec3 expectedPoint(std::sqrt(3) * 0.5, 1, -0.5);
+		Vec3 expectedPoint(std::sqrt(3.f) * 0.5f, 1, -0.5f);
 		EXPECT_EQ(Equal(transformePoint, expectedPoint), true);
 	}
 };
@@ -230,7 +230,7 @@ TEST(TestRotatePoint, RotateV) {
 		Transform transform = Transform::Rotate(30, Vec3(1, 0, 0));
 		Vec3 absError;
 		Vec3 transformePoint = transform.TransformVector(point3, &absError);
-		Vec3 expectedPoint(1.f, std::sqrt(3) * 0.5, 0.5);
+		Vec3 expectedPoint(1.f, std::sqrt(3.f) * 0.5f, 0.5f);
 		EXPECT_EQ(Equal(transformePoint, expectedPoint), true);
 	}
 	{
@@ -238,7 +238,7 @@ TEST(TestRotatePoint, RotateV) {
 		Transform transform = Transform::Rotate(30, Vec3(0, 1, 0));
 		Vec3 absError;
 		Vec3 transformePoint = transform.TransformVector(point3, &absError);
-		Vec3 expectedPoint(std::sqrt(3) * 0.5, 1, -0.5);
+		Vec3 expectedPoint(std::sqrt(3.f) * 0.5f, 1, -0.5f);
 		EXPECT_EQ(Equal(transformePoint, expectedPoint), true);
 	}
 	{
@@ -246,7 +246,7 @@ TEST(TestRotatePoint, RotateV) {
 		Transform transform = Transform::Rotate(30, Vec3(0, 0, 1));
 		Vec3 absError;
 		Vec3 transformePoint = transform.TransformVector(point3, &absError);
-		Vec3 expectedPoint(std::sqrt(3) * 0.5, 0.5, 1);
+		Vec3 expectedPoint(std::sqrt(3.f) * 0.5f, 0.5f, 1);
 		EXPECT_EQ(Equal(transformePoint, expectedPoint), true);
 	}
 };
@@ -264,7 +264,7 @@ TEST(TestRotateNormal, RotateX) {
 		Vec3 normal(0, 1, 0);
 		Transform transform = Transform::RotateX(30);
 		Vec3 transformeVector = transform.TransformNormal(normal);
-		Vec3 expectedVector(0, std::sqrt(3) * 0.5, 0.5);
+		Vec3 expectedVector(0, std::sqrt(3.f) * 0.5f, 0.5f);
 		std::cout << transformeVector << std::endl << expectedVector << std::endl;
 		EXPECT_EQ(Equal(transformeVector, expectedVector), true);
 	}
@@ -283,7 +283,7 @@ TEST(TestRotateNormal, RotateY) {
 		Vec3 normal(1, 0, 0);
 		Transform transform = Transform::RotateY(30);
 		Vec3 transformeVector = transform.TransformNormal(normal);
-		Vec3 expectedVector(std::sqrt(3) * 0.5, 0, -0.5);
+		Vec3 expectedVector(std::sqrt(3.f) * 0.5f, 0, -0.5);
 		//std::cout << transformeVector << std::endl << expectedVector << std::endl;
 		EXPECT_EQ(Equal(transformeVector, expectedVector), true);
 	}
@@ -302,7 +302,7 @@ TEST(TestRotateNormal, RotateZ) {
 		Vec3 normal(1, 0, 0);
 		Transform transform = Transform::RotateZ(30);
 		Vec3 transformeVector = transform.TransformNormal(normal);
-		Vec3 expectedVector(std::sqrt(3) * 0.5, 0.5, 0);
+		Vec3 expectedVector(std::sqrt(3.f) * 0.5f, 0.5f, 0.f);
 		//std::cout << transformeVector << std::endl << expectedVector << std::endl;
 		EXPECT_EQ(Equal(transformeVector, expectedVector), true);
 	}

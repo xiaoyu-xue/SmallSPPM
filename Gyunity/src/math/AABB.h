@@ -67,8 +67,8 @@ struct AABB {
 	}
 
 	GYT_FORCE_INLINE void GetBoundingSphere(Vec3* center, real* radius) const {
-		*center = (minPoint + maxPoint) * 0.5;
-		*radius = (maxPoint - minPoint).Length() * 0.5;
+		*center = (minPoint + maxPoint) * 0.5f;
+		*radius = (maxPoint - minPoint).Length() * 0.5f;
 	}
 };
 

@@ -32,7 +32,7 @@ public:
 // Random Number Declarations
 
 static const double DoubleOneMinusEpsilon = 0.99999999999999989;
-static const float FloatOneMinusEpsilon = 0.99999994;
+static const float FloatOneMinusEpsilon = 0.99999994f;
 
 
 #ifdef USING_DOUBLE

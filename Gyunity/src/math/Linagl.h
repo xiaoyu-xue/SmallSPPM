@@ -182,7 +182,7 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 		}
 	}
 
-	GYT_FORCE_INLINE Vector(Vector &&a) {
+	GYT_FORCE_INLINE Vector(Vector &&a) noexcept  {
 		for (int i = 0; i < dim; ++i) {
 			this->d[i] = std::move(a.d[i]);
 		}
@@ -246,7 +246,7 @@ struct Vector : public VectorBase<dim_, T, ISE> {
 		return *this;
 	}
 
-	GYT_FORCE_INLINE Vector& operator=(Vector &&a) {
+	GYT_FORCE_INLINE Vector& operator=(Vector &&a) noexcept {
 		//memcpy(&(this->d[0]), &(a.d[0]), sizeof(T) * dim);
 		memcpy(this, &a, sizeof(*this));
 		return *this;

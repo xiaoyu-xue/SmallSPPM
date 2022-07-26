@@ -440,9 +440,9 @@ void TestSPPM4(int argc, char* argv[]) {
 	std::shared_ptr<Sampler> regularHaltonSampler = std::shared_ptr<Sampler>(new RegularHaltonSampler());;
 	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
 	std::shared_ptr<SamplerEnum> haltonSamplerEnum = std::shared_ptr<SamplerEnum>(new HaltonEnum((unsigned)resX, (unsigned)resY));
-	real alpha = 0.66666667;
+	real alpha = 0.66666667f;
 	std::shared_ptr<Integrator> integrator =
-		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 0.05, alpha, true, haltonSampler, haltonSamplerEnum));
+		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 0.05f, alpha, true, haltonSampler, haltonSamplerEnum));
 	fprintf(stderr, "Load Scene ...\n");
 
 	CornellBoxTriangle2::SetScene(scene);
@@ -482,9 +482,9 @@ void TestSPPM5(int argc, char* argv[]) {
 	std::shared_ptr<Sampler> regularHaltonSampler = std::shared_ptr<Sampler>(new RegularHaltonSampler());;
 	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
 	std::shared_ptr<SamplerEnum> haltonSamplerEnum = std::shared_ptr<SamplerEnum>(new HaltonEnum((unsigned)resX, (unsigned)resY));
-	real alpha = 0.66666667;
+	real alpha = 0.66666667f;
 	std::shared_ptr<Integrator> integrator =
-		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 0.05, alpha, false, haltonSampler, haltonSamplerEnum, true));
+		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 0.05f, alpha, false, haltonSampler, haltonSamplerEnum, true));
 	fprintf(stderr, "Load Scene ...\n");
 
 	CornellBoxMesh::SetScene(scene);
@@ -515,7 +515,7 @@ void TestHashGrid() {
 	for (int i = 0; i < 12345; ++i) {
 		points.push_back(Vec3(rng.GetFloat(), rng.GetFloat(), rng.GetFloat()));
 	}
-	real searchRadius = 0.15;
+	real searchRadius = 0.15f;
 	HashGrid<int> hashGrid;
 	for (int i = 0; i < points.size(); ++i) {
 		hashGrid.AddPoint(std::move(std::pair<Vec3, int>(points[i], i)), 0.15f);
@@ -570,9 +570,9 @@ void TestSPPM6(int argc, char* argv[]) {
 	std::shared_ptr<Sampler> regularHaltonSampler = std::shared_ptr<Sampler>(new RegularHaltonSampler());;
 	std::shared_ptr<SamplerEnum> samplerEnum = std::shared_ptr<SamplerEnum>(new SamplerEnum());
 	std::shared_ptr<SamplerEnum> haltonSamplerEnum = std::shared_ptr<SamplerEnum>(new HaltonEnum((unsigned)resX, (unsigned)resY));
-	real alpha = 0.66666667;
+	real alpha = 0.66666667f;
 	std::shared_ptr<Integrator> integrator =
-		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 0.05, alpha, false, haltonSampler, haltonSamplerEnum, true));
+		std::shared_ptr<Integrator>(new SPPM(nIterations, render_stage_number, 20, 0.05f, alpha, false, haltonSampler, haltonSamplerEnum, true));
 
 	GYT_Print("Load Scene ...\n");
 
@@ -643,9 +643,9 @@ void TestVolPathTracing(int argc, char* argv[]) {
 void TestTransmittance() {
 	std::shared_ptr<Scene> scene = std::shared_ptr<Scene>(new Scene);
 	CornellBoxMedium::SetScene(scene);
-	Intersection p0(Vec3(0, -0.99999, 0), Vec3(), MediumInterface());
+	Intersection p0(Vec3(0, -0.99999f, 0), Vec3(), MediumInterface());
 	p0.mNormal = p0.mAbsNormal = p0.mGeometryNormal = Vec3(0, 1, 0);
-	Intersection p1(Vec3(0, 0.965, 0), Vec3(), MediumInterface());
+	Intersection p1(Vec3(0, 0.965f, 0), Vec3(), MediumInterface());
 	p1.mNormal = p1.mAbsNormal = p1.mGeometryNormal = Vec3(0, -1, 0);
 	VisibilityTester visibilityTester(p0, p1);
 	std::shared_ptr<Accelerator> accelerator = std::shared_ptr<Accelerator>(new BVHAccel(scene->GetPrimitives()));
@@ -922,7 +922,7 @@ void PathTracingTestV3(int argc, char* argv[]) {
 
 int main(int argc, char *argv[]) {
 
-	std::cout << GGXDistribution::RoughnessToAlpha(0.118) << std::endl;
+	std::cout << GGXDistribution::RoughnessToAlpha(0.118f) << std::endl;
 
 
 	TestBDPT(argc, argv);

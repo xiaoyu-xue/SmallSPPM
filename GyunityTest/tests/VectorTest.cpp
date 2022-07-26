@@ -12,17 +12,17 @@ TEST(TestVectorOstreamOperator, Ostream) {
 	}
 	{
 		std::ostringstream os;
-		os << Vector3(1.3, 2.5, 3.7);
-		EXPECT_EQ(os.str(), "[ 1.3, 2.5, 3.7 ]");
+		os << Vector3(1.3f, 2.5f, 3.7f);
+		EXPECT_EQ(os.str(), "[ 1.3f, 2.5f, 3.7f ]");
 	}
 };
 
 TEST(TestVectorOperatorIsEqual, IsEqual) {
 	{
-		EXPECT_EQ(Vector3(1.1, 2.2, 3.3) == Vector3(1.1, 2.2, 3.3), true);
+		EXPECT_EQ(Vector3(1.1f, 2.2f, 3.3f) == Vector3(1.1f, 2.2f, 3.3f), true);
 	}
 	{
-		EXPECT_EQ(Vector3(1.1, 2.2, 3.5) == Vector3(1.1, 2.2, 3.3), false);
+		EXPECT_EQ(Vector3(1.1f, 2.2f, 3.5f) == Vector3(1.1f, 2.2f, 3.3f), false);
 	}
 }
 
@@ -36,10 +36,10 @@ TEST(TestVectorOperatorEqual, Equal) {
 
 TEST(TestVectorOperatorNotEqual, NotEqual) {
 	{
-		EXPECT_EQ(Vector3(1.1, 2.2, 3.3) != Vector3(1.1, 2.2, 3.3), false);
+		EXPECT_EQ(Vector3(1.1f, 2.2f, 3.3f) != Vector3(1.1f, 2.2f, 3.3f), false);
 	}
 	{
-		EXPECT_EQ(Vector3(1.1, 2.2, 3.5) != Vector3(1.1, 2.2, 3.3), true);
+		EXPECT_EQ(Vector3(1.1f, 2.2f, 3.5f) != Vector3(1.1f, 2.2f, 3.3f), true);
 	}
 }
 
@@ -169,23 +169,23 @@ TEST(TestVectorLength, Length) {
 	}
 	{
 		Vector3 a(1, 2, 3);
-		real length = 3.741657386;
+		real length = 3.741657386f;
 		EXPECT_EQ(Equal(a.Length(), length), true);
 	}
 }
 
 TEST(TestVectorNormalize, Normalize) {
 	{
-		Vector3 a(1, 2, 3), b(0.2672612419, 0.5345224838, 0.80178372573);
+		Vector3 a(1, 2, 3), b(0.2672612419f, 0.5345224838f, 0.80178372573f);
 		EXPECT_EQ(Equal(a.Norm(), b), true);
 	}
 	{
-		Vector3 a(1, 2, 3), b(0.2672612419, 0.5345224838, 0.80178372573);
+		Vector3 a(1, 2, 3), b(0.2672612419f, 0.5345224838f, 0.80178372573f);
 		a.Normalize();
 		EXPECT_EQ(Equal(a, b), true);
 	}
 	{
-		Vector3 a(1, 2, 3), b(0.2672612419, 0.5345224838, 0.80178372573);
+		Vector3 a(1, 2, 3), b(0.2672612419f, 0.5345224838f, 0.80178372573f);
 		Normalize(a);
 		EXPECT_EQ(Equal(a, b), true);
 	}

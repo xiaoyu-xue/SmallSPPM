@@ -237,7 +237,7 @@ GYT_FORCE_INLINE bool Quadratic(EReal A, EReal B, EReal C, EReal *t0, EReal *t1)
 	if (discrim < 0.) return false;
 	double rootDiscrim = std::sqrt(discrim);
 
-	EReal floatRootDiscrim(rootDiscrim, MachineEps * rootDiscrim);
+	EReal floatRootDiscrim(rootDiscrim, (double)MachineEps * rootDiscrim);
 
 	// Compute quadratic _t_ values
 	EReal q;

@@ -66,7 +66,7 @@ GYT_FORCE_INLINE real Degrees(real rad) { return (180 / PI) * rad; }
 
 
 GYT_FORCE_INLINE real Log2(real x) {
-	const real invLog2 = 1.442695040888963387004650940071;
+	const real invLog2 = (real)1.442695040888963387004650940071;
 	return std::log(x) * invLog2;
 }
 

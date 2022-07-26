@@ -76,7 +76,7 @@ Vec3 UniformSampleCone(const Vec3& u, real cosThetaMax)
 
 Vec3 UniformSampleCone(const Vec3& u, real cosThetaMax, const Vec3& x, const Vec3& y, const Vec3& z)
 {
-	real cosTheta = Lerp(u[0], cosThetaMax, 1.f);
+	real cosTheta = Lerp(u[0], cosThetaMax, (real)1.0);
 	real sinTheta = std::sqrt((real)1. - cosTheta * cosTheta);
 	real phi = u[1] * 2 * PI;
 	return std::cos(phi) * sinTheta * x + std::sin(phi) * sinTheta * y + cosTheta * z;

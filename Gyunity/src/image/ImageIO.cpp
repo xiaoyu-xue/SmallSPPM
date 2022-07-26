@@ -121,8 +121,8 @@ void ImageIO::WriteImage(const std::string& filename, const std::vector<Vec3>& i
 	std::string suffix = filename.substr(filename.length() - 4);
 	if (suffix == ".hdr") {
 		std::vector<float> dataToWrite(resX * resY * channels);
-		for (int y = 0; y < resY; ++y) {
-			for (int x = 0; x < resX; ++x) {
+		for (uint32 y = 0; y < resY; ++y) {
+			for (uint32 x = 0; x < resX; ++x) {
 				for (int k = 0; k < channels; ++k) {
 					int idx = y * resX + x;
 					dataToWrite[idx * channels + k] = image[idx][k];
@@ -133,8 +133,8 @@ void ImageIO::WriteImage(const std::string& filename, const std::vector<Vec3>& i
 	}
 	else {
 		std::vector<unsigned char> dataToWrite(resX * resY * channels);
-		for (int y = 0; y < resY; ++y) {
-			for (int x = 0; x < resX; ++x) {
+		for (uint32 y = 0; y < resY; ++y) {
+			for (uint32 x = 0; x < resX; ++x) {
 				for (int k = 0; k < channels; ++k) {
 					int idx = y * resX + x;
 					dataToWrite[idx * channels + k] = unsigned char(toInt(image[idx][k]));

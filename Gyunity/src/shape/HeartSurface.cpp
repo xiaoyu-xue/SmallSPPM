@@ -49,7 +49,7 @@ bool HeartSurface::Intersect(const Ray& r, Intersection* isect, real* t) const {
 	isect->mPos = ray(*t);
 	isect->mPos = ObjectToWorld.TransformPoint(ray(*t));
 
-	isect->mRayEps = 5e-3;
+	isect->mRayEps = 5e-3f;
 	//std::cout << isect->rayEps << std::endl;
 	isect->mShapeId = mShapeId;
 	return true;

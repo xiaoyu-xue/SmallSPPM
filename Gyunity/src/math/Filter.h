@@ -59,7 +59,7 @@ public:
 	{
 		auto Gaussian = [this](const real d)
 		{
-			return std::max(0.0f, std::exp(alpha * d * d) - expR);
+			return std::max((real)0.0, std::exp(alpha * d * d) - expR);
 		};
 
 		return Gaussian(dx) * Gaussian(dy);
