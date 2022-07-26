@@ -396,17 +396,17 @@ void TestProjection() {
 	real fovy = 28.7993f;
 	std::shared_ptr<ProjectiveCamera> camera = std::shared_ptr<ProjectiveCamera>(new PinHoleCamera(film, camPos, cz, cx, cy, fovy, filmDis));
 	
-	//raster to ndc
+	//raster to NDC
 	{
-		std::cout << "raster to ndc:" << std::endl;
+		std::cout << "raster to NDC:" << std::endl;
 		Vec3 rasterPoint(0, 0, 0.5);
 		Vec3 rasterToNDC = camera->RasterToNDC(rasterPoint);
 		std::cout << rasterToNDC << std::endl;
 	}
 
-	//ndc to camera
+	//NDC to camera
 	{
-		std::cout << "ndc to camera:" << std::endl;
+		std::cout << "NDC to camera:" << std::endl;
 		Vec3 cameraPoint = camera->WorldToCamera(camera->GetFilm()->mLU);
 		//cameraPoint.z = 1000;
 		std::cout << cameraPoint << std::endl;
