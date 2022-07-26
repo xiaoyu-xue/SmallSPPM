@@ -63,18 +63,18 @@ public:
 		TransportMode			mode);
 
 	static real ConvertSolidToArea(
-		real				pdfW, 
-		const PathVertex	&vertex, 
-		const PathVertex	&nxt);
+		real					pdfW, 
+		const PathVertex		&vertex, 
+		const PathVertex		&nxt);
 
 	static bool IsConnectable(
-		const Scene		&scene, 
-		const Vec3		&pointA, 
-		const Vec3		&pointB);
+		const Scene				&scene, 
+		const Vec3				&pointA, 
+		const Vec3				&pointB);
 
 	static real G(
-		const PathVertex& vertexA, 
-		const PathVertex& vertexB);
+		const PathVertex		&vertexA, 
+		const PathVertex		&vertexB);
 
 	static real MISWeight(
 		const Scene				&scene,
