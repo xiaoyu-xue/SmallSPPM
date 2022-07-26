@@ -168,4 +168,11 @@ real CosineHemispherePdf(real cosTheta);
 Vec3 UniformSampleHemisphere(const Vec2& u);
 
 real UniformSampleHemispherePdf();
+
+Vec3 UniformSampleCone(const Vec3& u, real cosThetaMax);
+
+Vec3 UniformSampleCone(const Vec3& u, real cosThetaMax, const Vec3& x, const Vec3& y, const Vec3& z);
+
+real UniformConePdf(real cosThetaMax);
+
 GYT_NAMESPACE_END

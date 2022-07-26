@@ -53,7 +53,7 @@ real UniformSpherePdf() {
 	return INV_4PI;
 }
 
-Gyunity::Vec3 UniformSampleHemisphere(const Vec2& u)
+Vec3 UniformSampleHemisphere(const Vec2& u)
 {
 	real x = std::cos(2 * PI * u.y) * std::sqrt(1 - u.x * u.x);
 	real y = std::sin(2 * PI * u.y) * std::sqrt(1 - u.x * u.x);
@@ -61,9 +61,30 @@ Gyunity::Vec3 UniformSampleHemisphere(const Vec2& u)
 	return Vec3(x, y, z);
 }
 
-Gyunity::real UniformSampleHemispherePdf()
+real UniformSampleHemispherePdf()
 {
 	return INV_2PI;
+}
+
+Vec3 UniformSampleCone(const Vec3& u, real cosThetaMax)
+{
+	real cosTheta = ((real)1 - u[0]) + u[0] * cosThetaMax;
+	real sinTheta = std::sqrt((real)1 - cosTheta * cosTheta);
+	real phi = u[1] * 2 * PI;
+	return Vec3(std::cos(phi) * sinTheta, std::sin(phi) * sinTheta, cosTheta);
+}
+
+Vec3 UniformSampleCone(const Vec3& u, real cosThetaMax, const Vec3& x, const Vec3& y, const Vec3& z)
+{
+	real cosTheta = Lerp(u[0], cosThetaMax, 1.f);
+	real sinTheta = std::sqrt((real)1. - cosTheta * cosTheta);
+	real phi = u[1] * 2 * PI;
+	return std::cos(phi) * sinTheta * x + std::sin(phi) * sinTheta * y + cosTheta * z;
+}
+
+real UniformConePdf(real cosThetaMax)
+{
+	return 1 / (2 * PI * (1 - cosThetaMax));
 }
 
 GYT_NAMESPACE_END

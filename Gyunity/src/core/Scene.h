@@ -104,16 +104,16 @@ public:
 		return mLights;
 	}
 
-	Light* SampleOneLight(real *lightPdf, real u) const {
+	Light* SampleOneLight(real *pdfLight, real u) const {
 		int nLights = (int)(mLights.size());
 		int lightNum;
 		if (mLightPowerDistribution != nullptr) {
-			lightNum = mLightPowerDistribution->SampleDiscrete(u, lightPdf);
-			if (*lightPdf == 0) return nullptr;
+			lightNum = mLightPowerDistribution->SampleDiscrete(u, pdfLight);
+			if (*pdfLight == 0) return nullptr;
 		}
 		else {
 			lightNum = std::min((int)(u * nLights), nLights - 1);
-			*lightPdf = 1.f / nLights;
+			*pdfLight = 1.f / nLights;
 		}
 		return mLights[lightNum].get();
 	}

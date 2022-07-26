@@ -108,8 +108,6 @@ public:
 		Ray ray(isect.mPos + dir * RayEps, dir);
 
 		int nVertices = Trace(scene, camera, ray, arena, rand, 1, throughput, pdfDir, lightPath);
-		
-
 
 		return nVertices;
 	}

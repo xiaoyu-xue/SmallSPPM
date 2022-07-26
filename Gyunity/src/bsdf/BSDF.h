@@ -81,6 +81,7 @@ public:
 	virtual real EvaluateScalar(real cosI) const = 0;
 };
 
+
 class FresnelConductor : public Fresnel {
 private:
 	Vec3 m_etaI, m_etaT, m_k;
@@ -96,6 +97,7 @@ public:
 		return 0;
 	}
 };
+
 
 class FresnelDielectric : public Fresnel {
 private:
@@ -147,6 +149,7 @@ public:
 
 };
 
+
 class BxDF {
 public:
 	BxDF(ScatterEventType scatterType) : scatterEventType(scatterType){}
@@ -185,6 +188,7 @@ public:
 		return mR * INV_PI;
 	}
 };
+
 
 class SpecularBSDF : public BxDF {
 public:

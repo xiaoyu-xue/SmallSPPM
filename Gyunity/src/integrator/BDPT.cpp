@@ -32,6 +32,8 @@ void BDPT::Render(const Scene& scene, const Camera& camera)
 				int nCameraVertices = BidirectionalRenderer::GenerateCameraPath(scene, camera, rand, arena, cameraPath, cameraRay, mMaxDepth);
 				real u = mpSamplerEnum->SampleX(x, rand());
 				real v = mpSamplerEnum->SampleY(y, rand());
+				
+				// LT
 				//for (int s = 0; s < nLightVertices; ++s) {
 				//	Vec3 pRaster;
 				//	bool inScreen;
@@ -43,13 +45,15 @@ void BDPT::Render(const Scene& scene, const Camera& camera)
 				//	}
 				//}
 				
+				// PT
 				Vec3 L = Vec3(0, 0, 0);
 				for (int t = 1; t < nCameraVertices; ++t) {
 					//debug
 					if (nCameraVertices <= 1) continue;
 					L += ConnectToLight(scene, rand, cameraPath, t);
-					camera.GetFilm()->AddSample(x + u, y + v, L);
 				}
+				camera.GetFilm()->AddSample(x + u, y + v, L);
+
 				workDone++;
 			}
 		}
@@ -130,26 +134,46 @@ Vec3 BDPT::ConnectToCamera(const Scene& scene, const Camera& camera, StateSequen
 	return L;
 }
 
-Gyunity::Vec3 BDPT::ConnectToLight(const Scene& scene, StateSequence& rand, const std::vector<PathVertex>& path, int t)
+Vec3 BDPT::ConnectToLight(const Scene& scene, StateSequence& rand, const std::vector<PathVertex>& path, int t)
 {
-	Light* pLight;
-	Intersection lightPoint;
-	real pdfLight;
-	Vec3 wi;
-	real pdfW;
-	const PathVertex& camerVertex = path[t];
-	pLight = scene.SampleOneLight(&pdfLight, rand());
-	Vec3 Le = pLight->Sample_Li(camerVertex.mIsect, &wi, &pdfW, &lightPoint, Vec2(rand(), rand()));
-	Vec3 f = camerVertex.mIsect.mpBSDF->Evaluate(camerVertex.mIsect.mOutDir, wi);
-	Vec3 hitPointToLight = (lightPoint.mPos - camerVertex.mIsect.mPos);
-	Ray shadowRay(camerVertex.mIsect.mPos, wi, hitPointToLight.Length(), 0.f);
-	if (!scene.Intersect(shadowRay)) {
-		return Vec3(0, 0, 0);
+	Vec3 L(0, 0, 0);
+	const PathVertex& vertex = path[t];
+	if (t > 0 && path[t - 1].mIsDelta && vertex.mIsect.mpPrimitive->IsLight()) {
+		const Light* pLight = vertex.mIsect.mpPrimitive->GetLight();
+		L = vertex.mThroughput * pLight->Emission();
 	}
-	Vec3 L = path[t].mThroughput * f * std::abs(Dot(wi, camerVertex.mIsect.mNormal)) * pLight->Emission() / pdfW / pdfLight;
-
+	else {
+		L = vertex.mThroughput * SimpleDirectIllumination(scene, vertex.mIsect, rand);
+	}
 	return L;
 }
 
+Vec3 BDPT::SimpleDirectIllumination(const Scene& scene, const Intersection& hitPoint, StateSequence& rand) const
+{
+	Vec3 L(0, 0, 0);
+	if (!hitPoint.mIsDelta) {
+		Light* pLight;
+		real pdfLight;
+		real pdfA, pdfW;
+		Intersection lightPoint;
+		pLight = scene.SampleOneLight(&pdfLight, rand());
+		Vec3 Le = pLight->SampleOnePoint(&lightPoint, &pdfA, Vec2(rand(), rand()));
+		Vec3 hitToLight = lightPoint.mPos - hitPoint.mPos;
+		real dis = hitToLight.Length();
+		hitToLight.Normalize();
+		real cosTheta0 = hitToLight.Dot(hitPoint.mNormal);
+		real cosTheta1 = (-1 * hitToLight).Dot(lightPoint.mNormal);
+		pdfW = pdfA * dis * dis / std::abs(cosTheta1);
+		Vec3 f = hitPoint.mpBSDF->Evaluate(hitPoint.mOutDir, hitToLight);
+		VisibilityTester visibilityTester(hitPoint, lightPoint);
+		if (!visibilityTester.Unoccluded(scene) || cosTheta1 < 0) {
+			return Vec3(0, 0, 0);
+		}
+		else {
+			L = Le * f * std::abs(cosTheta0) / pdfW / pdfLight;
+		}
+	}
+	return L;
+}
 
 GYT_NAMESPACE_END

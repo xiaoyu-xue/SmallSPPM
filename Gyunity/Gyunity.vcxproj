@@ -177,6 +177,8 @@
     <ClCompile Include="src\common\Logger.cpp" />
     <ClCompile Include="src\integrator\BDPT.cpp" />
     <ClCompile Include="src\integrator\BidirectionalRenderer.cpp" />
+    <ClCompile Include="src\integrator\PathTracingV2.cpp" />
+    <ClCompile Include="src\integrator\SimplePT.cpp" />
     <ClCompile Include="src\math\AABB.cpp" />
     <ClCompile Include="src\bsdf\BSDF.cpp" />
     <ClCompile Include="src\accelerator\BVHAccel.cpp" />
@@ -229,7 +231,9 @@
     <ClInclude Include="src\integrator\BDPT.h" />
     <ClInclude Include="src\integrator\BidirectionalRenderer.h" />
     <ClInclude Include="src\integrator\LT.h" />
+    <ClInclude Include="src\integrator\PathTracingV2.h" />
     <ClInclude Include="src\integrator\PathVertex.h" />
+    <ClInclude Include="src\integrator\SimplePT.h" />
     <ClInclude Include="src\math\AABB.h" />
     <ClInclude Include="src\accelerator\Accelerator.h" />
     <ClInclude Include="src\light\AreaLight.h" />

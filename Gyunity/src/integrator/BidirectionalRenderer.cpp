@@ -75,34 +75,39 @@ int BidirectionalRenderer::Trace(
 	int						maxDepth,
 	TransportMode			mode)
 {
+
+	int bounce = 1;
 	Ray ray = r;
-	int bounce = depth;
-	real pdfDir = pdfFwd;
+	real pdfW = pdfFwd;
 	while (true) {
 		PathVertex& prev = path[bounce - 1];
 		PathVertex& vertex = path[bounce];
 		Intersection& isect = path[bounce].mIsect;
-
-		if (!scene.Intersect(ray, &isect)) break;
-
+		if (!scene.Intersect(ray, &isect)) {
+			break;
+		}
 		scene.QueryIntersectionInfo(ray, &isect);
-		isect.ComputeScatteringFunction(arena, mode);
+		isect.ComputeScatteringFunction(arena);
+		BSDF* pBSDF = isect.mpBSDF;
 
-		path[bounce].mIsDelta = isect.mpBSDF->IsDelta();
-		path[bounce].mPdfFwd = BidirectionalRenderer::ConvertSolidToArea(pdfDir, prev, vertex);
+		path[bounce].mPdfFwd = ConvertSolidToArea(pdfW, prev, vertex);
 		path[bounce].mThroughput = throughput;
-
-		bounce++;
-		if (bounce >= maxDepth) break;
+		path[bounce].mIsDelta = pBSDF->IsDelta();
 
 		Vec3 wi;
-		Vec3 f = isect.mpBSDF->Sample(-1 * ray.mDir, &wi, &pdfDir, Vec3(rand(), rand(), rand()));
+		Vec3 f = pBSDF->Sample(-ray.mDir, &wi, &pdfW, Vec3(rand(), rand(), rand()));
+		Vec3 estimation;
 
-		throughput = throughput * f * std::abs(Dot(wi, isect.mNormal)) / pdfDir;
+		estimation = f * std::abs(Dot(isect.mNormal, wi)) / pdfW;
+		throughput = throughput * estimation;
+
+		ray = isect.SpawnRay(wi);
+
 		real pdfWPrev = isect.mpBSDF->Pdf(wi, -1 * ray.mDir);
-		prev.mPdfPrev = BidirectionalRenderer::ConvertSolidToArea(pdfWPrev, vertex, prev);
+		prev.mPdfPrev = ConvertSolidToArea(pdfWPrev, vertex, prev);
 
-		ray = Ray(isect.mPos + wi * RayEps, wi);
+		bounce++;
+		if (bounce >= maxDepth + 1) break;
 	}
 	return bounce;
 }
