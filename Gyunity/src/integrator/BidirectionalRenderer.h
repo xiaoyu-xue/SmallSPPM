@@ -65,7 +65,7 @@ public:
 	static real ConvertSolidToArea(
 		real					pdfW, 
 		const PathVertex		&vertex, 
-		const PathVertex		&nxt);
+		const PathVertex		&nextVertex);
 
 	static bool IsConnectable(
 		const Scene				&scene, 

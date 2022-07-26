@@ -115,13 +115,13 @@ int BidirectionalRenderer::Trace(
 real BidirectionalRenderer::ConvertSolidToArea(
 	real				pdfW, 
 	const PathVertex	&vertex, 
-	const PathVertex	&nxt)
+	const PathVertex	&nextVertex)
 {
-	Vec3 dir = nxt.mIsect.mPos - vertex.mIsect.mPos;
+	Vec3 dir = nextVertex.mIsect.mPos - vertex.mIsect.mPos;
 	real dist2 = dir.Length2();
 	if (dist2 == 0) return 0;
 	dir.Normalize();
-	real cosTheta = std::abs(dir.Dot(nxt.mIsect.mNormal));
+	real cosTheta = std::abs(dir.Dot(nextVertex.mIsect.mNormal));
 	return pdfW * cosTheta / dist2;
 }
 
