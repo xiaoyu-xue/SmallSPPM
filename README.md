@@ -15,26 +15,26 @@ This project's origin name is SmallSPPM since I have answered someones' question
 
 ## Some Results
 <div align="center">
-  <img width="600px" height="600px" src="https://github.com/Microsoft-Virtual-Ads/assets/blob/main/gallery/bunny2.png?raw=true"/>
-  <img width="600px" height="600px" src="https://github.com/Microsoft-Virtual-Ads/assets/blob/main/gallery/bunny.png?raw=true"/>
+  <img width="400px" height="400px" src="https://github.com/Microsoft-Virtual-Ads/assets/blob/main/gallery/bunny2.png?raw=true"/>
+  <img width="400px" height="400px" src="https://github.com/Microsoft-Virtual-Ads/assets/blob/main/gallery/bunny.png?raw=true"/>
 </div>
 
 <br/>
 <div align="center">
-  <img width="600px" height="600px" src="https://github.com/Microsoft-Virtual-Ads/assets/blob/main/gallery/coca2.png?raw=true"/>
-  <img width="600px" height="600px" src="https://raw.githubusercontent.com/Microsoft-Virtual-Ads/assets/main/gallery/coca1.png"/>
+  <img width="400px" height="400px" src="https://github.com/Microsoft-Virtual-Ads/assets/blob/main/gallery/coca2.png?raw=true"/>
+  <img width="400px" height="400px" src="https://raw.githubusercontent.com/Microsoft-Virtual-Ads/assets/main/gallery/coca1.png"/>
 </div>
 
 <br/>
 <div align="center">
-  <img width="600px" height="600px" src="https://raw.githubusercontent.com/Microsoft-Virtual-Ads/assets/main/gallery/EiffelTower_GGX_RoughGlass_EnvMap.png"/>
-  <img width="600px" height="600px" src="https://raw.githubusercontent.com/Microsoft-Virtual-Ads/assets/main/gallery/EiffelTower_Glass_EnvMap.png"/>
+  <img width="400px" height="400px" src="https://raw.githubusercontent.com/Microsoft-Virtual-Ads/assets/main/gallery/EiffelTower_GGX_RoughGlass_EnvMap.png"/>
+  <img width="400px" height="400px" src="https://raw.githubusercontent.com/Microsoft-Virtual-Ads/assets/main/gallery/EiffelTower_Glass_EnvMap.png"/>
 </div>
 
 <br/>
 <div align="center">
-  <img width="600px" height="600px" src="https://raw.githubusercontent.com/Microsoft-Virtual-Ads/assets/main/gallery/Lucy_Bunny.png"/>
-  <img width="600px" height="600px" src="https://raw.githubusercontent.com/Microsoft-Virtual-Ads/assets/main/gallery/water_cornell_box.png"/>
+  <img width="400px" height="400px" src="https://raw.githubusercontent.com/Microsoft-Virtual-Ads/assets/main/gallery/Lucy_Bunny.png"/>
+  <img width="400px" height="400px" src="https://raw.githubusercontent.com/Microsoft-Virtual-Ads/assets/main/gallery/water_cornell_box.png"/>
 </div>
 
 ## Build
