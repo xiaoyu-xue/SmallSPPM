@@ -6,6 +6,7 @@ obj/
 *.layout
 .layout
 .vs/
+.vscode/
  
 external/build
 x64/
