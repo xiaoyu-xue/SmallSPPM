@@ -1,17 +1,23 @@
 # Gyunity
-This project's origin name is SmallSPPM since I have answered someones' question about sppm. But now I decide to extend it to a graphics library, so I rename this project to "Gyunity".
+## Description
+This is a physically based renderer (CPU based ray tracing), and it's original name is SmallSPPM since I have answered someone's question about sppm to write a demo. But now I decide to extend it to a graphics library, so I rename this project to "Gyunity" [dʒiːjuːnəti].
+
+Next plan is to implement the GPU based renderer and add more features like MCMC(MMLT), VCM, Differentiable Rendering core, Path Guiding methods...
 
 ## Features
-- PathTracing
+- PathTracing (PT)
 - Stochastic progressive photon mapping (SPPM)
-- LightTracing
+- LightTracing (LT)
 - Bidirectional PathTracing (BDPT)
+- Volume PathTracing (VPT)
+- Equi-angular sampling
 - Multiple importance sampling (MIS)
 - Microfacet model with GGX distribution (GGX)
 - Ambient Occlusion (AO)
 - Low Discrepancy Sequence (Halton, Sobol...)
-- Kdtree, BVH
+- KdTree, BVH
 - Fast vector and matrix calculation (SIMD-SSE)
+- Simple Memory Pool
 
 ## Some Results
 <div align="center">
