@@ -64,3 +64,19 @@ foreach(_source IN ITEMS ${HEADERS})
     string(REPLACE "/" "\\" _group_path "${_source_path_rel}")
     source_group("Header Files\\${HDADER_NAME}\\${_group_path}" FILES "${_source}")
 endforeach()
+
+
+# googletest *h files
+set(GOOGLE_TEST_HEADERS_DIR "${CMAKE_CURRENT_LIST_DIR}/../googletest")
+file(GLOB_RECURSE GOOGLE_TEST_HEADERS "${GOOGLE_TEST_HEADERS_DIR}/*.h")
+set(GOOGLE_TEST_ALL_HEADERS "${GOOGLE_TEST_HEADERS}")
+
+set(HEADER_DIR ${GOOGLE_TEST_HEADERS_DIR})
+set(HDADER_NAME "googletest")
+set(HEADERS ${GOOGLE_TEST_HEADERS})
+foreach(_source IN ITEMS ${HEADERS})
+    get_filename_component(_source_path "${_source}" PATH)
+    file(RELATIVE_PATH _source_path_rel "${HEADER_DIR}" "${_source_path}")
+    string(REPLACE "/" "\\" _group_path "${_source_path_rel}")
+    source_group("Header Files\\${HDADER_NAME}\\${_group_path}" FILES "${_source}")
+endforeach()

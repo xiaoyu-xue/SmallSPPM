@@ -1,8 +1,7 @@
+#include "gtest/gtest.h"
 #include "math/Linagl.h"
 #include "math/MathUtils.h"
 #include "math/Transform.h"
-#include "gtest/gtest.h"
-
 
 GYT_NAMESPACE_BEGIN
 

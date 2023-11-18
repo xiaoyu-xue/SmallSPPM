@@ -24,8 +24,13 @@ set(SPDLOG_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/spdlog/include)
 set(FMT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/spdlog/include/spdlog)
 #set(FMT_INCLUDE_DIRS ${FMT_INCLUDE_DIRS} PARENT_SCOPE)
 
+# googletest
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+add_subdirectory(googletest)
+set(GOOGLE_TEST_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/googletest/googletest/include)
+set(GOOGLE_MOCK_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/googletest/googlemock/include)
 
 include(cmake/ide.cmake)
 # ext headers
 message("Create header project...")
-add_custom_target(ext_headers SOURCES ${SPD_ALL_HEADERS} ${TBB_ALL_HEADERS} ${TINY_OBJ_LOADER_ALL_HEADERS} ${STB_HEADERS})
+add_custom_target(ext_headers SOURCES ${SPD_ALL_HEADERS} ${TBB_ALL_HEADERS} ${TINY_OBJ_LOADER_ALL_HEADERS} ${STB_HEADERS} ${GOOGLE_TEST_ALL_HEADERS})
